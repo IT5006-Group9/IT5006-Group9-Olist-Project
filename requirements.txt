@@ -1,0 +1,13 @@
+# IT5006 Group 9 — Olist project
+# Verified on Python 3.13.9 with the versions below.
+# Install:  python3 -m pip install -r requirements.txt
+
+pandas>=2.2
+numpy>=2.0
+matplotlib>=3.9
+seaborn>=0.13
+scipy>=1.14
+
+# notebooks
+jupyterlab>=4.0
+ipykernel>=6.29
