@@ -22,12 +22,21 @@ import streamlit as st
 
 DATA = Path(__file__).resolve().parent / "orders.parquet"
 
-# Consistent colours across every tab: one accent, plus good/bad for delivery outcomes.
-ACCENT = "#1f6f6a"
-GOOD = "#3f7d5a"
-BAD = "#a8433a"
-MUTED = "#9aa3ad"
-SEQ = px.colors.sequential.Teal
+# One primary accent carries the page; amber marks a second series; brick red is
+# reserved for outcomes that are actually bad (late, low review). Green is not used
+# decoratively, so a coloured mark always means something.
+ACCENT = "#3d5a9b"      # deep blue — primary
+ACCENT_2 = "#c8763a"    # burnt amber — second series
+BAD = "#b3453c"         # brick — late deliveries, low scores
+OK = "#3d5a9b"          # on-time reads as the neutral primary, not "success green"
+MUTED = "#8b93a1"
+
+# Sequential ramp built from the accent, for magnitude (GMV, order counts).
+BLUES = ["#e9edf5", "#c6d1e6", "#a2b5d6", "#7d99c6", "#5a7db5", "#3d5a9b"]
+# Categorical set for small breakdowns such as payment method.
+QUAL = ["#3d5a9b", "#c8763a", "#7d99c6", "#b3453c", "#8b93a1", "#d9b382"]
+# Diverging ramp for star ratings: red is bad, blue is good, no green in between.
+DIVERGING = "RdYlBu"
 
 st.set_page_config(page_title="Olist Dashboard · IT5006 Group 9",
                    page_icon="📦", layout="wide")
@@ -160,7 +169,7 @@ with tab_overview:
         fig = go.Figure()
         fig.add_bar(x=g.month, y=g.orders, name="Orders", marker_color=ACCENT, opacity=.85)
         fig.add_scatter(x=g.month, y=g.gmv, name="GMV (R$)", yaxis="y2",
-                        mode="lines+markers", line=dict(color=BAD, width=2))
+                        mode="lines+markers", line=dict(color=ACCENT_2, width=2))
         fig.update_layout(
             yaxis=dict(title="Orders"),
             yaxis2=dict(title="GMV (R$)", overlaying="y", side="right", showgrid=False),
@@ -204,7 +213,7 @@ with tab_overview:
     with c2:
         pay = d.payment_type.value_counts().rename_axis("type").reset_index(name="orders")
         fig = px.pie(pay, names="type", values="orders", hole=.55,
-                     color_discrete_sequence=SEQ)
+                     color_discrete_sequence=QUAL)
         fig.update_layout(height=260, margin=dict(t=30, b=0, l=0, r=0), title="Payment method")
         st.plotly_chart(fig, use_container_width=True)
     with c3:
@@ -290,7 +299,7 @@ with tab_delivery:
             st.subheader("How long deliveries take")
             fig = px.histogram(dd.delivery_days.clip(upper=60), nbins=60,
                                color_discrete_sequence=[ACCENT])
-            fig.add_vline(x=dd.delivery_days.median(), line_dash="dash", line_color=BAD,
+            fig.add_vline(x=dd.delivery_days.median(), line_dash="dash", line_color=ACCENT_2,
                           annotation_text=f"median {dd.delivery_days.median():.0f} d")
             fig.update_layout(height=300, margin=dict(t=20, b=0, l=0, r=0), showlegend=False,
                               xaxis_title="Days from purchase (clipped at 60)", yaxis_title=None)
@@ -323,7 +332,9 @@ with tab_reviews:
                       .rename_axis("score").reset_index(name="orders"))
             counts["score"] = counts.score.astype(int).astype(str)
             fig = px.bar(counts, x="score", y="orders",
-                         color="score", color_discrete_sequence=list(reversed(SEQ))[:5])
+                         color="score",
+                         color_discrete_sequence=["#b3453c", "#d08b6a", "#c9c4bd",
+                                                  "#7d99c6", "#3d5a9b"])
             fig.update_layout(height=320, margin=dict(t=20, b=0, l=0, r=0), showlegend=False,
                               xaxis_title="Stars", yaxis_title=None)
             st.plotly_chart(fig, use_container_width=True)
@@ -341,7 +352,7 @@ with tab_reviews:
                      .agg(score=("review_score", "mean"), n=("review_score", "size"))
                      .reset_index())
                 fig = px.bar(g, x="bucket", y="score", color="score",
-                             color_continuous_scale="RdYlGn", range_color=(1, 5),
+                             color_continuous_scale=DIVERGING, range_color=(1, 5),
                              hover_data={"n": True})
                 fig.update_layout(height=320, margin=dict(t=20, b=0, l=0, r=0),
                                   coloraxis_showscale=False, yaxis_range=[0, 5],
@@ -363,7 +374,7 @@ with tab_reviews:
                 g = (r2.groupby(r2.is_late.map({0.0: "On time", 1.0: "Late"}), observed=True)
                      .review_score.mean().rename_axis("outcome").reset_index(name="score"))
                 fig = px.bar(g, x="outcome", y="score", color="outcome",
-                             color_discrete_map={"On time": GOOD, "Late": BAD})
+                             color_discrete_map={"On time": OK, "Late": BAD})
                 fig.update_layout(height=280, margin=dict(t=20, b=0, l=0, r=0), showlegend=False,
                                   yaxis_range=[0, 5], xaxis_title=None, yaxis_title="Mean stars")
                 st.plotly_chart(fig, use_container_width=True)
@@ -373,7 +384,7 @@ with tab_reviews:
                  .agg(score=("review_score", "mean"), n=("review_score", "size")).reset_index())
             g = g[g.n >= 50].sort_values("score", ascending=False)
             fig = px.bar(g, x="customer_state", y="score", color="score",
-                         color_continuous_scale="RdYlGn", range_color=(3.5, 4.5),
+                         color_continuous_scale=DIVERGING, range_color=(3.5, 4.5),
                          hover_data={"n": True})
             fig.update_layout(height=280, margin=dict(t=20, b=0, l=0, r=0),
                               coloraxis_showscale=False, yaxis_range=[3, 5],
@@ -395,7 +406,7 @@ with tab_catalogue:
         st.subheader("Biggest categories by GMV")
         top = cat.nlargest(n_top, "gmv").sort_values("gmv")
         fig = px.bar(top, x="gmv", y="category", orientation="h",
-                     color="gmv", color_continuous_scale="Teal")
+                     color="gmv", color_continuous_scale=BLUES)
         fig.update_layout(height=28 * n_top + 60, margin=dict(t=20, b=0, l=0, r=0),
                           coloraxis_showscale=False, xaxis_title="GMV (R$)", yaxis_title=None)
         st.plotly_chart(fig, use_container_width=True)
@@ -442,7 +453,7 @@ with tab_geo:
     reverse = metric in {"days", "late", "dist"}
     plot = g[g.orders >= 30].sort_values(metric, ascending=False)
     fig = px.bar(plot, x="customer_state", y=metric, color=metric,
-                 color_continuous_scale="Reds" if reverse else "Teal",
+                 color_continuous_scale="Reds" if reverse else BLUES,
                  hover_data={"orders": True})
     fig.update_layout(height=380, margin=dict(t=20, b=0, l=0, r=0), coloraxis_showscale=False,
                       xaxis_title=None,
