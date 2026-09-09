@@ -135,18 +135,29 @@ def kpi(col, label, value, help_text=None):
 
 k = st.columns(6)
 kpi(k[0], "Orders", f"{len(d):,}")
-kpi(k[1], "GMV", f"R$ {d.gmv.sum()/1e6:,.1f}M", "Item price plus freight")
-kpi(k[2], "Average order", f"R$ {d.gmv.mean():,.0f}")
-kpi(k[3], "Median delivery", f"{dd.delivery_days.median():.0f} d" if len(dd) else "—",
-    "Purchase to customer delivery")
-kpi(k[4], "On-time rate", f"{(1 - dd.is_late.mean()):.1%}" if len(dd) else "—",
-    "Delivered on or before the promised date")
-kpi(k[5], "Mean review", f"{d.review_score.mean():.2f}" if d.review_score.notna().any() else "—")
+kpi(k[1], "Total sales", f"R$ {d.gmv.sum()/1e6:,.1f}M",
+    "Gross merchandise value: item price plus freight. Not Olist's own revenue — "
+    "the platform takes a commission on this.")
+kpi(k[2], "Average order value", f"R$ {d.gmv.mean():,.0f}")
+kpi(k[3], "Median delivery time", f"{dd.delivery_days.median():.0f} days" if len(dd) else "—",
+    "Purchase to customer delivery, delivered orders only")
+kpi(k[4], "Delivered on time", f"{(1 - dd.is_late.mean()):.1%}" if len(dd) else "—",
+    "Share of delivered orders that arrived on or before the promised date")
+kpi(k[5], "Average rating", f"{d.review_score.mean():.2f} / 5"
+    if d.review_score.notna().any() else "—")
+
+# The tooltips above are invisible in a screenshot or on a projector, and the row
+# mixes denominators, so the two things a reader needs are stated in the open.
+st.caption(
+    "Sales figures are in Brazilian reais (R$) and include freight. "
+    "Delivery and rating figures cover delivered orders only, so they are measured "
+    "on a smaller base than the order count."
+)
 
 st.divider()
 
-tab_overview, tab_delivery, tab_reviews, tab_catalogue, tab_geo = st.tabs(
-    ["Overview", "Delivery", "Reviews", "Categories", "Geography"]
+tab_orders, tab_delivery, tab_reviews, tab_catalogue, tab_geo = st.tabs(
+    ["Orders", "Delivery", "Reviews", "Categories", "Geography"]
 )
 
 
@@ -158,9 +169,9 @@ def month_frame(frame: pd.DataFrame) -> pd.DataFrame:
     return g[~g.month.isin(EDGE_MONTHS)].sort_values("month")
 
 
-# ---------------------------------------------------------------- overview
+# ---------------------------------------------------------------- orders
 
-with tab_overview:
+with tab_orders:
     left, right = st.columns([3, 2])
 
     g = month_frame(d)
