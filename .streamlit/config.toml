@@ -1,0 +1,15 @@
+# Streamlit's stock accent is red, which fought the blue charts on every slider,
+# radio and active tab. Aligning the theme with the chart palette makes the
+# controls read as part of the same page.
+[theme]
+primaryColor = "#3d5a9b"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f4f6fa"
+textColor = "#1c2430"
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false
