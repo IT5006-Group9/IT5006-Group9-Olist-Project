@@ -36,8 +36,6 @@ MUTED = "#8b93a1"
 BLUES = ["#e9edf5", "#c6d1e6", "#a2b5d6", "#7d99c6", "#5a7db5", "#3d5a9b"]
 # Categorical set for small breakdowns such as payment method.
 QUAL = ["#3d5a9b", "#c8763a", "#7d99c6", "#b3453c", "#8b93a1", "#d9b382"]
-# Diverging ramp for star ratings: red is bad, blue is good, no green in between.
-DIVERGING = "RdYlBu"
 
 st.set_page_config(page_title="Olist Dashboard · IT5006 Group 9",
                    page_icon="📦", layout="wide")
@@ -308,6 +306,7 @@ with tab_orders:
         fig.add_scatter(x=g.month, y=g.gmv, name="GMV (R$)", yaxis="y2",
                         mode="lines+markers", line=dict(color=ACCENT_2, width=2))
         fig.update_layout(
+            xaxis=dict(title="Purchase month"),
             yaxis=dict(title="Orders"),
             yaxis2=dict(title="GMV (R$)", overlaying="y", side="right", showgrid=False),
             legend=dict(orientation="h", y=1.12, x=0), height=H_MAIN, margin=PAD,
@@ -322,14 +321,14 @@ with tab_orders:
                             "Friday", "Saturday", "Sunday"]).reset_index(name="orders"))
         fig = px.bar(by_dow, x="dow", y="orders", color_discrete_sequence=[ACCENT])
         fig.update_layout(height=H_MAIN // 2, margin=PAD,
-                          xaxis_title=None, yaxis_title=None)
+                          xaxis_title="Day of week", yaxis_title="Orders")
         render(fig)
 
         by_hour = d.groupby(d.purchase_ts.dt.hour).size().reset_index(name="orders")
         by_hour.columns = ["hour", "orders"]
         fig = px.bar(by_hour, x="hour", y="orders", color_discrete_sequence=[ACCENT])
         fig.update_layout(height=H_MAIN // 2, margin=PAD,
-                          xaxis_title="Hour of day", yaxis_title=None)
+                          xaxis_title="Hour of day", yaxis_title="Orders")
         render(fig)
 
     gap()
@@ -348,7 +347,7 @@ with tab_orders:
         fig = px.bar(items, x="items", y="orders", color_discrete_sequence=[ACCENT])
         section("Items per order")
         fig.update_layout(height=H_SHORT, margin=PAD,
-                          xaxis_title=None, yaxis_title=None)
+                          xaxis_title="Items in the order", yaxis_title="Orders")
         render(fig)
     with c2:
         pay = d.payment_type.value_counts().rename_axis("type").reset_index(name="orders")
@@ -366,12 +365,19 @@ with tab_orders:
                           margin=dict(t=30, b=30, l=80, r=80))
         render(fig)
     with c3:
-        vals = d.gmv.clip(upper=d.gmv.quantile(.99))
+        # Order value is long-tailed: the median order is R$105 but the largest
+        # is R$13,664, so drawn to scale the distribution collapses into a line
+        # against the y axis. The top percentile is folded into the final bin.
+        p99 = d.gmv.quantile(.99)
+        n_clipped = int((d.gmv > p99).sum())
+        vals = d.gmv.clip(upper=p99)
         fig = px.histogram(vals, nbins=50, color_discrete_sequence=[ACCENT])
         section("Order value")
         fig.update_layout(height=H_SHORT, margin=PAD, showlegend=False,
-                          xaxis_title="R$ (99th percentile clipped)", yaxis_title=None)
+                          xaxis_title="Order value (R$)", yaxis_title="Orders")
         render(fig)
+        note(f"The final bar is a pile-up, not a peak: the {n_clipped:,} orders "
+             f"above R$ {p99:,.0f} — the most expensive 1% — are folded into it.")
 
     takeaway(
         "Volume grows about ninefold across the window. The November 2017 spike is Black Friday — "
@@ -398,8 +404,8 @@ with tab_delivery:
                           color_discrete_sequence=[BAD])
             fig.add_hline(y=dd.is_late.mean(), line_dash="dash", line_color=MUTED,
                           annotation_text=f"overall {dd.is_late.mean():.1%}")
-            fig.update_layout(height=H_MAIN, margin=PAD,
-                              yaxis_tickformat=".0%", xaxis_title=None, yaxis_title=None)
+            fig.update_layout(height=H_MAIN, margin=PAD, yaxis_tickformat=".0%",
+                              xaxis_title="Purchase month", yaxis_title="Late rate")
             render(fig)
 
 
@@ -416,7 +422,8 @@ with tab_delivery:
             fig.add_scatter(x=m2.month, y=m2.actual, name="Actual", mode="lines+markers",
                             line=dict(color=ACCENT, width=2))
             fig.update_layout(height=H_MAIN, margin=PAD,
-                              yaxis_title="Median days",
+                              xaxis_title="Purchase month",
+                              yaxis_title="Delivery days (monthly median)",
                               legend=dict(orientation="h", y=1.12, x=0))
             render(fig)
 
@@ -439,7 +446,7 @@ with tab_delivery:
                               color_discrete_sequence=[ACCENT], hover_data={"n": True})
                 fig.update_layout(height=H_SHORT, margin=PAD,
                                   xaxis_title="Customer–seller distance (km)",
-                                  yaxis_title="Median days")
+                                  yaxis_title="Delivery days (median)")
                 render(fig)
             else:
                 st.info("Not enough orders with coordinates in this selection.")
@@ -451,7 +458,8 @@ with tab_delivery:
             fig.add_vline(x=dd.delivery_days.median(), line_dash="dash", line_color=ACCENT_2,
                           annotation_text=f"median {dd.delivery_days.median():.0f} d")
             fig.update_layout(height=H_SHORT, margin=PAD, showlegend=False,
-                              xaxis_title="Days from purchase (clipped at 60)", yaxis_title=None)
+                              xaxis_title="Days from purchase (clipped at 60)",
+                          yaxis_title="Orders")
             render(fig)
 
         gap()
@@ -462,17 +470,21 @@ with tab_delivery:
         fig = px.bar(s, x="customer_state", y="late", color="late",
                      color_continuous_scale="Reds", hover_data={"orders": True})
         fig.update_layout(height=H_MAIN, margin=PAD, coloraxis_showscale=False,
-                          yaxis_tickformat=".0%", xaxis_title=None, yaxis_title="Late rate")
+                          yaxis_tickformat=".0%", xaxis_title="Customer state",
+                          yaxis_title="Late rate")
         render(fig)
         note("States with at least 50 delivered orders in the current selection.")
 
         takeaway(
-            "The late rate swings fifteen-fold between months (1.4% to 21.4%) while the promised "
-            "lead time stays flat — Olist is not recalibrating its promise when operations "
-            "degrade. Two consequences for Phase 2: the gap between promise and reality is the "
-            "baseline any lead-time model must beat, and the instability means the train/test "
-            "split has to be time-ordered, since a random split would leak calm months into the "
-            "test set."
+            "The promise is a safety buffer, not an estimate: Olist quotes a median of 23 days "
+            "and delivers in 10. That 13-day cushion, not fast delivery, is what holds the "
+            "on-time rate at 92% — and when operations slipped in March 2018 the cushion "
+            "thinned to 8 days and one order in five arrived late.<br><br>"
+            "Two consequences for Phase 2. Olist's own promise is already a predictor, so "
+            "\"predict the promise\" is the baseline a lead-time model has to beat — beating the "
+            "mean is not enough. And the late rate swings fifteen-fold between months (1.4% to "
+            "21.4%), so the train/test split has to be time-ordered; a random split would leak "
+            "the calm months into the test set."
         )
 
 
@@ -491,15 +503,10 @@ with tab_reviews:
                       .rename_axis("score").reset_index(name="orders"))
             counts["score"] = counts.score.astype(int).astype(str)
             fig = px.bar(counts, x="score", y="orders",
-                         color="score",
-                         color_discrete_sequence=["#b3453c", "#d08b6a", "#c9c4bd",
-                                                  "#7d99c6", "#3d5a9b"])
+                         color_discrete_sequence=[ACCENT])
             fig.update_layout(height=H_MAIN, margin=PAD, showlegend=False,
-                              xaxis_title="Stars", yaxis_title=None)
+                              xaxis_title="Review score (stars)", yaxis_title="Orders")
             render(fig)
-            low = (rev.review_score <= 2).mean()
-            st.metric("Orders rated 1–2 stars", f"{low:.1%}",
-                      help="The imbalance a satisfaction classifier would have to handle.")
 
         with c2:
             section("Review score against delivery time")
@@ -510,11 +517,9 @@ with tab_reviews:
                 g = (r.assign(bucket=buckets).groupby("bucket", observed=True)
                      .agg(score=("review_score", "mean"), n=("review_score", "size"))
                      .reset_index())
-                fig = px.bar(g, x="bucket", y="score", color="score",
-                             color_continuous_scale=DIVERGING, range_color=(1, 5),
-                             hover_data={"n": True})
-                fig.update_layout(height=H_MAIN, margin=PAD,
-                                  coloraxis_showscale=False, yaxis_range=[0, 5],
+                fig = px.bar(g, x="bucket", y="score",
+                             color_discrete_sequence=[ACCENT], hover_data={"n": True})
+                fig.update_layout(height=H_MAIN, margin=PAD, yaxis_range=[0, 5],
                                   xaxis_title="Delivery time", yaxis_title="Mean stars")
                 render(fig)
 
@@ -532,20 +537,21 @@ with tab_reviews:
                 fig = px.bar(g, x="outcome", y="score", color="outcome",
                              color_discrete_map={"On time": OK, "Late": BAD})
                 fig.update_layout(height=H_SHORT, margin=PAD, showlegend=False,
-                                  yaxis_range=[0, 5], xaxis_title=None, yaxis_title="Mean stars")
+                                  yaxis_range=[0, 5], xaxis_title="Delivery outcome",
+                                  yaxis_title="Mean stars")
                 render(fig)
         with c4:
             section("Mean score by state")
             g = (rev.groupby("customer_state", observed=True)
                  .agg(score=("review_score", "mean"), n=("review_score", "size")).reset_index())
             g = g[g.n >= 50].sort_values("score", ascending=False)
-            fig = px.bar(g, x="customer_state", y="score", color="score",
-                         color_continuous_scale=DIVERGING, range_color=(3.5, 4.5),
-                         hover_data={"n": True})
-            fig.update_layout(height=H_SHORT, margin=PAD,
-                              coloraxis_showscale=False, yaxis_range=[3, 5],
-                              xaxis_title=None, yaxis_title="Mean stars")
+            fig = px.bar(g, x="customer_state", y="score",
+                         color_discrete_sequence=[ACCENT], hover_data={"n": True})
+            fig.update_layout(height=H_SHORT, margin=PAD, yaxis_range=[3, 5],
+                              xaxis_title="Customer state", yaxis_title="Mean stars")
             render(fig)
+            note("Every state sits between 3.8 and 4.2 stars. The order ranks them; "
+                 "colour would exaggerate differences this small.")
 
         takeaway(
             "Mean score falls by more than two stars between the fastest and slowest deliveries — "
@@ -572,7 +578,8 @@ with tab_catalogue:
         fig = px.bar(top, x="gmv", y="category", orientation="h",
                      color="gmv", color_continuous_scale=BLUES)
         fig.update_layout(height=32 * n_top + 90, margin=PAD,
-                          coloraxis_showscale=False, xaxis_title="GMV (R$)", yaxis_title=None)
+                          coloraxis_showscale=False, xaxis_title="Total sales (R$)",
+                          yaxis_title="Product category")
         render(fig)
 
     with c2:
@@ -583,7 +590,7 @@ with tab_catalogue:
                      hover_data={"orders": True})
         fig.update_layout(height=32 * n_top + 90, margin=PAD,
                           coloraxis_showscale=False, xaxis_tickformat=".0%",
-                          xaxis_title="Late rate", yaxis_title=None)
+                          xaxis_title="Late rate", yaxis_title="Product category")
         render(fig)
         note("Categories with at least 100 orders, ranked by volume.")
 
@@ -640,20 +647,36 @@ with tab_geo:
             # choropleth_map draws on a blank basemap: no tiles are fetched, and
             # centre and zoom are honoured. The geo projection was left behind
             # because neither fitbounds nor axis ranges framed the country.
+            # Orders and sales are dominated by São Paulo: on a linear ramp it
+            # takes the whole colour range and the other 26 states are all but
+            # white. Colouring by log spreads them out; the bar beside it still
+            # shows the true magnitudes.
+            skewed = metric in {"orders", "gmv"}
+            gm = g.copy()
+            colour_by = metric
+            if skewed:
+                gm["_log"] = np.log10(gm[metric].clip(lower=1))
+                colour_by = "_log"
+
             fig = px.choropleth_map(
-                g, geojson=load_states(), locations="customer_state",
-                featureidkey="properties.uf", color=metric,
+                gm, geojson=load_states(), locations="customer_state",
+                featureidkey="properties.uf", color=colour_by,
                 color_continuous_scale=scale, map_style="white-bg",
                 center={"lat": -14.0, "lon": -53.5}, zoom=2.25, opacity=.92,
                 hover_name="customer_state",
                 hover_data={"customer_state": False, "orders": ":,", metric: True},
                 labels={metric: METRIC_LABELS[metric], "orders": "Orders"},
             )
-            fig.update_layout(
-                height=H_TALL, margin=dict(t=10, b=10, l=10, r=10),
-                coloraxis_colorbar=dict(title=None, orientation="h", thickness=10,
-                                        len=.6, y=-.04, yanchor="top", x=.5,
-                                        xanchor="center"))
+            bar = dict(title=None, orientation="h", thickness=10, len=.6,
+                       y=-.04, yanchor="top", x=.5, xanchor="center")
+            if skewed:
+                # Ticks stay on the real scale even though the colour is log.
+                hi = int(np.floor(np.log10(max(gm[metric].max(), 1))))
+                ticks = [10 ** e for e in range(1, hi + 1)]
+                bar |= dict(tickvals=[np.log10(t) for t in ticks],
+                            ticktext=[f"{t:,}" for t in ticks])
+            fig.update_layout(height=H_TALL, margin=dict(t=10, b=10, l=10, r=10),
+                              coloraxis_colorbar=bar)
             render(fig)
             note("All 27 federative units are drawn, including those with too few "
                  "orders for the ranking beside it.")
@@ -661,13 +684,12 @@ with tab_geo:
             st.info("`dashboard/br_states.geojson` is missing, so the map is hidden.")
 
     with bar_col:
-        fig = px.bar(plot, x="customer_state", y=metric, color=metric,
-                     color_continuous_scale=scale, hover_data={"orders": True},
+        fig = px.bar(plot, x="customer_state", y=metric,
+                     color_discrete_sequence=[ACCENT], hover_data={"orders": True},
                      labels={metric: METRIC_LABELS[metric]})
-        fig.update_layout(height=H_TALL, margin=PAD,
-                          coloraxis_showscale=False, xaxis_title=None,
+        fig.update_layout(height=H_TALL, margin=PAD, xaxis_title="Customer state",
                           yaxis_tickformat=".0%" if metric == "late" else None,
-                          yaxis_title=None)
+                          yaxis_title=METRIC_LABELS[metric])
         render(fig)
         note("States with at least 30 orders in the current selection.")
 
