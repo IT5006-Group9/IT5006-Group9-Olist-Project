@@ -32,8 +32,31 @@ BAD = "#b3453c"         # brick — late deliveries, low scores
 OK = "#3d5a9b"          # on-time reads as the neutral primary, not "success green"
 MUTED = "#8b93a1"
 
-# Sequential ramp built from the accent, for magnitude (GMV, order counts).
-BLUES = ["#e9edf5", "#c6d1e6", "#a2b5d6", "#7d99c6", "#5a7db5", "#3d5a9b"]
+# Each tab carries its own hue, so colour tells you which section you are in
+# rather than repeating what an axis already says. All five are held at a
+# similar muted saturation so the dashboard still reads as one piece.
+TONES = {
+    "orders":     "#3d5a9b",   # deep blue
+    "delivery":   "#2f7a6f",   # teal
+    "reviews":    "#6b4c8a",   # plum
+    "categories": "#b07039",   # burnt amber
+    "geography":  "#4a7355",   # forest
+}
+
+
+def ramp(hex_colour: str, stops: int = 6):
+    """A light-to-tone sequential scale, so every tab's magnitude charts are
+    shaded in that tab's own hue instead of a single shared blue."""
+    r, g_, b = (int(hex_colour[i:i + 2], 16) for i in (1, 3, 5))
+    out = []
+    for i in range(stops):
+        t = 0.90 - 0.90 * i / (stops - 1)          # 0.90 -> 0 lightening
+        out.append("#%02x%02x%02x" % tuple(
+            round(c + (255 - c) * t) for c in (r, g_, b)))
+    return out
+
+
+BLUES = ramp(TONES["orders"])
 # Categorical set for small breakdowns such as payment method.
 QUAL = ["#3d5a9b", "#c8763a", "#7d99c6", "#b3453c", "#8b93a1", "#d9b382"]
 
@@ -284,6 +307,21 @@ tab_orders, tab_delivery, tab_reviews, tab_catalogue, tab_geo = st.tabs(
     ["Orders", "Delivery", "Reviews", "Categories", "Geography"]
 )
 
+# The active tab's underline picks up that tab's hue, so the colour of the charts
+# below is never a surprise.
+st.markdown(
+    "<style>"
+    + "".join(
+        f'div[data-baseweb="tab-list"] button:nth-child({i})[aria-selected="true"] '
+        f'{{ color:{c} !important }}'
+        f'div[data-baseweb="tab-list"] button:nth-child({i})[aria-selected="true"] '
+        f'~ div[data-baseweb="tab-highlight"] {{ background:{c} !important }}'
+        for i, c in enumerate(TONES.values(), start=1)
+    )
+    + "</style>",
+    unsafe_allow_html=True,
+)
+
 
 def month_frame(frame: pd.DataFrame) -> pd.DataFrame:
     """Monthly aggregates with the sparse edge months dropped from the plot window."""
@@ -296,13 +334,14 @@ def month_frame(frame: pd.DataFrame) -> pd.DataFrame:
 # ---------------------------------------------------------------- orders
 
 with tab_orders:
+    tone = TONES["orders"]
     left, right = st.columns([3, 2])
 
     g = month_frame(d)
     with left:
         section("Orders and GMV per month")
         fig = go.Figure()
-        fig.add_bar(x=g.month, y=g.orders, name="Orders", marker_color=ACCENT, opacity=.85)
+        fig.add_bar(x=g.month, y=g.orders, name="Orders", marker_color=tone, opacity=.85)
         fig.add_scatter(x=g.month, y=g.gmv, name="GMV (R$)", yaxis="y2",
                         mode="lines+markers", line=dict(color=ACCENT_2, width=2))
         fig.update_layout(
@@ -319,14 +358,14 @@ with tab_orders:
                   .groupby("dow", observed=True).size()
                   .reindex(["Monday", "Tuesday", "Wednesday", "Thursday",
                             "Friday", "Saturday", "Sunday"]).reset_index(name="orders"))
-        fig = px.bar(by_dow, x="dow", y="orders", color_discrete_sequence=[ACCENT])
+        fig = px.bar(by_dow, x="dow", y="orders", color_discrete_sequence=[tone])
         fig.update_layout(height=H_MAIN // 2, margin=PAD,
                           xaxis_title="Day of week", yaxis_title="Orders")
         render(fig)
 
         by_hour = d.groupby(d.purchase_ts.dt.hour).size().reset_index(name="orders")
         by_hour.columns = ["hour", "orders"]
-        fig = px.bar(by_hour, x="hour", y="orders", color_discrete_sequence=[ACCENT])
+        fig = px.bar(by_hour, x="hour", y="orders", color_discrete_sequence=[tone])
         fig.update_layout(height=H_MAIN // 2, margin=PAD,
                           xaxis_title="Hour of day", yaxis_title="Orders")
         render(fig)
@@ -344,7 +383,7 @@ with tab_orders:
         items = (d.n_items.clip(upper=5).value_counts().sort_index()
                  .rename_axis("items").reset_index(name="orders"))
         items["items"] = items["items"].astype(str).replace({"5": "5+"})
-        fig = px.bar(items, x="items", y="orders", color_discrete_sequence=[ACCENT])
+        fig = px.bar(items, x="items", y="orders", color_discrete_sequence=[tone])
         section("Items per order")
         fig.update_layout(height=H_SHORT, margin=PAD,
                           xaxis_title="Items in the order", yaxis_title="Orders")
@@ -353,7 +392,7 @@ with tab_orders:
         pay = d.payment_type.value_counts().rename_axis("type").reset_index(name="orders")
         section("Payment method")
         fig = px.pie(pay, names="type", values="orders", hole=.55,
-                     color_discrete_sequence=QUAL)
+                     color_discrete_sequence=[tone, ACCENT_2, ramp(tone)[2], BAD])
         # Labels sit outside on leader lines so the thin voucher and debit_card
         # slices keep their percentages; the margins below are what stops those
         # labels being clipped by the column edge.
@@ -371,7 +410,7 @@ with tab_orders:
         p99 = d.gmv.quantile(.99)
         n_clipped = int((d.gmv > p99).sum())
         vals = d.gmv.clip(upper=p99)
-        fig = px.histogram(vals, nbins=50, color_discrete_sequence=[ACCENT])
+        fig = px.histogram(vals, nbins=50, color_discrete_sequence=[tone])
         section("Order value")
         fig.update_layout(height=H_SHORT, margin=PAD, showlegend=False,
                           xaxis_title="Order value (R$)", yaxis_title="Orders")
@@ -390,6 +429,7 @@ with tab_orders:
 # ---------------------------------------------------------------- delivery
 
 with tab_delivery:
+    tone = TONES["delivery"]
     if dd.empty:
         st.info("No delivered orders in the current selection.")
     else:
@@ -420,7 +460,7 @@ with tab_delivery:
             fig.add_scatter(x=m2.month, y=m2.promised, name="Promised", mode="lines+markers",
                             line=dict(color=MUTED, dash="dash"))
             fig.add_scatter(x=m2.month, y=m2.actual, name="Actual", mode="lines+markers",
-                            line=dict(color=ACCENT, width=2))
+                            line=dict(color=tone, width=2))
             fig.update_layout(height=H_MAIN, margin=PAD,
                               xaxis_title="Purchase month",
                               yaxis_title="Delivery days (monthly median)",
@@ -443,7 +483,7 @@ with tab_delivery:
                 g2 = g2[g2.n >= 20]
                 g2["mid"] = [b.mid for b in g2["bin"]]
                 fig = px.line(g2, x="mid", y="days", markers=True,
-                              color_discrete_sequence=[ACCENT], hover_data={"n": True})
+                              color_discrete_sequence=[tone], hover_data={"n": True})
                 fig.update_layout(height=H_SHORT, margin=PAD,
                                   xaxis_title="Customer–seller distance (km)",
                                   yaxis_title="Delivery days (median)")
@@ -454,7 +494,7 @@ with tab_delivery:
         with c4:
             section("How long deliveries take")
             fig = px.histogram(dd.delivery_days.clip(upper=60), nbins=60,
-                               color_discrete_sequence=[ACCENT])
+                               color_discrete_sequence=[tone])
             fig.add_vline(x=dd.delivery_days.median(), line_dash="dash", line_color=ACCENT_2,
                           annotation_text=f"median {dd.delivery_days.median():.0f} d")
             fig.update_layout(height=H_SHORT, margin=PAD, showlegend=False,
@@ -491,6 +531,7 @@ with tab_delivery:
 # ---------------------------------------------------------------- reviews
 
 with tab_reviews:
+    tone = TONES["reviews"]
     rev = d[d.review_score.notna()]
     if rev.empty:
         st.info("No reviewed orders in the current selection.")
@@ -503,7 +544,7 @@ with tab_reviews:
                       .rename_axis("score").reset_index(name="orders"))
             counts["score"] = counts.score.astype(int).astype(str)
             fig = px.bar(counts, x="score", y="orders",
-                         color_discrete_sequence=[ACCENT])
+                         color_discrete_sequence=[tone])
             fig.update_layout(height=H_MAIN, margin=PAD, showlegend=False,
                               xaxis_title="Review score (stars)", yaxis_title="Orders")
             render(fig)
@@ -518,7 +559,7 @@ with tab_reviews:
                      .agg(score=("review_score", "mean"), n=("review_score", "size"))
                      .reset_index())
                 fig = px.bar(g, x="bucket", y="score",
-                             color_discrete_sequence=[ACCENT], hover_data={"n": True})
+                             color_discrete_sequence=[tone], hover_data={"n": True})
                 fig.update_layout(height=H_MAIN, margin=PAD, yaxis_range=[0, 5],
                                   xaxis_title="Delivery time", yaxis_title="Mean stars")
                 render(fig)
@@ -535,7 +576,7 @@ with tab_reviews:
                 g = (r2.groupby(r2.is_late.map({0.0: "On time", 1.0: "Late"}), observed=True)
                      .review_score.mean().rename_axis("outcome").reset_index(name="score"))
                 fig = px.bar(g, x="outcome", y="score", color="outcome",
-                             color_discrete_map={"On time": OK, "Late": BAD})
+                             color_discrete_map={"On time": tone, "Late": BAD})
                 fig.update_layout(height=H_SHORT, margin=PAD, showlegend=False,
                                   yaxis_range=[0, 5], xaxis_title="Delivery outcome",
                                   yaxis_title="Mean stars")
@@ -546,7 +587,7 @@ with tab_reviews:
                  .agg(score=("review_score", "mean"), n=("review_score", "size")).reset_index())
             g = g[g.n >= 50].sort_values("score", ascending=False)
             fig = px.bar(g, x="customer_state", y="score",
-                         color_discrete_sequence=[ACCENT], hover_data={"n": True})
+                         color_discrete_sequence=[tone], hover_data={"n": True})
             fig.update_layout(height=H_SHORT, margin=PAD, yaxis_range=[3, 5],
                               xaxis_title="Customer state", yaxis_title="Mean stars")
             render(fig)
@@ -565,6 +606,7 @@ with tab_reviews:
 # ---------------------------------------------------------------- categories
 
 with tab_catalogue:
+    tone = TONES["categories"]
     n_top = st.slider("Categories shown", 5, 30, 15)
     cat = (d[d.category != "unknown"].groupby("category", observed=True)
            .agg(orders=("gmv", "size"), gmv=("gmv", "sum"), aov=("gmv", "mean"),
@@ -576,7 +618,7 @@ with tab_catalogue:
         section("Biggest categories by GMV")
         top = cat.nlargest(n_top, "gmv").sort_values("gmv")
         fig = px.bar(top, x="gmv", y="category", orientation="h",
-                     color="gmv", color_continuous_scale=BLUES)
+                     color="gmv", color_continuous_scale=ramp(tone))
         fig.update_layout(height=32 * n_top + 90, margin=PAD,
                           coloraxis_showscale=False, xaxis_title="Total sales (R$)",
                           yaxis_title="Product category")
@@ -618,6 +660,7 @@ with tab_catalogue:
 # ---------------------------------------------------------------- geography
 
 with tab_geo:
+    tone = TONES["geography"]
     section("State by state")
     g = (d.groupby("customer_state", observed=True)
          .agg(orders=("gmv", "size"), gmv=("gmv", "sum"), aov=("gmv", "mean"),
@@ -636,7 +679,7 @@ with tab_geo:
     # Red always means the worse outcome (slower, later, further); blue carries volume
     # and the metrics where more is better.
     reverse = metric in {"days", "late", "dist"}
-    scale = "Reds" if reverse else BLUES
+    scale = "Reds" if reverse else ramp(tone)
     plot = g[g.orders >= 30].sort_values(metric, ascending=False)
 
     gap(0.8)
@@ -685,7 +728,7 @@ with tab_geo:
 
     with bar_col:
         fig = px.bar(plot, x="customer_state", y=metric,
-                     color_discrete_sequence=[ACCENT], hover_data={"orders": True},
+                     color_discrete_sequence=[tone], hover_data={"orders": True},
                      labels={metric: METRIC_LABELS[metric]})
         fig.update_layout(height=H_TALL, margin=PAD, xaxis_title="Customer state",
                           yaxis_tickformat=".0%" if metric == "late" else None,
