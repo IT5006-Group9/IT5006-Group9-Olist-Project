@@ -59,6 +59,10 @@ def ramp(hex_colour: str, stops: int = 6):
 BLUES = ramp(TONES["orders"])
 # Categorical set for small breakdowns such as payment method.
 QUAL = ["#3d5a9b", "#c8763a", "#7d99c6", "#b3453c", "#8b93a1", "#d9b382"]
+# Eight lines need eight separable hues; the tab tones are reused so the set
+# still belongs to the same palette rather than reading as a default rainbow.
+STATE_QUAL = ["#3d5a9b", "#c8763a", "#2f7a6f", "#b3453c",
+              "#6b4c8a", "#7d99c6", "#b07039", "#4a7355"]
 
 st.set_page_config(page_title="Olist Dashboard · IT5006 Group 9",
                    page_icon="📦", layout="wide")
@@ -104,6 +108,18 @@ def takeaway(text: str):
         f"padding:.7rem .95rem;border-radius:0 4px 4px 0;font-size:.9rem;"
         f"line-height:1.55;color:#3a424f'><b style='color:#1c2430'>What this shows"
         f"</b><br>{text}</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def block(title: str, caption: str | None = None):
+    """A top-level heading inside a tab. Sits a clear step above section(), so a
+    long tab reads as a few labelled blocks instead of a flat run of charts."""
+    st.markdown(
+        f"<div style='font-size:1.25rem;font-weight:700;letter-spacing:-.01em;"
+        f"color:#1c2430;margin:0 0 .15rem'>{title}</div>"
+        + (f"<div style='font-size:.85rem;color:#5c6472;line-height:1.45;"
+           f"margin:0 0 .1rem'>{caption}</div>" if caption else ""),
         unsafe_allow_html=True,
     )
 
@@ -371,10 +387,9 @@ with tab_orders:
         render(fig)
 
     gap()
-    st.markdown(
-        "<div style='font-size:1.25rem;font-weight:700;margin:0 0 .1rem'>"
-        "Order composition</div>", unsafe_allow_html=True)
-    st.caption("What a typical order looks like: how many items, paid how, and for how much.")
+    block("Order composition and payments",
+          "What a typical order looks like: how many items, paid how, in how many "
+          "instalments, and for how much.")
     gap(0.5)
     # The middle column carries a pie with labels on leader lines, which needs
     # room on both sides of the circle that a plain third does not give.
@@ -418,11 +433,43 @@ with tab_orders:
         note(f"The final bar is a pile-up, not a peak: the {n_clipped:,} orders "
              f"above R$ {p99:,.0f} — the most expensive 1% — are folded into it.")
 
+    gap()
+    # Payment method alone does not say how customers actually finance an order.
+    # Brazilian card payments are routinely split across months, and the split is
+    # known at purchase — so it is a usable feature as well as a market fact.
+    inst = d.installments.dropna()
+    inst = inst[inst >= 1].clip(upper=12)
+    p1, p2 = st.columns(2)
+    with p1:
+        section("Instalments per order")
+        cnt = inst.value_counts().sort_index().rename_axis("n").reset_index(name="orders")
+        cnt["n"] = cnt.n.astype(int).astype(str).replace({"12": "12+"})
+        fig = px.bar(cnt, x="n", y="orders", color_discrete_sequence=[tone])
+        fig.update_layout(height=H_SHORT, margin=PAD,
+                          xaxis_title="Instalments", yaxis_title="Orders")
+        render(fig)
+        note("Boleto, debit and voucher payments cannot be split, so they all sit in "
+             "the single-instalment bar. Anything above twelve is folded into 12+.")
+    with p2:
+        section("Order value by instalment count")
+        med = (d.assign(n=d.installments.clip(upper=12))
+               .dropna(subset=["n"]).query("n >= 1")
+               .groupby("n", observed=True)
+               .agg(value=("gmv", "median"), orders=("gmv", "size")).reset_index())
+        med["n"] = med.n.astype(int).astype(str).replace({"12": "12+"})
+        fig = px.bar(med, x="n", y="value", color_discrete_sequence=[tone],
+                     hover_data={"orders": ":,"})
+        fig.update_layout(height=H_SHORT, margin=PAD,
+                          xaxis_title="Instalments",
+                          yaxis_title="Median order value (R$)")
+        render(fig)
+        note("Median rather than mean, so a few very large baskets do not set the level.")
+
     takeaway(
         "Volume grows about ninefold across the window. The November 2017 spike is Black Friday — "
         "it appears <b>once</b> in the whole extract, so it is an event to flag with a dummy "
         "variable rather than a seasonal pattern a model could learn. Weekday and evening ordering "
-        "are cheap, leakage-free features: both are known the moment an order is placed."
+        "are cheap, leakage-free features: both are known the moment an order is placed. Instalments rise almost monotonically with basket size, so the count is a proxy for order value as much as for credit appetite — a pair worth watching for collinearity."
     )
 
 
@@ -637,17 +684,20 @@ with tab_catalogue:
         note("Categories with at least 100 orders, ranked by volume.")
 
     gap()
-    section("Category detail")
-    detail = (cat.nlargest(n_top, "orders")
-            [["category", "orders", "gmv", "aov", "review", "late"]].copy())
-    detail.columns = ["Category", "Orders", "Total sales", "Avg order",
-                      "Avg rating", "Late rate"]
-    st.dataframe(
-        detail.style.format({"Orders": "{:,.0f}", "Total sales": "R$ {:,.0f}",
-                           "Avg order": "R$ {:,.0f}", "Avg rating": "{:.2f}",
-                           "Late rate": "{:.1%}"}),
-        use_container_width=True, hide_index=True,
-    )
+    # Same rows as the two charts above, with three more columns. Folded away so
+    # the tab does not end in a wall of numbers, but kept for anyone looking up a
+    # specific category.
+    with st.expander("Category detail — full numbers"):
+        detail = (cat.nlargest(n_top, "orders")
+                [["category", "orders", "gmv", "aov", "review", "late"]].copy())
+        detail.columns = ["Category", "Orders", "Total sales", "Avg order",
+                          "Avg rating", "Late rate"]
+        st.dataframe(
+            detail.style.format({"Orders": "{:,.0f}", "Total sales": "R$ {:,.0f}",
+                               "Avg order": "R$ {:,.0f}", "Avg rating": "{:.2f}",
+                               "Late rate": "{:.1%}"}),
+            use_container_width=True, hide_index=True,
+        )
 
     takeaway(
         "Sales concentrate in a handful of categories, but late-delivery risk does not follow "
@@ -661,7 +711,9 @@ with tab_catalogue:
 
 with tab_geo:
     tone = TONES["geography"]
-    section("State by state")
+
+    block("Where the orders are",
+          "Every federative unit on the map, with the same measure ranked beside it.")
     g = (d.groupby("customer_state", observed=True)
          .agg(orders=("gmv", "size"), gmv=("gmv", "sum"), aov=("gmv", "mean"),
               days=("delivery_days", "median"), late=("is_late", "mean"),
@@ -676,8 +728,8 @@ with tab_geo:
     metric = st.selectbox("Colour states by", list(METRIC_LABELS),
                           format_func=METRIC_LABELS.get)
 
-    # Red always means the worse outcome (slower, later, further); blue carries volume
-    # and the metrics where more is better.
+    # Red always means the worse outcome (slower, later, further); the tab's own
+    # green carries volume and the metrics where more is better.
     reverse = metric in {"days", "late", "dist"}
     scale = "Reds" if reverse else ramp(tone)
     plot = g[g.orders >= 30].sort_values(metric, ascending=False)
@@ -686,6 +738,7 @@ with tab_geo:
     map_col, bar_col = st.columns([1, 1])
 
     with map_col:
+        section("On the map")
         if GEOJSON.exists():
             # choropleth_map draws on a blank basemap: no tiles are fetched, and
             # centre and zoom are honoured. The geo projection was left behind
@@ -727,6 +780,7 @@ with tab_geo:
             st.info("`dashboard/br_states.geojson` is missing, so the map is hidden.")
 
     with bar_col:
+        section("Ranked")
         fig = px.bar(plot, x="customer_state", y=metric,
                      color_discrete_sequence=[tone], hover_data={"orders": True},
                      labels={metric: METRIC_LABELS[metric]})
@@ -736,8 +790,25 @@ with tab_geo:
         render(fig)
         note("States with at least 30 orders in the current selection.")
 
+    gap(0.8)
+    # The map and the bar show one measure at a time, so this is the lookup
+    # behind them: all seven measures for all 27 states, on demand.
+    with st.expander("Every state — full numbers"):
+        table = g.copy()
+        table.columns = ["State", "Orders", "Total sales", "Avg order", "Median days",
+                         "Late rate", "Avg rating", "Median km"]
+        st.dataframe(
+            table.style.format({"Orders": "{:,.0f}", "Total sales": "R$ {:,.0f}",
+                                "Avg order": "R$ {:,.0f}", "Median days": "{:.0f}",
+                                "Late rate": "{:.1%}", "Avg rating": "{:.2f}",
+                                "Median km": "{:,.0f}"}),
+            use_container_width=True, hide_index=True, height=430,
+        )
+
     gap()
-    section("Same state or across?")
+    block("Same state or across the country?",
+          "Whether the seller sits in the customer's own state, and what that changes.")
+    gap(0.4)
 
     r = (d.groupby(d.same_state.map({True: "Same state", False: "Cross state"}),
                    observed=True)
@@ -751,34 +822,133 @@ with tab_geo:
             continue
         row = r.loc[route_name]
         with col:
-            st.markdown(f"**{route_name}**")
-            a, b_, c_ = st.columns(3)
-            a.metric("Orders", f"{row.orders:,.0f}")
-            b_.metric("Late rate", f"{row.late:.1%}")
-            c_.metric("Median days", f"{row.days:.0f}")
-
-
+            with st.container(border=True):
+                section(route_name)
+                a, b_, c_ = st.columns(3)
+                a.metric("Orders", f"{row.orders:,.0f}")
+                b_.metric("Late rate", f"{row.late:.1%}")
+                c_.metric("Median days", f"{row.days:.0f}")
 
     gap()
-    section("Every state")
-    table = g.copy()
-    table.columns = ["State", "Orders", "Total sales", "Avg order", "Median days",
-                     "Late rate", "Avg rating", "Median km"]
-    st.dataframe(
-        table.style.format({"Orders": "{:,.0f}", "Total sales": "R$ {:,.0f}",
-                            "Avg order": "R$ {:,.0f}", "Median days": "{:.0f}",
-                            "Late rate": "{:.1%}", "Avg rating": "{:.2f}",
-                            "Median km": "{:,.0f}"}),
-        use_container_width=True, hide_index=True, height=430,
+    block("Distance and buying behaviour",
+          "One point per state: how far its orders travel, against how its customers "
+          "behave. This is the state-level view behind the regional-behaviour "
+          "candidate problem.")
+
+    beh = (d.assign(freight_share=d.freight / d.gmv,
+                    boleto=(d.payment_type == "boleto").astype(float))
+           .groupby("customer_state", observed=True)
+           .agg(orders=("gmv", "size"), dist=("distance_km", "median"),
+                freight_share=("freight_share", "median"), aov=("gmv", "mean"),
+                inst=("installments", "mean"), boleto=("boleto", "mean"),
+                late=("is_late", "mean"), review=("review_score", "mean"))
+           .reset_index())
+    beh = beh[beh.orders >= 30]
+
+    BEH_LABELS = {
+        "freight_share": "Freight as a share of order value",
+        "aov": "Average order value (R$)",
+        "inst": "Average instalments",
+        "boleto": "Boleto share of orders",
+        "late": "Late rate",
+        "review": "Average rating",
+    }
+    PCT_BEH = {"freight_share", "boleto", "late"}
+
+    behaviour = st.selectbox("Behaviour metric", list(BEH_LABELS),
+                             format_func=BEH_LABELS.get, key="beh_metric")
+    pts = beh.dropna(subset=["dist", behaviour])
+
+    gap(0.4)
+    if len(pts) < 3:
+        st.info("Too few states in the current selection to plot a relationship.")
+    else:
+        # Spearman, not Pearson: these state aggregates are monotone but not linear,
+        # and a handful of remote states would otherwise drag a Pearson coefficient.
+        rho = pts["dist"].corr(pts[behaviour], method="spearman")
+        fig = px.scatter(
+            pts, x="dist", y=behaviour, size="orders", text="customer_state",
+            color_discrete_sequence=[tone], size_max=38, hover_name="customer_state",
+            hover_data={"customer_state": False, "orders": ":,"},
+            labels={"dist": "Median shipping distance (km)",
+                    behaviour: BEH_LABELS[behaviour], "orders": "Orders"},
+        )
+        fig.update_traces(textposition="top center", textfont_size=10,
+                          marker=dict(opacity=.72, line=dict(color="#ffffff", width=1)))
+        # A straight fit, drawn only to show the direction of the relationship;
+        # the coefficient quoted beneath is the rank correlation, not this line.
+        k, b0 = np.polyfit(pts["dist"], pts[behaviour], 1)
+        xs = np.array([pts["dist"].min(), pts["dist"].max()])
+        fig.add_scatter(x=xs, y=k * xs + b0, mode="lines", showlegend=False,
+                        hoverinfo="skip",
+                        line=dict(color=MUTED, width=1.5, dash="dash"))
+        fig.update_layout(height=H_TALL, margin=PAD, showlegend=False,
+                          xaxis_title="Median shipping distance (km)",
+                          yaxis_title=BEH_LABELS[behaviour],
+                          yaxis_tickformat=".0%" if behaviour in PCT_BEH else None)
+        render(fig)
+        note(f"Spearman &rho; = {rho:+.2f} across {len(pts)} states with at least 30 orders; "
+             "point area is order count. Distance is the median customer-to-seller "
+             "distance of the state's own orders — with most sellers in the south-east it "
+             "stands in for distance from the commercial centre.")
+
+    gap()
+    totals = d.groupby("customer_state", observed=True).gmv.sum().sort_values(ascending=False)
+    keep = list(totals.head(8).index)
+    share = totals.head(8).sum() / totals.sum() if totals.sum() else 0
+
+    block("State-level GMV trajectories",
+          f"How the eight largest states — {share:.0%} of all sales — have grown "
+          "month by month.")
+
+    view = st.radio("Scale", ["Absolute (R$)", "Indexed (first month = 100)"],
+                    horizontal=True, key="traj_scale")
+    tr = (d[d.customer_state.isin(keep)]
+          .groupby(["month", "customer_state"], observed=True).gmv.sum()
+          .reset_index().sort_values("month"))
+
+    indexed = view.startswith("Indexed")
+    if indexed:
+        # Levels differ by two orders of magnitude, so rebasing is the only way to
+        # compare the *shape* of growth rather than re-reading the same ranking.
+        tr["value"] = 100 * tr.gmv / tr.groupby("customer_state", observed=True).gmv.transform("first")
+    else:
+        tr["value"] = tr.gmv
+
+    gap(0.4)
+    # Without an explicit order the traces come out in whatever order the first
+    # month happens to list them, so the legend stops matching the ranking.
+    fig = px.line(tr, x="month", y="value", color="customer_state",
+                  color_discrete_sequence=STATE_QUAL,
+                  category_orders={"customer_state": keep},
+                  labels={"customer_state": "State"})
+    fig.update_traces(line=dict(width=2))
+    fig.update_layout(
+        height=H_MAIN, margin=PAD, xaxis_title="Purchase month",
+        yaxis_title="GMV, first month = 100" if indexed else "GMV (R$, log scale)",
+        legend=dict(orientation="h", y=1.12, x=0, title=None),
     )
+    if not indexed:
+        fig.update_yaxes(type="log")
+    render(fig)
+    note("Each state is rebased to its own first month in the window, so a state that "
+         "starts later starts from a different point in time."
+         if indexed else
+         "The axis is logarithmic — São Paulo is an order of magnitude above the rest, "
+         "and on a linear axis the other seven flatten into the baseline.")
 
     takeaway(
         "Both sides of the marketplace sit in the south-east: São Paulo alone takes the largest "
         "share of orders, while the northern states are nearly empty. Crossing a state line "
         "roughly doubles the typical delivery time, but state relation is a coarse proxy for "
         "distance — read it as a route difference, not a penalty for the border itself. The "
-        "states that deliver worst are largely the ones furthest from the São Paulo seller base."
+        "states that deliver worst are largely the ones furthest from the São Paulo seller base. "
+        "Distance also tracks behaviour, not just logistics: remote states pay a far higher share "
+        "of the order in freight and buy larger baskets, while rating falls with distance. The "
+        "eight largest states dominate the revenue and move together month to month, so a "
+        "state-level model has few genuinely independent series to learn from."
     )
+
 
 
 st.divider()

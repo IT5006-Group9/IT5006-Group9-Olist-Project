@@ -5,7 +5,7 @@ Milestone 1 dashboard deliverable.
 
 | File | What it is |
 |---|---|
-| `app.py` | The Streamlit app: five tabs (Overview, Delivery, Reviews, Categories, Geography) over shared sidebar filters |
+| `app.py` | The Streamlit app: five tabs (Orders, Delivery, Reviews, Categories, Geography) over shared sidebar filters |
 | `orders.parquet` | One row per order (98,666 rows, 3.7 MB, zstd). Committed, so the app runs anywhere without the raw CSVs |
 | `build_data.py` | Regenerates `orders.parquet` |
 | `requirements.txt` | Pinned dependencies for Streamlit Cloud |
