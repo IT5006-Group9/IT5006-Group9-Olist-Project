@@ -865,7 +865,9 @@ with tab_geo:
     else:
         # Spearman, not Pearson: these state aggregates are monotone but not linear,
         # and a handful of remote states would otherwise drag a Pearson coefficient.
-        rho = pts["dist"].corr(pts[behaviour], method="spearman")
+        # Computed as Pearson on ranks, which is the same number: pandas'
+        # method="spearman" imports scipy, and scipy is not deployed.
+        rho = pts["dist"].rank().corr(pts[behaviour].rank())
         fig = px.scatter(
             pts, x="dist", y=behaviour, size="orders", text="customer_state",
             color_discrete_sequence=[tone], size_max=38, hover_name="customer_state",
