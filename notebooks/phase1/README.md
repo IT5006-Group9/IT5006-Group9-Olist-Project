@@ -25,8 +25,3 @@ unpack them into `data/Olist_CSV/` at the repository root (that folder is git-ig
 - **Leakage.** `00` section 6.2 records which columns are known at purchase time and which are
   post-outcome. Consult it before adding a feature; do not re-decide this per notebook.
 
-## Milestone 1 Deliverables
-
-- [Submitted Report](reports/phase1/Team9_Phase1_IT5006_AY2627Sem1.pdf)
-- [EDA Notebooks](notebooks/phase1/)
-- [Interactive Dashboard](https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/)
