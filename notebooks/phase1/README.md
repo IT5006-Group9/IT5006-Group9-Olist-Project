@@ -13,7 +13,7 @@ unpack them into `data/Olist_CSV/` at the repository root (that folder is git-ig
 | `01_customer_satisfaction_eda.ipynb` | Review scores vs. category, freight, delivery, location | Candidate problem exploration |
 | `02_late_delivery_classification_eda.ipynb` | Whether an order arrives after its promised date | Candidate problem exploration |
 | `03_delivery_lead_time_regression_eda.ipynb` | Purchase-to-delivery duration in days | Candidate problem exploration |
-| `04_ regional_consumer_behaviour_eda.ipynb` | Regional demand, category mix, state x month GMV | Candidate problem exploration |
+| `04_regional_consumer_behaviour_eda.ipynb` | Regional demand, category mix, state x month GMV | Candidate problem exploration |
 
 ## Conventions
 
@@ -24,3 +24,9 @@ unpack them into `data/Olist_CSV/` at the repository root (that folder is git-ig
   person level.
 - **Leakage.** `00` section 6.2 records which columns are known at purchase time and which are
   post-outcome. Consult it before adding a feature; do not re-decide this per notebook.
+
+## Milestone 1 Deliverables
+
+- [Submitted Report](reports/phase1/Team9_Phase1_IT5006_AY2627Sem1.pdf)
+- [EDA Notebooks](notebooks/phase1/)
+- [Interactive Dashboard](https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/)
