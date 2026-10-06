@@ -1,0 +1,28 @@
+# Local environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store
+
+# Raw/derived order data and fitted artifacts
+data/
+models/
+outputs/predictions/
+outputs/oof/
+*.joblib
+*.pkl
+
+# Local secrets and editor state
+.env
+.env.*
+.vscode/
+
+# Private kernel runtime logs
+outputs/*.log
+
+# Isolated preparation revisions; summaries are tracked, order data is local
+versions/*/data/
+versions/*/models/
+versions/*/outputs/predictions/
+versions/*/outputs/oof/

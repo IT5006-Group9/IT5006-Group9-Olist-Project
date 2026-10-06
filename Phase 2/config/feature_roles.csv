@@ -1,0 +1,24 @@
+field,source,formula,role,availability,preprocessing
+promised_lead_time_days,"orders: order_estimated_delivery_date, order_purchase_timestamp",elapsed fractional days,input,conditional archived quote; estimated date must be the original customer quote; no creation/revision history exists,training-fold median and scaling
+max_distance_km,customers/sellers: zip prefixes; geolocation: lat/lng,screen Brazil envelope; median unique postal reference coordinates; haversine rounded to 0.1 km; max observed item routes (v2),input,static reference assumption; course coordinates approximate historical addresses; revision history absent,training-fold median and scaling
+total_price,order_items: price,sum per order,input,"conditional order snapshot; archived basket, selected sellers, charges and destination represent the placed order",training-fold median and scaling
+total_freight,order_items: freight_value,sum per order,input,"conditional order snapshot; archived basket, selected sellers, charges and destination represent the placed order",training-fold median and scaling
+freight_ratio,"order_items: price, freight_value",total_freight / positive total_price,input,"conditional order snapshot; archived basket, selected sellers, charges and destination represent the placed order",training-fold median and scaling
+item_count,order_items: order_item_id,count item rows,input,"conditional order snapshot; archived basket, selected sellers, charges and destination represent the placed order",training-fold median and scaling
+seller_count,order_items: seller_id,distinct seller count,input,"conditional order snapshot; archived basket, selected sellers, charges and destination represent the placed order",training-fold median and scaling
+avg_product_weight_g,products: product_weight_g,mean positive item weight; missing if any missing/non-positive,input,static catalogue assumption; archived product attributes are assumed applicable at purchase,training-fold median and scaling
+any_distance_missing,derived distance_km,any item route lacks coordinates,input,static reference assumption; course coordinates approximate historical addresses; revision history absent,training-fold median and scaling
+any_weight_missing,products: product_weight_g,any item has missing/non-positive weight,input,static catalogue assumption; archived product attributes are assumed applicable at purchase,training-fold median and scaling
+customer_state,customers: customer_state,customer state per order,input,"conditional order snapshot; archived basket, selected sellers, charges and destination represent the placed order",training-fold mode and rare-category one-hot encoding
+route_group,customers/sellers: state; order_items: seller_id,"all sellers same-state, any cross-state, or unknown",input,"conditional order snapshot; archived basket, selected sellers, charges and destination represent the placed order",training-fold mode and rare-category one-hot encoding
+category_group,products: product_category_name; translation,one English category; explicit mixed or missing/incomplete group,input,static catalogue assumption; archived product attributes are assumed applicable at purchase,training-fold mode and rare-category one-hot encoding
+purchase_month,orders: order_purchase_timestamp,calendar month 1-12 as category,input,direct from prediction timestamp; purchase timestamp is available when order is placed,fixed known integer calendar domains; one-hot drop-first; no learned rare pooling
+purchase_weekday,orders: order_purchase_timestamp,weekday 0-6 as category,input,direct from prediction timestamp; purchase timestamp is available when order is placed,fixed known integer calendar domains; one-hot drop-first; no learned rare pooling
+purchase_hour,orders: order_purchase_timestamp,hour 0-23 as category,input,direct from prediction timestamp; purchase timestamp is available when order is placed,fixed known integer calendar domains; one-hot drop-first; no learned rare pooling
+lead_time_days,raw or order-derived,see target/split definitions,target,not passed to X,excluded from X
+delivered_ts,raw or order-derived,see target/split definitions,target_and_label_availability,not passed to X,excluded from X
+order_status,raw or order-derived,see target/split definitions,cohort_audit,not passed to X,excluded from X
+estimated_ts,raw or order-derived,see target/split definitions,derive_original_quote,not passed to X,excluded from X
+purchase_ts,raw or order-derived,see target/split definitions,split_and_calendar,not passed to X,excluded from X; derive calendar and time splits only
+order_id,raw or order-derived,see target/split definitions,audit_identifier,not passed to X,excluded from X
+customer_unique_id,raw or order-derived,see target/split definitions,audit_identifier,not passed to X,excluded from X

@@ -1,0 +1,9 @@
+{
+  "chosen_by_mature_training_CV": {
+    "linear": "linear_baseline",
+    "tree": "tree_baseline",
+    "ridge": "ridge_control",
+    "forest": "forest_control"
+  },
+  "test_scored": false
+}

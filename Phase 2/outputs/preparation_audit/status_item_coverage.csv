@@ -1,0 +1,13 @@
+order_status,has_item_records,n
+approved,True,2
+canceled,False,164
+canceled,True,461
+created,False,5
+delivered,True,96478
+invoiced,False,2
+invoiced,True,312
+processing,True,301
+shipped,False,1
+shipped,True,1106
+unavailable,False,603
+unavailable,True,6

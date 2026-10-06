@@ -1,0 +1,17 @@
+field,availability_evidence,required_assumption,uses_outcome_for_value
+promised_lead_time_days,conditional archived quote,estimated date must be the original customer quote; no creation/revision history exists,False
+max_distance_km,static reference assumption,course coordinates approximate historical addresses; revision history absent,False
+total_price,conditional order snapshot,"archived basket, selected sellers, charges and destination represent the placed order",False
+total_freight,conditional order snapshot,"archived basket, selected sellers, charges and destination represent the placed order",False
+freight_ratio,conditional order snapshot,"archived basket, selected sellers, charges and destination represent the placed order",False
+item_count,conditional order snapshot,"archived basket, selected sellers, charges and destination represent the placed order",False
+seller_count,conditional order snapshot,"archived basket, selected sellers, charges and destination represent the placed order",False
+avg_product_weight_g,static catalogue assumption,archived product attributes are assumed applicable at purchase,False
+any_distance_missing,static reference assumption,course coordinates approximate historical addresses; revision history absent,False
+any_weight_missing,static catalogue assumption,archived product attributes are assumed applicable at purchase,False
+customer_state,conditional order snapshot,"archived basket, selected sellers, charges and destination represent the placed order",False
+route_group,conditional order snapshot,"archived basket, selected sellers, charges and destination represent the placed order",False
+category_group,static catalogue assumption,archived product attributes are assumed applicable at purchase,False
+purchase_month,direct from prediction timestamp,purchase timestamp is available when order is placed,False
+purchase_weekday,direct from prediction timestamp,purchase timestamp is available when order is placed,False
+purchase_hour,direct from prediction timestamp,purchase timestamp is available when order is placed,False

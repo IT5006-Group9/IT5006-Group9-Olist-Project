@@ -1,0 +1,4 @@
+{
+  "course_orders_csv_sha256": "8df58ef3d2d7e9944010f7beecd9b75367f5588ec6e3c91cec19ae3345ef9ecf",
+  "retained_context": "purchases strictly before April 1; each feature query filters to earlier purchase/receipt events; no final status filter"
+}

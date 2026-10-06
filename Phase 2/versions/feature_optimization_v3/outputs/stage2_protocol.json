@@ -1,0 +1,239 @@
+{
+  "input_sha256": "c606a8792a2d4ed96225c6ac9c25489c11c482db5db29cf06927c00024b6570b",
+  "source_sha256": "c29234865a0864b2680a6d7a1bb9c816761952c258e58ea68857d2969e41e9e8",
+  "source_archive_sha256": "90ee50730a9e799aa2d3c7b1758fef680cbbc366f61a287870144796a37156d4",
+  "dependency_sha256": {
+    "delivery_regression.py": "3dcceeb856d35d6611a29b1f11836892b11f3721b3871d4bdb78d976179c8cc1",
+    "baseline_variant_review.py": "79b8e4eba9acfa01b39a904b57e5e174b5bdb095785342657fa5c2e6f97bf110"
+  },
+  "configurations": {
+    "linear_baseline": {
+      "kind": "linear",
+      "params": {},
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid",
+      "temporal": false,
+      "history": false
+    },
+    "tree_baseline": {
+      "kind": "tree",
+      "params": {
+        "max_depth": 8,
+        "min_samples_leaf": 20
+      },
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid",
+      "temporal": false,
+      "history": false
+    },
+    "ridge_control": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1000
+      },
+      "temporal": false,
+      "history": false
+    },
+    "ridge_temporal": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1000
+      },
+      "temporal": true,
+      "history": false
+    },
+    "ridge_history": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1000
+      },
+      "temporal": false,
+      "history": true
+    },
+    "ridge_combined": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1000
+      },
+      "temporal": true,
+      "history": true
+    },
+    "forest_control": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": 180,
+      "stage": "bounded_review",
+      "kind": "forest",
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "temporal": false,
+      "history": false
+    },
+    "forest_temporal": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": 180,
+      "stage": "bounded_review",
+      "kind": "forest",
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "temporal": true,
+      "history": false
+    },
+    "forest_history": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": 180,
+      "stage": "bounded_review",
+      "kind": "forest",
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "temporal": false,
+      "history": true
+    },
+    "forest_combined": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": 180,
+      "stage": "bounded_review",
+      "kind": "forest",
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "temporal": true,
+      "history": true
+    },
+    "ridge_spline5_a100": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 100
+      },
+      "temporal": false,
+      "history": false,
+      "spline_knots": 5
+    },
+    "ridge_spline5_a1000": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1000
+      },
+      "temporal": false,
+      "history": false,
+      "spline_knots": 5
+    },
+    "ridge_spline8_a100": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 100
+      },
+      "temporal": false,
+      "history": false,
+      "spline_knots": 8
+    },
+    "ridge_spline8_a1000": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1000
+      },
+      "temporal": false,
+      "history": false,
+      "spline_knots": 8
+    },
+    "ridge_spline5_a100_temporal": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 100
+      },
+      "temporal": true,
+      "history": false,
+      "spline_knots": 5
+    },
+    "ridge_spline5_a1000_temporal": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1000
+      },
+      "temporal": true,
+      "history": false,
+      "spline_knots": 5
+    }
+  },
+  "seed": 5006,
+  "folds": [
+    [
+      "2017-07-01",
+      "2017-10-01"
+    ],
+    [
+      "2017-10-01",
+      "2018-01-01"
+    ],
+    [
+      "2018-01-01",
+      "2018-03-01"
+    ]
+  ],
+  "mature_scoring_label_cutoff": "2018-07-01 00:00:00",
+  "selection": "mean of three mature historical MAEs per algorithm, tie by name; original conditional CV is sensitivity evidence",
+  "fitting": "identical original fold training rows; purchase and receipt before fold cutoff",
+  "history": "90-day prior completions; state/route shrinkage 20; purchase/receipt event counts; score sources frozen at origin, train sources additionally restricted to row purchase time",
+  "development_history": "stage1: 10 temporal/history ablations fixed before fitting; stage2: 6 spline configurations added after stage1 CV, before their March inspection. This is an adaptive bounded development search, not a single preregistered grid.",
+  "test_scored": false,
+  "stacking_fitted": false,
+  "limits": "observed completed-delivery selection remains; mature labels for retrospective tuning known before July; March previously used in development; OOF is selected not nested"
+}

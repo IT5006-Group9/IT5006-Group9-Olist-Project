@@ -1,0 +1,10 @@
+{
+  "chosen_by_training_CV": {
+    "linear": "linear",
+    "ridge": "ridge_logx_a1000",
+    "tree": "tree_d8",
+    "forest": "rf_recent180",
+    "boost": "boost_squared"
+  },
+  "test_scored": false
+}

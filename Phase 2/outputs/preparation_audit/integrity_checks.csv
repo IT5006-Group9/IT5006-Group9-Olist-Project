@@ -1,0 +1,11 @@
+check,affected_rows
+orders primary key,0
+items primary key,0
+customers primary key,0
+sellers primary key,0
+products primary key,0
+translation primary key,0
+order_id FK coverage,0
+product_id FK coverage,0
+seller_id FK coverage,0
+customer_id FK coverage,0

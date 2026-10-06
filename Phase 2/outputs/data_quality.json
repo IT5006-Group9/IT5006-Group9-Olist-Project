@@ -1,0 +1,15 @@
+{
+  "source_orders": 99441,
+  "item_rows": 112650,
+  "orders_with_items": 98666,
+  "orders_without_items": 775,
+  "eligible_orders": 96470,
+  "delivered_with_missing_target": 8,
+  "retained_over_60_days": 306,
+  "missing_max_distance": 476,
+  "mean_target_days": 12.558217098051976,
+  "median_target_days": 10.217476851851853,
+  "archive_sha256": "90ee50730a9e799aa2d3c7b1758fef680cbbc366f61a287870144796a37156d4",
+  "timezone": "original timezone-naive timestamps; no conversion",
+  "geo_assumption": "static zip centroids from supplied archive; no time-varying geolocation history available"
+}

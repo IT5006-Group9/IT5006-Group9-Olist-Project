@@ -1,0 +1,13 @@
+period,field,unknown_rows,evaluation_rows
+CV 1,customer_state,0,12215
+CV 1,route_group,0,12215
+CV 1,category_group,15,12215
+CV 2,customer_state,0,17260
+CV 2,route_group,0,17260
+CV 2,category_group,7,17260
+CV 3,customer_state,0,9970
+CV 3,route_group,0,9970
+CV 3,category_group,0,9970
+March validation,customer_state,0,7003
+March validation,route_group,0,7003
+March validation,category_group,0,7003

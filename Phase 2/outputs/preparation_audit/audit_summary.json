@@ -1,0 +1,29 @@
+{
+  "audit_date": "2026-10-05",
+  "source_unchanged": true,
+  "eligible_orders": 96470,
+  "target_matched_all_orders": true,
+  "non_geographic_inputs_matched_all_orders": true,
+  "no_completed_order_lost_by_item_requirement": true,
+  "event_chronology_flagged_orders": 84,
+  "retained_valid_over_60_days": 306,
+  "geography": {
+    "source_rows": 1000163,
+    "exact_duplicate_rows": 261831,
+    "postal_prefixes": 19015,
+    "multi_state_prefixes": 8,
+    "outside_global_domain": 0,
+    "outside_conservative_brazil_envelope": 29,
+    "flagged_postal_prefixes": 20
+  },
+  "existing_splits_verified": true,
+  "candidate_policy": "screened_median; unchanged cohort, all non-geographic inputs unchanged",
+  "candidate_applied_to_training": false,
+  "model_fit_performed": false,
+  "test_scoring_performed": false,
+  "status": "cohort and corrected geographic preparation verified; legacy model artifacts await refit",
+  "production_preparation_corrected": true,
+  "formal_v2_materialized": "versions/preparation_v2/data/eligible_orders.csv",
+  "geographic_reference": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/20/aeb_2022.pdf; table 1.1.1.1 including island notes",
+  "reference_use": "geographic domain rationale only; no external coordinates or new Olist data ingested"
+}

@@ -1,0 +1,104 @@
+{
+  "chosen_by_training_CV": {
+    "linear": "linear",
+    "ridge": "ridge_a100",
+    "tree": "tree_d8",
+    "forest": "rf_d24_l10"
+  },
+  "grid": {
+    "linear": [
+      "linear",
+      {},
+      false
+    ],
+    "ridge_a10": [
+      "ridge",
+      {
+        "alpha": 10
+      },
+      false
+    ],
+    "ridge_a100": [
+      "ridge",
+      {
+        "alpha": 100
+      },
+      false
+    ],
+    "tree_d8": [
+      "tree",
+      {
+        "max_depth": 8,
+        "min_samples_leaf": 20
+      },
+      false
+    ],
+    "tree_d14": [
+      "tree",
+      {
+        "max_depth": 14,
+        "min_samples_leaf": 20
+      },
+      false
+    ],
+    "rf_d16_l5": [
+      "forest",
+      {
+        "max_depth": 16,
+        "min_samples_leaf": 5,
+        "max_features": 0.8
+      },
+      false
+    ],
+    "rf_d24_l10": [
+      "forest",
+      {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      false
+    ],
+    "rf_log_d24_l10": [
+      "forest",
+      {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      true
+    ]
+  },
+  "seed": 5006,
+  "features": [
+    "promised_lead_time_days",
+    "max_distance_km",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "item_count",
+    "seller_count",
+    "avg_product_weight_g",
+    "any_distance_missing",
+    "any_weight_missing",
+    "customer_state",
+    "route_group",
+    "category_group",
+    "purchase_month",
+    "purchase_weekday",
+    "purchase_hour"
+  ],
+  "test_scored": false,
+  "oof_rows": 39445,
+  "warmup_train_rows": 14199,
+  "oof_note": "Limited configurations with Ridge added during development; columns selected by training CV, not nested. OOF is for meta-training, not an unbiased final score; March validation remains separate.",
+  "versions": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.7.2",
+    "matplotlib": "3.11.2",
+    "joblib": "1.6.0"
+  },
+  "preparation_version": "purchase_inputs_v1_legacy_mean"
+}

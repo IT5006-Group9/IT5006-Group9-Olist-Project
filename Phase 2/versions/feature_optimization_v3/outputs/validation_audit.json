@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "configurations": 18,
+  "folds": 3,
+  "historical_cohort_views": 2,
+  "March_orders": 7003,
+  "history_rows_independently_checked": 240,
+  "future_outcome_mutation_invariance": true,
+  "fit_only_imputation_checked": true,
+  "selected_train_oof_rows": 39445,
+  "pipelines_reloaded": true,
+  "legacy_handoff_unchanged": true,
+  "test_scored": false,
+  "limits": "observed completed deliveries and frozen-origin history; mature CV labels known before July; adaptive development search, not nested CV or final testing"
+}

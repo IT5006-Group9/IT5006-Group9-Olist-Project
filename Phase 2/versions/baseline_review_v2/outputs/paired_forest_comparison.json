@@ -1,0 +1,12 @@
+{
+  "candidate": "rf_recent180",
+  "comparator": "rf_d24_l10",
+  "MAE_difference_days": -0.09769326533154135,
+  "day_cluster_bootstrap_95_interval": [
+    -0.11608983106526312,
+    -0.07949070119462309
+  ],
+  "seed": 5006,
+  "resamples": 2000,
+  "interpretation": "negative favors candidate; descriptive on an already-used validation month, not an unbiased final-test inference"
+}

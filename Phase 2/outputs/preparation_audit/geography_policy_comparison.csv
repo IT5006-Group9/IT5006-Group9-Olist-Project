@@ -1,0 +1,5 @@
+policy,eligible_n,missing_max_distance_n,any_distance_missing_n,max_observed_distance_km,above_4500_km_n,changed_ge_50_km_n,median_absolute_change_km,new_missing_n
+legacy_mean,96470,476,480,8677.9,4,0,0.0,0
+screened_mean,96470,477,481,3399.2,0,26,0.0,1
+screened_median,96470,477,481,3398.5,0,154,0.10000000000002274,1
+screened_state_median,96470,1036,1056,3398.5,0,159,0.10000000000002274,560

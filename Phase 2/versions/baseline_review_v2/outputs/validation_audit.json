@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "configurations": 18,
+  "folds": 3,
+  "validation_n": 7003,
+  "selected_oof_rows_per_model": 39445,
+  "metrics_recomputed": true,
+  "pipelines_reloaded": true,
+  "legacy_handoff_hashes_unchanged": true,
+  "test_scored": false,
+  "caveat": "The chronological CV scoring cohort is conditioned on labels known by March 1; March is development evidence, not a final test."
+}

@@ -1,0 +1,239 @@
+{
+  "input_sha256": "c606a8792a2d4ed96225c6ac9c25489c11c482db5db29cf06927c00024b6570b",
+  "source_sha256": "79b8e4eba9acfa01b39a904b57e5e174b5bdb095785342657fa5c2e6f97bf110",
+  "base_source_sha256": "3dcceeb856d35d6611a29b1f11836892b11f3721b3871d4bdb78d976179c8cc1",
+  "preparation_version": "purchase_inputs_v2_screened_median",
+  "seed": 5006,
+  "features": [
+    "promised_lead_time_days",
+    "max_distance_km",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "item_count",
+    "seller_count",
+    "avg_product_weight_g",
+    "any_distance_missing",
+    "any_weight_missing",
+    "customer_state",
+    "route_group",
+    "category_group",
+    "purchase_month",
+    "purchase_weekday",
+    "purchase_hour"
+  ],
+  "folds": [
+    [
+      "2017-07-01",
+      "2017-10-01"
+    ],
+    [
+      "2017-10-01",
+      "2018-01-01"
+    ],
+    [
+      "2018-01-01",
+      "2018-03-01"
+    ]
+  ],
+  "configurations": {
+    "linear": {
+      "kind": "linear",
+      "params": {},
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid"
+    },
+    "ridge_a10": {
+      "kind": "ridge",
+      "params": {
+        "alpha": 10
+      },
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid"
+    },
+    "ridge_a100": {
+      "kind": "ridge",
+      "params": {
+        "alpha": 100
+      },
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid"
+    },
+    "tree_d8": {
+      "kind": "tree",
+      "params": {
+        "max_depth": 8,
+        "min_samples_leaf": 20
+      },
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid"
+    },
+    "tree_d14": {
+      "kind": "tree",
+      "params": {
+        "max_depth": 14,
+        "min_samples_leaf": 20
+      },
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid"
+    },
+    "rf_d16_l5": {
+      "kind": "forest",
+      "params": {
+        "max_depth": 16,
+        "min_samples_leaf": 5,
+        "max_features": 0.8
+      },
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid"
+    },
+    "rf_d24_l10": {
+      "kind": "forest",
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid"
+    },
+    "rf_log_d24_l10": {
+      "kind": "forest",
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "log_target": true,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "original_grid"
+    },
+    "ridge_a1": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1
+      }
+    },
+    "ridge_a1000": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1000
+      }
+    },
+    "ridge_logx_a100": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 100
+      }
+    },
+    "ridge_logx_a1000": {
+      "log_target": false,
+      "log_inputs": true,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 1000
+      }
+    },
+    "ridge_recent180": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": 180,
+      "stage": "bounded_review",
+      "kind": "ridge",
+      "params": {
+        "alpha": 100
+      }
+    },
+    "rf_full_l1": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "forest",
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "max_features": 1.0
+      }
+    },
+    "rf_full_l3": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "forest",
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 3,
+        "max_features": 1.0
+      }
+    },
+    "rf_recent180": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": 180,
+      "stage": "bounded_review",
+      "kind": "forest",
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      }
+    },
+    "boost_squared": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "boost",
+      "params": {
+        "loss": "squared_error"
+      }
+    },
+    "boost_absolute": {
+      "log_target": false,
+      "log_inputs": false,
+      "half_life_days": null,
+      "stage": "bounded_review",
+      "kind": "boost",
+      "params": {
+        "loss": "absolute_error"
+      }
+    }
+  },
+  "selection": "minimum unweighted mean of three training temporal CV MAEs per algorithm; ties resolved by name",
+  "march_inspection": "only CV-selected configuration per algorithm plus fixed v2 comparators; no subsequent search in this run",
+  "test_scored": false,
+  "stacking_fitted": false,
+  "boost_role": "additional diagnostic within the tree family; not automatically a replacement for random forest",
+  "limits": "CV evaluation rows are conditional on receipt known by March 1; selected OOF is not nested CV; March has already been inspected in prior development"
+}

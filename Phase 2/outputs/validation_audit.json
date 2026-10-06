@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-05",
+  "checks": {
+    "independent_metric_recalculation": "7 rows matched saved per-order predictions",
+    "time_oof_and_label_visibility": "3 folds, common 39,445 rows; disjoint from validation/test",
+    "reloaded_pipeline_inference": "4 pipelines reproduced validation predictions from CSV schema",
+    "feature_allowlist_and_holdout": "16 inputs matched role table; test features only, no test scoring artifact",
+    "phase1_reconciliation": "96,470 target rows and 13 matching inputs reconciled; calendar represented separately",
+    "raw_source_spot_check": "100 deterministic order targets and item totals matched original CSV members",
+    "notebook_execution": "9 code cells executed in order, no errors; nbformat valid"
+  },
+  "test_scored": false,
+  "stacking_fitted": false
+}
