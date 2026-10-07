@@ -1,0 +1,8 @@
+model,model_label,evaluation,n,MAE_days,decision
+stack_four_a0.1,Original four-model Ridge stacking,March 2018 validation; original OOF design,7003,6.557853476751997,Historical attempt; not retained as a main published method
+stack_ridge_forest_a100,Original two-model Ridge stacking,March 2018 validation; original OOF design,7003,6.561714027672635,Historical attempt; not retained as a main published method
+ridge_original,Four-model Ridge stacking with monthly OOF,Oct 2017-Apr 2018; equal-month mean MAE,44695,5.802643055764418,Higher primary validation MAE
+convex_four,Four-model constrained MAE stacking,Oct 2017-Apr 2018; equal-month mean MAE,44695,5.7235206878498115,Almost tied with two models; retained the simpler structure
+median_four,Four-model median-regression stacking,Oct 2017-Apr 2018; equal-month mean MAE,44695,5.798018521029602,Higher primary validation MAE
+recent180,"Two-model constrained MAE, recent 180 days",Oct 2017-Apr 2018; equal-month mean MAE,44695,5.7276014931166355,Close to full history; not selected
+gap30,"Two-model constrained MAE, 30-day gap",Oct 2017-Apr 2018; equal-month mean MAE,44695,5.7241302536559955,Close to full history; not selected

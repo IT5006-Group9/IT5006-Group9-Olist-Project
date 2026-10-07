@@ -1,0 +1,8 @@
+model,model_label,n,MAE_days,RMSE_days,R2,period
+linear,Linear regression,12507,3.760808902975258,5.2039624595376575,0.0613752328766368,July-August 2018 original final test; prior to new tuning
+ridge,Reviewed Ridge,12507,4.068107366102565,5.4012669924941505,-0.0111486139359284,July-August 2018 original final test; prior to new tuning
+tree,Decision tree,12507,4.2804052517885305,5.6449816955859955,-0.1044569074076169,July-August 2018 original final test; prior to new tuning
+forest,Reviewed random forest,12507,4.1575766842259325,5.572179573754172,-0.0761527193887843,July-August 2018 original final test; prior to new tuning
+stack_four_a0.1,Original four-model Ridge stacking,12507,4.915834478733189,6.299483686772882,-0.3754145392103403,July-August 2018 original final test; prior to new tuning
+mean_ridge_forest,Ridge-forest 50/50 average,12507,4.0441278875071545,5.4124468296202775,-0.0153388071410749,July-August 2018 original final test; prior to new tuning
+mean_four,Four-model equal-weight average,12507,3.965460158883106,5.330127428147225,0.0153114602866554,July-August 2018 original final test; prior to new tuning

@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "status": "complete_local_artifact_audit_passed",
+  "full_local_audit": true,
+  "test_scored": false,
+  "test_predictions_generated": false,
+  "protocol_sha256": "6a44ba1602170c0ca0b587b3784104e28d2e9719947fb5c46d1ea3133c6ab866",
+  "run_result_sha256": "7aa846561f6c2870b3ac434fc39826b03d8dc9578182e2c6f021abd36f532980",
+  "public_artifact_sha256": {
+    "outputs/tables/main_summary.csv": "e5791ce882b28484d4761ee18bd88c45ec12d223dcc8aa66c5200eebc02eca3d",
+    "outputs/tables/monthly_metrics.csv": "ecf177c1d00005923f6b504d0ffcdf8bf1768d838156f9b7ab6cf7a02de39394",
+    "outputs/tables/coverage_by_month.csv": "dc37d8d998b4752a5be6b45f6bd437f8246d284298ba8af6c7d6690d6d247a80",
+    "outputs/tables/final_weights.csv": "a57a76ad2fb30544d194ec05830385b8e385d43140e601f386e627d16e1d924b",
+    "outputs/tables/source_inventory.csv": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b"
+  },
+  "oof_n": 68059,
+  "monthly_model_replays": 48,
+  "scored_months": [
+    "2017-10",
+    "2017-11",
+    "2017-12",
+    "2018-01",
+    "2018-02",
+    "2018-03",
+    "2018-04",
+    "2018-05"
+  ],
+  "checks": [
+    "source and data fingerprints",
+    "course inventory",
+    "label maturity",
+    "base/meta timestamp membership",
+    "fit-only preprocessing",
+    "base/meta saved-model replays",
+    "independent convex optimum",
+    "prediction metrics",
+    "equal-month aggregation",
+    "final pre-July fit IDs",
+    "two serialized inference bundles"
+  ]
+}

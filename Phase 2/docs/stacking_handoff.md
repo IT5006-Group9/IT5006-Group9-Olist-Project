@@ -1,4 +1,10 @@
-# Delivery Regression · Stacking 输入交接
+# Delivery Regression · Stacking Input Handoff
+
+**Ensemble entry-point update: 2026-10-07.** The latest [Notebook](../notebooks/ensemble_comparison.ipynb) and [reproduction guide](ensemble_comparison.md) present the Ridge + forest 50/50 average and constrained MAE stacking together. New artifacts are located in `versions/ensemble_comparison/`. The base models use the audited v2 inputs and previously retained parameters; older handoff files cannot substitute for these artifacts. Author: **yexueying70-cell**.
+
+The original handoff record is preserved below. Statements such as “not fitted” or “not tested” refer to the status at that time.
+
+---
 
 **最新特征/回测更新（2026-10-05）：** [特征优化说明](feature_optimization.md)和[已运行Notebook](../notebooks/feature_optimization.ipynb)记录新增18组配置，未找到进一步收益；保留上一轮Ridge/森林，三月MAE6.847/6.913天。恢复3,669笔慢订单后成熟历史CV5.236/5.219天；旧约4.54天须标为条件化口径。以下原交接/报告/导读保留历史语境，不能与新版本混用，最终测试未评分。
 

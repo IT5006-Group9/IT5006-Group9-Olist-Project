@@ -1,5 +1,26 @@
 # Phase 2 · Delivery Lead-time Regression
 
+## Ensemble comparison: one entry point, two methods
+
+**Author: yexueying70-cell · Updated: 2026-10-07**
+
+Read the [ensemble Notebook](notebooks/ensemble_comparison.ipynb) for the complete sequence: four original models → Ridge + random forest 50/50 average → two-model constrained MAE stacking → comparison on the same periods and conclusions. The [method and reproduction guide](docs/ensemble_comparison.md) provides execution commands. Other stacking attempts are collected in an appendix summary table instead of separate experiment Notebooks.
+
+| Retained ensemble method | Mean monthly MAE, October 2017–April 2018 | May 2018 MAE, sensitivity check only |
+|---|---:|---:|
+| Ridge + forest 50/50 average | **5.717 days** | **4.574 days** |
+| Ridge + forest constrained MAE stacking | 5.724 days | 4.593 days |
+
+The base models are the previously retained Ridge with log-transformed inputs and the forest with recency weighting. Constrained stacking learns nonnegative weights summing to one from temporal OOF predictions, with a fixed zero intercept. The final historical weights are approximately 53.1%/46.9%. Learning weights has not demonstrated a clear benefit over simple averaging.
+
+This is exploratory development performed after the first stacking version's test results had been inspected. The Notebook retains that version's weaker test performance and separates results by evaluation period. The new methods have no new independent test scores. Every historical fit uses only orders purchased and delivered before its origin, and preprocessing is fitted within each training fold.
+
+The public files include the executed Notebook, source code, summary tables, verification records, and pinned dependencies. Raw data, order-level data, OOF predictions, scoring predictions, and model files remain local. The new entry point can reproduce the comparison independently from the course CSVs or ZIP, without local older stacking Notebooks or older experiment directories.
+
+The earlier single-model and feature experiments are preserved below. Statements such as “stacking not fitted” and “test not scored” refer only to their respective historical stages.
+
+---
+
 **小组共享入口（2026-10-07）：** 本目录为[小组仓库](https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project)根目录的`Phase 2/`配送回归开发审阅成果，复制自独立工程提交`0625de8521097f69e615fea857ded4314a2c9aa5`。代码、已运行Notebook、摘要表、图和结论一并提供；原始/派生订单数据、逐订单预测、OOF和模型文件保留本地，可使用课程ZIP复现。本目录不是最终stacking交接或最终提交。
 
 **审阅入口：[当前进展、结果和独立复现](docs/current_progress.md)。** 最新以`notebooks/feature_optimization.ipynb`及`versions/feature_optimization_v3/outputs/`为准。下文保留课程范围与早期实验过程；原主Notebook/交接明确标为历史版本。
