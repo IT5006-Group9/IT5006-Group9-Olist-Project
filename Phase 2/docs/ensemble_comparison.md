@@ -1,7 +1,5 @@
 # Ridge + Random Forest: Simple Averaging and Constrained MAE Stacking
 
-Author: **yexueying70-cell**
-
 Updated: 2026-10-07
 
 The [executed Notebook](../notebooks/ensemble_comparison.ipynb) is the single entry point for this ensemble comparison. Its main analysis covers two methods; other attempts and the first stacking version's test results are retained in appendix tables.

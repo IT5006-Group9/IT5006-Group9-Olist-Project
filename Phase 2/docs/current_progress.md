@@ -1,6 +1,6 @@
 # Delivery Regression · Current Review Entry Point
 
-**Ensemble update: 2026-10-07.** The latest entry point is [ensemble_comparison.ipynb](../notebooks/ensemble_comparison.ipynb), authored by **yexueying70-cell**. See [ensemble_comparison.md](ensemble_comparison.md) for methods and reproduction. The main analysis presents only the Ridge + forest 50/50 average and two-model constrained MAE stacking; other attempts are collected in appendix summary tables.
+**Ensemble update: 2026-10-07.** The latest entry point is [ensemble_comparison.ipynb](../notebooks/ensemble_comparison.ipynb). See [ensemble_comparison.md](ensemble_comparison.md) for methods and reproduction. The main analysis presents only the Ridge + forest 50/50 average and two-model constrained MAE stacking; other attempts are collected in appendix summary tables.
 
 In the same monthly backtest, their MAEs are 5.717 and 5.724 days, respectively. The results do not establish an additional benefit from learning weights. Development was informed by previously inspected test results, so the new evidence is exploratory and historical. The first stacking version's test results are retained separately in the Notebook. The public reproduction entry point runs only these two methods and does not score the old test again.
 

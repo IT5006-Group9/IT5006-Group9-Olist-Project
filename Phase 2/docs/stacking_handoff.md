@@ -1,6 +1,6 @@
 # Delivery Regression · Stacking Input Handoff
 
-**Ensemble entry-point update: 2026-10-07.** The latest [Notebook](../notebooks/ensemble_comparison.ipynb) and [reproduction guide](ensemble_comparison.md) present the Ridge + forest 50/50 average and constrained MAE stacking together. New artifacts are located in `versions/ensemble_comparison/`. The base models use the audited v2 inputs and previously retained parameters; older handoff files cannot substitute for these artifacts. Author: **yexueying70-cell**.
+**Ensemble entry-point update: 2026-10-07.** The latest [Notebook](../notebooks/ensemble_comparison.ipynb) and [reproduction guide](ensemble_comparison.md) present the Ridge + forest 50/50 average and constrained MAE stacking together. New artifacts are located in `versions/ensemble_comparison/`. The base models use the audited v2 inputs and previously retained parameters; older handoff files cannot substitute for these artifacts.
 
 The original handoff record is preserved below. Statements such as “not fitted” or “not tested” refer to the status at that time.
 

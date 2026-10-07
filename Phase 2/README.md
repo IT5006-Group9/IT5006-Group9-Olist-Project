@@ -2,7 +2,7 @@
 
 ## Ensemble comparison: one entry point, two methods
 
-**Author: yexueying70-cell · Updated: 2026-10-07**
+**Updated: 2026-10-07**
 
 Read the [ensemble Notebook](notebooks/ensemble_comparison.ipynb) for the complete sequence: four original models → Ridge + random forest 50/50 average → two-model constrained MAE stacking → comparison on the same periods and conclusions. The [method and reproduction guide](docs/ensemble_comparison.md) provides execution commands. Other stacking attempts are collected in an appendix summary table instead of separate experiment Notebooks.
 
