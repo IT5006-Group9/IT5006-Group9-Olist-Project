@@ -1,26 +1,5 @@
 # Phase 2 · Delivery Lead-time Regression
 
-## 集成模型：一个入口、两个方案
-
-**作者：yexueying70-cell · 更新：2026-10-07**
-
-从 [集成模型 Notebook](notebooks/ensemble_comparison.ipynb) 阅读完整流程：原四个单模型 → Ridge＋随机森林50/50平均 → 两模型约束 MAE stacking → 同期比较与结论。[方法与复现说明](docs/ensemble_comparison.md) 提供运行命令。其他 stacking 尝试集中在 Notebook 文末的摘要表，不再单独展示多个实验 Notebook。
-
-| 保留的集成方案 | 2017年10月—2018年4月平均月度 MAE | 2018年5月 MAE，仅敏感性检查 |
-|---|---:|---:|
-| Ridge＋森林50/50平均 | **5.717天** | **4.574天** |
-| Ridge＋森林约束 MAE stacking | 5.724天 | 4.593天 |
-
-两个基础模型使用前期保留的 log-input Ridge 和近期加权随机森林。约束 stacking 从时间 OOF 学习非负、和为1的权重，截距固定0；最终历史拟合权重约53.1%/46.9%。学习权重未体现超越简单平均的明确收益。
-
-本轮是在已查看首版测试成绩之后进行的探索性开发。Notebook 保留首版 stacking 测试表现较差的记录，按评价时期分开呈现；新方案没有生成新的独立测试成绩。所有历史训练只使用当时已经下单且已收货的标签，预处理在训练折内拟合。
-
-公开内容为已执行 Notebook、源码、汇总表、核验记录和固定依赖；原始数据、逐订单数据、OOF、预测及模型文件保留本地。新入口从课程 CSV/ZIP 可独立复现，不需要本地旧 stacking Notebook 或旧实验目录。
-
-下方保留此前单模型/特征实验的记录；其中“stacking 未拟合”“测试未评分”等表述仅描述相应历史阶段。
-
----
-
 **小组共享入口（2026-10-07）：** 本目录为[小组仓库](https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project)根目录的`Phase 2/`配送回归开发审阅成果，复制自独立工程提交`0625de8521097f69e615fea857ded4314a2c9aa5`。代码、已运行Notebook、摘要表、图和结论一并提供；原始/派生订单数据、逐订单预测、OOF和模型文件保留本地，可使用课程ZIP复现。本目录不是最终stacking交接或最终提交。
 
 **审阅入口：[当前进展、结果和独立复现](docs/current_progress.md)。** 最新以`notebooks/feature_optimization.ipynb`及`versions/feature_optimization_v3/outputs/`为准。下文保留课程范围与早期实验过程；原主Notebook/交接明确标为历史版本。

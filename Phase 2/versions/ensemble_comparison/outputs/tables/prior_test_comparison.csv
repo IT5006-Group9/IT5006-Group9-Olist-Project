@@ -1,8 +1,0 @@
-model,model_label,n,MAE_days,RMSE_days,R2,period
-linear,普通线性回归,12507,3.760808902975258,5.2039624595376575,0.0613752328766368,July-August 2018 original final test; prior to new tuning
-ridge,改进 Ridge,12507,4.068107366102565,5.4012669924941505,-0.0111486139359284,July-August 2018 original final test; prior to new tuning
-tree,决策树,12507,4.2804052517885305,5.6449816955859955,-0.1044569074076169,July-August 2018 original final test; prior to new tuning
-forest,改进随机森林,12507,4.1575766842259325,5.572179573754172,-0.0761527193887843,July-August 2018 original final test; prior to new tuning
-stack_four_a0.1,首版四模型 Ridge stacking,12507,4.915834478733189,6.299483686772882,-0.3754145392103403,July-August 2018 original final test; prior to new tuning
-mean_ridge_forest,Ridge＋森林50/50平均,12507,4.0441278875071545,5.4124468296202775,-0.0153388071410749,July-August 2018 original final test; prior to new tuning
-mean_four,四模型等权平均,12507,3.965460158883106,5.330127428147225,0.0153114602866554,July-August 2018 original final test; prior to new tuning

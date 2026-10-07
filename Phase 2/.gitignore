@@ -26,25 +26,3 @@ versions/*/data/
 versions/*/models/
 versions/*/outputs/predictions/
 versions/*/outputs/oof/
-
-# Stacking execution logs (summary evidence is tracked separately)
-versions/stacking_v1/outputs/*.log
-versions/stacking_tuning_v2/outputs/*.log
-
-# Deterministic local replay of the historical experiment
-versions/stacking_reproduction/
-
-# Detailed local exploration; the public entrypoint is ensemble_comparison.ipynb
-notebooks/stacking_review.ipynb
-notebooks/stacking_tuning.ipynb
-docs/stacking_review.md
-docs/stacking_tuning.md
-scripts/build_stacking_notebook.py
-scripts/build_stacking_tuning_notebook.py
-scripts/reproduce_stacking.py
-scripts/reproduce_stacking_tuning.py
-scripts/verify_stacking.py
-scripts/verify_stacking_tuning.py
-versions/stacking_v1/
-versions/stacking_tuning_v2/
-versions/ensemble_comparison/outputs/*.log

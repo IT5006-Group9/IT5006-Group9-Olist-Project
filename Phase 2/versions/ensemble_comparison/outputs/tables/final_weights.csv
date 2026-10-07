@@ -1,5 +1,0 @@
-stage,month,candidate,input,weight_in_days_space,intercept_days,weight_sum,solver_success
-final,2018-07,convex_two_full_history,ridge_oof_days,0.5309842468806111,0.0,1.0,True
-final,2018-07,convex_two_full_history,forest_oof_days,0.46901575311938887,0.0,1.0,True
-final,2018-07,mean_ridge_forest,ridge_oof_days,0.5,0.0,1.0,
-final,2018-07,mean_ridge_forest,forest_oof_days,0.5,0.0,1.0,
