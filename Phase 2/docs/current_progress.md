@@ -1,5 +1,13 @@
 # Delivery Regression · 当前审阅入口
 
+**集成模型更新：2026-10-07。** 最新入口为 [ensemble_comparison.ipynb](../notebooks/ensemble_comparison.ipynb)，作者 **yexueying70-cell**；方法与复现见 [ensemble_comparison.md](ensemble_comparison.md)。正文只展示 Ridge＋森林50/50平均与两模型约束 MAE stacking，其他尝试统一放在摘要附表。
+
+同一月度回测中，两者 MAE 分别为5.717和5.724天，未证明学习权重的额外价值。新开发受到此前已观察测试结果的影响，只有探索性历史证据；首版测试结果在 Notebook 中单独保留。公开复现入口仅运行这两个方案，不重新评分旧测试。
+
+以下为前期单模型与特征实验记录，日期及“未测试/未拟合”状态按历史阶段理解。
+
+---
+
 实验更新：2026-10-05；小组共享：2026-10-07。本目录是Phase 2配送回归开发审阅快照，供讨论模型改进；不是最终提交或已部署系统。Stacking尚未拟合，七月及之后的最终测试没有评分。
 
 ## 先看这些文件

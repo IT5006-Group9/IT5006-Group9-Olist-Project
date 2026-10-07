@@ -1,7 +1,7 @@
 {
   "project": "IT5006 Delivery Lead-time Regression Phase 2",
-  "updated": "2026-10-05",
-  "status": "feature_optimization_and_mature_backtest_complete_no_additional_gain_canonical_handoff_pending",
+  "updated": "2026-10-07",
+  "status": "two_method_ensemble_publication_with_historical_comparisons",
   "task": "regression",
   "grain": "one row per order_id",
   "prediction_point": "order_purchase_timestamp",
@@ -85,10 +85,10 @@
     "cross_validation": "three expanding chronological folds, label availability before each start; evaluation rows conditional on labels known by 2018-03-01",
     "label_availability": "each training fold uses only orders whose receipt was observed before its forecast cutoff",
     "preprocessing": "fit imputation, encoding, scaling and transformations inside training folds",
-    "test_use": "lock during development; joint final evaluation after base-model and stacking designs are frozen"
+    "test_use": "Original final test was evaluated before follow-up tuning; new publication reproduces historical development only and preserves previous test results separately."
   },
   "stacking": {
-    "implementation_scope": "handoff only; fitting is a separate integration step",
+    "implementation_scope": "two-method ensemble comparison implemented; original handoff below is historical",
     "handoff": [
       "data version and schema",
       "order IDs and fold manifest",
@@ -96,12 +96,12 @@
       "aligned out-of-fold predictions",
       "development metrics and run instructions"
     ],
-    "meta_training": "OOF predictions only; no in-sample fitted predictions or test labels",
+    "meta_training": "Only historical monthly OOF predictions whose receipt labels precede each fitting origin",
     "time_oof_warmup": "exclude rows without a valid earlier-trained prediction, consistently across base models",
-    "oof_rows": 39445,
+    "oof_rows": 68059,
     "warmup_rows": 14199,
-    "final_pretest_refit_pending": true,
-    "fitting_scope": "four base pipelines fitted on 53644 development training rows; final pre-July refit pending"
+    "final_pretest_refit_pending": false,
+    "fitting_scope": "Both retained ensembles fitted at the July historical origin: 82258 visible base-training orders and 68059 chronological OOF meta rows; no new test predictions."
   },
   "sharing": "Team repository review snapshot: https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project/tree/main/Phase%202; copied from standalone commit 0625de8521097f69e615fea857ded4314a2c9aa5; source, executed notebooks, summary tables, figures and conclusions shared; raw/derived order data, per-order predictions, OOF and fitted models remain local.",
   "features": [
@@ -193,5 +193,33 @@
     "test_scored": false,
     "stacking_fitted": false,
     "limits": "mature retrospective labels known before July; completed-delivery conditioning remains; marked online variants only use prior receipt events; adaptive/non-nested selection"
+  },
+  "ensemble_comparison": {
+    "author": "yexueying70-cell",
+    "notebook": "notebooks/ensemble_comparison.ipynb",
+    "explanation": "docs/ensemble_comparison.md",
+    "reproduce": "scripts/reproduce_ensemble_comparison.py",
+    "verify": "scripts/verify_ensemble_comparison.py",
+    "output_directory": "versions/ensemble_comparison",
+    "retained_methods": [
+      "mean_ridge_forest",
+      "convex_two_full_history"
+    ],
+    "base_variants": {
+      "ridge": "ridge_logx_a1000",
+      "forest": "rf_recent180"
+    },
+    "meta_training": "Chronological OOF only; labels strictly available before each monthly origin; full historical OOF; nonnegative unit-sum MAE weights and zero intercept",
+    "primary_months": "2017-10 through 2018-04; equal-month MAE",
+    "sensitivity_month": "2018-05",
+    "known_label_cutoff": "2018-07-01",
+    "prior_test_already_observed": true,
+    "new_test_scored": false,
+    "primary_MAE_days": {
+      "mean_ridge_forest": 5.717157947636854,
+      "convex_two_full_history": 5.723656440237423
+    },
+    "conclusion": "No clear added value from learning blend weights compared with fixed 50/50 averaging; both retained for transparent comparison.",
+    "historical_evidence": "Aggregate appendices separate original March validation, monthly development and already observed final test."
   }
 }

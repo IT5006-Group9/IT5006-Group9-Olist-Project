@@ -1,0 +1,19 @@
+{
+  "description": "Aggregate exports from previously completed experiments; not newly rescored test results.",
+  "source_snapshots_sha256": {
+    "versions/baseline_review_v2/outputs/tables/model_comparison.csv": "e1e605066dc7da385e9dbbd17ca567194d1d9db32b1ddcd25fd40aa974ea9f19",
+    "versions/stacking_v1/outputs/tables/validation_comparison.csv": "ff6ddce7826003cd81aa73a4153e2ca77b5cf87d47c50bf03e7e71fed43ae00c",
+    "versions/stacking_v1/outputs/tables/test_comparison.csv": "d135788f6177a8dd77c36dc9e3d00641277e32f52ec7854b24124d517f3d966d",
+    "versions/stacking_tuning_v2/outputs/tables/stage1_summary.csv": "1713007f7eb350cb042216ff82d4976585acbb87661c22b339bc07ae29e4370a",
+    "versions/stacking_tuning_v2/outputs/tables/stage2_summary.csv": "9a12b91defee2861d34be69d73a59bd1bc09c8d190ab3c8294eea9f0cde40e12"
+  },
+  "published_exports_sha256": {
+    "versions/ensemble_comparison/outputs/tables/initial_model_comparison.csv": "30e3359992d8ce88bbe9b18b63d3c0af472604e6835c46d6f09d106f70f2466b",
+    "versions/ensemble_comparison/outputs/tables/other_attempts.csv": "02bd774404cf14e75a8fa5734a23768fc224c073b1fc15c024e1ed2977f90f25",
+    "versions/ensemble_comparison/outputs/tables/prior_test_comparison.csv": "58737f0c15fb8865d4a17f88ed1d82d1b0119cd0cf9b7e29fb320d45214564ff"
+  },
+  "data_version": "purchase_inputs_v2_screened_median",
+  "original_test_already_observed_before_tuning": true,
+  "new_test_scores_generated": false,
+  "limitations": "Source snapshots are preserved locally; public exports retain separate evaluation periods. Frozen supporting source modules are included. The new public entrypoint reproduces only the two retained ensemble methods."
+}

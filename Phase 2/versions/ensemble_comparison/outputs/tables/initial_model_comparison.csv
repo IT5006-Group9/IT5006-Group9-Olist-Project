@@ -1,0 +1,7 @@
+model,model_label,configuration,role,n,MAE_days,RMSE_days,R2,period
+linear,普通线性回归,LinearRegression,initial,7003,6.917978232910142,10.673878751391216,0.1314723593530017,March 2018 validation; audited geography v2
+ridge_a100,初始 Ridge,alpha=100,initial,7003,6.913419202539248,10.66333256039104,0.1331877869980177,March 2018 validation; audited geography v2
+tree_d8,决策树,max_depth=8; min_samples_leaf=20,initial,7003,7.236435262553224,11.205030677863633,0.0428825952195941,March 2018 validation; audited geography v2
+rf_d24_l10,初始随机森林,max_depth=24; min_samples_leaf=10,initial,7003,7.010616097463657,10.840354382478084,0.1041690270827145,March 2018 validation; audited geography v2
+ridge_logx_a1000,改进 Ridge,7 numeric inputs log1p; alpha=1000,retained_variant,7003,6.8474642264548375,10.583504724705485,0.14611746652339,March 2018 validation; audited geography v2
+rf_recent180,改进随机森林,180-day exponential recency half-life,retained_variant,7003,6.912922832132116,10.681750901750888,0.1301907818494574,March 2018 validation; audited geography v2

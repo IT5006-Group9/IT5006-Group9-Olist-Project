@@ -1,0 +1,8 @@
+model,model_label,evaluation,n,MAE_days,decision
+stack_four_a0.1,首版四模型 Ridge stacking,March 2018 validation; original OOF design,7003,6.557853476751997,历史尝试，未作为公开主方案保留
+stack_ridge_forest_a100,首版两模型 Ridge stacking,March 2018 validation; original OOF design,7003,6.561714027672635,历史尝试，未作为公开主方案保留
+ridge_original,原 Ridge stacking 架构，月度 OOF,Oct 2017-Apr 2018; equal-month mean MAE,44695,5.802643055764418,主验证 MAE 较高
+convex_four,四模型约束 MAE,Oct 2017-Apr 2018; equal-month mean MAE,44695,5.7235206878498115,与两模型几乎持平，保留较简单结构
+median_four,四模型中位数回归,Oct 2017-Apr 2018; equal-month mean MAE,44695,5.798018521029602,主验证 MAE 较高
+recent180,两模型约束 MAE，最近180天,Oct 2017-Apr 2018; equal-month mean MAE,44695,5.7276014931166355,与全历史接近，未选中
+gap30,两模型约束 MAE，30天间隔,Oct 2017-Apr 2018; equal-month mean MAE,44695,5.7241302536559955,与全历史接近，未选中

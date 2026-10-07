@@ -1,5 +1,11 @@
 # Delivery Regression · Stacking 输入交接
 
+**集成入口更新：2026-10-07。** 最新 [Notebook](../notebooks/ensemble_comparison.ipynb) 和 [复现说明](ensemble_comparison.md) 统一展示 Ridge＋森林50/50平均与约束 MAE stacking。新工件位于 `versions/ensemble_comparison/`，基础模型采用审计v2输入与前期保留参数；旧交接文件不能替代这些工件。作者：**yexueying70-cell**。
+
+以下保留原历史交接记录，其“未拟合/未测试”等表述对应当时状态。
+
+---
+
 **最新特征/回测更新（2026-10-05）：** [特征优化说明](feature_optimization.md)和[已运行Notebook](../notebooks/feature_optimization.ipynb)记录新增18组配置，未找到进一步收益；保留上一轮Ridge/森林，三月MAE6.847/6.913天。恢复3,669笔慢订单后成熟历史CV5.236/5.219天；旧约4.54天须标为条件化口径。以下原交接/报告/导读保留历史语境，不能与新版本混用，最终测试未评分。
 
 **交接状态更新（2026-10-05）：** [独立模型复核](baseline_variant_review.md)已在审计v2上比较原方案和有限改进，结果保存在`versions/baseline_review_v2/`。以下正式交接仍是v1历史文件；新方案冻结之前不能将两版数据、pipeline或OOF混用。复核未拟合stacking或评分最终测试。
