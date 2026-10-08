@@ -1,0 +1,33 @@
+{
+  "best_params": {
+    "A_linear_tuned": {
+      "model__regressor__alpha": 1000
+    },
+    "B_tree_base": {
+      "model__max_depth": 11,
+      "model__min_samples_leaf": 150
+    },
+    "B_rf": {
+      "model__max_depth": 18,
+      "model__max_features": 0.2845545349848576,
+      "model__min_samples_leaf": 19,
+      "model__n_estimators": 600
+    },
+    "B_catboost": {
+      "model__depth": 5,
+      "model__iterations": 300,
+      "model__l2_leaf_reg": 26.690431824362527,
+      "model__learning_rate": 0.12865519985699791,
+      "model__loss_function": "RMSE",
+      "model__random_strength": 0.5187238977950593,
+      "model__subsample": 0.6923575302488596
+    },
+    "A_ridge_dev": {
+      "model__alpha": 1000
+    }
+  },
+  "final_model": "A_ridge_dev",
+  "best_single": "A_ridge_dev",
+  "family_C_retained": false,
+  "quick_mode": false
+}

@@ -1,0 +1,92 @@
+{
+  "best_params": {
+    "A_linear_tuned": {
+      "model__C": 0.01
+    },
+    "B_tree_base": {
+      "model__max_depth": 12,
+      "model__min_samples_leaf": 179
+    },
+    "B_rf": {
+      "model__max_depth": 22,
+      "model__max_features": 0.2585884464855609,
+      "model__min_samples_leaf": 100,
+      "model__n_estimators": 343
+    },
+    "B_catboost": {
+      "model__depth": 4,
+      "model__iterations": 300,
+      "model__l2_leaf_reg": 1.6378486386666542,
+      "model__learning_rate": 0.020192175104513394,
+      "model__one_hot_max_size": 10,
+      "model__random_strength": 0.6196295635329006,
+      "model__subsample": 0.6968512712370577
+    }
+  },
+  "final_model": "B_rf",
+  "thresholds": {
+    "baseline_majority": 1.0,
+    "baseline_rule_late": 0.5,
+    "A_linear_base": 0.6997279970677205,
+    "A_linear_tuned": 0.7527709631747891,
+    "B_tree_base": 0.7196875353786956,
+    "B_rf": 0.62318561999251,
+    "B_catboost": 0.7198911218483335,
+    "C_stacking": 0.3678722058132339
+  },
+  "seed": 5006,
+  "stacking_retained": false,
+  "quick_mode": false,
+  "test_scored": true,
+  "features": [
+    "n_items",
+    "n_distinct_products",
+    "n_sellers",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "total_weight_g",
+    "max_weight_g",
+    "total_volume_cm3",
+    "max_dimension_cm",
+    "main_category",
+    "n_categories",
+    "max_distance_km",
+    "any_distance_missing",
+    "same_state",
+    "same_city",
+    "customer_state",
+    "seller_state",
+    "customer_region",
+    "seller_region",
+    "customer_zip2",
+    "promised_days",
+    "days_to_shipping_limit",
+    "purchase_month_num",
+    "purchase_dow",
+    "purchase_hour",
+    "is_weekend",
+    "black_friday_week",
+    "approval_lag_hours",
+    "main_payment_type",
+    "payment_max_installments",
+    "n_payment_methods",
+    "payment_total",
+    "seller_prior_orders",
+    "seller_tenure_days",
+    "seller_prior_mean_delivery_days",
+    "seller_prior_late_rate",
+    "seller_prior_low_review_rate",
+    "seller_id_enc",
+    "route_prior_orders",
+    "route_prior_mean_delivery_days",
+    "route_prior_late_rate",
+    "delivered_by_T",
+    "delivery_days_at_T",
+    "days_vs_promise_at_T",
+    "carrier_shipped_by_T",
+    "carrier_handover_days_at_T",
+    "carrier_transit_days_at_T",
+    "delivery_vs_seller_prior_at_T"
+  ]
+}

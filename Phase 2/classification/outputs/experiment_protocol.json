@@ -1,0 +1,118 @@
+{
+  "experiment": "classification_low_review",
+  "quick_mode": true,
+  "seed": 5006,
+  "windows": {
+    "train": [
+      "2016-09",
+      "2018-02"
+    ],
+    "validation": [
+      "2018-03",
+      "2018-03"
+    ],
+    "maturation_gap": [
+      "2018-04",
+      "2018-06"
+    ],
+    "test": [
+      "2018-07",
+      "2018-08"
+    ]
+  },
+  "cv_cutoffs": [
+    "2017-07-01",
+    "2017-10-01",
+    "2018-01-01",
+    "2018-03-01"
+  ],
+  "features": [
+    "n_items",
+    "n_distinct_products",
+    "n_sellers",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "total_weight_g",
+    "max_weight_g",
+    "total_volume_cm3",
+    "max_dimension_cm",
+    "main_category",
+    "n_categories",
+    "max_distance_km",
+    "any_distance_missing",
+    "same_state",
+    "same_city",
+    "customer_state",
+    "seller_state",
+    "customer_region",
+    "seller_region",
+    "customer_zip2",
+    "promised_days",
+    "days_to_shipping_limit",
+    "purchase_month_num",
+    "purchase_dow",
+    "purchase_hour",
+    "is_weekend",
+    "black_friday_week",
+    "approval_lag_hours",
+    "main_payment_type",
+    "payment_max_installments",
+    "n_payment_methods",
+    "payment_total",
+    "seller_prior_orders",
+    "seller_tenure_days",
+    "seller_prior_mean_delivery_days",
+    "seller_prior_late_rate",
+    "seller_prior_low_review_rate",
+    "seller_id_enc",
+    "route_prior_orders",
+    "route_prior_mean_delivery_days",
+    "route_prior_late_rate",
+    "delivered_by_T",
+    "delivery_days_at_T",
+    "days_vs_promise_at_T",
+    "carrier_shipped_by_T",
+    "carrier_handover_days_at_T",
+    "carrier_transit_days_at_T",
+    "delivery_vs_seller_prior_at_T"
+  ],
+  "source_sha256": {
+    "src/paths.py": "be7a19321a679c34a81ef66cd13b84dc1a4c6bcddf7f4be8a8cee0d9576a4ba1",
+    "src/clf_config.py": "14883a7f2566f8f382f17f3de83a1a0016c8f9963c7578302c24c409d8bdb509",
+    "src/clf_data.py": "34baf1675a0ea408f5a21626d552abe280adabcd25bac577ffb7ff5ee235dfe4",
+    "src/clf_features.py": "80c06793da397ea87b7cb1faf73f07de2834b7b0d21f7579ea22cfb8c7a5467c",
+    "src/clf_split.py": "743073d39e28d868fd577eb99a9ebf4756e596933bc9b63ef60f47ba58627862",
+    "src/clf_pipelines.py": "370d3284df767144751738642ed4d71444b2b86b458d9dee0a5db1000b2f55b8",
+    "src/clf_evaluate.py": "b80f6c51735564e04333282f7d4a5284c6ccd9569c60ae6e99b653e3d0896f77",
+    "src/clf_ensembles.py": "8d41bf27592fb60f8fa1f2805b7e352123e40c52a1b610ab5ba5021fb6cd9a7c",
+    "scripts/reproduce_classification.py": "c39211d4058a8f64a69d3e361f896742dd5b5689c6fe174a6f24e73ad1eb36e2",
+    "scripts/verify_classification.py": "9734c7d06ab27f0c70de55eb5612c3a9159aaeb7f1335ed1902e3d1d8a4a660c"
+  },
+  "regression_source_sha256": {
+    "src/delivery_regression.py": "eee6d063b86cd5e68e261b5b8c7d341017cbee32c0b093e3212a43dbf62f4908",
+    "src/data_preparation_audit.py": "28768e0d90ca09e49b799835affc0bd06e310f8e066cf4164add27ee1d1d3773"
+  },
+  "output_sha256": {
+    "outputs/tables/class_balance_study.csv": "3c778c67c00d76d4afac1d8ec32ba687547dcccd85059bf686edc43a99877a84",
+    "outputs/tables/ensemble_test_results.csv": "fc9ebf392c3437d617b1e5aadf14d70f1b9abdb17526288035204db328f431a6",
+    "outputs/tables/ensemble_weights.csv": "0156db6589a0355071dceb84f0a4a331ec29403becdd00246df8eb12e7fc98d0",
+    "outputs/tables/fold_summary.csv": "4c4f2dfefbf075390f9dde8c8d1b7975e701b8a5c3b708de51a19565fe4519d3",
+    "outputs/tables/model_comparison.csv": "2f5c8bbf641b52001d00f559e642e79237e581b3ea635c6010dc353bbe95c79a",
+    "outputs/tables/permutation_importance.csv": "1dcbf891f49857660c5f2981066d2c7ddfebe5dfa3eaa6e7c7e6f7349aa35043",
+    "outputs/tables/single_feature_auc.csv": "aa1ee957d136abcafb532fc124cddbfcce351705e7281d1a8ba7628f6db49661",
+    "outputs/tables/split_summary.csv": "0a6a6ac31a21249779850717568132272c47b98ac6fb8b1e0f1400a87ad62765"
+  },
+  "python": "3.13.16",
+  "environment": {
+    "numpy": "2.5.3",
+    "pandas": "3.0.5",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "catboost": "1.2.10",
+    "joblib": "1.6.0"
+  },
+  "test_scored": true,
+  "executed": "notebooks run in place with QUICK = True on 2026-10-07 (dry run); report numbers require QUICK = False",
+  "note": "The test window is scored once per final model inside each notebook; selection uses validation only."
+}

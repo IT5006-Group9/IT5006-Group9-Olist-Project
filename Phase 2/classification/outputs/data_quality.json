@@ -1,0 +1,13 @@
+{
+  "orders": 99421,
+  "p2_cohort": 78085,
+  "windows": {
+    "train": 54372,
+    "validation": 7125,
+    "test": 12655,
+    "pending_label": 3933
+  },
+  "features": 49,
+  "leakage_audit_passed": true,
+  "reviews_before_T_share": 0.028981238394057758
+}

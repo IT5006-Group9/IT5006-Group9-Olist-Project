@@ -1,0 +1,9 @@
+# The regression development record hashes its own source, protocol and table files
+# (SHA-256 in versions/*/outputs/*.json). Check them out byte-for-byte with LF endings so
+# the recorded digests also match on Windows clones with core.autocrlf=true.
+notebooks/phase2/regression_dev/** text eol=lf
+src/regression_dev/** text eol=lf
+*.png binary
+*.parquet binary
+*.pdf binary
+*.joblib binary

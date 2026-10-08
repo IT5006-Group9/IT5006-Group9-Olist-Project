@@ -1,0 +1,40 @@
+{
+  "final": "B_rf",
+  "ensemble_retained": false,
+  "best_single": "B_rf",
+  "best_ensemble": "convex",
+  "thresholds": {
+    "A_linear_tuned": 0.7527709631747891,
+    "B_rf": 0.6263872185850703,
+    "B_catboost": 0.6661733601707966,
+    "mean_three": 0.6857570322738206,
+    "mean_rf_cb": 0.6315382934482265,
+    "convex": 0.6778334507663988,
+    "logit_stack": 0.31890047620777
+  },
+  "convex_weights": {
+    "A_linear_tuned": 0.2,
+    "B_rf": 0.6,
+    "B_catboost": 0.2
+  },
+  "oof_rows": 39751,
+  "quick_mode": true,
+  "val_pr_auc": {
+    "A_linear_tuned": 0.6017,
+    "B_rf": 0.6418,
+    "B_catboost": 0.5953,
+    "mean_three": 0.6231,
+    "mean_rf_cb": 0.6336,
+    "convex": 0.6346,
+    "logit_stack": 0.6157
+  },
+  "test_pr_auc": {
+    "A_linear_tuned": 0.3584,
+    "B_rf": 0.3531,
+    "B_catboost": 0.3452,
+    "mean_three": 0.3641,
+    "mean_rf_cb": 0.36,
+    "convex": 0.3648,
+    "logit_stack": 0.366
+  }
+}

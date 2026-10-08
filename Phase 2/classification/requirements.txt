@@ -1,0 +1,4 @@
+# Additions on top of ../requirements.txt (regression package environment).
+catboost>=1.2
+pyarrow>=15                # parquet feature table
+# imbalanced-learn>=0.12   # optional: SMOTE rows in the sensitivity checks
