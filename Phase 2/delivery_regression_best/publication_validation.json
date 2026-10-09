@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-10",
+  "original_result_files_match": 21,
+  "source_modules_match": 8,
+  "executed_code_cells": 7,
+  "embedded_figures": 2,
+  "portable_notebook_qa_passed": true,
+  "preparation": {
+    "course_archive_hash_match": true,
+    "V2_hash_match": true,
+    "split_and_cv_manifest_hashes_match": true,
+    "train_n": 64634,
+    "test_n": 31836,
+    "eligible_n": 96470,
+    "above_60_days_retained": 306,
+    "enrichment_source": "unchanged aggregate_purchase_features, all original seller/route/product groups",
+    "enrichment_csv_hash_match": true,
+    "original_enrichment_gzip_sha256": "bddfaaecb8313ed7c7c7fb47a4edf3d220d2be090461c8be887fd04597d48c52",
+    "stacking": false
+  },
+  "model_reload": {
+    "full_test_metrics_match": true,
+    "bundle_source_model_reload": true,
+    "outcome_columns_not_required": true,
+    "n": 31836,
+    "refit": false,
+    "stacking": false
+  },
+  "test_MAE_days": 4.150491686642425,
+  "no_parameter_reselection": true,
+  "fresh_full_training_rerun": false,
+  "CV_search_rerun": false,
+  "new_stacking": false,
+  "private_data_and_models_excluded": true
+}

@@ -1,0 +1,9 @@
+{
+  "original_notebook_sha256": "f3a8b6896f7119c3cca048daf5429d44babf0acbca76381ea72e94303a83bba5",
+  "source_experiment": "versions/random_split_v1/experiments/12_hgb_parameter_tuning",
+  "original_source_files_copied_unchanged": true,
+  "original_result_files_copied_unchanged": true,
+  "notebook_adapter": "root/results directory; bundle-file hashes instead of unavailable private/history hashes; outputs re-executed",
+  "fixed_selected_model": "leaves63__time_risk",
+  "excluded": "raw and derived order data, per-order predictions, OOF, fitted models, previous schemes"
+}

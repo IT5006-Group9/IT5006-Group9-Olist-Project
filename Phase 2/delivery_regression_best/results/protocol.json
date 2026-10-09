@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-10",
+  "source_sha256": "a9694e1709e6c534e1f8c5ee536124ba81d61b649b030c95ee4f649ddf2873e6",
+  "input_sha256": "c606a8792a2d4ed96225c6ac9c25489c11c482db5db29cf06927c00024b6570b",
+  "archive_sha256": "90ee50730a9e799aa2d3c7b1758fef680cbbc366f61a287870144796a37156d4",
+  "cv_manifest_sha256": "d6d32a3dad6fbf2f8ad3d5479197efc9477e30749f9b87eb6536c4f191abc504",
+  "split_manifest_sha256": "a00ac0309896576745e4c0bf4bb0b04c535ab9cb39c6344ee13c178bcb8cb9ab",
+  "configurations": {
+    "control": {
+      "loss": "absolute_error",
+      "max_iter": 300,
+      "learning_rate": 0.05,
+      "max_leaf_nodes": 31,
+      "min_samples_leaf": 30,
+      "l2_regularization": 10
+    },
+    "leaves15": {
+      "loss": "absolute_error",
+      "max_iter": 300,
+      "learning_rate": 0.05,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 30,
+      "l2_regularization": 10
+    },
+    "leaves63": {
+      "loss": "absolute_error",
+      "max_iter": 300,
+      "learning_rate": 0.05,
+      "max_leaf_nodes": 63,
+      "min_samples_leaf": 30,
+      "l2_regularization": 10
+    },
+    "leaf15": {
+      "loss": "absolute_error",
+      "max_iter": 300,
+      "learning_rate": 0.05,
+      "max_leaf_nodes": 31,
+      "min_samples_leaf": 15,
+      "l2_regularization": 10
+    },
+    "leaf60": {
+      "loss": "absolute_error",
+      "max_iter": 300,
+      "learning_rate": 0.05,
+      "max_leaf_nodes": 31,
+      "min_samples_leaf": 60,
+      "l2_regularization": 10
+    },
+    "l2zero": {
+      "loss": "absolute_error",
+      "max_iter": 300,
+      "learning_rate": 0.05,
+      "max_leaf_nodes": 31,
+      "min_samples_leaf": 30,
+      "l2_regularization": 0
+    },
+    "rounds600": {
+      "loss": "absolute_error",
+      "max_iter": 600,
+      "learning_rate": 0.05,
+      "max_leaf_nodes": 31,
+      "min_samples_leaf": 30,
+      "l2_regularization": 10
+    },
+    "rate010": {
+      "loss": "absolute_error",
+      "max_iter": 300,
+      "learning_rate": 0.1,
+      "max_leaf_nodes": 31,
+      "min_samples_leaf": 30,
+      "l2_regularization": 10
+    }
+  },
+  "train_n": 64634,
+  "test_n": 31836,
+  "random_split": "fixed 67/33, seed33",
+  "outer_cv": "unchanged five development folds",
+  "stage_A": "8 settings on time_risk; 40 CV rows, 5 original controls reused, 35 new fits",
+  "stage_B": "Stage A CV winner parameters on time-only; original time-only control reused; at most 5 new fits",
+  "selection": "minimum mean five-fold training MAE across A and B; original control first on exact tie",
+  "risk_generation": "reuse hash-verified per-outer-fold nested three-fold cross-fitted training risks; not global OOF",
+  "fixed_risk_classifier": {
+    "learning_rate": 0.05,
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 40,
+    "l2_regularization": 10.0,
+    "early_stopping": false,
+    "random_state": 33
+  },
+  "classifier_tuning": false,
+  "features": "09 all-onehot + 11 fixed purchase elapsed days/year-month + optional continuous p30",
+  "loss": "absolute_error fixed; no reweighting or target/cohort changes",
+  "preprocessing": "fold-local original numeric/category/time transforms and risk scaling unchanged",
+  "concurrency": "two independent settings, two threads each; no simultaneous dataset mutation",
+  "test_scoring": "only frozen winner plus previous matched time_risk and time controls",
+  "test_previously_exposed": true,
+  "development_and_adaptive_selection": true,
+  "not_unbiased_nested_model_selection": true,
+  "stacking": false,
+  "upload": false,
+  "no_new_models_or_families": true,
+  "assumptions": "purchase archive attributes available; completed cohort; historical random mixture, not future performance",
+  "software": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.7.2",
+    "joblib": "1.6.0",
+    "scipy": "1.18.1"
+  }
+}

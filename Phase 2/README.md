@@ -1,5 +1,7 @@
 # Phase 2 · Delivery Lead-time Regression
 
+**2026-10-10 published update:** [Current best delivery regression package](delivery_regression_best/README.md) · [Executed notebook](delivery_regression_best/notebooks/best_scheme_review.ipynb). Frozen 63-leaf HGB with purchase/time/risk features: five-fold CV MAE4.2378 days, same random test MAE4.1505 days and RMSE7.4651. See the package for source, parameters, evidence, limitations and reproduction. Earlier material below is a historical snapshot.
+
 ## Ensemble comparison: one entry point, two methods
 
 **Updated: 2026-10-07**

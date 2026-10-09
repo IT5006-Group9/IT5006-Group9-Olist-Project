@@ -1,0 +1,9 @@
+configuration,loss,max_iter,learning_rate,max_leaf_nodes,min_samples_leaf,l2_regularization
+control,absolute_error,300,0.05,31,30,10
+leaves15,absolute_error,300,0.05,15,30,10
+leaves63,absolute_error,300,0.05,63,30,10
+leaf15,absolute_error,300,0.05,31,15,10
+leaf60,absolute_error,300,0.05,31,60,10
+l2zero,absolute_error,300,0.05,31,30,0
+rounds600,absolute_error,600,0.05,31,30,10
+rate010,absolute_error,300,0.1,31,30,10

@@ -1,0 +1,6 @@
+{
+  "configuration": "leaves63",
+  "by": "training five-fold MAE",
+  "before_test": true,
+  "summary_sha256": "db1175ae6499ac47dee13fd19fe8f83c3d2bf677a9d64f5c704058dd6dcd114a"
+}

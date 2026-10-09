@@ -8,8 +8,11 @@ IT5006 Group 9 project on the Olist Brazilian E-Commerce Dataset
 
 ## Phase 2 · Delivery Lead-time Regression
 
-- [Current progress and results](Phase%202/docs/current_progress.md)
-- [Latest executed notebook](Phase%202/notebooks/feature_optimization.ipynb)
+- [Current best regression scheme](Phase%202/delivery_regression_best/) — tuned HGB, test MAE **4.1505 days**.
+- [Executed best-scheme notebook](Phase%202/delivery_regression_best/notebooks/best_scheme_review.ipynb)
+
+- [Historical development snapshot](Phase%202/docs/current_progress.md)
+- [Historical feature-optimization notebook](Phase%202/notebooks/feature_optimization.ipynb)
 - [Reproduction and experiment files](Phase%202/README.md)
 
-Development review snapshot: source, executed notebooks, summary tables, figures and conclusions. Raw/derived order data and fitted artifacts are generated locally from the fixed course ZIP. Stacking and final-test evaluation are pending.
+The current best package contains source, an executed notebook, fixed parameters, result tables, figures and a course-ZIP reproduction entry. Its random test was previously exposed; MAE 4.1505 days is a retrospective development result. Raw/derived order data and fitted artifacts are generated locally. Earlier linked snapshots retain their historical status. This publication does not update stacking or the shared report.
