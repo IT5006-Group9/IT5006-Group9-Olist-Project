@@ -1,0 +1,1888 @@
+{
+  "date": "2026-10-11",
+  "source_commit": "794cccebb7f12017df2b48e970e3bcca154b5eec",
+  "purpose": "Directory organization only; no modeling or report-edit run",
+  "all_original_files_retained": true,
+  "all_saved_notebook_outputs_and_execution_counts_unchanged": true,
+  "all_published_result_tables_and_figures_unchanged": true,
+  "historical_source_protocol_hashes_preserved": true,
+  "model_retraining_performed": false,
+  "files": [
+    {
+      "from": "Phase 2/.gitignore",
+      "to": "Phase 2/Regression/historical_temporal/.gitignore",
+      "before_sha256": "85c56d56c8d553e26ad66df88adbe4197d8be9fe08e87b57ff9505d2a19f8471",
+      "after_sha256": "85c56d56c8d553e26ad66df88adbe4197d8be9fe08e87b57ff9505d2a19f8471",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/README.md",
+      "to": "Phase 2/Regression/historical_temporal/README.md",
+      "before_sha256": "d1d31340635c43ecf045dfc476ec69008f44c6d0922dbbf339355385823c7d9f",
+      "after_sha256": "ca79b976af41cade55882201f237e5733f0b4e010df53345b6ed071ebe0cb090",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/README.md",
+      "to": "Phase 2/Classification/README.md",
+      "before_sha256": "9215eb4c7becef03217fa64793bb7544ad2c406658dae31c42fd4a37da9db8d3",
+      "after_sha256": "821046b4b80ac06b2f08144ee31e463eab722dd7072421fca899338bc97f70fb",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/config/feature_roles.csv",
+      "to": "Phase 2/Classification/config/feature_roles.csv",
+      "before_sha256": "e9169f93e3404bf574de5db54e79f6f39326e5048e62745b792dc3906a1e9a9d",
+      "after_sha256": "e9169f93e3404bf574de5db54e79f6f39326e5048e62745b792dc3906a1e9a9d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/config/problem_spec.json",
+      "to": "Phase 2/Classification/config/problem_spec.json",
+      "before_sha256": "dcc0baee2f53933eb3da1e6024eb2dc7d4075f061b9fe14d1a08ae11c024bd85",
+      "after_sha256": "dcc0baee2f53933eb3da1e6024eb2dc7d4075f061b9fe14d1a08ae11c024bd85",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/docs/current_progress.md",
+      "to": "Phase 2/Classification/docs/current_progress.md",
+      "before_sha256": "d3f7aaef28d05f7980e27d3be695ff5a3914d2fc1a8479362721e89f59ce9c06",
+      "after_sha256": "6e45373ff1d2183a1c7f0867f10e3b5e14a73bd098415ba80b85bd470d47703a",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/docs/ensemble_comparison.md",
+      "to": "Phase 2/Classification/docs/ensemble_comparison.md",
+      "before_sha256": "b80469c062b69daa871159036701c3178c01b76cdcf531167d340dfdead9891f",
+      "after_sha256": "7cffea9cbfdca4d14430c3546553f20701b602a472cc4029045acc36b6016233",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/docs/sampling_comparison.md",
+      "to": "Phase 2/Classification/docs/sampling_comparison.md",
+      "before_sha256": "05bc4c59a5a6c099510def0b6efc1aeabe009c1d07e4d3e396b9c5f034a1c1fa",
+      "after_sha256": "1ab428e54fec6afa25f21e8b444ad8a57b10a3c0ae7c5e662a80541135bd2418",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/notebooks/baseline_variant_review.ipynb",
+      "to": "Phase 2/Classification/notebooks/baseline_variant_review.ipynb",
+      "before_sha256": "d0cd09c3d0f8747a796849d2c5cabc7fe5306f4cd923ef927de9cdc6ffa44dcc",
+      "after_sha256": "ef3da372c1ab4add6b006cd1e76ac237869d35bec2442f7dd26c772ac090d360",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/notebooks/data_preparation_audit.ipynb",
+      "to": "Phase 2/Classification/notebooks/data_preparation_audit.ipynb",
+      "before_sha256": "e9b4c0aa19d33a01945e0ba8a606252b922474eba36c21dcb8ef2200f58b619e",
+      "after_sha256": "7eeeb850f30517289cf74d4f2f201c4f6bd17258031fcdb8076a33dcd2111a74",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/notebooks/ensemble_comparison.ipynb",
+      "to": "Phase 2/Classification/notebooks/ensemble_comparison.ipynb",
+      "before_sha256": "a6f896770e3de8a2fe4a7c0e0116eeac6ae9385c2b790059d6d71fc0e999a7f6",
+      "after_sha256": "b21c3e064f80b1aff308467257a075dbfd47b5765975eac745bc3fb2daca25ca",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/notebooks/sampling_comparison.ipynb",
+      "to": "Phase 2/Classification/notebooks/sampling_comparison.ipynb",
+      "before_sha256": "40506e27acecc5346af65731bf444174decc61716bc8c0fd9906272da1e73fa6",
+      "after_sha256": "8487dcf5c26ed0efc5d92d3b0dbfe5d4fda03a16245ec29f91c4c556286e6292",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/outputs/data_quality.json",
+      "to": "Phase 2/Classification/outputs/data_quality.json",
+      "before_sha256": "20c8d011b17379027ff18f77a639f0629ec96ba1fd0f04cf8040333b4edfce79",
+      "after_sha256": "20c8d011b17379027ff18f77a639f0629ec96ba1fd0f04cf8040333b4edfce79",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/ensemble_summary.json",
+      "to": "Phase 2/Classification/outputs/ensemble_summary.json",
+      "before_sha256": "9a06cd42270e3da44b8e8a1149d22f9da810b3029c6e9f2577ab3cb14e6485ba",
+      "after_sha256": "9a06cd42270e3da44b8e8a1149d22f9da810b3029c6e9f2577ab3cb14e6485ba",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/experiment_protocol.json",
+      "to": "Phase 2/Classification/outputs/experiment_protocol.json",
+      "before_sha256": "055937ad56e10fcb9e5218ef169e05cc9df3fc5791ac00810e2f086c93b2edc1",
+      "after_sha256": "055937ad56e10fcb9e5218ef169e05cc9df3fc5791ac00810e2f086c93b2edc1",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/figures/01_windows_and_rates.png",
+      "to": "Phase 2/Classification/outputs/figures/01_windows_and_rates.png",
+      "before_sha256": "c2f3a6908479e8009790508c38e983ff65ffcf31f7ebad3ba89d4965c0927a75",
+      "after_sha256": "c2f3a6908479e8009790508c38e983ff65ffcf31f7ebad3ba89d4965c0927a75",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/figures/01b_late_vs_low_review.png",
+      "to": "Phase 2/Classification/outputs/figures/01b_late_vs_low_review.png",
+      "before_sha256": "485e67b7436ae2eac2c2dca097a92649d17cf7ea3f5937cec7626d177c1ad312",
+      "after_sha256": "485e67b7436ae2eac2c2dca097a92649d17cf7ea3f5937cec7626d177c1ad312",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/figures/02_pr_calibration_drift.png",
+      "to": "Phase 2/Classification/outputs/figures/02_pr_calibration_drift.png",
+      "before_sha256": "619cedf7f60f298dc9485a7bf2607091fe1758c2ba96599eb6ef1cd248fbf6ed",
+      "after_sha256": "619cedf7f60f298dc9485a7bf2607091fe1758c2ba96599eb6ef1cd248fbf6ed",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/figures/03_permutation_importance.png",
+      "to": "Phase 2/Classification/outputs/figures/03_permutation_importance.png",
+      "before_sha256": "9222b72f93853e8ec0f30d48f34ffaeb426b9c37616ebba89c1ba94cc9534e3d",
+      "after_sha256": "9222b72f93853e8ec0f30d48f34ffaeb426b9c37616ebba89c1ba94cc9534e3d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/figures/04_ensemble_comparison.png",
+      "to": "Phase 2/Classification/outputs/figures/04_ensemble_comparison.png",
+      "before_sha256": "60265bd4f22adb61cb1835a4f249fa291864b823687b2a5e8817eccb72ecb649",
+      "after_sha256": "60265bd4f22adb61cb1835a4f249fa291864b823687b2a5e8817eccb72ecb649",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/figures/05_sampling_comparison.png",
+      "to": "Phase 2/Classification/outputs/figures/05_sampling_comparison.png",
+      "before_sha256": "8ef9107197083e1d6e9dad3caeeb81d8263921d1f12e9bf5c8c3a7bee49f8e18",
+      "after_sha256": "8ef9107197083e1d6e9dad3caeeb81d8263921d1f12e9bf5c8c3a7bee49f8e18",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/figures/06_shap_summary.png",
+      "to": "Phase 2/Classification/outputs/figures/06_shap_summary.png",
+      "before_sha256": "8433be723dd3c30f6467a31b0236c2e72ace56a942db75ce4b08b5a04c3e7842",
+      "after_sha256": "8433be723dd3c30f6467a31b0236c2e72ace56a942db75ce4b08b5a04c3e7842",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/figures/07_shap_dependence.png",
+      "to": "Phase 2/Classification/outputs/figures/07_shap_dependence.png",
+      "before_sha256": "e46bca5a61b8a6c46d478eae107226e9a0c30888e5f767b37d7a8ef7c232a289",
+      "after_sha256": "e46bca5a61b8a6c46d478eae107226e9a0c30888e5f767b37d7a8ef7c232a289",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/oof/base_oof_probabilities.csv",
+      "to": "Phase 2/Classification/outputs/oof/base_oof_probabilities.csv",
+      "before_sha256": "7b3107a9407986f7f786a12866ca1fca95acd7c77f6ffc2d63b032642bf92604",
+      "after_sha256": "7b3107a9407986f7f786a12866ca1fca95acd7c77f6ffc2d63b032642bf92604",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/predictions/test_predictions.csv",
+      "to": "Phase 2/Classification/outputs/predictions/test_predictions.csv",
+      "before_sha256": "8445088f3c2245c3be52f5d624393151cfb2c49d8bc893afa442b6f5685f1e2e",
+      "after_sha256": "8445088f3c2245c3be52f5d624393151cfb2c49d8bc893afa442b6f5685f1e2e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/predictions/validation_predictions.csv",
+      "to": "Phase 2/Classification/outputs/predictions/validation_predictions.csv",
+      "before_sha256": "f3e49eaa967446f5c66d6986c1d899832f87ff02a431d95bd05f7459cbfcb0c5",
+      "after_sha256": "f3e49eaa967446f5c66d6986c1d899832f87ff02a431d95bd05f7459cbfcb0c5",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/sampling_summary.json",
+      "to": "Phase 2/Classification/outputs/sampling_summary.json",
+      "before_sha256": "f5d27fff1fa9bf3e57bd94cc39450906073475a7d153d422d77143c3149a8e6a",
+      "after_sha256": "f5d27fff1fa9bf3e57bd94cc39450906073475a7d153d422d77143c3149a8e6a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/selected_models.json",
+      "to": "Phase 2/Classification/outputs/selected_models.json",
+      "before_sha256": "38d0a91768924cebf52589926576d8706d1f1b34f446252090bb2fad5f20a447",
+      "after_sha256": "38d0a91768924cebf52589926576d8706d1f1b34f446252090bb2fad5f20a447",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/class_balance_study.csv",
+      "to": "Phase 2/Classification/outputs/tables/class_balance_study.csv",
+      "before_sha256": "e6f1982f1cd0e9699ebc7ac707fd801e31dddd8e091a885413053be6f37f70e0",
+      "after_sha256": "e6f1982f1cd0e9699ebc7ac707fd801e31dddd8e091a885413053be6f37f70e0",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/ensemble_test_results.csv",
+      "to": "Phase 2/Classification/outputs/tables/ensemble_test_results.csv",
+      "before_sha256": "ac2b82db2467c7e2ec79960da100f7796677dc469e428f6960880b51cfb8c856",
+      "after_sha256": "ac2b82db2467c7e2ec79960da100f7796677dc469e428f6960880b51cfb8c856",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/ensemble_weights.csv",
+      "to": "Phase 2/Classification/outputs/tables/ensemble_weights.csv",
+      "before_sha256": "6d33cf93b8d7afed20b92ba2f12a2456f9a3e3e9f869ef136ca2d5c21ae732c1",
+      "after_sha256": "6d33cf93b8d7afed20b92ba2f12a2456f9a3e3e9f869ef136ca2d5c21ae732c1",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/fold_summary.csv",
+      "to": "Phase 2/Classification/outputs/tables/fold_summary.csv",
+      "before_sha256": "8d148c86b064fe8884570c23152c4fb5988fe92dbae55146d2b1715a1ad326be",
+      "after_sha256": "8d148c86b064fe8884570c23152c4fb5988fe92dbae55146d2b1715a1ad326be",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/late_vs_low_review_correlation.csv",
+      "to": "Phase 2/Classification/outputs/tables/late_vs_low_review_correlation.csv",
+      "before_sha256": "3de53f2ae1891875cb8f7f6711774d69308a83de8acfca85bca6d6c211961938",
+      "after_sha256": "3de53f2ae1891875cb8f7f6711774d69308a83de8acfca85bca6d6c211961938",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/model_comparison.csv",
+      "to": "Phase 2/Classification/outputs/tables/model_comparison.csv",
+      "before_sha256": "b8f35f3245920239d0a72dad8549a5d250d5121cf4a113ed11c548b88ff7a941",
+      "after_sha256": "b8f35f3245920239d0a72dad8549a5d250d5121cf4a113ed11c548b88ff7a941",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/permutation_importance.csv",
+      "to": "Phase 2/Classification/outputs/tables/permutation_importance.csv",
+      "before_sha256": "3b1c299e2f3813e9c1bfe0dcd1390d46753a80befac04ef4205e3fc8c54824ee",
+      "after_sha256": "3b1c299e2f3813e9c1bfe0dcd1390d46753a80befac04ef4205e3fc8c54824ee",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/sampling_comparison.csv",
+      "to": "Phase 2/Classification/outputs/tables/sampling_comparison.csv",
+      "before_sha256": "fbfbfd62c2b6412fb6a8606ec6c676b1d64c8eee2d1b0ed0dd427f24040d6c92",
+      "after_sha256": "fbfbfd62c2b6412fb6a8606ec6c676b1d64c8eee2d1b0ed0dd427f24040d6c92",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/shap_cross_model.csv",
+      "to": "Phase 2/Classification/outputs/tables/shap_cross_model.csv",
+      "before_sha256": "a7cc9151a71706031a82377d6c362adf9234d636ea518b2555e20fa286ab2c5a",
+      "after_sha256": "a7cc9151a71706031a82377d6c362adf9234d636ea518b2555e20fa286ab2c5a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/shap_importance.csv",
+      "to": "Phase 2/Classification/outputs/tables/shap_importance.csv",
+      "before_sha256": "469af6dc567b2208e384e5c380c5d9ef425b1f6c85dbc1832f22a86a20014442",
+      "after_sha256": "469af6dc567b2208e384e5c380c5d9ef425b1f6c85dbc1832f22a86a20014442",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/single_feature_auc.csv",
+      "to": "Phase 2/Classification/outputs/tables/single_feature_auc.csv",
+      "before_sha256": "f480e2d0ab3f5c98229e848d9e0ee005240de6ff0783ae194f3eba5c3206e2c9",
+      "after_sha256": "f480e2d0ab3f5c98229e848d9e0ee005240de6ff0783ae194f3eba5c3206e2c9",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/smote_sensitivity.csv",
+      "to": "Phase 2/Classification/outputs/tables/smote_sensitivity.csv",
+      "before_sha256": "d798074226d0d2a28603b9bf5ed42be82c7ce55ac21657c2a493c33e2424bf6c",
+      "after_sha256": "d798074226d0d2a28603b9bf5ed42be82c7ce55ac21657c2a493c33e2424bf6c",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/tables/split_summary.csv",
+      "to": "Phase 2/Classification/outputs/tables/split_summary.csv",
+      "before_sha256": "bdcc262b1a17aba0d0f256686fefa57bdb4292d7f32b594874ca295e10c84fb4",
+      "after_sha256": "bdcc262b1a17aba0d0f256686fefa57bdb4292d7f32b594874ca295e10c84fb4",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/outputs/validation_audit.json",
+      "to": "Phase 2/Classification/outputs/validation_audit.json",
+      "before_sha256": "da4e8db82de8dc44f0ce2a3d9d8810550a9b6a57c820f7672d642535ae68de30",
+      "after_sha256": "da4e8db82de8dc44f0ce2a3d9d8810550a9b6a57c820f7672d642535ae68de30",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/requirements.txt",
+      "to": "Phase 2/Classification/requirements.txt",
+      "before_sha256": "b5450b277405bf997047ba101e91cf230c7798712a199e35d2d18227c0db0241",
+      "after_sha256": "b5450b277405bf997047ba101e91cf230c7798712a199e35d2d18227c0db0241",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/scripts/build_notebooks.py",
+      "to": "Phase 2/Classification/scripts/build_notebooks.py",
+      "before_sha256": "786c0abd9afb8dc42ce869350e91a6672a7969efca542ff220d95cb7fd20f197",
+      "after_sha256": "17afc9cf046e233fa828722b8413f30bc4cbc6a99c3b9cdef5a654b9f5178786",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/scripts/reproduce_classification.py",
+      "to": "Phase 2/Classification/scripts/reproduce_classification.py",
+      "before_sha256": "20b2f739fd27e378b887b893e4458a3518a406dbd4d085c7a88cb649a048115d",
+      "after_sha256": "65b0b0f21226e59c95853420ab9189005c2485cad7cedcf5f4dcf6955e66608c",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/scripts/run_notebook.py",
+      "to": "Phase 2/Classification/scripts/run_notebook.py",
+      "before_sha256": "f4b5588345b44e5e1394a8c3235b1fde65bcbb509aa84ada5b9c1b8a1e3e75a6",
+      "after_sha256": "f4b5588345b44e5e1394a8c3235b1fde65bcbb509aa84ada5b9c1b8a1e3e75a6",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/scripts/verify_classification.py",
+      "to": "Phase 2/Classification/scripts/verify_classification.py",
+      "before_sha256": "91d474b103423f537dac5fa4b5292a374df06e139356abcf2ebc0133726af22d",
+      "after_sha256": "91d474b103423f537dac5fa4b5292a374df06e139356abcf2ebc0133726af22d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/src/clf_config.py",
+      "to": "Phase 2/Classification/src/clf_config.py",
+      "before_sha256": "b1a7611d28c80ce49fa28f68706212181de1d644d39df84e28815c0d4ca1e408",
+      "after_sha256": "7153ab88862a598542adb3662222b523793862b147a728dd1824e29c7e3cb83b",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/src/clf_data.py",
+      "to": "Phase 2/Classification/src/clf_data.py",
+      "before_sha256": "34baf1675a0ea408f5a21626d552abe280adabcd25bac577ffb7ff5ee235dfe4",
+      "after_sha256": "34baf1675a0ea408f5a21626d552abe280adabcd25bac577ffb7ff5ee235dfe4",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/src/clf_ensembles.py",
+      "to": "Phase 2/Classification/src/clf_ensembles.py",
+      "before_sha256": "8d41bf27592fb60f8fa1f2805b7e352123e40c52a1b610ab5ba5021fb6cd9a7c",
+      "after_sha256": "8d41bf27592fb60f8fa1f2805b7e352123e40c52a1b610ab5ba5021fb6cd9a7c",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/src/clf_evaluate.py",
+      "to": "Phase 2/Classification/src/clf_evaluate.py",
+      "before_sha256": "c5d5da3da60944bf21d2307497a128b033d178ea1cae3150b419dbe5ac73514c",
+      "after_sha256": "c5d5da3da60944bf21d2307497a128b033d178ea1cae3150b419dbe5ac73514c",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/src/clf_explain.py",
+      "to": "Phase 2/Classification/src/clf_explain.py",
+      "before_sha256": "12974525b134d009bd4d952b7733436b96d092ae84e379292dc2651b19810d43",
+      "after_sha256": "12974525b134d009bd4d952b7733436b96d092ae84e379292dc2651b19810d43",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/src/clf_features.py",
+      "to": "Phase 2/Classification/src/clf_features.py",
+      "before_sha256": "4fdce276cad702927e8e29adff43a06f710bc5385a7d350a7c229f654969d847",
+      "after_sha256": "4fdce276cad702927e8e29adff43a06f710bc5385a7d350a7c229f654969d847",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/src/clf_pipelines.py",
+      "to": "Phase 2/Classification/src/clf_pipelines.py",
+      "before_sha256": "171bfa559949d400c476a91e670a9912014183bfd1f41e9f72b36a4fcffe114a",
+      "after_sha256": "171bfa559949d400c476a91e670a9912014183bfd1f41e9f72b36a4fcffe114a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/src/clf_sampling.py",
+      "to": "Phase 2/Classification/src/clf_sampling.py",
+      "before_sha256": "f6824429a127b445408d362e1e6f0376e3f20d4c6f82a87a3995be2283f7b476",
+      "after_sha256": "f6824429a127b445408d362e1e6f0376e3f20d4c6f82a87a3995be2283f7b476",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/src/clf_split.py",
+      "to": "Phase 2/Classification/src/clf_split.py",
+      "before_sha256": "5b70b19f7459cf8ba4845c1914c1ae9f8b8cc0223061a97062aefe6949dcbf72",
+      "after_sha256": "5b70b19f7459cf8ba4845c1914c1ae9f8b8cc0223061a97062aefe6949dcbf72",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/classification/src/paths.py",
+      "to": "Phase 2/Classification/src/paths.py",
+      "before_sha256": "be7a19321a679c34a81ef66cd13b84dc1a4c6bcddf7f4be8a8cee0d9576a4ba1",
+      "after_sha256": "18bd67e4975480525251b98627282994c15bdb7806da2ebb55d3987c3135ed91",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/classification/tests/test_classification.py",
+      "to": "Phase 2/Classification/tests/test_classification.py",
+      "before_sha256": "de9cbd040d7ec199ef55b71e21da5365438752b6bdb01f6155d3675e31ee470f",
+      "after_sha256": "de9cbd040d7ec199ef55b71e21da5365438752b6bdb01f6155d3675e31ee470f",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/config/feature_optimization_roles.csv",
+      "to": "Phase 2/Regression/historical_temporal/config/feature_optimization_roles.csv",
+      "before_sha256": "2674f7b1da0468456e89fbd207e8fdd06cb4aeb943fcd9236e3bf69cb5edee06",
+      "after_sha256": "2674f7b1da0468456e89fbd207e8fdd06cb4aeb943fcd9236e3bf69cb5edee06",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/config/feature_roles.csv",
+      "to": "Phase 2/Regression/historical_temporal/config/feature_roles.csv",
+      "before_sha256": "c3b2b7db8ceae3f4ae5ca7b0eff4f8b2883845baa391025fc6cb2911e2e039ef",
+      "after_sha256": "c3b2b7db8ceae3f4ae5ca7b0eff4f8b2883845baa391025fc6cb2911e2e039ef",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/config/problem_spec.json",
+      "to": "Phase 2/Regression/historical_temporal/config/problem_spec.json",
+      "before_sha256": "aba637faf66dd74d51281ce0bc8b133dcf5041d84586c59e3f879693d9cf96e4",
+      "after_sha256": "aba637faf66dd74d51281ce0bc8b133dcf5041d84586c59e3f879693d9cf96e4",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/.gitignore",
+      "to": "Phase 2/Regression/delivery_regression_best/.gitignore",
+      "before_sha256": "335fa588a5d54d76457b19f1136b8655e55c80c043848ddf9cdd9388b46b6f85",
+      "after_sha256": "335fa588a5d54d76457b19f1136b8655e55c80c043848ddf9cdd9388b46b6f85",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/README.md",
+      "to": "Phase 2/Regression/delivery_regression_best/README.md",
+      "before_sha256": "71fd82ab95dac3333d1a9df2c7ad8e6157a911e96ee81ccb7cfd1dd2858469e8",
+      "after_sha256": "71fd82ab95dac3333d1a9df2c7ad8e6157a911e96ee81ccb7cfd1dd2858469e8",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/bundle_manifest.json",
+      "to": "Phase 2/Regression/delivery_regression_best/bundle_manifest.json",
+      "before_sha256": "35ee907a70a080dc1fbece09d5452e37e29bf6aef1b035fd7b2a3a103daa1ef1",
+      "after_sha256": "4db430031de3eaf8881db8ef13fd05cf54e8393b406f64cb420ef9d86d9c544b",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/config/purchase_feature_protocol.json",
+      "to": "Phase 2/Regression/delivery_regression_best/config/purchase_feature_protocol.json",
+      "before_sha256": "00acddd972e769dd847f88304b88a0473aa41870fbedd4644d62b8ca5346a21e",
+      "after_sha256": "00acddd972e769dd847f88304b88a0473aa41870fbedd4644d62b8ca5346a21e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/config/random_split_protocol.json",
+      "to": "Phase 2/Regression/delivery_regression_best/config/random_split_protocol.json",
+      "before_sha256": "8bfa05cd5fc575a190f9fe44402a06328f569f56a9a1479655f7ac5124eac76e",
+      "after_sha256": "8bfa05cd5fc575a190f9fe44402a06328f569f56a9a1479655f7ac5124eac76e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/config/report_models.json",
+      "to": "Phase 2/Regression/delivery_regression_best/config/report_models.json",
+      "before_sha256": "53105c3b653d3c8b569c496f47f13590b5e56afbec26ec138bf2d142a9536716",
+      "after_sha256": "53105c3b653d3c8b569c496f47f13590b5e56afbec26ec138bf2d142a9536716",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/config/reproduction_checks.json",
+      "to": "Phase 2/Regression/delivery_regression_best/config/reproduction_checks.json",
+      "before_sha256": "84b314a38d2bf3f401654fa95e78c6c95e25b851ab25f1dbf698f05b2c87df68",
+      "after_sha256": "84b314a38d2bf3f401654fa95e78c6c95e25b851ab25f1dbf698f05b2c87df68",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/config/selected_model.json",
+      "to": "Phase 2/Regression/delivery_regression_best/config/selected_model.json",
+      "before_sha256": "45752a43b3a730af30e19fe6222406cb31678614b3b9369621ea232698828950",
+      "after_sha256": "45752a43b3a730af30e19fe6222406cb31678614b3b9369621ea232698828950",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/docs/report_evidence_guide.md",
+      "to": "Phase 2/Regression/delivery_regression_best/docs/report_evidence_guide.md",
+      "before_sha256": "b1ddc817d0ecff06ff47c199accb2782eabd3da7a01d768993f8591cabc17b61",
+      "after_sha256": "737b77e782f82623c335a7dfcb505b577eb5201621ee18ad6d059c1ac3903014",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/notebooks/best_scheme_review.ipynb",
+      "to": "Phase 2/Regression/delivery_regression_best/notebooks/best_scheme_review.ipynb",
+      "before_sha256": "e139d56a3f29cf875ebecefcc427ff58f7587a0cb2ca5f041c7de8eac88fbdf0",
+      "after_sha256": "e139d56a3f29cf875ebecefcc427ff58f7587a0cb2ca5f041c7de8eac88fbdf0",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/notebooks/report_supplement_review.ipynb",
+      "to": "Phase 2/Regression/delivery_regression_best/notebooks/report_supplement_review.ipynb",
+      "before_sha256": "8cd9cb14e1cf5536a6e2811f17fac7ab3eb97573461efe2d115eec6a77ae84d5",
+      "after_sha256": "8cd9cb14e1cf5536a6e2811f17fac7ab3eb97573461efe2d115eec6a77ae84d5",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb",
+      "to": "Phase 2/Regression/delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb",
+      "before_sha256": "8e6ce8e281dd6b901984506168c084efe37f9adda68b6a4ed211d142c8471ea3",
+      "after_sha256": "a79a5f39eb58f24004e6ceeaad921bfeb33a94d9873772f8d806bfa8dcc6cac2",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/publication_provenance.json",
+      "to": "Phase 2/Regression/delivery_regression_best/publication_provenance.json",
+      "before_sha256": "ca7382face3a9b6b407d9770bb9cdf7e2482761e3891586fc0bfe7b02362554d",
+      "after_sha256": "ca7382face3a9b6b407d9770bb9cdf7e2482761e3891586fc0bfe7b02362554d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/publication_validation.json",
+      "to": "Phase 2/Regression/delivery_regression_best/publication_validation.json",
+      "before_sha256": "725109a1d00515e905130d7726090c241146307c303243f732b01810b6c0941a",
+      "after_sha256": "725109a1d00515e905130d7726090c241146307c303243f732b01810b6c0941a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/requirements.txt",
+      "to": "Phase 2/Regression/delivery_regression_best/requirements.txt",
+      "before_sha256": "2218af306605f9424e3e0d16eee1f199bd6bf686a948b36feb1fbe4f149b3548",
+      "after_sha256": "2218af306605f9424e3e0d16eee1f199bd6bf686a948b36feb1fbe4f149b3548",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/artifact_validation.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/artifact_validation.json",
+      "before_sha256": "efb823fd7d2a5f49624abcecbcb9de1fd844d46250e0fde4cb54072ee32252ed",
+      "after_sha256": "efb823fd7d2a5f49624abcecbcb9de1fd844d46250e0fde4cb54072ee32252ed",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/cv_verification.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/cv_verification.json",
+      "before_sha256": "579f96d2e2b21b24c0468074d7204c074f4b16c923cd6b1bf0c60d1717b4959a",
+      "after_sha256": "579f96d2e2b21b24c0468074d7204c074f4b16c923cd6b1bf0c60d1717b4959a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/figures/cv_parameter_comparison.png",
+      "to": "Phase 2/Regression/delivery_regression_best/results/figures/cv_parameter_comparison.png",
+      "before_sha256": "198ce4dd29611f5c5eed51a604fc8144ad44b4758383d4601dbac1e6b7c9330c",
+      "after_sha256": "198ce4dd29611f5c5eed51a604fc8144ad44b4758383d4601dbac1e6b7c9330c",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/figures/test_comparison.png",
+      "to": "Phase 2/Regression/delivery_regression_best/results/figures/test_comparison.png",
+      "before_sha256": "432aa14bda92c19d0a2dd23daf85134450ed15e6bdc1d4370f191db70e070712",
+      "after_sha256": "432aa14bda92c19d0a2dd23daf85134450ed15e6bdc1d4370f191db70e070712",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/fold_audit.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/fold_audit.json",
+      "before_sha256": "1e49e70d50287e7f94d90e40237d04ebe6ce0ef1ebfff84afa2f209c0dce86d5",
+      "after_sha256": "1e49e70d50287e7f94d90e40237d04ebe6ce0ef1ebfff84afa2f209c0dce86d5",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/frozen_selection.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/frozen_selection.json",
+      "before_sha256": "45752a43b3a730af30e19fe6222406cb31678614b3b9369621ea232698828950",
+      "after_sha256": "45752a43b3a730af30e19fe6222406cb31678614b3b9369621ea232698828950",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/protocol.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/protocol.json",
+      "before_sha256": "2374fa25b69c8156dd57a207e950ef898c74359aca047799a39fd5507508f171",
+      "after_sha256": "2374fa25b69c8156dd57a207e950ef898c74359aca047799a39fd5507508f171",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/artifact_validation.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/artifact_validation.json",
+      "before_sha256": "0c1a847fc6c0eadb7c42970b4088059c8832a2e299f0de52b3ad836441bb5cc4",
+      "after_sha256": "0c1a847fc6c0eadb7c42970b4088059c8832a2e299f0de52b3ad836441bb5cc4",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/error_diagnostics.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/error_diagnostics.json",
+      "before_sha256": "b7e912452640db728c10820893a242e7730f72befdf8021ef65e6a5be003db5b",
+      "after_sha256": "b7e912452640db728c10820893a242e7730f72befdf8021ef65e6a5be003db5b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/feature_design.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/feature_design.json",
+      "before_sha256": "fb6fcf70d4b483faea64e2abd5db0d010926320183f70d0df7d56417f92c7ed7",
+      "after_sha256": "fb6fcf70d4b483faea64e2abd5db0d010926320183f70d0df7d56417f92c7ed7",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/figures/hgb_grouped_permutation_importance.png",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/figures/hgb_grouped_permutation_importance.png",
+      "before_sha256": "e80ca46739b94d49e812e006aadec73d97ed816e28cca26eec16beb4737e1b4d",
+      "after_sha256": "e80ca46739b94d49e812e006aadec73d97ed816e28cca26eec16beb4737e1b4d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/figures/hgb_test_errors.png",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/figures/hgb_test_errors.png",
+      "before_sha256": "bbad6bfc276f141f97a2a84a5b89be68c3959ad534bc20f82168205f42ab14c3",
+      "after_sha256": "bbad6bfc276f141f97a2a84a5b89be68c3959ad534bc20f82168205f42ab14c3",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/figures/train_cv_test_comparison.png",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/figures/train_cv_test_comparison.png",
+      "before_sha256": "52ef6b4d025c4ebdd641630582d8f684e0ca3d377c94ecdee0a9d37b5f50eaa5",
+      "after_sha256": "52ef6b4d025c4ebdd641630582d8f684e0ca3d377c94ecdee0a9d37b5f50eaa5",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/interpretation_verification.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/interpretation_verification.json",
+      "before_sha256": "79b4b107b8331fa45ae87745fd312ba1031dc0f6a21b341aba253f5172205c27",
+      "after_sha256": "79b4b107b8331fa45ae87745fd312ba1031dc0f6a21b341aba253f5172205c27",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/protocol.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/protocol.json",
+      "before_sha256": "3a905ac931cbfb227c55c1060492f0ed176fd979f96ab0e00afb14a25df0db6f",
+      "after_sha256": "3a905ac931cbfb227c55c1060492f0ed176fd979f96ab0e00afb14a25df0db6f",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/reproduction_verification.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/reproduction_verification.json",
+      "before_sha256": "5ddb357d3f3e7176c20eebf23215b43fb88b801d64cca61bdfeec117a2208fb2",
+      "after_sha256": "5ddb357d3f3e7176c20eebf23215b43fb88b801d64cca61bdfeec117a2208fb2",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/stacking_context_verification.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/stacking_context_verification.json",
+      "before_sha256": "c3658fd1f83a17dd6dd7af42b2198b1c3176d855fd6880b0e8ddab0368385e60",
+      "after_sha256": "c3658fd1f83a17dd6dd7af42b2198b1c3176d855fd6880b0e8ddab0368385e60",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/chronology_evaluation_sensitivity.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/chronology_evaluation_sensitivity.csv",
+      "before_sha256": "339ef09fdf44c25d7ab16e6bcfdc33f2df5ad548d663f8c7ce42190e3968dada",
+      "after_sha256": "339ef09fdf44c25d7ab16e6bcfdc33f2df5ad548d663f8c7ce42190e3968dada",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/cv_fold_metrics.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/cv_fold_metrics.csv",
+      "before_sha256": "643548a12c919eea977ced883fe48c7020263e143ce993069307ce18e831795c",
+      "after_sha256": "643548a12c919eea977ced883fe48c7020263e143ce993069307ce18e831795c",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/final_feature_catalogue.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/final_feature_catalogue.csv",
+      "before_sha256": "595e6f2e6404b2d3cbf334a1c7695c951deceed5a4c78578e4e885b091236102",
+      "after_sha256": "595e6f2e6404b2d3cbf334a1c7695c951deceed5a4c78578e4e885b091236102",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/hgb_grouped_permutation_importance.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/hgb_grouped_permutation_importance.csv",
+      "before_sha256": "7bff3f5afa453a22134fc42fe3b2b2f17f05e9752d5f63823ed4be06b0e1bc47",
+      "after_sha256": "7bff3f5afa453a22134fc42fe3b2b2f17f05e9752d5f63823ed4be06b0e1bc47",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/hgb_grouped_permutation_repeats.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/hgb_grouped_permutation_repeats.csv",
+      "before_sha256": "0e3c2f17749e9d02f37153c8d23cf7d3fb63ce5d36a82158aa5786272cbb2f74",
+      "after_sha256": "0e3c2f17749e9d02f37153c8d23cf7d3fb63ce5d36a82158aa5786272cbb2f74",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/hgb_improvement_vs_references.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/hgb_improvement_vs_references.csv",
+      "before_sha256": "1fb41e3a43c1eb632b9424b11fe36c1db019a5787da5e18885b7f93f3e39da18",
+      "after_sha256": "1fb41e3a43c1eb632b9424b11fe36c1db019a5787da5e18885b7f93f3e39da18",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/hgb_test_error_groups.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/hgb_test_error_groups.csv",
+      "before_sha256": "76edbc216d825110b8c9bdae15ad72edb83f9934d3b240173125f62f0f496a78",
+      "after_sha256": "76edbc216d825110b8c9bdae15ad72edb83f9934d3b240173125f62f0f496a78",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/metrics_by_phase.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/metrics_by_phase.csv",
+      "before_sha256": "d846ff2e0f44e0fbcbb943be26ef711f84d87422bbb9a1d22d50add67de30002",
+      "after_sha256": "d846ff2e0f44e0fbcbb943be26ef711f84d87422bbb9a1d22d50add67de30002",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/regression_cohort_flow.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/regression_cohort_flow.csv",
+      "before_sha256": "9428336a43be545819193af0649a40b9f991da569085969b4c19b08054786e42",
+      "after_sha256": "9428336a43be545819193af0649a40b9f991da569085969b4c19b08054786e42",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/source_table_inventory.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/source_table_inventory.csv",
+      "before_sha256": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b",
+      "after_sha256": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/split_population.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/split_population.csv",
+      "before_sha256": "317be5829197f864a54cc98bc6fd9a82f435170fc4b965677045466833b57101",
+      "after_sha256": "317be5829197f864a54cc98bc6fd9a82f435170fc4b965677045466833b57101",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/stacking_fold_weights.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/stacking_fold_weights.csv",
+      "before_sha256": "bed9240b2f306ecf820ae9c39032ad831364b0678a99de375917a4ee754e5b61",
+      "after_sha256": "bed9240b2f306ecf820ae9c39032ad831364b0678a99de375917a4ee754e5b61",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/stacking_outer_cv_comparison.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/stacking_outer_cv_comparison.csv",
+      "before_sha256": "b31041c4621827f93f62934cc037cf501bff0b44210f034420822cf68349a441",
+      "after_sha256": "b31041c4621827f93f62934cc037cf501bff0b44210f034420822cf68349a441",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/stacking_selected_candidates.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/stacking_selected_candidates.csv",
+      "before_sha256": "d3d27e36dbd120f78aaa2f7315ad0eb233d2d38d7659e4ae5423302634996af0",
+      "after_sha256": "d3d27e36dbd120f78aaa2f7315ad0eb233d2d38d7659e4ae5423302634996af0",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/tables/train_cv_test_comparison.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/tables/train_cv_test_comparison.csv",
+      "before_sha256": "81b410b893fe39f14619561ea30535fa2007c046950218d9d260bf1c03bba943",
+      "after_sha256": "81b410b893fe39f14619561ea30535fa2007c046950218d9d260bf1c03bba943",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/report_supplement/verification.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/report_supplement/verification.json",
+      "before_sha256": "0ec6b73a6b4b10123e5e2f455cad5af88468fb2f69d501fe27f552154089f843",
+      "after_sha256": "0ec6b73a6b4b10123e5e2f455cad5af88468fb2f69d501fe27f552154089f843",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/result_summary.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/result_summary.json",
+      "before_sha256": "fb914012a2a76e123e948960b3560a284af9d465fc986303d3601590e998892a",
+      "after_sha256": "fb914012a2a76e123e948960b3560a284af9d465fc986303d3601590e998892a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/stage_A_selection.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/stage_A_selection.json",
+      "before_sha256": "10f2329730e4e5fbe45ac071d79aa2bae3bf16a29dfcca0e862b72b2591745b9",
+      "after_sha256": "10f2329730e4e5fbe45ac071d79aa2bae3bf16a29dfcca0e862b72b2591745b9",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/cv_folds.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/cv_folds.csv",
+      "before_sha256": "99ddd9c7b35ab787ec47fde761a828698f63ea925a2eeae3566ad1c8d2b78939",
+      "after_sha256": "99ddd9c7b35ab787ec47fde761a828698f63ea925a2eeae3566ad1c8d2b78939",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/cv_summary.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/cv_summary.csv",
+      "before_sha256": "1617eb068be511b9631aed523c5bf5157b6ca7743c57f18e9eac0f58cdf900c3",
+      "after_sha256": "1617eb068be511b9631aed523c5bf5157b6ca7743c57f18e9eac0f58cdf900c3",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/oof_duration_groups.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/oof_duration_groups.csv",
+      "before_sha256": "f8463b9e23bef01278d4791a1727e42fd0cd4335be06d3f15c51d32d0c4d78e9",
+      "after_sha256": "f8463b9e23bef01278d4791a1727e42fd0cd4335be06d3f15c51d32d0c4d78e9",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/paired_fold_changes.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/paired_fold_changes.csv",
+      "before_sha256": "9d678624ab5b41660110e2c55d5a52e742ca032f734fa844720521a8eceaa439",
+      "after_sha256": "9d678624ab5b41660110e2c55d5a52e742ca032f734fa844720521a8eceaa439",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/parameter_comparison.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/parameter_comparison.csv",
+      "before_sha256": "f5c7719984327c679787f984919bd867f1b597e3888a5d15ae03ef392e43b908",
+      "after_sha256": "f5c7719984327c679787f984919bd867f1b597e3888a5d15ae03ef392e43b908",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/parameter_settings.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/parameter_settings.csv",
+      "before_sha256": "8f5e0bc396a4f31bb74a1c586ee7aa4097b881a7f99274f71dd4dca5e9f992df",
+      "after_sha256": "8f5e0bc396a4f31bb74a1c586ee7aa4097b881a7f99274f71dd4dca5e9f992df",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/stage_A_folds.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/stage_A_folds.csv",
+      "before_sha256": "ae330a805f4ef7a86ad052036e81452846d0306d6ff215f4136e2c9157204d9a",
+      "after_sha256": "ae330a805f4ef7a86ad052036e81452846d0306d6ff215f4136e2c9157204d9a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/stage_A_summary.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/stage_A_summary.csv",
+      "before_sha256": "db1175ae6499ac47dee13fd19fe8f83c3d2bf677a9d64f5c704058dd6dcd114a",
+      "after_sha256": "db1175ae6499ac47dee13fd19fe8f83c3d2bf677a9d64f5c704058dd6dcd114a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/test_duration_groups.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/test_duration_groups.csv",
+      "before_sha256": "3fe0ed9852018929d60cc1dce3cf989334640c7858f31f95fd7d3059c6006a10",
+      "after_sha256": "3fe0ed9852018929d60cc1dce3cf989334640c7858f31f95fd7d3059c6006a10",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/tables/test_metrics.csv",
+      "to": "Phase 2/Regression/delivery_regression_best/results/tables/test_metrics.csv",
+      "before_sha256": "cf7eea74b42832b9dea39f556f242d022feb71afd25913d31760462a7b8b4b78",
+      "after_sha256": "cf7eea74b42832b9dea39f556f242d022feb71afd25913d31760462a7b8b4b78",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/test_complete.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/test_complete.json",
+      "before_sha256": "1cac651c8b18c6b46718cf043b42ffbc5507737980d2251cb8391f82b5262709",
+      "after_sha256": "1cac651c8b18c6b46718cf043b42ffbc5507737980d2251cb8391f82b5262709",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/results/verification.json",
+      "to": "Phase 2/Regression/delivery_regression_best/results/verification.json",
+      "before_sha256": "3372f6e594a50919adbab33c046e358ffaf159dca124d79434e838c11ef24682",
+      "after_sha256": "3372f6e594a50919adbab33c046e358ffaf159dca124d79434e838c11ef24682",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/scripts/reproduce_best.py",
+      "to": "Phase 2/Regression/delivery_regression_best/scripts/reproduce_best.py",
+      "before_sha256": "b8aa57f309da84eaf6a657dff4fdee5263920c058f31ec3b3f0c64e785a10aec",
+      "after_sha256": "b8aa57f309da84eaf6a657dff4fdee5263920c058f31ec3b3f0c64e785a10aec",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/scripts/reproduce_report_supplement.py",
+      "to": "Phase 2/Regression/delivery_regression_best/scripts/reproduce_report_supplement.py",
+      "before_sha256": "32455ce7c583074edc410d1c52f0f0d96e73d3aac1f705711b49933f53b3d7c1",
+      "after_sha256": "32455ce7c583074edc410d1c52f0f0d96e73d3aac1f705711b49933f53b3d7c1",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/scripts/run_notebook.py",
+      "to": "Phase 2/Regression/delivery_regression_best/scripts/run_notebook.py",
+      "before_sha256": "575a1c943e2fdbfb43e6651ced5a2b35704dfc6df2218755635daf25659962ba",
+      "after_sha256": "575a1c943e2fdbfb43e6651ced5a2b35704dfc6df2218755635daf25659962ba",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/scripts/verify_bundle.py",
+      "to": "Phase 2/Regression/delivery_regression_best/scripts/verify_bundle.py",
+      "before_sha256": "dc9bfca52b3763953d82440a7bcad52ccd2ba04c5431d5d65b513b0d2fb60d0b",
+      "after_sha256": "dc9bfca52b3763953d82440a7bcad52ccd2ba04c5431d5d65b513b0d2fb60d0b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/scripts/verify_report_supplement.py",
+      "to": "Phase 2/Regression/delivery_regression_best/scripts/verify_report_supplement.py",
+      "before_sha256": "980b8e9ad2fc4397538ebe0cdc3777f9f67f5bf26f74e8800f028b5dcc8488ad",
+      "after_sha256": "980b8e9ad2fc4397538ebe0cdc3777f9f67f5bf26f74e8800f028b5dcc8488ad",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/src/data_preparation_audit.py",
+      "to": "Phase 2/Regression/delivery_regression_best/src/data_preparation_audit.py",
+      "before_sha256": "829ab3c647b6e60ba69649ae894c74ee138463d31115aaa7ca6efe986614b444",
+      "after_sha256": "829ab3c647b6e60ba69649ae894c74ee138463d31115aaa7ca6efe986614b444",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/src/delivery_regression.py",
+      "to": "Phase 2/Regression/delivery_regression_best/src/delivery_regression.py",
+      "before_sha256": "3dcceeb856d35d6611a29b1f11836892b11f3721b3871d4bdb78d976179c8cc1",
+      "after_sha256": "3dcceeb856d35d6611a29b1f11836892b11f3721b3871d4bdb78d976179c8cc1",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/src/hgb_parameter_tuning.py",
+      "to": "Phase 2/Regression/delivery_regression_best/src/hgb_parameter_tuning.py",
+      "before_sha256": "a9694e1709e6c534e1f8c5ee536124ba81d61b649b030c95ee4f649ddf2873e6",
+      "after_sha256": "a9694e1709e6c534e1f8c5ee536124ba81d61b649b030c95ee4f649ddf2873e6",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/src/purchase_risk_diagnostics.py",
+      "to": "Phase 2/Regression/delivery_regression_best/src/purchase_risk_diagnostics.py",
+      "before_sha256": "38a9c57e861e353d587ad18b6437343a17de2202c7a1e6f41720013d6cc4faf1",
+      "after_sha256": "38a9c57e861e353d587ad18b6437343a17de2202c7a1e6f41720013d6cc4faf1",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/src/random_experiments.py",
+      "to": "Phase 2/Regression/delivery_regression_best/src/random_experiments.py",
+      "before_sha256": "bcccefee8717b9ad1d11d3e267a077e89dcd0a21c05bfca7efa47ba2db14a5be",
+      "after_sha256": "bcccefee8717b9ad1d11d3e267a077e89dcd0a21c05bfca7efa47ba2db14a5be",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/src/random_split_protocol.py",
+      "to": "Phase 2/Regression/delivery_regression_best/src/random_split_protocol.py",
+      "before_sha256": "1b84652ea0fe4711316ad136314535bd864396fc17b8d7124d35923e1c095cad",
+      "after_sha256": "1b84652ea0fe4711316ad136314535bd864396fc17b8d7124d35923e1c095cad",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/src/report_supplement.py",
+      "to": "Phase 2/Regression/delivery_regression_best/src/report_supplement.py",
+      "before_sha256": "ea39a34d1b776ca1c797dc78ce03d20b359e7ae92728ea52c2b8336bd7e7c356",
+      "after_sha256": "ea39a34d1b776ca1c797dc78ce03d20b359e7ae92728ea52c2b8336bd7e7c356",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/src/time_risk_features.py",
+      "to": "Phase 2/Regression/delivery_regression_best/src/time_risk_features.py",
+      "before_sha256": "710a5ef5c121a0074119610300192c4f44e3c9c963e6162f24eab5a1ed0a6d56",
+      "after_sha256": "710a5ef5c121a0074119610300192c4f44e3c9c963e6162f24eab5a1ed0a6d56",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/delivery_regression_best/src/tree_extensions.py",
+      "to": "Phase 2/Regression/delivery_regression_best/src/tree_extensions.py",
+      "before_sha256": "e1c0d259ae1be451ad5558ecfd461ef195962c3d99e143c49dc0ebd0212ea89e",
+      "after_sha256": "e1c0d259ae1be451ad5558ecfd461ef195962c3d99e143c49dc0ebd0212ea89e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/baseline_variant_review.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/baseline_variant_review.md",
+      "before_sha256": "16de582d5a17a204c20691b5cf2f9033a02c43245055ed2c8f4c9ea39c55d531",
+      "after_sha256": "16de582d5a17a204c20691b5cf2f9033a02c43245055ed2c8f4c9ea39c55d531",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/current_progress.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/current_progress.md",
+      "before_sha256": "c82326abacc908202782e8ef9bf7277820e00a00737e6cf22ee343382b8e5b5b",
+      "after_sha256": "c82326abacc908202782e8ef9bf7277820e00a00737e6cf22ee343382b8e5b5b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/ensemble_comparison.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/ensemble_comparison.md",
+      "before_sha256": "e42a95eb65f8f13456c71e371c1ea77505fb797cad64b25313ed0c869426876b",
+      "after_sha256": "fd1ac73dcf8af432708108939ef2824fa02057c5a5c0860bbf06fe2d00b04c5f",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/docs/feature_optimization.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/feature_optimization.md",
+      "before_sha256": "f423c47d2c71000d8629b558c4ce740bd3be834e639a757e03f5f0e1475482cd",
+      "after_sha256": "f423c47d2c71000d8629b558c4ce740bd3be834e639a757e03f5f0e1475482cd",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/literature_to_features.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/literature_to_features.md",
+      "before_sha256": "b85b31b67e173086c3ce65a8447a508ba48ed2c09c0d3537b7d8526dc281ff52",
+      "after_sha256": "b85b31b67e173086c3ce65a8447a508ba48ed2c09c0d3537b7d8526dc281ff52",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/phase1_feedback_response.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/phase1_feedback_response.md",
+      "before_sha256": "4090a26e3602e7c0e2c66173ed5f4d58cb6c13ac72a04ca25eea611b19e3905d",
+      "after_sha256": "4090a26e3602e7c0e2c66173ed5f4d58cb6c13ac72a04ca25eea611b19e3905d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/report_section.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/report_section.md",
+      "before_sha256": "5cf5e769c3e74df3d136faa7ad50f72f24bcfea74d469be04f1901bfaef80118",
+      "after_sha256": "5cf5e769c3e74df3d136faa7ad50f72f24bcfea74d469be04f1901bfaef80118",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/shared_v2_feature_roles.csv",
+      "to": "Phase 2/Regression/historical_temporal/docs/shared_v2_feature_roles.csv",
+      "before_sha256": "6b4a14fd9dcef2ca94e4abb4f76f2b7a5e68a89a16539d323c67f3862fbc897b",
+      "after_sha256": "6b4a14fd9dcef2ca94e4abb4f76f2b7a5e68a89a16539d323c67f3862fbc897b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/stacking_handoff.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/stacking_handoff.md",
+      "before_sha256": "618688d0fd271ee83c2ce3cf980b39ad927352d5ad98a21a959cd48deb4e4247",
+      "after_sha256": "618688d0fd271ee83c2ce3cf980b39ad927352d5ad98a21a959cd48deb4e4247",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/validation_review.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/validation_review.md",
+      "before_sha256": "23a454c1ea4a9c8b580c87deb03abd026658efb73e36baa230130c03a879b30d",
+      "after_sha256": "23a454c1ea4a9c8b580c87deb03abd026658efb73e36baa230130c03a879b30d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/docs/中文版导读.md",
+      "to": "Phase 2/Regression/historical_temporal/docs/中文版导读.md",
+      "before_sha256": "7b20b06e1ec085606957b7fd7943742b313af3ee6a20785b49b083f7bc19c7bd",
+      "after_sha256": "7b20b06e1ec085606957b7fd7943742b313af3ee6a20785b49b083f7bc19c7bd",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/notebooks/baseline_variant_review.ipynb",
+      "to": "Phase 2/Regression/historical_temporal/notebooks/baseline_variant_review.ipynb",
+      "before_sha256": "c1b49e7bf6799488dd7a2ec7623550812f7778d7db219e556de8a161355d285b",
+      "after_sha256": "c1b49e7bf6799488dd7a2ec7623550812f7778d7db219e556de8a161355d285b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/notebooks/data_preparation_audit.ipynb",
+      "to": "Phase 2/Regression/historical_temporal/notebooks/data_preparation_audit.ipynb",
+      "before_sha256": "f4cee25a491c0cc37e428a16d48cfe3cdb051541837fb0108a610800f9a41ca5",
+      "after_sha256": "f4cee25a491c0cc37e428a16d48cfe3cdb051541837fb0108a610800f9a41ca5",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/notebooks/delivery_regression_phase2.ipynb",
+      "to": "Phase 2/Regression/historical_temporal/notebooks/delivery_regression_phase2.ipynb",
+      "before_sha256": "4c93428f493192875ccfbb4bd74edb6f0c1a4d6555982bca8aeaa392519bb85e",
+      "after_sha256": "4c93428f493192875ccfbb4bd74edb6f0c1a4d6555982bca8aeaa392519bb85e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/notebooks/ensemble_comparison.ipynb",
+      "to": "Phase 2/Regression/historical_temporal/notebooks/ensemble_comparison.ipynb",
+      "before_sha256": "71ae3038de5e4bc43770a8ab81007f9e254df6954906f1f79822a625419d0b4d",
+      "after_sha256": "4d73176ba0b8a59f73796289b5f73f4c8906b7e83406dc9bf66bb6602f1284e0",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/notebooks/feature_optimization.ipynb",
+      "to": "Phase 2/Regression/historical_temporal/notebooks/feature_optimization.ipynb",
+      "before_sha256": "9bd12b381ef2a786d1c934711cbc0b1999c8686ae522a618c92b7d11648caf12",
+      "after_sha256": "9bd12b381ef2a786d1c934711cbc0b1999c8686ae522a618c92b7d11648caf12",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/data_quality.json",
+      "to": "Phase 2/Regression/historical_temporal/outputs/data_quality.json",
+      "before_sha256": "72bc8dc4fb6b9a81d93b2789d1e44e34b98dc1fedd5ae61cac24dff9a928a76c",
+      "after_sha256": "72bc8dc4fb6b9a81d93b2789d1e44e34b98dc1fedd5ae61cac24dff9a928a76c",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/figures/01_model_comparison.png",
+      "to": "Phase 2/Regression/historical_temporal/outputs/figures/01_model_comparison.png",
+      "before_sha256": "a55076849937455c23069c80cb75014d35296d12a6a71e756c1d2b9510791682",
+      "after_sha256": "a55076849937455c23069c80cb75014d35296d12a6a71e756c1d2b9510791682",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/figures/02_error_analysis.png",
+      "to": "Phase 2/Regression/historical_temporal/outputs/figures/02_error_analysis.png",
+      "before_sha256": "8ee8ffc403605360c1fcb662d9e980a49bd6024f424f6f2dda9521b294ba9e33",
+      "after_sha256": "8ee8ffc403605360c1fcb662d9e980a49bd6024f424f6f2dda9521b294ba9e33",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/figures/03_feature_importance.png",
+      "to": "Phase 2/Regression/historical_temporal/outputs/figures/03_feature_importance.png",
+      "before_sha256": "daf810c4dabff0decc188b57870034b3f905b58acafd2994f8be13c44621b116",
+      "after_sha256": "daf810c4dabff0decc188b57870034b3f905b58acafd2994f8be13c44621b116",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/audit_summary.json",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/audit_summary.json",
+      "before_sha256": "5895617c5b253604f178d8bcb950f23de15d6a10a402c401d1b4ec812689079a",
+      "after_sha256": "5895617c5b253604f178d8bcb950f23de15d6a10a402c401d1b4ec812689079a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/chronology_checks.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/chronology_checks.csv",
+      "before_sha256": "5dc5338b615bc92ece9eb5aa2a9821c0a287eff07cf9f6fbb09c88e7ad00d71f",
+      "after_sha256": "5dc5338b615bc92ece9eb5aa2a9821c0a287eff07cf9f6fbb09c88e7ad00d71f",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/cohort_flow.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/cohort_flow.csv",
+      "before_sha256": "acbe77bc1fbc19e98dcb946aa3835a4077a2d153be41f751d63843886d186bc1",
+      "after_sha256": "acbe77bc1fbc19e98dcb946aa3835a4077a2d153be41f751d63843886d186bc1",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/development_missingness.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/development_missingness.csv",
+      "before_sha256": "30adc71bcc91a1062c27e717a7ec59071c1111581a241feb56de784abf162887",
+      "after_sha256": "30adc71bcc91a1062c27e717a7ec59071c1111581a241feb56de784abf162887",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/feature_availability.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/feature_availability.csv",
+      "before_sha256": "8b6afbd1cdcab57ba7e2d669e7a48127e247c4dca875f21ff06ade8cbed56efe",
+      "after_sha256": "8b6afbd1cdcab57ba7e2d669e7a48127e247c4dca875f21ff06ade8cbed56efe",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/feature_profile.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/feature_profile.csv",
+      "before_sha256": "45b23d19450fda7a0ed6309ea1604373bc1deac811b1e731e7d7a0c07253721d",
+      "after_sha256": "45b23d19450fda7a0ed6309ea1604373bc1deac811b1e731e7d7a0c07253721d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/geography_policy_comparison.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/geography_policy_comparison.csv",
+      "before_sha256": "f74c55677c7b47c4567a9b9ce46b8c08af847d0c376f87cd546d6c9597774d24",
+      "after_sha256": "f74c55677c7b47c4567a9b9ce46b8c08af847d0c376f87cd546d6c9597774d24",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/integrity_checks.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/integrity_checks.csv",
+      "before_sha256": "e5e55aaa9105675e69035efcae9b2ec6d9df6073609ad3cf542c38dd212ba90d",
+      "after_sha256": "e5e55aaa9105675e69035efcae9b2ec6d9df6073609ad3cf542c38dd212ba90d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/source_inventory.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/source_inventory.csv",
+      "before_sha256": "14b643f9b46c052a53adb80e4855af26ddc126cc275b2bcac8bf65c5c6d212fd",
+      "after_sha256": "14b643f9b46c052a53adb80e4855af26ddc126cc275b2bcac8bf65c5c6d212fd",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/preparation_audit/status_item_coverage.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/preparation_audit/status_item_coverage.csv",
+      "before_sha256": "17bf5e5632a2254934234c087e342bf781d685fda7440be1c621228cc5984113",
+      "after_sha256": "17bf5e5632a2254934234c087e342bf781d685fda7440be1c621228cc5984113",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/selected_models.json",
+      "to": "Phase 2/Regression/historical_temporal/outputs/selected_models.json",
+      "before_sha256": "fbcd8eb12d73ccf0378c2757c44de7c604855b8094e24e1b5aa7bf2eb8bba469",
+      "after_sha256": "fbcd8eb12d73ccf0378c2757c44de7c604855b8094e24e1b5aa7bf2eb8bba469",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/cv_results.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/cv_results.csv",
+      "before_sha256": "48f4a247ece0282a9503ff297fda11acaa43d6c8732a70b855df7ca3f7ee0847",
+      "after_sha256": "48f4a247ece0282a9503ff297fda11acaa43d6c8732a70b855df7ca3f7ee0847",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/cv_summary.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/cv_summary.csv",
+      "before_sha256": "c9a0b1cfc72be1bd1451328bd0c84eb31ac23a7e2e4ccd18e60862a12e67e3b2",
+      "after_sha256": "c9a0b1cfc72be1bd1451328bd0c84eb31ac23a7e2e4ccd18e60862a12e67e3b2",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/duration_errors.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/duration_errors.csv",
+      "before_sha256": "95108cd09a115ff24830b63ad5420cb57ab07dcd3ce219259415cfce121c1639",
+      "after_sha256": "95108cd09a115ff24830b63ad5420cb57ab07dcd3ce219259415cfce121c1639",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/early_fold_linear_calendar_coefficients.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/early_fold_linear_calendar_coefficients.csv",
+      "before_sha256": "0956e1f76ece0960a30ff6ef36b3d239d758960c19e2692856f592ad442e509b",
+      "after_sha256": "0956e1f76ece0960a30ff6ef36b3d239d758960c19e2692856f592ad442e509b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/early_fold_month_support.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/early_fold_month_support.csv",
+      "before_sha256": "e3ab04d38bff046567eef0f991ece715b93571eb1bd820340da4da1e66d9bbee",
+      "after_sha256": "e3ab04d38bff046567eef0f991ece715b93571eb1bd820340da4da1e66d9bbee",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/early_fold_ridge_a100_calendar_coefficients.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/early_fold_ridge_a100_calendar_coefficients.csv",
+      "before_sha256": "548d029b1f98fe816c76cad75a45ceb7574e309ed4d61a8c5207699184c188b9",
+      "after_sha256": "548d029b1f98fe816c76cad75a45ceb7574e309ed4d61a8c5207699184c188b9",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/early_fold_ridge_a10_calendar_coefficients.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/early_fold_ridge_a10_calendar_coefficients.csv",
+      "before_sha256": "822e309c4a01357c7daeaeb3b598361addb5e7223fda1b34358719909e70fb10",
+      "after_sha256": "822e309c4a01357c7daeaeb3b598361addb5e7223fda1b34358719909e70fb10",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/fold_summary.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/fold_summary.csv",
+      "before_sha256": "5459485e1549dd43d12dc0911f005e450341c480fea648e1ee3f7e7d2bb42899",
+      "after_sha256": "5459485e1549dd43d12dc0911f005e450341c480fea648e1ee3f7e7d2bb42899",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/local_handoff_manifest.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/local_handoff_manifest.csv",
+      "before_sha256": "ea837ba070d69ae13a1c56d7a98fa116e29a8c096620ccb3f4279a1c17a6910a",
+      "after_sha256": "ea837ba070d69ae13a1c56d7a98fa116e29a8c096620ccb3f4279a1c17a6910a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/model_comparison.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/model_comparison.csv",
+      "before_sha256": "6b99cf18c31ba1322e2ed5bb6f00d7c69bdd03a24a6250e52a84dfd159dbbcfc",
+      "after_sha256": "6b99cf18c31ba1322e2ed5bb6f00d7c69bdd03a24a6250e52a84dfd159dbbcfc",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/period_target_summary.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/period_target_summary.csv",
+      "before_sha256": "b5984a90fe57de23026e002c5c1a8d3f08996cbff409307189453952b3749791",
+      "after_sha256": "b5984a90fe57de23026e002c5c1a8d3f08996cbff409307189453952b3749791",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/permutation_importance.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/permutation_importance.csv",
+      "before_sha256": "ce461ffce1028066626798d1ffba16a108b612b25c7ea122b5bb27747e080318",
+      "after_sha256": "ce461ffce1028066626798d1ffba16a108b612b25c7ea122b5bb27747e080318",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/route_errors.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/route_errors.csv",
+      "before_sha256": "720fe4eddf6d111869f7d00b2c22597e7d841f0deb4ce4160bcbdadaaf27ca48",
+      "after_sha256": "720fe4eddf6d111869f7d00b2c22597e7d841f0deb4ce4160bcbdadaaf27ca48",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/source_inventory.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/source_inventory.csv",
+      "before_sha256": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b",
+      "after_sha256": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/split_summary.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/split_summary.csv",
+      "before_sha256": "0b7ad362a2ee54fcba9a2a168a705126ce07b1249815244ff965de9dffdb0c7e",
+      "after_sha256": "0b7ad362a2ee54fcba9a2a168a705126ce07b1249815244ff965de9dffdb0c7e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/tables/unseen_categories.csv",
+      "to": "Phase 2/Regression/historical_temporal/outputs/tables/unseen_categories.csv",
+      "before_sha256": "66402f3d78a7a2d3e09870d04009528b6dc44bbd45ba9675e745eb72a691f85d",
+      "after_sha256": "66402f3d78a7a2d3e09870d04009528b6dc44bbd45ba9675e745eb72a691f85d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/outputs/validation_audit.json",
+      "to": "Phase 2/Regression/historical_temporal/outputs/validation_audit.json",
+      "before_sha256": "a92b0d59f9c07ede90c0ad3085ba96ba51f7e5c6ac95cdbe9b98068857013e18",
+      "after_sha256": "a92b0d59f9c07ede90c0ad3085ba96ba51f7e5c6ac95cdbe9b98068857013e18",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/.gitignore",
+      "to": "Phase 2/Regression/random_stacking/.gitignore",
+      "before_sha256": "655c6290bf7947d351dc5a80455c9982c9cc1a658a77e3808a9bd13098218aaf",
+      "after_sha256": "655c6290bf7947d351dc5a80455c9982c9cc1a658a77e3808a9bd13098218aaf",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/README.md",
+      "to": "Phase 2/Regression/random_stacking/README.md",
+      "before_sha256": "63c164e5abbaedf0050cc5534d796bc29d42811753bff1708b8194456869a810",
+      "after_sha256": "27fd3f55d28d227ed4a433f606e5b8c5aa8898f5ae0471a8f02f8531c91ae3cf",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/README.md",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/README.md",
+      "before_sha256": "0f4b77a9df59db9f6a360c4a4aa558f291011983eac245586e9567c9d485dd9f",
+      "after_sha256": "f3742036e880285de6f46e47f007aadd97e3fea3b728f4802f8185b409076206",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/config/protocol.json",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/config/protocol.json",
+      "before_sha256": "3604b3039b37f89bf9d1aa588b1fb726d8e0d208b851c9a89bc109c60134487f",
+      "after_sha256": "3604b3039b37f89bf9d1aa588b1fb726d8e0d208b851c9a89bc109c60134487f",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/results/summary.json",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/results/summary.json",
+      "before_sha256": "54942dde0158edb73fe08c7b8d791013837fca84fa0dee8532115d82ba1b9b0e",
+      "after_sha256": "54942dde0158edb73fe08c7b8d791013837fca84fa0dee8532115d82ba1b9b0e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/results/tables/comparison.csv",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/results/tables/comparison.csv",
+      "before_sha256": "b31041c4621827f93f62934cc037cf501bff0b44210f034420822cf68349a441",
+      "after_sha256": "b31041c4621827f93f62934cc037cf501bff0b44210f034420822cf68349a441",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/results/tables/inner_candidate_metrics.csv",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/results/tables/inner_candidate_metrics.csv",
+      "before_sha256": "8b82e809c472d7924206e54984b2a11c9e7050a5918496cc4e646e43f03b2a05",
+      "after_sha256": "8b82e809c472d7924206e54984b2a11c9e7050a5918496cc4e646e43f03b2a05",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/results/tables/outer_fold_metrics.csv",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/results/tables/outer_fold_metrics.csv",
+      "before_sha256": "3a7527d9881b8d6c481c49c32fba0f4dfaaf500166b1facc8b2006e6b3b61976",
+      "after_sha256": "3a7527d9881b8d6c481c49c32fba0f4dfaaf500166b1facc8b2006e6b3b61976",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/results/tables/paired_changes.csv",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/results/tables/paired_changes.csv",
+      "before_sha256": "9009a3b1630ea616d421fcb9ed2b3587f3614450386aae2ad451932166528fe5",
+      "after_sha256": "9009a3b1630ea616d421fcb9ed2b3587f3614450386aae2ad451932166528fe5",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/results/tables/selected_candidates.csv",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/results/tables/selected_candidates.csv",
+      "before_sha256": "d3d27e36dbd120f78aaa2f7315ad0eb233d2d38d7659e4ae5423302634996af0",
+      "after_sha256": "d3d27e36dbd120f78aaa2f7315ad0eb233d2d38d7659e4ae5423302634996af0",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/results/tables/weights.csv",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/results/tables/weights.csv",
+      "before_sha256": "bed9240b2f306ecf820ae9c39032ad831364b0678a99de375917a4ee754e5b61",
+      "after_sha256": "bed9240b2f306ecf820ae9c39032ad831364b0678a99de375917a4ee754e5b61",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/results/validation.json",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/results/validation.json",
+      "before_sha256": "fd8d8f74618c336690d3a53f9108f758aa5b3c82ac6e3769f027a7957b7319e9",
+      "after_sha256": "fd8d8f74618c336690d3a53f9108f758aa5b3c82ac6e3769f027a7957b7319e9",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/scripts/build_notebook.py",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/scripts/build_notebook.py",
+      "before_sha256": "d1c8889bd0d4c5c68821fdd1a24bc5206c882599ad75f6c565b50bbe82991837",
+      "after_sha256": "392f4099ee72ed2a1eb120128fbeb086271e055eeb4b8a79753b31e0d5885120",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/scripts/verify_nested_tuning.py",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/scripts/verify_nested_tuning.py",
+      "before_sha256": "2a9116a851b092c8ed91173c34ea7ab8e296b8cf2653b1386a3bd0d0e2a2eb58",
+      "after_sha256": "2a9116a851b092c8ed91173c34ea7ab8e296b8cf2653b1386a3bd0d0e2a2eb58",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/src/nested_classic.py",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/src/nested_classic.py",
+      "before_sha256": "330408b9e123d93e6c01af6d91f27f8ecabf8dac6417fa0717b7b85cb2c8969c",
+      "after_sha256": "330408b9e123d93e6c01af6d91f27f8ecabf8dac6417fa0717b7b85cb2c8969c",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/src/nested_hgb.py",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/src/nested_hgb.py",
+      "before_sha256": "6fbb5879dd6971a7f3f22506c1bcaafad20ce79581bb28fb467d41db221c64f5",
+      "after_sha256": "6fbb5879dd6971a7f3f22506c1bcaafad20ce79581bb28fb467d41db221c64f5",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/src/nested_meta.py",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/src/nested_meta.py",
+      "before_sha256": "278dc072cde1d9a814377c61575c55acf98e2799a1be1ebcd2bcdd3247d8e0f4",
+      "after_sha256": "278dc072cde1d9a814377c61575c55acf98e2799a1be1ebcd2bcdd3247d8e0f4",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/nested_tuning/tests/test_nested_tuning.py",
+      "to": "Phase 2/Regression/random_stacking/nested_tuning/tests/test_nested_tuning.py",
+      "before_sha256": "e9ad4d4c7c865e2a0367d40ad167d10e0be6485d2b5164794c16b8d803637846",
+      "after_sha256": "e9ad4d4c7c865e2a0367d40ad167d10e0be6485d2b5164794c16b8d803637846",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/requirements.txt",
+      "to": "Phase 2/Regression/random_stacking/requirements.txt",
+      "before_sha256": "fc72294c8546d6e2fa616c6bb2501380c1501a5d0dd3a02ab979e558089c41c5",
+      "after_sha256": "fc72294c8546d6e2fa616c6bb2501380c1501a5d0dd3a02ab979e558089c41c5",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/random_stacking/src/hgb_reference.py",
+      "to": "Phase 2/Regression/random_stacking/src/hgb_reference.py",
+      "before_sha256": "0a1d0c030245d76c1102cfb5eb7ab4b471196c0703ab6e103bbd8e3d1805ac54",
+      "after_sha256": "8ce075e10e67edbed73b2baa8e19dacb212b20843ddb569d88e329664f054b25",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/random_stacking/src/stacking_trial.py",
+      "to": "Phase 2/Regression/random_stacking/src/stacking_trial.py",
+      "before_sha256": "0800fce7a7f2fb4902a17f8e5676a511be5fad91e870bf90694e34a6feca7b8e",
+      "after_sha256": "0800fce7a7f2fb4902a17f8e5676a511be5fad91e870bf90694e34a6feca7b8e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/requirements-stacking.txt",
+      "to": "Phase 2/Regression/historical_temporal/requirements-stacking.txt",
+      "before_sha256": "3798107b1bddb28fd00dc98d734d1fb4156f889b535d6643444976eed779b2ad",
+      "after_sha256": "3798107b1bddb28fd00dc98d734d1fb4156f889b535d6643444976eed779b2ad",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/requirements.txt",
+      "to": "Phase 2/Regression/historical_temporal/requirements.txt",
+      "before_sha256": "2218af306605f9424e3e0d16eee1f199bd6bf686a948b36feb1fbe4f149b3548",
+      "after_sha256": "2218af306605f9424e3e0d16eee1f199bd6bf686a948b36feb1fbe4f149b3548",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/scripts/build_ensemble_comparison_notebook.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/build_ensemble_comparison_notebook.py",
+      "before_sha256": "40610051b5f0de76e11a648eeccca662987c09135c11d44a0ce48fda77b24833",
+      "after_sha256": "12bdbddf8d3d225c8b67c0235d2dd883dc404d1708c82421060ace8c78143fcf",
+      "content_unchanged": false
+    },
+    {
+      "from": "Phase 2/scripts/build_notebook.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/build_notebook.py",
+      "before_sha256": "fb0b8ec4e6b5896cf0254df377cb19b31d008b23f684a62e386a4811c915a743",
+      "after_sha256": "fb0b8ec4e6b5896cf0254df377cb19b31d008b23f684a62e386a4811c915a743",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/scripts/plot_feature_optimization.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/plot_feature_optimization.py",
+      "before_sha256": "731bd328272c7619227b71429bc742536fc94b72dfaa37e60028ce99292947d4",
+      "after_sha256": "731bd328272c7619227b71429bc742536fc94b72dfaa37e60028ce99292947d4",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/scripts/reproduce_ensemble_comparison.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/reproduce_ensemble_comparison.py",
+      "before_sha256": "713ad1fce2d49e9585e7d62b9ef2f6551e406407f556a03bf81f0d6ea15a9ed3",
+      "after_sha256": "713ad1fce2d49e9585e7d62b9ef2f6551e406407f556a03bf81f0d6ea15a9ed3",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/scripts/reproduce_review.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/reproduce_review.py",
+      "before_sha256": "e222aa4e654890519245ed62a51ebeee948d71abe6ab983dee9476bcbb1f7adb",
+      "after_sha256": "e222aa4e654890519245ed62a51ebeee948d71abe6ab983dee9476bcbb1f7adb",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/scripts/run_notebook.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/run_notebook.py",
+      "before_sha256": "575a1c943e2fdbfb43e6651ced5a2b35704dfc6df2218755635daf25659962ba",
+      "after_sha256": "575a1c943e2fdbfb43e6651ced5a2b35704dfc6df2218755635daf25659962ba",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/scripts/verify_baseline_review.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/verify_baseline_review.py",
+      "before_sha256": "2188b2773efcfc0da9af6b02ab04c6a2b7da197522c423d54b8b46d202489b56",
+      "after_sha256": "2188b2773efcfc0da9af6b02ab04c6a2b7da197522c423d54b8b46d202489b56",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/scripts/verify_ensemble_comparison.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/verify_ensemble_comparison.py",
+      "before_sha256": "184122d9d3e062118e97484a5581a063d18bf6aadfe6774dc68a52cefcf0269a",
+      "after_sha256": "184122d9d3e062118e97484a5581a063d18bf6aadfe6774dc68a52cefcf0269a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/scripts/verify_feature_optimization.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/verify_feature_optimization.py",
+      "before_sha256": "8ed281d44a2d6c948637b00dd6e0a5d677974301e5c34a9d0135ad26f35b548e",
+      "after_sha256": "8ed281d44a2d6c948637b00dd6e0a5d677974301e5c34a9d0135ad26f35b548e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/scripts/verify_outputs.py",
+      "to": "Phase 2/Regression/historical_temporal/scripts/verify_outputs.py",
+      "before_sha256": "05cdbc036ce03a6e132bbb71057dcfec3c4a419ff19a2f7ce0bdf52468cd7a43",
+      "after_sha256": "05cdbc036ce03a6e132bbb71057dcfec3c4a419ff19a2f7ce0bdf52468cd7a43",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/src/baseline_variant_review.py",
+      "to": "Phase 2/Regression/historical_temporal/src/baseline_variant_review.py",
+      "before_sha256": "79b8e4eba9acfa01b39a904b57e5e174b5bdb095785342657fa5c2e6f97bf110",
+      "after_sha256": "79b8e4eba9acfa01b39a904b57e5e174b5bdb095785342657fa5c2e6f97bf110",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/src/data_preparation_audit.py",
+      "to": "Phase 2/Regression/historical_temporal/src/data_preparation_audit.py",
+      "before_sha256": "829ab3c647b6e60ba69649ae894c74ee138463d31115aaa7ca6efe986614b444",
+      "after_sha256": "829ab3c647b6e60ba69649ae894c74ee138463d31115aaa7ca6efe986614b444",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/src/delivery_regression.py",
+      "to": "Phase 2/Regression/historical_temporal/src/delivery_regression.py",
+      "before_sha256": "3dcceeb856d35d6611a29b1f11836892b11f3721b3871d4bdb78d976179c8cc1",
+      "after_sha256": "3dcceeb856d35d6611a29b1f11836892b11f3721b3871d4bdb78d976179c8cc1",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/src/ensemble_comparison.py",
+      "to": "Phase 2/Regression/historical_temporal/src/ensemble_comparison.py",
+      "before_sha256": "c7a5bab2a10f45a6f1625330ea97f33b18b19c36bdcd9ddb6d69231975c98c40",
+      "after_sha256": "c7a5bab2a10f45a6f1625330ea97f33b18b19c36bdcd9ddb6d69231975c98c40",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/src/feature_optimization.py",
+      "to": "Phase 2/Regression/historical_temporal/src/feature_optimization.py",
+      "before_sha256": "32d8fa9d5958e1bf2a030ae9f54a7c92bcdad5837c7bbf6503b89c836b08e6ff",
+      "after_sha256": "32d8fa9d5958e1bf2a030ae9f54a7c92bcdad5837c7bbf6503b89c836b08e6ff",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/src/stacking_regression.py",
+      "to": "Phase 2/Regression/historical_temporal/src/stacking_regression.py",
+      "before_sha256": "617ef3f136200d83ff35b02bf50f71cb8b612fb7e61f504be044f4058415de37",
+      "after_sha256": "617ef3f136200d83ff35b02bf50f71cb8b612fb7e61f504be044f4058415de37",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/src/stacking_tuning.py",
+      "to": "Phase 2/Regression/historical_temporal/src/stacking_tuning.py",
+      "before_sha256": "0427b22550c3792b67ea594fb3be1b67f33b6ac0f5e3af03e90b9175d920142d",
+      "after_sha256": "0427b22550c3792b67ea594fb3be1b67f33b6ac0f5e3af03e90b9175d920142d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/tests/test_stacking_regression.py",
+      "to": "Phase 2/Regression/historical_temporal/tests/test_stacking_regression.py",
+      "before_sha256": "175811859d05e0ab3a959c859b081e2fb6cf5e508393feebbe3274cd0e2ce535",
+      "after_sha256": "175811859d05e0ab3a959c859b081e2fb6cf5e508393feebbe3274cd0e2ce535",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/tests/test_stacking_tuning.py",
+      "to": "Phase 2/Regression/historical_temporal/tests/test_stacking_tuning.py",
+      "before_sha256": "aab493f84d9a0d1580fc3c0cf9b150dcaa69d70491097e858b2d3170db1d095a",
+      "after_sha256": "aab493f84d9a0d1580fc3c0cf9b150dcaa69d70491097e858b2d3170db1d095a",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/baseline_review_v2/outputs/cv_selection.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/baseline_review_v2/outputs/cv_selection.json",
+      "before_sha256": "6f917154bb203be48442cfbc94b98dec4e730138aa708d70f48fd3cbf83f9b1d",
+      "after_sha256": "6f917154bb203be48442cfbc94b98dec4e730138aa708d70f48fd3cbf83f9b1d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/baseline_review_v2/outputs/experiment_protocol.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/baseline_review_v2/outputs/experiment_protocol.json",
+      "before_sha256": "3f9c40d1b066cbda5b1cbd37d4392d4b7b1451f716adee4d87ea132083d2ddb8",
+      "after_sha256": "3f9c40d1b066cbda5b1cbd37d4392d4b7b1451f716adee4d87ea132083d2ddb8",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/baseline_review_v2/outputs/paired_forest_comparison.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/baseline_review_v2/outputs/paired_forest_comparison.json",
+      "before_sha256": "79b62faceb812443d23368c5feb150a09fa42f5cc05ac986abf6e81b7b1a10b8",
+      "after_sha256": "79b62faceb812443d23368c5feb150a09fa42f5cc05ac986abf6e81b7b1a10b8",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/baseline_review_v2/outputs/tables/cv_results.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/baseline_review_v2/outputs/tables/cv_results.csv",
+      "before_sha256": "81f125f276d089c3164c1433075b7326b5146a0d03e9c0bd9f4d24527f7c94fc",
+      "after_sha256": "81f125f276d089c3164c1433075b7326b5146a0d03e9c0bd9f4d24527f7c94fc",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/baseline_review_v2/outputs/tables/cv_summary.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/baseline_review_v2/outputs/tables/cv_summary.csv",
+      "before_sha256": "cf552f175b79f9c276ff291fa6a00f060f3d2dbc3c0a8452559a33026f327239",
+      "after_sha256": "cf552f175b79f9c276ff291fa6a00f060f3d2dbc3c0a8452559a33026f327239",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/baseline_review_v2/outputs/tables/duration_errors.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/baseline_review_v2/outputs/tables/duration_errors.csv",
+      "before_sha256": "b0999cec5eb24dd4f425113197c96d7be4494f89b155c53af3cd781c32d658db",
+      "after_sha256": "b0999cec5eb24dd4f425113197c96d7be4494f89b155c53af3cd781c32d658db",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/baseline_review_v2/outputs/tables/model_comparison.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/baseline_review_v2/outputs/tables/model_comparison.csv",
+      "before_sha256": "e1e605066dc7da385e9dbbd17ca567194d1d9db32b1ddcd25fd40aa974ea9f19",
+      "after_sha256": "e1e605066dc7da385e9dbbd17ca567194d1d9db32b1ddcd25fd40aa974ea9f19",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/baseline_review_v2/outputs/tables/period_targets.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/baseline_review_v2/outputs/tables/period_targets.csv",
+      "before_sha256": "295baff557b03cd5b21807a124a76cdcdadf36567bfc3f2e6245c485ac927ecf",
+      "after_sha256": "295baff557b03cd5b21807a124a76cdcdadf36567bfc3f2e6245c485ac927ecf",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/baseline_review_v2/outputs/validation_audit.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/baseline_review_v2/outputs/validation_audit.json",
+      "before_sha256": "eba11b203266d1f5b3ed27a941dbe9d47841fd92b8befeb03a223eb3ff79dfe1",
+      "after_sha256": "eba11b203266d1f5b3ed27a941dbe9d47841fd92b8befeb03a223eb3ff79dfe1",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/data_quality.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/data_quality.json",
+      "before_sha256": "f718f5b2c0286c5f71112a532d1ba8ee69a88daca5a9b2dda04c40bc9db94cf9",
+      "after_sha256": "f718f5b2c0286c5f71112a532d1ba8ee69a88daca5a9b2dda04c40bc9db94cf9",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/experiment_protocol.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/experiment_protocol.json",
+      "before_sha256": "6a44ba1602170c0ca0b587b3784104e28d2e9719947fb5c46d1ea3133c6ab866",
+      "after_sha256": "6a44ba1602170c0ca0b587b3784104e28d2e9719947fb5c46d1ea3133c6ab866",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/historical_evidence.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/historical_evidence.json",
+      "before_sha256": "b4f9290cb69a37c338c31bad5acdd92d6c09b19eb019a3be25e3fb12c6e0a8c8",
+      "after_sha256": "b4f9290cb69a37c338c31bad5acdd92d6c09b19eb019a3be25e3fb12c6e0a8c8",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/run_result.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/run_result.json",
+      "before_sha256": "7aa846561f6c2870b3ac434fc39826b03d8dc9578182e2c6f021abd36f532980",
+      "after_sha256": "7aa846561f6c2870b3ac434fc39826b03d8dc9578182e2c6f021abd36f532980",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/coverage_by_month.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/coverage_by_month.csv",
+      "before_sha256": "dc37d8d998b4752a5be6b45f6bd437f8246d284298ba8af6c7d6690d6d247a80",
+      "after_sha256": "dc37d8d998b4752a5be6b45f6bd437f8246d284298ba8af6c7d6690d6d247a80",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/final_weights.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/final_weights.csv",
+      "before_sha256": "a57a76ad2fb30544d194ec05830385b8e385d43140e601f386e627d16e1d924b",
+      "after_sha256": "a57a76ad2fb30544d194ec05830385b8e385d43140e601f386e627d16e1d924b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/initial_model_comparison.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/initial_model_comparison.csv",
+      "before_sha256": "926c82bfabb4597bd2d90f8c25a97743634f05bf6a98fb9554c6484a9e131bef",
+      "after_sha256": "926c82bfabb4597bd2d90f8c25a97743634f05bf6a98fb9554c6484a9e131bef",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/main_summary.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/main_summary.csv",
+      "before_sha256": "e5791ce882b28484d4761ee18bd88c45ec12d223dcc8aa66c5200eebc02eca3d",
+      "after_sha256": "e5791ce882b28484d4761ee18bd88c45ec12d223dcc8aa66c5200eebc02eca3d",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/monthly_metrics.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/monthly_metrics.csv",
+      "before_sha256": "ecf177c1d00005923f6b504d0ffcdf8bf1768d838156f9b7ab6cf7a02de39394",
+      "after_sha256": "ecf177c1d00005923f6b504d0ffcdf8bf1768d838156f9b7ab6cf7a02de39394",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/monthly_weights.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/monthly_weights.csv",
+      "before_sha256": "db34a395262abcaec5b578a2212a2804b07c3a8b9a1eb084b10a166be6744ccb",
+      "after_sha256": "db34a395262abcaec5b578a2212a2804b07c3a8b9a1eb084b10a166be6744ccb",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/other_attempts.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/other_attempts.csv",
+      "before_sha256": "35e1e0bd79d99a998010ba7ce545a2eece6c04b71ae58389a6dbde9cee7363d8",
+      "after_sha256": "35e1e0bd79d99a998010ba7ce545a2eece6c04b71ae58389a6dbde9cee7363d8",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/prior_test_comparison.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/prior_test_comparison.csv",
+      "before_sha256": "b7eb184b5ee0cdf7b72bd14b37e3a4ccc9e341f8d7e63c2677a71abd126c3b48",
+      "after_sha256": "b7eb184b5ee0cdf7b72bd14b37e3a4ccc9e341f8d7e63c2677a71abd126c3b48",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/source_inventory.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/source_inventory.csv",
+      "before_sha256": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b",
+      "after_sha256": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/tables/split_summary.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/tables/split_summary.csv",
+      "before_sha256": "0b7ad362a2ee54fcba9a2a168a705126ce07b1249815244ff965de9dffdb0c7e",
+      "after_sha256": "0b7ad362a2ee54fcba9a2a168a705126ce07b1249815244ff965de9dffdb0c7e",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/ensemble_comparison/outputs/validation_audit.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/ensemble_comparison/outputs/validation_audit.json",
+      "before_sha256": "701bfcc7e5ce6c61bd1a8ba1470ceee37e1eda613a4eb8adb709c1d11922d101",
+      "after_sha256": "701bfcc7e5ce6c61bd1a8ba1470ceee37e1eda613a4eb8adb709c1d11922d101",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/cv_selection.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/cv_selection.json",
+      "before_sha256": "e8a2464fb90b5ef197b12e6efbf808ef0164a8076ef25729972a43de38546284",
+      "after_sha256": "e8a2464fb90b5ef197b12e6efbf808ef0164a8076ef25729972a43de38546284",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/experiment_protocol.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/experiment_protocol.json",
+      "before_sha256": "e892fa8ad459e9c64f63b848236bf74fcfc4ed9a583ef8c22639b1d8c5792da6",
+      "after_sha256": "e892fa8ad459e9c64f63b848236bf74fcfc4ed9a583ef8c22639b1d8c5792da6",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/figures/feature_review.png",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/figures/feature_review.png",
+      "before_sha256": "30dca760572e2e7254b7cc7793171f86f0e017dc1abaca6713441ceef6a687de",
+      "after_sha256": "30dca760572e2e7254b7cc7793171f86f0e017dc1abaca6713441ceef6a687de",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/source_orders.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/source_orders.json",
+      "before_sha256": "a9f87957233df07a30001b94c42a99dbb9a29f2fde626cb60e54055146f94a7f",
+      "after_sha256": "a9f87957233df07a30001b94c42a99dbb9a29f2fde626cb60e54055146f94a7f",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/stage1_protocol.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/stage1_protocol.json",
+      "before_sha256": "1841130583d8423371b70921fe300ba6b89e3fc24f07ab83b0577a2c32d0f999",
+      "after_sha256": "1841130583d8423371b70921fe300ba6b89e3fc24f07ab83b0577a2c32d0f999",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/stage2_protocol.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/stage2_protocol.json",
+      "before_sha256": "5b23313478577d6927cca199c72bbd919bf2d66f7a74d998aa207025cdebee69",
+      "after_sha256": "5b23313478577d6927cca199c72bbd919bf2d66f7a74d998aa207025cdebee69",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/tables/cv_results.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/tables/cv_results.csv",
+      "before_sha256": "07438b7ffc5e6003bcf63b875c7fa6dffd998f558645796eb0a21f4ad17583f6",
+      "after_sha256": "07438b7ffc5e6003bcf63b875c7fa6dffd998f558645796eb0a21f4ad17583f6",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/tables/cv_summary.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/tables/cv_summary.csv",
+      "before_sha256": "a4f6892c2f32dfc406857d70a260e2f83a5b0b0f28865b279302d5e349080171",
+      "after_sha256": "a4f6892c2f32dfc406857d70a260e2f83a5b0b0f28865b279302d5e349080171",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/tables/duration_errors.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/tables/duration_errors.csv",
+      "before_sha256": "184990658f5f11a728c20394bf793ccf6c929f03500bf767bae04d7dcabcfe41",
+      "after_sha256": "184990658f5f11a728c20394bf793ccf6c929f03500bf767bae04d7dcabcfe41",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/tables/maturity_comparison.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/tables/maturity_comparison.csv",
+      "before_sha256": "398a2f62e8900796720f330e4098badbe456b1c14462bf40284594063008c2c9",
+      "after_sha256": "398a2f62e8900796720f330e4098badbe456b1c14462bf40284594063008c2c9",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/tables/model_comparison.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/tables/model_comparison.csv",
+      "before_sha256": "57da4276671b90ad0c207221a34f94b6ba3b5f0742fc00ccfd1bf82b47325457",
+      "after_sha256": "57da4276671b90ad0c207221a34f94b6ba3b5f0742fc00ccfd1bf82b47325457",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/feature_optimization_v3/outputs/validation_audit.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/feature_optimization_v3/outputs/validation_audit.json",
+      "before_sha256": "61fa5520f6360caec308724333c8b83bd456ea97dd0281284992985b51d27e30",
+      "after_sha256": "61fa5520f6360caec308724333c8b83bd456ea97dd0281284992985b51d27e30",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/preparation_v2/outputs/data_quality.json",
+      "to": "Phase 2/Regression/historical_temporal/versions/preparation_v2/outputs/data_quality.json",
+      "before_sha256": "4ad6cba2da5d4b0367abbfb17d5dd9cf12395fe7cdefb6b8448ad527b19daf0f",
+      "after_sha256": "4ad6cba2da5d4b0367abbfb17d5dd9cf12395fe7cdefb6b8448ad527b19daf0f",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/preparation_v2/outputs/tables/source_inventory.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/preparation_v2/outputs/tables/source_inventory.csv",
+      "before_sha256": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b",
+      "after_sha256": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b",
+      "content_unchanged": true
+    },
+    {
+      "from": "Phase 2/versions/preparation_v2/outputs/tables/split_summary.csv",
+      "to": "Phase 2/Regression/historical_temporal/versions/preparation_v2/outputs/tables/split_summary.csv",
+      "before_sha256": "0b7ad362a2ee54fcba9a2a168a705126ce07b1249815244ff965de9dffdb0c7e",
+      "after_sha256": "0b7ad362a2ee54fcba9a2a168a705126ce07b1249815244ff965de9dffdb0c7e",
+      "content_unchanged": true
+    }
+  ],
+  "validation": {
+    "classification_existing_tests_passed": 11,
+    "nested_stacking_existing_tests_passed": 12,
+    "current_entry_Markdown_links_resolve": true,
+    "all_python_and_notebook_code_syntax_valid": true,
+    "hash_notes": "Historical run source hashes are retained. Path-only adapters and notebook discovery now have new after hashes; this does not claim their models were rerun.",
+    "classification_notebook_path_discovery_cwd_cases_passed": 4,
+    "current_regression_notebooks_executed_in_memory": 3,
+    "regression_notebook_code_cells_executed": 20,
+    "committed_notebook_outputs_overwritten": false,
+    "classification_full_notebook_execution_performed": false,
+    "classification_full_model_retraining_performed": false,
+    "classification_check_scope": "Existing 11 tests, Python/notebook syntax, and notebook path discovery in four working directories; full classification notebooks not run (CatBoost absent in checking environment)."
+  }
+}
