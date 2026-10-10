@@ -1,8 +1,8 @@
 {
-  "base_commit": "b090395d4226393c66c40ed077d78b0b43267843",
+  "base_commit": "41a56b263140996ff0e00a40cd06318a80bf621e",
   "notebook": "notebooks/delivery_regression_complete.ipynb",
-  "cells": 35,
-  "code_cells": 13,
+  "cells": 44,
+  "code_cells": 15,
   "images": 4,
   "errors": 0,
   "live_course_ZIP_preparation_passed": true,
@@ -15,6 +15,10 @@
   "models_refitted_this_task": false,
   "complete_training_mode_executed_this_task": false,
   "training_mode_uses_existing_verified_runner": true,
-  "style_reference": "Assignment 1: short methods, focused outputs, result interpretation",
-  "notebook_sha256": "a451e65da76051a45cee6ee4fefdb787f8ef1c907910edf0d5f7024c530e9bd6"
+  "style_reference": "Project Phase 1 final 03, supplemented by 00 and 02: context/methods, definitions, findings and implications",
+  "phase1_reference_sha256": "a43e72da7d6df58225839bd19423b364a23ec39d75943840a841f56d0451adfe",
+  "derived_error_contributions_recomputed": true,
+  "notebook_sha256": "9a3fcf821eb4eae6ec41b93ec234625c850b6129e956df185e1f719a0416c0a4",
+  "embedded_figures_match_source_files": true,
+  "phase1_original_notebooks_preserved": 5
 }

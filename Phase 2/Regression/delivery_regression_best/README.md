@@ -4,7 +4,7 @@
 
 ## 先看这些
 
-**完整 Notebook 入口：** [delivery_regression_complete.ipynb](notebooks/delivery_regression_complete.ipynb)。采用 Assignment 1 的分析呈现方式：按数据准备、特征与划分、baseline、variants、HGB调参、stacking、测试评价与解释分节，方法短说明后接代码和结果分析；默认审阅模式，提供课程ZIP时实际重建数据，切换 `reproduce` 可重拟合15行固定模型，`WITH_CV=True` 可重做其5折。原详细Notebook保留。[课程规范与classification格式对照](docs/notebook_alignment.md)。
+**完整 Notebook 入口：** [delivery_regression_complete.ipynb](notebooks/delivery_regression_complete.ipynb)。参考项目 Phase 1 最终提交 `03` 的风格：先说明问题、自查与 Context & Methods，再按数据准备、特征/划分、baseline、variants、调参、stacking、评价与解释展开；每节交代分析目的和方法，并在表/图后解释具体发现及其意义；默认审阅模式，提供课程ZIP时实际重建数据，切换 `reproduce` 可重拟合15行固定模型，`WITH_CV=True` 可重做其5折。原详细Notebook保留。[课程规范与classification格式对照](docs/notebook_alignment.md)。
 
 - [已运行 Notebook](notebooks/best_scheme_review.ipynb)：目标、数据／特征、防泄漏、参数比较、最终结果及慢单表现。
 - [完整参数与选择](config/selected_model.json)、[结果摘要](results/result_summary.json)、[参数比较表](results/tables/parameter_comparison.csv)。

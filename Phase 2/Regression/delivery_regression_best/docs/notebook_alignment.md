@@ -6,7 +6,7 @@ Reviewed against team main `534a802` and the official V2 brief on **2026-10-11**
 
 [delivery_regression_complete.ipynb](../notebooks/delivery_regression_complete.ipynb) follows:
 
-**data preparation → features/split → baselines → variants → HGB tuning → stacking → test evaluation → interpretation → conclusions.**
+**question/scoping/context → data preparation → features/split → baselines → variants → HGB tuning → stacking → test evaluation → interpretation → implications/takeaways.**
 
 Default `review` mode validates saved model evidence and, if the fixed course ZIP is supplied, actually rebuilds source contracts, V2 inputs and the random manifests. `reproduce` mode invokes the existing frozen-model training runner; `WITH_CV=True` also rebuilds all 75 fold records. Model fitting remains in the reusable `src/` / `scripts/` implementations. The notebook presents the analysis and results; execution plumbing and QA logs are kept in `scripts/integrated_notebook_support.py` and ignored `runs/`. It does not refit every search candidate or a final stack.
 
@@ -63,7 +63,7 @@ We implement the contracts with pandas; **the GX library itself is not used or c
 
 | Requirement | Where the integrated notebook addresses it |
 |---|---|
-| question, stakeholder, target and success measure | opening, sections1/3/7/9 |
+| question, stakeholder, target and success measure | opening/scoping/context, sections1/3/7/9 |
 | course dataset, joins/transforms/assumptions | sections1–2 |
 | simple baseline before added complexity | sections3–6 |
 | split/CV, seeds, exclusion of post-outcome inputs | sections2/5–6 |
@@ -73,7 +73,7 @@ We implement the contracts with pandas; **the GX library itself is not used or c
 | readable Markdown, executable GitHub entry | numbered analysis sections, results and README reproduction commands |
 | attribution and AI declaration | final reference paragraph and report guide |
 
-The five problem-scoping checks remain satisfied: (1) timestamps directly define the target; (2) predictors exclude post-purchase outcomes, subject to archived-attribute availability; (3) EDA associations and matched model comparisons show signal; (4) valid long-tail labels are retained, with MAE/absolute loss and tail/RMSE reporting; (5) customer-service and order-operations roles can use estimates for human checks. These checks are expressed through the analysis rather than repeated as an introductory administrative table.
+The five problem-scoping checks remain satisfied: (1) timestamps directly define the target; (2) predictors exclude post-purchase outcomes, subject to archived-attribute availability; (3) EDA associations and matched model comparisons show signal; (4) valid long-tail labels are retained, with MAE/absolute loss and tail/RMSE reporting; (5) customer-service and order-operations roles can use estimates for human checks. The notebook opens with the five-row checklist, matching the Phase 1 submission, and substantiates the checks in its data/model sections.
 
 No new model family, test-driven selection, data exclusion or dataset version was introduced to match a template. The overall project must still stay within its **2–3 family budget** and its report must cover both tasks; this regression notebook alone does not certify every team deliverable.
 
@@ -85,8 +85,10 @@ Change the setup cell to `RUN_MODE="reproduce"` to refit 15 frozen Train/Test ro
 
 Detailed report data: [Regression Report Evidence Guide](report_evidence_guide.md).
 
-## 5. Assignment-style revision (2026-10-11)
+## 5. Phase 1 submission style (2026-10-11)
 
-The formatting reference is the local Assignment1 notebook, especially its 1-based cells13,17,21,23,29 and31: a short method explanation, focused code/output, then an interpretation tied to the question. No assignment questions, point allocations or individual-assessment instructions were copied into this team project.
+The style reference is the project's submitted Phase 1 regression notebook, [03_delivery_lead_time_regression_eda.ipynb](https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project/blob/main/notebooks/phase1/03_delivery_lead_time_regression_eda.ipynb), with the shared `00` and classification `02` used as supplementary references. The key pattern is purpose/method/definition before code, then a numerical finding and its implication after the output. In `03`, 1-based cells1–3 establish the question, scoping and methods; cells14–17 introduce the distribution and explain its consequences; cells18–28 interpret feature groups; cells29–35 distinguish the fixed rule, evaluation and next-stage implications.
 
-The integrated notebook now uses numbered analytical sections and concise result paragraphs. Reader-route/headline blocks, repeated protocol warnings, unfitted estimator HTML, checksum dumps, large JSON outputs and handoff instructions are removed from the submission narrative. Detailed data contracts, execution modes and reproducibility evidence remain in supporting code/docs. The same source, split, model configurations, scores and figures are retained; this is a presentation revision, not a new experiment.
+The Phase 2 notebook follows that analysis style with a Context & Methods section, the five scoping checks, explicit cohort/feature/split definitions, and substantive result explanations. It explains why OLS/tree are baselines; what Ridge, forests, log targets and HGB change; how risk cross-fitting prevents label reuse; how parameters are selected; why latest stacking is not retained; and what overall, tail, route and permutation results mean. Error-share calculations weight subgroup errors by sample size and keep MAE versus squared-error contributions distinct.
+
+This adopts presentation, not Phase 1's planned temporal evaluation: the existing Phase 2 random protocol remains unchanged and its changed interpretation is stated. Execution modes and detailed provenance stay in supporting code/docs. Models, configurations, source CSVs and figures remain byte-identical; this revision does not retrain or choose a new model.
