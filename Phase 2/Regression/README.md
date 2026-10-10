@@ -4,7 +4,7 @@ Predict purchase-to-receipt delivery lead time. The final selected model remains
 
 | Folder | Purpose | Start here |
 |---|---|---|
-| `delivery_regression_best/` | Current selected model, full Train–CV–Test evidence, figures and reproduction | [Package](delivery_regression_best/README.md), [best-model notebook](delivery_regression_best/notebooks/best_scheme_review.ipynb), [report evidence](delivery_regression_best/docs/report_evidence_guide.md) |
+| `delivery_regression_best/` | Current selected model, full Train–CV–Test evidence, figures and reproduction | [Package](delivery_regression_best/README.md), [best-model notebook](delivery_regression_best/notebooks/best_scheme_review.ipynb), [report fill-in guide](delivery_regression_best/docs/report_evidence_guide.md) |
 | `random_stacking/` | Latest nested Ridge/RF and stacking comparison; HGB remains selected | [Guide](random_stacking/README.md), [stacking notebook](delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb) |
 | `historical_temporal/` | Earlier time-split experiments, source, notebooks, results and reproduction | [Historical workspace](historical_temporal/README.md) |
 

@@ -27,7 +27,7 @@
 
 ## 报告证据补充（2026-10-10）
 
-[报告证据 Notebook](notebooks/report_supplement_review.ipynb) · [表格、图与口径说明](docs/report_evidence_guide.md) · [完整 Train–CV–Test 表](results/report_supplement/tables/train_cv_test_comparison.csv)。补齐15行同随机切分的参照／baseline／variant、最终模型训练成绩、HGB分组置换重要性、误差图、分组样本数和时间矛盾的评价敏感性。最终模型／参数／测试成绩不变。
+[报告证据 Notebook](notebooks/report_supplement_review.ipynb) · [按报告章节填写的指南（数字、英文段落与图片）](docs/report_evidence_guide.md) · [完整 Train–CV–Test 表](results/report_supplement/tables/train_cv_test_comparison.csv)。补齐15行同随机切分的参照／baseline／variant、最终模型训练成绩、HGB分组置换重要性、误差图、分组样本数和时间矛盾的评价敏感性。最终模型／参数／测试成绩不变。
 
 最新 stacking 结果另列：外层CV4.2374 vs HGB4.2378天，约36秒收益；未拟合最终stack或评分测试，不填造Train/Test。共享报告由整合流程更新，本包仅补充工程证据。
 
