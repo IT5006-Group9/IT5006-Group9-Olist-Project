@@ -50,6 +50,10 @@ def classification_metrics(y_true, proba, threshold: float = 0.5, top_share: flo
         "recall": recall_score(y_true, pred),
         "f1": f1_score(y_true, pred),
         "accuracy": (pred == y_true).mean(),
+        # class-size-weighted averages, reported by Zaghloul et al. (2024); dominated by the majority class
+        "precision_weighted": precision_score(y_true, pred, average="weighted", zero_division=0),
+        "recall_weighted": recall_score(y_true, pred, average="weighted"),
+        "f1_weighted": f1_score(y_true, pred, average="weighted"),
         "recall_top10": y_true[top].sum() / max(1, y_true.sum()),
         "flag_rate": pred.mean(),
         "threshold": threshold,

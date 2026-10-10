@@ -46,6 +46,35 @@ COHORT_MONTHS = ("2016-09", "2018-08")
 CV_CUTOFFS = [start for start, _ in base.FOLDS] + [base.FOLDS[-1][1]]
 LABEL_KNOWN_COLUMN = {"p1": "order_delivered_customer_date", "p2": "review_creation_date"}
 
+# --------------------------------------------------------------------------- split scheme
+# "stratified"    (default) Zaghloul et al. (2024) design with a validation set added:
+#                 one stratified 67/33 train+validation / test split on is_low_review,
+#                 then a stratified 80/20 train / validation split of the 67%
+#                 (overall ~54 / 13 / 33). Hyperparameter search and OOF probabilities
+#                 use StratifiedKFold(N_CV_FOLDS, shuffle=True). Point-in-time history
+#                 features only ever aggregate outcomes of *training* rows, so no
+#                 validation / test label can reach a training feature.
+# "chronological" the regression package's windows and label-matured expanding folds
+#                 (kept as a robustness check; see docs/current_progress.md).
+# The chosen scheme is written to the feature table as the `split` column and to
+# data/split_manifest.csv (order_id -> split), which every notebook reads.
+SPLIT_SCHEME = "stratified"
+TEST_SIZE = 0.33            # paper: train_test_split(test_size=0.33)
+VALIDATION_SIZE = 0.20      # of the remaining 67%
+N_CV_FOLDS = 5
+SPLIT_MANIFEST = PROCESSED_DIR / "split_manifest.csv"
+
+# Brazilian national holidays 2016-2018 for the working-day features of
+# Zaghloul et al. (wd_* columns): fixed dates plus Carnival Mon/Tue, Good Friday, Corpus Christi.
+BR_HOLIDAYS = [
+    "2016-01-01", "2016-02-08", "2016-02-09", "2016-03-25", "2016-04-21", "2016-05-01", "2016-05-26",
+    "2016-09-07", "2016-10-12", "2016-11-02", "2016-11-15", "2016-12-25",
+    "2017-01-01", "2017-02-27", "2017-02-28", "2017-04-14", "2017-04-21", "2017-05-01", "2017-06-15",
+    "2017-09-07", "2017-10-12", "2017-11-02", "2017-11-15", "2017-12-25",
+    "2018-01-01", "2018-02-12", "2018-02-13", "2018-03-30", "2018-04-21", "2018-05-01", "2018-05-31",
+    "2018-09-07", "2018-10-12", "2018-11-02", "2018-11-15", "2018-12-25",
+]
+
 BLACK_FRIDAY_WEEK = ("2017-11-20", "2017-11-30")
 # --------------------------------------------------------------------------- targets
 TARGET_REG = "delivery_days"      # Problem 1
@@ -78,19 +107,19 @@ POST_OUTCOME_COLUMNS = {
 IDENTIFIER_COLUMNS = {
     "order_id", "customer_id", "customer_unique_id", "seller_id", "product_id",
     "order_purchase_timestamp", "order_approved_at", "order_estimated_delivery_date",
-    "purchase_month", "window",
+    "purchase_month", "window", "split",
 }
 
 # Problem 1 features: everything known at order approval.
 # Problem 2 features: Problem 1 features + the delivery-as-of-T block.
 P1_FEATURE_GROUPS = ["order", "product", "geography", "timing", "payment",
                      "seller_history", "route_history"]
-P2_FEATURE_GROUPS = P1_FEATURE_GROUPS + ["delivery_at_T"]
+P2_FEATURE_GROUPS = P1_FEATURE_GROUPS + ["delivery"]
 
 FEATURE_GROUPS: dict[str, list[str]] = {
     "order": [
         "n_items", "n_distinct_products", "n_sellers", "total_price", "total_freight",
-        "freight_ratio",
+        "freight_ratio", "total_order_value",
     ],
     "product": [
         "total_weight_g", "max_weight_g", "total_volume_cm3", "max_dimension_cm",
@@ -116,11 +145,30 @@ FEATURE_GROUPS: dict[str, list[str]] = {
     "route_history": [
         "route_prior_orders", "route_prior_mean_delivery_days", "route_prior_late_rate",
     ],
-    "delivery_at_T": [
-        "delivered_by_T", "delivery_days_at_T", "days_vs_promise_at_T",
-        "carrier_shipped_by_T", "carrier_handover_days_at_T", "carrier_transit_days_at_T",
-        "delivery_vs_seller_prior_at_T",
+    "delivery": [
+        "is_delivered", "actual_delivery_time", "delivery_time_delta",
+        "carrier_shipped", "carrier_handover_days", "carrier_transit_days",
+        "delivery_vs_seller_prior",
+        # Zaghloul et al. (2024) working-day versions, evaluated as of T
+        "wd_actual_delivery_time", "wd_delivery_time_delta",
     ],
+}
+# Feature names follow Zaghloul et al. (2024) where they have one. Every delivery-status
+# feature is evaluated AS OF THE PREDICTION POINT T = min(delivered, estimated): identical to
+# the paper's value for orders delivered by T, NaN (+ missing indicator) otherwise.
+#   wd_actual_delivery_time  working days purchase -> delivered            (paper, as of T)
+#   wd_delivery_time_delta   working days delivered - promised (<= 0 by T) (paper, as of T)
+#   actual_delivery_time / delivery_time_delta   calendar-day versions     (as of T)
+#   payment_total = paper's payment_value; total_order_value = price + freight;
+#   freight_ratio = paper's order_freight_ratio
+# PREDICTION_POINT flags when each group becomes available; features_at_T() lists the
+# ones that depend on T and must never be used for a question asked at order time.
+PREDICTION_POINT = {
+    "order": "order approval", "product": "order approval", "geography": "order approval",
+    "timing": "order approval", "payment": "order approval",
+    "seller_history": "purchase time (point-in-time, training-row outcomes only)",
+    "route_history": "purchase time (point-in-time, training-row outcomes only)",
+    "delivery": "survey trigger T = min(delivered, estimated) - T-dependent",
 }
 
 # Categorical columns (strings). Everything else in FEATURE_GROUPS is numeric.
@@ -137,6 +185,19 @@ REGION_BY_STATE = {
     **dict.fromkeys(["ES", "MG", "RJ", "SP"], "Southeast"),
     **dict.fromkeys(["PR", "RS", "SC"], "South"),
 }
+
+
+def features_at_T() -> list[str]:
+    """Features whose value depends on the prediction point T (the delivery block)."""
+    return list(FEATURE_GROUPS["delivery"])
+
+
+def prediction_point_table():
+    """field -> (group, prediction point, T-dependent flag) for every feature."""
+    import pandas as pd
+    rows = [{"feature": f, "group": g, "prediction_point": PREDICTION_POINT[g], "T_dependent": g == "delivery"}
+            for g in P2_FEATURE_GROUPS for f in FEATURE_GROUPS[g]]
+    return pd.DataFrame(rows)
 
 
 def features_for(problem: str) -> list[str]:

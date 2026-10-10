@@ -1,5 +1,4 @@
-window,orders,first purchase,last purchase,positive rate,delivered by T share
-train,54372,2016-09-04,2018-02-26,0.1366,0.917
-validation,7125,2018-03-01,2018-03-31,0.2261,0.77
-test,12655,2018-07-01,2018-08-29,0.1066,0.911
-pending_label,3933,2018-01-06,2018-02-28,0.2914,0.699
+window,orders,first purchase,last purchase,positives,positive rate,delivered by T share
+train,52482,2016-09-05,2018-08-29,7436,0.1417,0.899
+validation,13121,2016-10-03,2018-08-29,1859,0.1417,0.897
+test,32313,2016-09-04,2018-08-29,4579,0.1417,0.904

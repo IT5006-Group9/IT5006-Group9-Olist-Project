@@ -1,0 +1,58 @@
+{
+  "strategies": [
+    "none",
+    "class_weight",
+    "random_oversampler",
+    "smote",
+    "adasyn"
+  ],
+  "models": [
+    "A_linear_tuned",
+    "B_tree_base",
+    "B_rf",
+    "B_catboost"
+  ],
+  "best_strategy_by_model_on_validation": {
+    "A_linear_tuned": "none",
+    "B_catboost": "none",
+    "B_rf": "none",
+    "B_tree_base": "none"
+  },
+  "final_model": "B_rf",
+  "final_strategy": "none",
+  "quick_mode": true,
+  "test_pr_auc": {
+    "A_linear_tuned/none": 0.4897,
+    "A_linear_tuned/class_weight": 0.4857,
+    "A_linear_tuned/random_oversampler": 0.486,
+    "A_linear_tuned/smote": 0.4834,
+    "A_linear_tuned/adasyn": 0.4711,
+    "B_tree_base/none": 0.4828,
+    "B_tree_base/class_weight": 0.4824,
+    "B_tree_base/random_oversampler": 0.4606,
+    "B_tree_base/smote": 0.4509,
+    "B_tree_base/adasyn": 0.4593,
+    "B_rf/none": 0.5097,
+    "B_rf/class_weight": 0.5077,
+    "B_rf/random_oversampler": 0.5058,
+    "B_rf/smote": 0.497,
+    "B_rf/adasyn": 0.4947,
+    "B_catboost/none": 0.5063,
+    "B_catboost/class_weight": 0.4981,
+    "B_catboost/random_oversampler": 0.5018,
+    "B_catboost/smote": 0.495,
+    "B_catboost/adasyn": 0.4945
+  },
+  "shap_top10": [
+    "n_items",
+    "wd_delivery_time_delta",
+    "delivery_time_delta",
+    "delivery_vs_seller_prior",
+    "wd_actual_delivery_time",
+    "actual_delivery_time",
+    "seller_id_enc",
+    "is_delivered",
+    "promised_days",
+    "carrier_transit_days"
+  ]
+}

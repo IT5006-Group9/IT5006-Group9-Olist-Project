@@ -5,8 +5,12 @@ Design rules (plan tab, Sections 2-4):
 * every feature is computable at its prediction point - order approval for Problem 1,
   the survey trigger T = min(delivered, estimated) for Problem 2
 * seller / route history is point-in-time: only outcomes *known* strictly before the
-  order was purchased contribute (merge_asof on the time the outcome became known)
-* smoothing priors and rare-category thresholds are learned on the training window
+  order was purchased contribute (merge_asof on the time the outcome became known);
+  under the stratified split scheme only *training* rows may contribute outcomes, so
+  validation / test labels never reach a feature
+* smoothing priors and rare-category thresholds are learned on the training rows
+* the split (config.SPLIT_SCHEME) is assigned inside build_feature_table and written to
+  the `split` column and data/split_manifest.csv
 """
 from __future__ import annotations
 
@@ -50,6 +54,7 @@ def add_static_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # order
     df["freight_ratio"] = df.total_freight / df.total_price.replace(0, np.nan)
+    df["total_order_value"] = df.total_price + df.total_freight      # Zaghloul et al. (2024)
 
     # geography
     df["same_state"] = (df.customer_state == df.seller_state).astype(float)
@@ -68,6 +73,52 @@ def add_static_features(df: pd.DataFrame) -> pd.DataFrame:
     bf0, bf1 = pd.Timestamp(config.BLACK_FRIDAY_WEEK[0]), pd.Timestamp(config.BLACK_FRIDAY_WEEK[1])
     df["black_friday_week"] = ts.between(bf0, bf1 + pd.Timedelta(days=1)).astype(float)
     df["approval_lag_hours"] = (df.order_approved_at - ts).dt.total_seconds() / 3600
+    return df
+
+
+# --------------------------------------------------------------------------- split
+def _eligible_p2(df: pd.DataFrame) -> pd.Series:
+    """Rows that can enter the low-review cohort: a seller (>= 1 line item), a review,
+    and a purchase month inside COHORT_MONTHS."""
+    return df.seller_id.notna() & df.is_low_review.notna() & df.purchase_month.between(*config.COHORT_MONTHS)
+
+
+def assign_split(df: pd.DataFrame, scheme: str | None = None, save: bool = True) -> pd.DataFrame:
+    """Add the `split` column: 'train' / 'validation' / 'test' / 'excluded'.
+
+    stratified   : Zaghloul et al. (2024) 67/33 stratified hold-out on is_low_review,
+                   then a stratified 80/20 train / validation split of the 67%.
+                   Deterministic (config.RANDOM_STATE); written to SPLIT_MANIFEST.
+    chronological: split == window for rows that pass the label-maturity rule
+                   (the regression package's protocol).
+    """
+    from sklearn.model_selection import train_test_split
+    scheme = scheme or config.SPLIT_SCHEME
+    df = df.copy()
+    df["split"] = "excluded"
+    elig = _eligible_p2(df)
+    if scheme == "stratified":
+        ids = df.loc[elig, "order_id"].to_numpy()
+        y = df.loc[elig, config.TARGET_CLF].astype(int).to_numpy()
+        dev_ids, test_ids, y_dev, _ = train_test_split(ids, y, test_size=config.TEST_SIZE, stratify=y,
+                                                       random_state=config.RANDOM_STATE)
+        train_ids, val_ids = train_test_split(dev_ids, test_size=config.VALIDATION_SIZE, stratify=y_dev,
+                                              random_state=config.RANDOM_STATE)
+        for name, sel in (("train", train_ids), ("validation", val_ids), ("test", test_ids)):
+            df.loc[df.order_id.isin(sel), "split"] = name
+    elif scheme == "chronological":
+        known = df[config.LABEL_KNOWN_COLUMN["p2"]]
+        ok_train = (df.window == "train") & (known < pd.Timestamp(config.VALIDATION_START))
+        ok_val = (df.window == "validation") & (known < pd.Timestamp(config.TEST_START))
+        ok_test = df.window == "test"
+        df.loc[elig & ok_train, "split"] = "train"
+        df.loc[elig & ok_val, "split"] = "validation"
+        df.loc[elig & ok_test, "split"] = "test"
+    else:
+        raise ValueError(scheme)
+    if save:
+        config.PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+        df.loc[df.split != "excluded", ["order_id", "split"]].to_csv(config.SPLIT_MANIFEST, index=False)
     return df
 
 
@@ -104,17 +155,25 @@ def _smooth(sum_, n, prior, m=config.HISTORY_SMOOTHING_M):
 
 
 def add_history_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Seller and route (seller_state -> customer_state) history as of purchase time."""
+    """Seller and route (seller_state -> customer_state) history as of purchase time.
+
+    Orders *placed* (no outcome involved) are counted over every row. Outcome events
+    (delivery dates / durations, review labels) come from `train` rows only: under the
+    stratified scheme that is `split == "train"`, so no validation or test label can
+    enter any feature; under the chronological scheme it is the training window, and
+    the as-of merge already guarantees that only outcomes known before purchase count.
+    """
     df = df.copy()
     df["route"] = df.seller_state.fillna("NA") + "-" + df.customer_state.fillna("NA")
-    train = df[df.window == "train"]
+    train_mask = (df.split == "train") if "split" in df else (df.window == "train")
+    train = df[train_mask]
 
-    # global priors from the training window only
+    # global priors from the training rows only
     g_delivery = train.delivery_days.mean()
     g_late = 1 - train.is_on_time.mean()
     g_low = train.is_low_review.mean()
 
-    # --- seller: orders placed before (known at purchase)
+    # --- seller: orders placed before (known at purchase; every row, no outcome used)
     placed = df[["seller_id", "order_purchase_timestamp"]].rename(
         columns={"order_purchase_timestamp": "known_time"}).assign(one=1.0)
     df = _asof_history(df, "seller_id", placed, "sp", {"one": "one"})
@@ -122,24 +181,24 @@ def add_history_features(df: pd.DataFrame) -> pd.DataFrame:
     first = df.groupby("seller_id").order_purchase_timestamp.transform("min")
     df["seller_tenure_days"] = (df.order_purchase_timestamp - first).dt.total_seconds() / 86400
 
-    # --- seller: delivery outcomes known before purchase (known when delivered)
-    dev = df.loc[df.order_delivered_customer_date.notna(),
-                 ["seller_id", "order_delivered_customer_date", "delivery_days", "is_on_time"]]
+    # --- seller: delivery outcomes known before purchase (known when delivered), training rows only
+    dev = train.loc[train.order_delivered_customer_date.notna(),
+                    ["seller_id", "order_delivered_customer_date", "delivery_days", "is_on_time"]]
     dev = dev.rename(columns={"order_delivered_customer_date": "known_time"})
     dev["is_late"] = 1 - dev.is_on_time
     df = _asof_history(df, "seller_id", dev, "sd", {"delivery_days": "days", "is_late": "late"})
     df["seller_prior_mean_delivery_days"] = _smooth(df.sd_sum_days, df.sd_n, g_delivery)
     df["seller_prior_late_rate"] = _smooth(df.sd_sum_late, df.sd_n, g_late)
 
-    # --- seller: review outcomes known before purchase (known when the review was written)
-    rv = df.loc[df.review_score.notna(), ["seller_id", "review_creation_date", "is_low_review"]]
+    # --- seller: review outcomes known before purchase (known when the review was written), training rows only
+    rv = train.loc[train.review_score.notna(), ["seller_id", "review_creation_date", "is_low_review"]]
     rv = rv.rename(columns={"review_creation_date": "known_time"})
     df = _asof_history(df, "seller_id", rv, "sr", {"is_low_review": "low"})
     df["seller_prior_low_review_rate"] = _smooth(df.sr_sum_low, df.sr_n, g_low)
 
-    # --- route: delivery outcomes known before purchase
-    rdev = df.loc[df.order_delivered_customer_date.notna(),
-                  ["route", "order_delivered_customer_date", "delivery_days", "is_on_time"]]
+    # --- route: delivery outcomes known before purchase, training rows only
+    rdev = train.loc[train.order_delivered_customer_date.notna(),
+                     ["route", "order_delivered_customer_date", "delivery_days", "is_on_time"]]
     rdev = rdev.rename(columns={"order_delivered_customer_date": "known_time"})
     rdev["is_late"] = 1 - rdev.is_on_time
     df = _asof_history(df, "route", rdev, "rd", {"delivery_days": "days", "is_late": "late"})
@@ -157,7 +216,7 @@ def add_history_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 # --------------------------------------------------------------------------- delivery as of T
-def add_delivery_at_T(df: pd.DataFrame) -> pd.DataFrame:
+def add_delivery(df: pd.DataFrame) -> pd.DataFrame:
     """Problem 2 only. T = survey trigger = min(delivered date, estimated date)."""
     df = df.copy()
     T = df.survey_trigger_time
@@ -165,19 +224,38 @@ def add_delivery_at_T(df: pd.DataFrame) -> pd.DataFrame:
     carrier = df.order_delivered_carrier_date
 
     by_T = delivered.notna() & (delivered <= T)
-    df["delivered_by_T"] = by_T.astype(float)
-    df["delivery_days_at_T"] = np.where(by_T, df.delivery_days, np.nan)
-    df["days_vs_promise_at_T"] = np.where(
+    df["is_delivered"] = by_T.astype(float)
+    df["actual_delivery_time"] = np.where(by_T, df.delivery_days, np.nan)
+    df["delivery_time_delta"] = np.where(
         by_T, (delivered - df.order_estimated_delivery_date).dt.total_seconds() / 86400, np.nan)
 
     shipped = carrier.notna() & (carrier <= T)
-    df["carrier_shipped_by_T"] = shipped.astype(float)
-    df["carrier_handover_days_at_T"] = np.where(
+    df["carrier_shipped"] = shipped.astype(float)
+    df["carrier_handover_days"] = np.where(
         shipped, (carrier - df.order_approved_at).dt.total_seconds() / 86400, np.nan)
-    df["carrier_transit_days_at_T"] = np.where(
+    df["carrier_transit_days"] = np.where(
         by_T & carrier.notna(), (delivered - carrier).dt.total_seconds() / 86400, np.nan)
-    df["delivery_vs_seller_prior_at_T"] = df.delivery_days_at_T - df.seller_prior_mean_delivery_days
+    df["delivery_vs_seller_prior"] = df.actual_delivery_time - df.seller_prior_mean_delivery_days
+
+    # Zaghloul et al. (2024) working-day features (Mon-Fri, Brazilian national holidays
+    # excluded), evaluated as of T so they stay prediction-point safe
+    df["wd_actual_delivery_time"] = np.where(by_T, _busdays(df.order_purchase_timestamp, delivered), np.nan)
+    df["wd_delivery_time_delta"] = np.where(by_T, _busdays(df.order_estimated_delivery_date, delivered), np.nan)
     return df
+
+
+def _busdays(start: pd.Series, end: pd.Series) -> np.ndarray:
+    """Signed working days from `start` to `end` (negative when end precedes start)."""
+    s = start.dt.normalize().to_numpy(dtype="datetime64[D]", na_value=np.datetime64("NaT", "D"))
+    e = end.dt.normalize().to_numpy(dtype="datetime64[D]", na_value=np.datetime64("NaT", "D"))
+    ok = ~(np.isnat(s) | np.isnat(e))
+    out = np.full(len(s), np.nan)
+    hol = np.array(config.BR_HOLIDAYS, dtype="datetime64[D]")
+    fwd = s[ok] <= e[ok]
+    lo, hi = np.where(fwd, s[ok], e[ok]), np.where(fwd, e[ok], s[ok])
+    n = np.busday_count(lo, hi, holidays=hol).astype(float)
+    out[ok] = np.where(fwd, n, -n)
+    return out
 
 
 # --------------------------------------------------------------------------- cohorts
@@ -193,6 +271,13 @@ def cohort(df: pd.DataFrame, problem: str) -> pd.DataFrame:
     """
     # orders with no line item (0.8%, mostly unavailable / cancelled) have no seller,
     # product or price and are out of scope for both problems
+    if problem == "p2" and "split" in df and config.SPLIT_SCHEME == "stratified":
+        # stratified scheme: the split column *is* the cohort; `window` is overwritten
+        # with the split so every downstream helper (split_frame, window_summary, the
+        # audits) works unchanged. The chronological window stays in `purchase_month`.
+        d = df[df.split.isin(["train", "validation", "test"])].copy()
+        d["window"] = d["split"]
+        return d
     d = df[df.window.isin(["train", "validation", "test"]) & df.seller_id.notna()]
     if problem == "p1":
         d = d[d.delivery_days.notna() & (d.delivery_days >= 0)].copy()
@@ -219,13 +304,13 @@ def assert_no_leakage(df: pd.DataFrame, problem: str) -> None:
     missing = [f for f in feats if f not in df.columns]
     assert not missing, f"features not built: {missing}"
     if problem == "p1":
-        at_T = set(config.FEATURE_GROUPS["delivery_at_T"])
+        at_T = set(config.FEATURE_GROUPS["delivery"])
         assert not (set(feats) & at_T), "Problem 1 must not see delivery-as-of-T features"
     if problem == "p2":
-        not_by_T = df.delivered_by_T == 0
-        for c in ["delivery_days_at_T", "days_vs_promise_at_T", "carrier_transit_days_at_T"]:
+        not_by_T = df.is_delivered == 0
+        for c in ["actual_delivery_time", "delivery_time_delta", "carrier_transit_days"]:
             assert df.loc[not_by_T, c].isna().all(), f"{c} populated for orders not delivered by T"
-        assert (df.loc[df.delivered_by_T == 1, "days_vs_promise_at_T"] <= 0).all(), \
+        assert (df.loc[df.is_delivered == 1, "delivery_time_delta"] <= 0).all(), \
             "an order delivered by T cannot be past its promise"
     # history must never include the order's own outcome: a seller's first order has
     # exactly the prior (no data) value
@@ -253,29 +338,39 @@ def leakage_audit(df: pd.DataFrame, problem: str, sample: int = 3000,
     base = full if full is not None else df
 
     # --- point-in-time history, recomputed from scratch for the sample
+    train_mask = (base.split == "train") if "split" in base else (base.window == "train")
+    train_rows = base[train_mask]
+    g_late = 1 - train_rows.is_on_time.mean()
+    m = config.HISTORY_SMOOTHING_M
     rows = []
     for _, r in d.iterrows():
         s = base[(base.seller_id == r.seller_id) & (base.order_purchase_timestamp < r.order_purchase_timestamp)]
         known = s[s.order_delivered_customer_date < r.order_purchase_timestamp]
+        # outcomes may only come from training rows delivered before this purchase
+        allowed = known[train_mask.loc[known.index]]
+        late = (1 - allowed.is_on_time).sum()
+        rate = (late + m * g_late) / (len(allowed) + m)
         rows.append({"order_id": r.order_id,
                      "prior_orders_ok": int(len(s) == r.seller_prior_orders),
-                     "prior_delivery_n": len(known),
+                     "prior_delivery_n": len(allowed),
                      "no_future_outcome_used": int((s.order_delivered_customer_date.isna()
                                                    | (s.order_delivered_customer_date >= r.order_purchase_timestamp)
-                                                   | s.index.isin(known.index)).all())})
+                                                   | s.index.isin(known.index)).all()),
+                     "train_only_rate_ok": int(abs(rate - r.seller_prior_late_rate) < 1e-9)})
     h = pd.DataFrame(rows)
     out["history"] = pd.Series({"orders checked": len(h),
                                 "seller_prior_orders exact match": h.prior_orders_ok.mean(),
-                                "only outcomes known before purchase": h.no_future_outcome_used.mean()})
+                                "only outcomes known before purchase": h.no_future_outcome_used.mean(),
+                                "late rate rebuilt from training-row outcomes only": h.train_only_rate_ok.mean()})
 
     if problem == "p2":
-        not_by_T = df.delivered_by_T == 0
+        not_by_T = df.is_delivered == 0
         out["at_T"] = pd.Series({
-            "delivery_days_at_T is NaN when not delivered by T": df.loc[not_by_T, "delivery_days_at_T"].isna().mean(),
-            "days_vs_promise_at_T <= 0 when delivered by T": (df.loc[~not_by_T, "days_vs_promise_at_T"] <= 0).mean(),
+            "actual_delivery_time is NaN when not delivered by T": df.loc[not_by_T, "actual_delivery_time"].isna().mean(),
+            "delivery_time_delta <= 0 when delivered by T": (df.loc[~not_by_T, "delivery_time_delta"] <= 0).mean(),
             "carrier_handover only when carrier date <= T": (
-                df.loc[df.carrier_shipped_by_T == 0, "carrier_handover_days_at_T"].isna().mean()),
-            "delivered_by_T share": df.delivered_by_T.mean(),
+                df.loc[df.carrier_shipped == 0, "carrier_handover_days"].isna().mean()),
+            "is_delivered share": df.is_delivered.mean(),
         })
         before = df.review_creation_date < df.survey_trigger_time
         out["review_time"] = pd.Series({
@@ -315,8 +410,9 @@ def build_feature_table(raw=None, save: bool = True) -> pd.DataFrame:
     df = df[df.purchase_month.between(*config.COHORT_MONTHS)].copy()
     df = assign_windows(df)
     df = add_static_features(df)
+    df = assign_split(df, save=save)        # before the history so outcome events are train-only
     df = add_history_features(df)
-    df = add_delivery_at_T(df)
+    df = add_delivery(df)
     assert_no_leakage(cohort(df, "p1"), "p1")
     assert_no_leakage(cohort(df, "p2"), "p2")
     if save:

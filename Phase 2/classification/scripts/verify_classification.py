@@ -5,7 +5,8 @@ regression package's verify_* scripts).
 
 Checks, without refitting any model:
   * the feature table rebuilds to the recorded cohort sizes and passes both leakage audits
-  * the chronological windows and folds are the regression package's
+  * the split rebuilds to exactly the committed data/split_manifest.csv (stratified scheme)
+    or the regression package's windows / folds (chronological scheme)
   * every published table matches its digest in experiment_protocol.json
   * source digests match (warning by default; --strict-sources makes it an error)
   * selection used validation only; the test window was scored once per final model
@@ -58,21 +59,36 @@ def main() -> None:
     failures: list = []
     protocol = json.loads((OUT / "experiment_protocol.json").read_text())
 
-    # protocol constants come from the regression package
-    require(config.CV_CUTOFFS == [s for s, _ in base.FOLDS] + [base.FOLDS[-1][1]], "fold cutoffs equal delivery_regression.FOLDS", failures)
+    # protocol constants
     require(config.RANDOM_STATE == base.SEED, "seed equals delivery_regression.SEED", failures)
-    require(protocol["windows"] == {k: list(v) for k, v in config.WINDOWS.items()} or protocol["windows"] == config.WINDOWS,
-            "windows in protocol equal clf_config.WINDOWS", failures)
+    require(protocol.get("split_scheme") == config.SPLIT_SCHEME, f"protocol split scheme is {config.SPLIT_SCHEME}", failures)
+    if config.SPLIT_SCHEME == "chronological":
+        require(config.CV_CUTOFFS == [s for s, _ in base.FOLDS] + [base.FOLDS[-1][1]], "fold cutoffs equal delivery_regression.FOLDS", failures)
+        require(protocol["windows"] == {k: list(v) for k, v in config.WINDOWS.items()} or protocol["windows"] == config.WINDOWS,
+                "windows in protocol equal clf_config.WINDOWS", failures)
 
-    # feature table and cohort
+    # feature table, split manifest and cohort
     df = features.build_feature_table(save=False)
     p2 = features.cohort(df, "p2")
     quality = json.loads((OUT / "data_quality.json").read_text())
     counts = split.window_summary(p2, "p2").orders.to_dict()
-    require(counts == quality["windows"], f"cohort windows rebuild to the recorded sizes {quality['windows']}", failures)
+    require(counts == quality["windows"], f"cohort splits rebuild to the recorded sizes {quality['windows']}", failures)
+    if config.SPLIT_MANIFEST.exists():
+        manifest = pd.read_csv(config.SPLIT_MANIFEST).set_index("order_id").split
+        rebuilt = p2.set_index("order_id").split.reindex(manifest.index)
+        require(bool((rebuilt == manifest).all()) and len(manifest) == len(p2),
+                "split rebuilds to the committed data/split_manifest.csv (same seed, same rows)", failures)
+    else:
+        print("SKIP data/split_manifest.csv not present locally (git-ignored data/); rebuilt split used")
+    if config.SPLIT_SCHEME == "stratified":
+        rates = p2.groupby("split").is_low_review.mean()
+        require(float(rates.max() - rates.min()) < 0.005, f"positive rate equal across splits (stratified): {rates.round(4).to_dict()}", failures)
+        require(abs(len(p2[p2.split == "test"]) / len(p2) - config.TEST_SIZE) < 0.005, "test share equals TEST_SIZE (0.33)", failures)
     features.assert_no_leakage(p2, "p2")
     audit = features.leakage_audit(p2, "p2", sample=1000, full=df)
     require(audit["history"]["only outcomes known before purchase"] == 1.0, "point-in-time history uses no future outcomes", failures)
+    require(audit["history"]["late rate rebuilt from training-row outcomes only"] == 1.0,
+            "history features use outcomes of training rows only (no validation / test label in any feature)", failures)
     require(audit["single_feature_auc"].roc_auc.max() < 0.9, "no single feature encodes the label", failures)
 
     # published tables

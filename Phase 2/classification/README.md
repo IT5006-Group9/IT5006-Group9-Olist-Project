@@ -1,8 +1,10 @@
 # Phase 2 · Low-review risk classification
 
 Classification counterpart of the delivery regression package one level up. Same
-layout, same chronological protocol, same seed; the regression modules in `../src`
-are imported, not copied.
+layout and seed; the regression modules in `../src` are imported, not copied. The split
+follows Zaghloul, Barakat & Rezk (2024, *J. Retailing and Consumer Services* 79:103865),
+the published study on the same target, with a validation set added; the regression
+package's chronological protocol is kept as a switch (`clf_config.SPLIT_SCHEME`).
 
 **Problem.** At the survey trigger T = min(delivered date, estimated delivery date),
 predict whether the order will receive a 1-2 star review. Stakeholder: Olist's
@@ -14,33 +16,41 @@ input catalogue in [`config/feature_roles.csv`](config/feature_roles.csv).
 
 | Notebook | What it does | Report items |
 |---|---|---|
-| [`notebooks/data_preparation_audit.ipynb`](notebooks/data_preparation_audit.ipynb) | builds the order-level feature table from the course CSVs, records the chronological windows and folds, runs the structural and empirical **leakage audits** | Tables 2-3, Figure 1 |
-| [`notebooks/baseline_variant_review.ipynb`](notebooks/baseline_variant_review.ipynb) | family ladder: baselines → logistic (A) → decision tree / random forest / CatBoost (B), search on three label-matured folds, CatBoost early stopping, validation-frozen thresholds, sklearn stacking check, one test scoring, permutation importance, delivery-at-T ablation | Table 7, Figures 3-4 |
-| [`notebooks/ensemble_comparison.ipynb`](notebooks/ensemble_comparison.ipynb) | Family C on matured out-of-fold probabilities: mean, convex weights (OOF average precision), logistic stack; retention rule; one test scoring with an independent PR-AUC cross-check; **class-balance study** | Section 6.3, Limitations |
+| [`notebooks/data_preparation_audit.ipynb`](notebooks/data_preparation_audit.ipynb) | builds the order-level feature table from the course CSVs, assigns and records the stratified split (`data/split_manifest.csv`), runs the structural and empirical **leakage audits** (incl. train-only history outcomes) | Tables 2-3, Figure 1 |
+| [`notebooks/baseline_variant_review.ipynb`](notebooks/baseline_variant_review.ipynb) | family ladder: baselines → logistic (A) → decision tree / random forest / CatBoost (B), 5-fold stratified search, CatBoost early stopping, validation-frozen thresholds, sklearn stacking check, one test scoring, permutation importance, delivery-at-T ablation | Table 7, Figures 3-4 |
+| [`notebooks/ensemble_comparison.ipynb`](notebooks/ensemble_comparison.ipynb) | Family C on out-of-fold probabilities: mean, convex weights (OOF average precision), logistic stack; retention rule; one test scoring with an independent PR-AUC cross-check; **class-balance study** | Section 6.3, Limitations |
+| [`notebooks/sampling_comparison.ipynb`](notebooks/sampling_comparison.ipynb) | Zaghloul et al. Experiment 4 on our protocol: 4 models × {none, class weights, RandomOverSampler, SMOTE, ADASYN} with both the brief's metrics and the paper's; **SHAP** on the final model (grouped importance, beeswarm, dependence) with CatBoost and linear cross-checks | Section 6.3-6.4, Figures 5-6 |
 
 Progress and current numbers: [`docs/current_progress.md`](docs/current_progress.md).
 Ensemble write-up: [`docs/ensemble_comparison.md`](docs/ensemble_comparison.md).
+Sampling and SHAP write-up: [`docs/sampling_comparison.md`](docs/sampling_comparison.md).
 
 ## What is shared with the regression package
 
 | From `../src` | Used for |
 |---|---|
-| `delivery_regression.SEED`, `VALIDATION_START`, `VALIDATION_END`, `TEST_START`, `FOLDS` | seed, windows and expanding folds (`clf_config`) |
+| `delivery_regression.SEED` | seed (5006) |
+| `delivery_regression.VALIDATION_START`, `VALIDATION_END`, `TEST_START`, `FOLDS` | the chronological scheme (`SPLIT_SCHEME = "chronological"`) and the drift figure |
 | `data_preparation_audit.geographic_reference` | audited zip-prefix coordinates (screened median) |
 | `data_preparation_audit.compute_routes` | maximum item-route distance per order and the missing-route flag |
 
 Everything else lives in `src/clf_*.py`: `clf_data` (course tables with SHA-256
 inventory, order-level aggregation incl. reviews and payments), `clf_features`
-(targets, point-in-time seller / route history, delivery-as-of-T block, cohorts with
-label maturity, leakage audits), `clf_split`, `clf_pipelines` (preprocessors and the
-model ladder), `clf_evaluate` (metrics, thresholds), `clf_ensembles`.
+(targets, split assignment, point-in-time seller / route history, delivery-as-of-T block
+incl. the working-day features of Zaghloul et al., cohorts, leakage audits), `clf_split`
+(frames and `cv_folds`), `clf_pipelines` (preprocessors and the model ladder),
+`clf_evaluate` (metrics, thresholds), `clf_ensembles`, `clf_sampling` (imbalance
+strategies as imblearn pipelines), `clf_explain` (SHAP helpers).
 
-## Protocol (identical to the regression package)
+## Protocol
 
-- Train: purchased **and reviewed** before 2018-03-01 (53-54k orders). Validation: March 2018. April-June: maturation gap, never modelled. Test: July-August 2018, scored once per final model.
-- CV: three expanding folds with cutoffs 2017-07-01, 2017-10-01, 2018-01-01; a fold fits only on orders whose review was already written at its cutoff.
-- Primary metric PR-AUC; thresholds chosen on validation and frozen; ensembles retained only with ≥ 1% relative validation gain.
-- Class imbalance (13.7% positive): class weights, not resampling; the class-balance study shows why.
+- Cohort: 97,916 reviewed orders with ≥ 1 line item, 2016-09 to 2018-08.
+- Split (`SPLIT_SCHEME = "stratified"`): `train_test_split(test_size=0.33, stratify=is_low_review)` as in Zaghloul et al., then a stratified 80/20 train / validation split of the 67% → train 52,482 / validation 13,121 / test 32,313, positive rate 14.2% in each. Written to `data/split_manifest.csv`; the verifier rebuilds it from the seed.
+- CV: `StratifiedKFold(5, shuffle=True, random_state=5006)` on the training rows for every search, the sklearn stacker and the OOF probabilities.
+- Leakage under a random split: outcome-based history features (seller / route delivery and review history) aggregate **training rows only**; the audit recomputes them and asserts an exact match.
+- Primary metric PR-AUC; thresholds chosen on validation and frozen; ensembles retained only with ≥ 1% relative validation gain; test scored once per final model.
+- Class imbalance: stratification keeps the rate equal across splits; the ladder uses class weights; `sampling_comparison` compares none / class weights / RandomOverSampler / SMOTE / ADASYN for all four models and shows that on this target the strategies move calibration, not ranking.
+- `SPLIT_SCHEME = "chronological"` restores the regression package's windows and label-matured expanding folds (used for the drift reference in `docs/current_progress.md`).
 
 ## Reproduce
 
@@ -48,21 +58,24 @@ From this folder, with the course CSVs available (`OLIST_CSV_DIR`, or the repo's
 
 ```bash
 python -m pip install -r requirements.txt            # on top of ../requirements.txt
-python scripts/run_notebook.py                        # data_preparation_audit
+python scripts/run_notebook.py                        # data_preparation_audit (writes data/split_manifest.csv)
 python scripts/run_notebook.py notebooks/baseline_variant_review.ipynb   # 1-2 h with QUICK = False
-python scripts/run_notebook.py notebooks/ensemble_comparison.ipynb       # 20 min
-python scripts/verify_classification.py               # re-checks published tables and audits
+python scripts/run_notebook.py notebooks/ensemble_comparison.ipynb       # 10-40 min
+python scripts/run_notebook.py notebooks/sampling_comparison.ipynb       # 15-60 min (20 fits + SHAP)
+python scripts/reproduce_classification.py --protocol-only              # digests -> outputs/experiment_protocol.json
+python scripts/verify_classification.py               # re-checks split, tables and audits
 python -m unittest discover -s tests -v
 ```
 
 `scripts/reproduce_classification.py [--quick]` runs the three notebooks' code headlessly
-and writes `outputs/experiment_protocol.json` with source and output digests.
+and writes `outputs/experiment_protocol.json` with source and output digests
+(`--protocol-only` rewrites the digests after `run_notebook.py`).
 `scripts/build_notebooks.py` regenerates the notebooks from their definition (clears outputs).
 
 Outputs: `outputs/tables/` (published CSVs), `outputs/figures/`, `outputs/selected_models.json`,
-`outputs/ensemble_summary.json`, `outputs/data_quality.json`. Git-ignored and regenerated locally:
+`outputs/ensemble_summary.json`, `outputs/sampling_summary.json`, `outputs/data_quality.json`. Git-ignored and regenerated locally:
 `data/` (feature table), `models/`, `outputs/predictions/`, `outputs/oof/`.
 
 The committed notebooks were executed with `QUICK = True` (dry run, 4 search draws,
-small forests) on 7 Oct 2026 to validate the code path; the report numbers come from a
+small forests) on 9 Oct 2026 to validate the code path; the report numbers come from a
 `QUICK = False` run.

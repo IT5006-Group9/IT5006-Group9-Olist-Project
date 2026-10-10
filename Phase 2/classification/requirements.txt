@@ -1,4 +1,6 @@
 # Additions on top of ../requirements.txt (regression package environment).
 catboost>=1.2
 pyarrow>=15                # parquet feature table
-# imbalanced-learn>=0.12   # optional: SMOTE rows in the sensitivity checks
+
+imbalanced-learn>=0.12   # sampling comparison (RandomOverSampler / SMOTE / ADASYN)
+shap>=0.45               # SHAP explanations

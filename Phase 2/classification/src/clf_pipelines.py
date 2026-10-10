@@ -44,7 +44,7 @@ LOW_CARD = ["customer_state", "seller_state", "customer_region", "seller_region"
             "main_payment_type"]
 HIGH_CARD = ["main_category", "seller_id_enc", "customer_zip2"]
 SKEWED = ["total_price", "total_freight", "total_weight_g", "max_weight_g",
-          "total_volume_cm3", "max_dimension_cm", "max_distance_km", "payment_total",
+          "total_volume_cm3", "max_dimension_cm", "max_distance_km", "payment_total", "total_order_value",
           "seller_prior_orders", "route_prior_orders", "approval_lag_hours",
           "n_items", "payment_max_installments"]
 
@@ -143,7 +143,8 @@ class _CatBoostSK(BaseEstimator):
         self.model_.fit(X, y, **fit_params)
         if hasattr(self.model_, "classes_"):
             self.classes_ = self.model_.classes_
-        self.feature_names_in_ = np.asarray(X.columns)
+        if hasattr(X, "columns"):
+            self.feature_names_in_ = np.asarray(X.columns)
         return self
 
     def predict(self, X):
@@ -263,13 +264,17 @@ def make_stacking(problem: str, fitted: dict[str, Pipeline]) -> Pipeline | Stack
     meta-learner. Base pipelines are cloned (unfitted) so the stacker refits them on
     its own out-of-fold scheme.
 
-    sklearn's stacker needs a partition of the rows, so TimeSeriesSplit cannot be used
-    here; KFold(shuffle=False) on the time-sorted training window gives five contiguous
-    chronological blocks instead (each base model's out-of-fold prediction for a block
-    comes from a model that saw the other blocks). State this in the report."""
-    from sklearn.model_selection import KFold
+    Under the stratified scheme the stacker's internal folds are the same
+    StratifiedKFold(N_CV_FOLDS, shuffle=True, seed) as the searches. Under the
+    chronological scheme sklearn's stacker still needs a partition of the rows, so
+    KFold(shuffle=False) on the time-sorted training window gives five contiguous
+    blocks (state this in the report)."""
+    from sklearn.model_selection import KFold, StratifiedKFold
     base = [(name, clone(fitted[name])) for name in ("A_linear_tuned", "B_rf", "B_catboost")]
-    cv = KFold(n_splits=5, shuffle=False)
+    if config.SPLIT_SCHEME == "stratified":
+        cv = StratifiedKFold(n_splits=config.N_CV_FOLDS, shuffle=True, random_state=SEED)
+    else:
+        cv = KFold(n_splits=5, shuffle=False)
     if problem == "p2":
         return StackingClassifier(estimators=base,
                                   final_estimator=LogisticRegression(max_iter=2000, random_state=SEED),

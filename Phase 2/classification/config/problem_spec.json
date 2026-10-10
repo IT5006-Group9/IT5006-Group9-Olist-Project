@@ -6,51 +6,68 @@
     "definition": "1 if review_score in {1, 2} else 0",
     "grain": "one row per order_id, one review per order (earliest kept)"
   },
-  "cohort": "reviewed orders with at least one line item, delivered or not; purchase months 2016-09 to 2018-08",
+  "cohort": "reviewed orders with at least one line item, delivered or not; purchase months 2016-09 to 2018-08 (78,085 orders)",
   "prediction_point": {
     "name": "survey trigger T",
     "definition": "min(order_delivered_customer_date, order_estimated_delivery_date)",
-    "rationale": "Olist emails the review survey when the order is delivered or the estimated date passes; every delivery feature is evaluated as of T"
+    "rationale": "Olist emails the review survey when the order is delivered or the estimated date passes; every delivery feature is evaluated as of T",
+    "T_dependent_features": [
+      "is_delivered",
+      "actual_delivery_time",
+      "delivery_time_delta",
+      "carrier_shipped",
+      "carrier_handover_days",
+      "carrier_transit_days",
+      "delivery_vs_seller_prior",
+      "wd_actual_delivery_time",
+      "wd_delivery_time_delta"
+    ],
+    "flag": "config/feature_roles.csv column T_dependent; clf_config.features_at_T(); audit notebook Section 3"
   },
   "stakeholder": {
     "role": "Olist customer-experience / seller-quality team",
     "decision": "rank orders at T by low-review risk and route the top of the list to proactive outreach; aggregate by seller for quality reviews"
   },
   "protocol": {
-    "source": "Phase 2/src/delivery_regression.py (shared with the regression problem)",
-    "validation_start": "2018-03-01",
-    "validation_end": "2018-04-01",
-    "test_start": "2018-07-01",
-    "windows": {
-      "train": [
-        "2016-09",
-        "2018-02"
-      ],
-      "validation": [
-        "2018-03",
-        "2018-03"
-      ],
-      "maturation_gap": [
-        "2018-04",
-        "2018-06"
-      ],
-      "test": [
-        "2018-07",
-        "2018-08"
-      ]
+    "split_scheme": "stratified",
+    "design": "Zaghloul, Barakat & Rezk (2024), J. Retailing and Consumer Services 79:103865 - stratified 67/33 train+validation / test on is_low_review - with a validation set added: stratified 80/20 train / validation of the 67% (overall ~54 / 13 / 33)",
+    "test_size": 0.33,
+    "validation_size_of_dev": 0.2,
+    "seed": 5006,
+    "manifest": "data/split_manifest.csv (order_id -> split; git-ignored, rebuilt deterministically by data_preparation_audit)",
+    "roles": {
+      "train": "fit pipelines; 5-fold stratified shuffled CV for hyperparameters and OOF probabilities",
+      "validation": "baselines vs ladder, CatBoost early stopping, F1 threshold, stacking / ensemble retention rule",
+      "test": "scored once per final model"
     },
-    "label_known_column": "review_creation_date",
-    "label_maturity": "train rows need the review written before validation_start; validation rows before test_start",
     "cv": {
-      "kind": "expanding, label-matured",
-      "cutoffs": [
-        "2017-07-01",
-        "2017-10-01",
-        "2018-01-01",
-        "2018-03-01"
-      ]
+      "kind": "StratifiedKFold",
+      "n_splits": 5,
+      "shuffle": true
     },
-    "seed": 5006
+    "history_features": "outcome events (delivery, review) aggregated from training rows only; orders placed counted over all rows",
+    "chronological_reference": {
+      "source": "Phase 2/src/delivery_regression.py",
+      "windows": {
+        "train": [
+          "2016-09",
+          "2018-02"
+        ],
+        "validation": [
+          "2018-03",
+          "2018-03"
+        ],
+        "maturation_gap": [
+          "2018-04",
+          "2018-06"
+        ],
+        "test": [
+          "2018-07",
+          "2018-08"
+        ]
+      },
+      "use": "drift figure and the robustness check in docs/current_progress.md only"
+    }
   },
   "families": {
     "A_linear": [
@@ -68,10 +85,10 @@
     ]
   },
   "class_imbalance": {
-    "positive_rate_train": 0.137,
-    "strategy": "class weights, threshold tuned on validation to maximise F1 then frozen",
-    "resampling": "SMOTE only as an appendix sensitivity row",
-    "evidence": "class-balance study in ensemble_comparison"
+    "positive_rate_train": 0.146,
+    "strategy": "stratified split keeps the positive rate equal across train / validation / test; class weights in every model; threshold tuned on validation to maximise F1 then frozen",
+    "resampling": "RandomOverSampler, SMOTE and ADASYN compared with none and class weights for all four models in sampling_comparison (Zaghloul et al. 2024 Experiment 4); resampling inside imblearn pipelines on training rows only",
+    "evidence": "class-balance study in ensemble_comparison; full grid in outputs/tables/sampling_comparison.csv"
   },
   "metrics": {
     "primary": "PR-AUC (average precision) on the test window, threshold-free",
@@ -112,7 +129,8 @@
       "n_sellers",
       "total_price",
       "total_freight",
-      "freight_ratio"
+      "freight_ratio",
+      "total_order_value"
     ],
     "product": [
       "total_weight_g",
@@ -162,15 +180,35 @@
       "route_prior_mean_delivery_days",
       "route_prior_late_rate"
     ],
-    "delivery_at_T": [
-      "delivered_by_T",
-      "delivery_days_at_T",
-      "days_vs_promise_at_T",
-      "carrier_shipped_by_T",
-      "carrier_handover_days_at_T",
-      "carrier_transit_days_at_T",
-      "delivery_vs_seller_prior_at_T"
+    "delivery": [
+      "is_delivered",
+      "actual_delivery_time",
+      "delivery_time_delta",
+      "carrier_shipped",
+      "carrier_handover_days",
+      "carrier_transit_days",
+      "delivery_vs_seller_prior",
+      "wd_actual_delivery_time",
+      "wd_delivery_time_delta"
     ]
   },
-  "test_scored": "once per final model inside each notebook"
+  "test_scored": "once per final model inside each notebook",
+  "literature_features": {
+    "source": "Zaghloul et al. (2024) Section 3.4",
+    "mapping": {
+      "wd_actual_delivery_time": "wd_actual_delivery_time (same name; evaluated as of T, NaN if not delivered by T)",
+      "wd_delivery_time_delta": "wd_delivery_time_delta (same name; working days delivered - promised, as of T)",
+      "payment_value": "payment_total",
+      "total_order_value": "total_order_value (price + freight)",
+      "order_freight_ratio": "freight_ratio (freight / price)"
+    },
+    "not_adopted": {
+      "review_comment_message": "part of the review itself (post-outcome)"
+    },
+    "working_days": "Mon-Fri excluding Brazilian national holidays 2016-2018 (clf_config.BR_HOLIDAYS)"
+  },
+  "interpretability": {
+    "permutation_importance": "validation set, baseline_variant_review",
+    "shap": "TreeExplainer on the final forest (validation sample), grouped by original feature; CatBoost SHAP and exact linear SHAP as cross-checks; sampling_comparison"
+  }
 }

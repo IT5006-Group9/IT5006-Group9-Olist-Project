@@ -1,38 +1,38 @@
 {
   "best_params": {
     "A_linear_tuned": {
-      "model__C": 0.01
+      "model__C": 10
     },
     "B_tree_base": {
-      "model__max_depth": 12,
-      "model__min_samples_leaf": 179
+      "model__max_depth": 10,
+      "model__min_samples_leaf": 194
     },
     "B_rf": {
-      "model__max_depth": 22,
-      "model__max_features": 0.2585884464855609,
-      "model__min_samples_leaf": 100,
-      "model__n_estimators": 343
+      "model__max_depth": 14,
+      "model__max_features": 0.4843096393967686,
+      "model__min_samples_leaf": 72,
+      "model__n_estimators": 594
     },
     "B_catboost": {
-      "model__depth": 4,
+      "model__depth": 7,
       "model__iterations": 300,
-      "model__l2_leaf_reg": 1.6378486386666542,
-      "model__learning_rate": 0.020192175104513394,
-      "model__one_hot_max_size": 10,
-      "model__random_strength": 0.6196295635329006,
-      "model__subsample": 0.6968512712370577
+      "model__l2_leaf_reg": 1.0310881642091188,
+      "model__learning_rate": 0.03429933990810608,
+      "model__one_hot_max_size": 2,
+      "model__random_strength": 0.8158393115766814,
+      "model__subsample": 0.734982047878261
     }
   },
   "final_model": "B_rf",
   "thresholds": {
     "baseline_majority": 1.0,
     "baseline_rule_late": 0.5,
-    "A_linear_base": 0.6997279970677205,
-    "A_linear_tuned": 0.7527709631747891,
-    "B_tree_base": 0.7196875353786956,
-    "B_rf": 0.62318561999251,
-    "B_catboost": 0.7198911218483335,
-    "C_stacking": 0.3678722058132339
+    "A_linear_base": 0.6573786980553703,
+    "A_linear_tuned": 0.6574152071780969,
+    "B_tree_base": 0.667927193003571,
+    "B_rf": 0.6469386230375662,
+    "B_catboost": 0.669665810426949,
+    "C_stacking": 0.25310827274181086
   },
   "seed": 5006,
   "stacking_retained": false,
@@ -45,6 +45,7 @@
     "total_price",
     "total_freight",
     "freight_ratio",
+    "total_order_value",
     "total_weight_g",
     "max_weight_g",
     "total_volume_cm3",
@@ -81,12 +82,14 @@
     "route_prior_orders",
     "route_prior_mean_delivery_days",
     "route_prior_late_rate",
-    "delivered_by_T",
-    "delivery_days_at_T",
-    "days_vs_promise_at_T",
-    "carrier_shipped_by_T",
-    "carrier_handover_days_at_T",
-    "carrier_transit_days_at_T",
-    "delivery_vs_seller_prior_at_T"
+    "is_delivered",
+    "actual_delivery_time",
+    "delivery_time_delta",
+    "carrier_shipped",
+    "carrier_handover_days",
+    "carrier_transit_days",
+    "delivery_vs_seller_prior",
+    "wd_actual_delivery_time",
+    "wd_delivery_time_delta"
   ]
 }
