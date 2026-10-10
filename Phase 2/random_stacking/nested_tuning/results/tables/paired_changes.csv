@@ -1,0 +1,9 @@
+candidate,reference,mean_MAE_change_days,change_minutes,better_folds,tied_folds,worse_folds,folds
+ridge_tuned,ridge_fixed,-0.11329352321149226,-163.14267342454886,5,0,0,5
+forest_tuned,forest_fixed,-0.20597186659601477,-296.59948789826126,5,0,0,5
+stack_two_tuned,stack_two_fixed,-0.20326859116946422,-292.7067712840285,5,0,0,5
+stack_three_tuned,stack_three_fixed,-0.0004190173122658791,-0.6033849296628659,5,0,0,5
+stack_two_tuned,forest_tuned,-0.0038292951290269882,-5.514184985798863,3,0,2,5
+stack_three_tuned,hgb,-0.0004190173122658791,-0.6033849296628659,5,0,0,5
+stack_two_tuned,mean_two_tuned,-0.06677799683953403,-96.16031544892901,5,0,0,5
+stack_three_tuned,mean_three_tuned,-0.20667706599732033,-297.6149750361413,5,0,0,5

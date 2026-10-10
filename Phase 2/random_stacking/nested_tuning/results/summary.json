@@ -1,0 +1,18 @@
+{
+  "status": "completed; independent artifact verification saved separately",
+  "train_n": 64634,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "ridge_candidates": 12,
+  "forest_candidates": 6,
+  "test_set_read_or_scored": false,
+  "models_compared": 13,
+  "protocol_sha256": "3604b3039b37f89bf9d1aa588b1fb726d8e0d208b851c9a89bc109c60134487f",
+  "limitations": [
+    "The dataset, published HGB configuration and these outer folds have informed earlier development. Nested assessment prevents new fold contamination but is not a new independent confirmation.",
+    "Random folds assess the same historical order mixture, not future-month forecasting.",
+    "HGB retains richer purchase and learned-risk features than the classic controls.",
+    "The candidate grid is limited; lack of improvement does not exhaust all possible stacking methods."
+  ],
+  "deployment_refit": false
+}
