@@ -2,6 +2,8 @@
 
 **2026-10-10 published update:** [Current best delivery regression package](delivery_regression_best/README.md) · [Executed notebook](delivery_regression_best/notebooks/best_scheme_review.ipynb). Frozen 63-leaf HGB with purchase/time/risk features: five-fold CV MAE4.2378 days, same random test MAE4.1505 days and RMSE7.4651. See the package for source, parameters, evidence, limitations and reproduction. Earlier material below is a historical snapshot.
 
+**报告证据补充（2026-10-10）：** [统一Train–CV–Test表](delivery_regression_best/results/report_supplement/tables/train_cv_test_comparison.csv) · [已运行证据Notebook](delivery_regression_best/notebooks/report_supplement_review.ipynb) · [表图与口径](delivery_regression_best/docs/report_evidence_guide.md)。补齐15行参照／baseline／variant、最终HGB训练成绩、分组置换重要性与误差分析。最终模型及测试成绩不变；最新stacking仅有开发CV，Train/Test保持未评测。
+
 ## Random-split stacking comparison
 
 Read the [tuned stacking notebook](delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb) and [reproduction guide](random_stacking/nested_tuning/README.md) for the bounded Ridge/RF tuning and ensemble comparison. Mean outer-validation MAE is **4.2374 days** for the three-model stack versus **4.2378 days** for HGB, an improvement of approximately 36 seconds. HGB remains the final regression model; stacking is retained for discussion. The new selection and stacking procedure uses five outer folds and three inner folds within the existing training set. HGB was previously selected using these same folds, so the comparison remains retrospective development evidence rather than a new independent test.

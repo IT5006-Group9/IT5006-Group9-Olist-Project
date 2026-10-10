@@ -1,0 +1,50 @@
+group,input,role,availability
+Geography and route,max_distance_km,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Geography and route,any_distance_missing,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Geography and route,customer_state,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Geography and route,route_group,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Geography and route,primary_seller_state,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Geography and route,primary_seller_city,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Geography and route,customer_city,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Geography and route,primary_state_route,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Geography and route,primary_city_route,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Geography and route,primary_zip_zone_route,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Purchase date and calendar,purchase_ts,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Purchase date and calendar,purchase_month,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Purchase date and calendar,purchase_weekday,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Purchase date and calendar,purchase_hour,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Quoted promise,promised_lead_time_days,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Price and freight,total_price,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Price and freight,total_freight,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Price and freight,freight_ratio,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Price and freight,mean_unit_price,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Seller identity and composition,primary_seller_id,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Seller identity and composition,seller_count,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Seller identity and composition,seller_state_count,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Seller identity and composition,primary_seller_price_share,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product category and composition,category_group,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product category and composition,dominant_category,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product category and composition,item_count,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product category and composition,distinct_product_count,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product category and composition,category_count_observed,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product category and composition,dominant_category_price_share,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product weight and volume,avg_product_weight_g,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product weight and volume,any_weight_missing,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product weight and volume,max_product_weight_g,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product weight and volume,total_known_weight_g,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product weight and volume,max_product_volume_cm3,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product weight and volume,total_known_volume_cm3,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+Product weight and volume,any_volume_missing,purchase input,archived purchase-time attribute assumed available; outcomes excluded
+deterministic transforms,dayofyear_sin,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,dayofyear_cos,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,weekday_sin,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,weekday_cos,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,hour_sin,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,hour_cos,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,promise_log_distance,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,promise_cross_state,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,log_distance_cross_state,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,state_route,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,purchase_elapsed_days,derived input,calculated only from whitelisted purchase inputs
+deterministic transforms,purchase_year_month,derived input,calculated only from whitelisted purchase inputs
+learned transform,risk_p30,cross-fitted input,generated by training-only purchase classifier; never use actual slow-order flag as input

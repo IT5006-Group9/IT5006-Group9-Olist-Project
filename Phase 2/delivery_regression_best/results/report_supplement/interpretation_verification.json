@@ -1,0 +1,8 @@
+{
+  "unmodified_derived_inputs_reproduce_baseline": true,
+  "120_purchase_only_rows_reproduce_inference": true,
+  "permutation_contains_no_target_or_outcome_columns": true,
+  "sample_size": 8000,
+  "sample_seed": 33,
+  "unchanged_final_model_sha256": "2efd2afa586a0fc61c54812a57638be2073f11fe1396b10c317dab1767954906"
+}

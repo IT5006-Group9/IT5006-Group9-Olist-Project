@@ -1,0 +1,279 @@
+{
+  "models": [
+    {
+      "model": "Delivery promise",
+      "role": "non-ML reference",
+      "feature_design": "promise",
+      "reference": "promise"
+    },
+    {
+      "model": "Training mean",
+      "role": "non-ML reference",
+      "feature_design": "mean",
+      "reference": "mean"
+    },
+    {
+      "model": "Training median",
+      "role": "non-ML reference",
+      "feature_design": "median",
+      "reference": "median"
+    },
+    {
+      "model": "OLS baseline",
+      "role": "baseline",
+      "feature_design": "F0",
+      "form": "standard",
+      "specification": {
+        "feature_pack": "F0",
+        "mi_fraction": 1.0,
+        "log_inputs": false,
+        "log_target": false,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "linear",
+        "params": {}
+      }
+    },
+    {
+      "model": "Single-tree baseline",
+      "role": "baseline",
+      "feature_design": "F0",
+      "form": "standard",
+      "specification": {
+        "feature_pack": "F0",
+        "mi_fraction": 1.0,
+        "log_inputs": false,
+        "log_target": false,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "tree",
+        "params": {
+          "max_depth": 8,
+          "min_samples_leaf": 20
+        }
+      }
+    },
+    {
+      "model": "Ridge F1",
+      "role": "linear variant",
+      "feature_design": "F1; log inputs",
+      "form": "standard",
+      "specification": {
+        "feature_pack": "F1",
+        "mi_fraction": 1.0,
+        "log_inputs": true,
+        "log_target": false,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "ridge",
+        "params": {
+          "alpha": 100
+        }
+      }
+    },
+    {
+      "model": "RF F1",
+      "role": "tree variant",
+      "feature_design": "F1; original target",
+      "form": "standard",
+      "specification": {
+        "feature_pack": "F1",
+        "mi_fraction": 1.0,
+        "log_inputs": false,
+        "log_target": false,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "forest",
+        "params": {
+          "max_depth": 24,
+          "min_samples_leaf": 10,
+          "max_features": 0.8
+        }
+      }
+    },
+    {
+      "model": "RF log-target F1",
+      "role": "tree variant",
+      "feature_design": "F1; log1p target",
+      "form": "standard",
+      "specification": {
+        "feature_pack": "F1",
+        "mi_fraction": 1.0,
+        "log_inputs": false,
+        "log_target": true,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "forest",
+        "params": {
+          "max_depth": 24,
+          "min_samples_leaf": 10,
+          "max_features": 0.8
+        }
+      }
+    },
+    {
+      "model": "OLS + time/risk",
+      "role": "input variant",
+      "feature_design": "F0 + time/risk",
+      "form": "bundle",
+      "specification": {
+        "feature_pack": "F0",
+        "mi_fraction": 1.0,
+        "log_inputs": false,
+        "log_target": false,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "linear",
+        "params": {}
+      },
+      "pack": "time_risk",
+      "uses_purchase_extension": false
+    },
+    {
+      "model": "Single tree + time/risk",
+      "role": "input variant",
+      "feature_design": "F0 + time/risk",
+      "form": "bundle",
+      "specification": {
+        "feature_pack": "F0",
+        "mi_fraction": 1.0,
+        "log_inputs": false,
+        "log_target": false,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "tree",
+        "params": {
+          "max_depth": 8,
+          "min_samples_leaf": 20
+        }
+      },
+      "pack": "time_risk",
+      "uses_purchase_extension": false
+    },
+    {
+      "model": "Ridge + time/risk",
+      "role": "input variant",
+      "feature_design": "F1 log inputs + time/risk",
+      "form": "bundle",
+      "specification": {
+        "feature_pack": "F1",
+        "mi_fraction": 1.0,
+        "log_inputs": true,
+        "log_target": false,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "ridge",
+        "params": {
+          "alpha": 100
+        }
+      },
+      "pack": "time_risk",
+      "uses_purchase_extension": false
+    },
+    {
+      "model": "RF + time/risk",
+      "role": "input variant",
+      "feature_design": "F1 log1p target + time/risk",
+      "form": "bundle",
+      "specification": {
+        "feature_pack": "F1",
+        "mi_fraction": 1.0,
+        "log_inputs": false,
+        "log_target": true,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "forest",
+        "params": {
+          "max_depth": 24,
+          "min_samples_leaf": 10,
+          "max_features": 0.8
+        }
+      },
+      "pack": "time_risk",
+      "uses_purchase_extension": false
+    },
+    {
+      "model": "HGB all purchase",
+      "role": "feature variant",
+      "feature_design": "F1 + seller/route/product onehot",
+      "form": "extension",
+      "specification": {
+        "algorithm": "hist_boost",
+        "role": "feature_variant",
+        "groups": [
+          "seller",
+          "route",
+          "product"
+        ],
+        "encoding": "onehot",
+        "params": {
+          "loss": "absolute_error",
+          "max_iter": 300,
+          "learning_rate": 0.05,
+          "max_leaf_nodes": 31,
+          "min_samples_leaf": 30,
+          "l2_regularization": 10
+        }
+      }
+    },
+    {
+      "model": "HGB + time/risk (31 leaves)",
+      "role": "pre-tuning control",
+      "feature_design": "All purchase + time/risk",
+      "form": "bundle",
+      "specification": {
+        "feature_pack": "F1",
+        "mi_fraction": 1.0,
+        "log_inputs": false,
+        "log_target": false,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "hist_boost",
+        "params": {
+          "loss": "absolute_error",
+          "max_iter": 300,
+          "learning_rate": 0.05,
+          "max_leaf_nodes": 31,
+          "min_samples_leaf": 30,
+          "l2_regularization": 10
+        }
+      },
+      "pack": "time_risk",
+      "uses_purchase_extension": true
+    },
+    {
+      "model": "Final HGB (63 leaves)",
+      "role": "CV-selected final model",
+      "feature_design": "All purchase + time/risk",
+      "form": "bundle",
+      "specification": {
+        "feature_pack": "F1",
+        "mi_fraction": 1.0,
+        "log_inputs": false,
+        "log_target": false,
+        "weight_policy": "uniform",
+        "output_role": "point",
+        "kind": "hist_boost",
+        "params": {
+          "loss": "absolute_error",
+          "max_iter": 300,
+          "learning_rate": 0.05,
+          "max_leaf_nodes": 63,
+          "min_samples_leaf": 30,
+          "l2_regularization": 10
+        }
+      },
+      "pack": "time_risk",
+      "uses_purchase_extension": true
+    }
+  ],
+  "risk_params": {
+    "learning_rate": 0.05,
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 40,
+    "l2_regularization": 10.0,
+    "early_stopping": false,
+    "random_state": 33
+  }
+}

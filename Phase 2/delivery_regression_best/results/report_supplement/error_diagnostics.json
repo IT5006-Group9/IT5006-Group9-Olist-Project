@@ -1,0 +1,8 @@
+{
+  "chronology_flags_total": 84,
+  "train_flags": 59,
+  "test_flags": 25,
+  "exclusion_scope": "evaluation only; model and training population unchanged",
+  "underprediction_share_pct": 49.82723960296519,
+  "p90_absolute_error_days": 9.091400187242279
+}
