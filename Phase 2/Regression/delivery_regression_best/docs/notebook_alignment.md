@@ -6,9 +6,9 @@ Reviewed against team main `534a802` and the official V2 brief on **2026-10-11**
 
 [delivery_regression_complete.ipynb](../notebooks/delivery_regression_complete.ipynb) follows:
 
-**problem/scoping → source/schema/contracts → order-level build → split/features/leakage → OLS/tree baselines → Ridge/RF/input variants → bounded HGB tuning → latest ensemble comparison → final Train–CV–Test → errors → interpretation → business limits → reproduction.**
+**data preparation → features/split → baselines → variants → HGB tuning → stacking → test evaluation → interpretation → conclusions.**
 
-Default `review` mode validates saved model evidence and, if the fixed course ZIP is supplied, actually rebuilds source contracts, V2 inputs and the random manifests. `reproduce` mode invokes the existing frozen-model training runner; `WITH_CV=True` also rebuilds all 75 fold records. This is an integrated workflow entry, with modelling implementations in `src/` / `scripts/`, not an inline copy of all historical code. It does not refit every search candidate or a final stack.
+Default `review` mode validates saved model evidence and, if the fixed course ZIP is supplied, actually rebuilds source contracts, V2 inputs and the random manifests. `reproduce` mode invokes the existing frozen-model training runner; `WITH_CV=True` also rebuilds all 75 fold records. Model fitting remains in the reusable `src/` / `scripts/` implementations. The notebook presents the analysis and results; execution plumbing and QA logs are kept in `scripts/integrated_notebook_support.py` and ignored `runs/`. It does not refit every search candidate or a final stack.
 
 ## 1. Classification inventory: entire repository
 
@@ -63,15 +63,17 @@ We implement the contracts with pandas; **the GX library itself is not used or c
 
 | Requirement | Where the integrated notebook addresses it |
 |---|---|
-| declared question, stakeholder, target and success measure | sections1/9/12 |
-| same course dataset; documented joins/transforms/assumptions | sections2–4 |
-| simple baseline before added complexity; small reusable families | sections5–8; linear / tree, with ensemble explored but not retained |
-| disciplined split/CV, recorded seeds, no post-outcome inputs | sections0/4/7–8 |
-| pipelines, clean code, validation and separation of stages | sections0/2–5/13 plus reusable implementation modules |
-| appropriate regression metrics and comparisons | sections5–10 |
-| interpretation, limitations and business recommendations | sections10–12 |
-| readable Notebook with Markdown, reproducible GitHub entry | numbered explanations, executed output and section13 |
-| source attribution and AI declaration | sections1/13 and report guide |
+| question, stakeholder, target and success measure | opening, sections1/3/7/9 |
+| course dataset, joins/transforms/assumptions | sections1–2 |
+| simple baseline before added complexity | sections3–6 |
+| split/CV, seeds, exclusion of post-outcome inputs | sections2/5–6 |
+| pipelines, validation and stage separation | sections1–3, implementation modules and supporting checks |
+| regression metrics and common-protocol comparisons | sections3–7 |
+| interpretation, limitations and recommendations | sections7–9 |
+| readable Markdown, executable GitHub entry | numbered analysis sections, results and README reproduction commands |
+| attribution and AI declaration | final reference paragraph and report guide |
+
+The five problem-scoping checks remain satisfied: (1) timestamps directly define the target; (2) predictors exclude post-purchase outcomes, subject to archived-attribute availability; (3) EDA associations and matched model comparisons show signal; (4) valid long-tail labels are retained, with MAE/absolute loss and tail/RMSE reporting; (5) customer-service and order-operations roles can use estimates for human checks. These checks are expressed through the analysis rather than repeated as an introductory administrative table.
 
 No new model family, test-driven selection, data exclusion or dataset version was introduced to match a template. The overall project must still stay within its **2–3 family budget** and its report must cover both tasks; this regression notebook alone does not certify every team deliverable.
 
@@ -82,3 +84,9 @@ Set `OLIST_ARCHIVE` to the unchanged course ZIP, then run `scripts/run_notebook.
 Change the setup cell to `RUN_MODE="reproduce"` to refit 15 frozen Train/Test rows; set `WITH_CV=True` for their five-fold scores. The existing fixed-model runner was previously independently executed from the course ZIP and its Train/Test matched. The new integration is validated in default review mode, with and without raw data; this does **not** claim that all fits/searches were repeated during this formatting task. The latest stacking retains its separate nested reproduction path and has no final deployment fit/Test.
 
 Detailed report data: [Regression Report Evidence Guide](report_evidence_guide.md).
+
+## 5. Assignment-style revision (2026-10-11)
+
+The formatting reference is the local Assignment1 notebook, especially its 1-based cells13,17,21,23,29 and31: a short method explanation, focused code/output, then an interpretation tied to the question. No assignment questions, point allocations or individual-assessment instructions were copied into this team project.
+
+The integrated notebook now uses numbered analytical sections and concise result paragraphs. Reader-route/headline blocks, repeated protocol warnings, unfitted estimator HTML, checksum dumps, large JSON outputs and handoff instructions are removed from the submission narrative. Detailed data contracts, execution modes and reproducibility evidence remain in supporting code/docs. The same source, split, model configurations, scores and figures are retained; this is a presentation revision, not a new experiment.
