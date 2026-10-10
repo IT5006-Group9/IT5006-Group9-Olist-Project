@@ -372,6 +372,8 @@
 
 ### 报告中的准确入口
 
+当前整体阅读入口：[delivery_regression_complete.ipynb](../notebooks/delivery_regression_complete.ipynb)，从数据质量／准备到最终选择完整串联；[课程规范与Notebook结构核对](notebook_alignment.md)。默认不重训，已明确列出重建数据与固定模型训练模式。
+
 从仓库根目录：
 
 - `Phase 2/Regression/delivery_regression_best/notebooks/best_scheme_review.ipynb`

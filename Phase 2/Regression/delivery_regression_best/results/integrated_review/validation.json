@@ -1,0 +1,19 @@
+{
+  "base_commit": "534a802",
+  "notebook": "notebooks/delivery_regression_complete.ipynb",
+  "cells": 36,
+  "code_cells": 15,
+  "images": 4,
+  "errors": 0,
+  "live_course_ZIP_preparation_passed": true,
+  "no_archive_review_passed": true,
+  "links_checked_in_notebook": 10,
+  "source_contract_checks": 19,
+  "hard_data_gates_passed": true,
+  "protected_artifacts_unchanged": 64,
+  "private_unexpected_rows_ignored": true,
+  "models_refitted_this_task": false,
+  "complete_training_mode_executed_this_task": false,
+  "training_mode_uses_existing_verified_runner": true,
+  "notebook_sha256": "daa22cccc880a74428ed9749a13f18e2e345062d194a13893e845454e251ee4a"
+}
