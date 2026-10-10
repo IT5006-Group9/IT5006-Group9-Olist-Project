@@ -1,6 +1,6 @@
 # Delivery Regression: Stacking Comparison
 
-The main report is [Tuned Ridge, Random Forest, and Stacking](nested_tuning/notebooks/tuned_stacking_comparison.ipynb). This exploratory comparison supports the choice of HGB as the final regression model.
+The main report is [Tuned Ridge, Random Forest, and Stacking](../delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb), alongside the latest random-split regression notebook. This exploratory comparison supports the choice of HGB as the final regression model.
 
 | Method | Mean outer-validation MAE (days) |
 |---|---:|
@@ -13,7 +13,7 @@ The experiment uses the existing 64,634 training orders, with five outer folds a
 
 ## Contents
 
-- [Executed notebook](nested_tuning/notebooks/tuned_stacking_comparison.ipynb): methods, before/after comparisons, weights, and interpretation.
+- [Executed notebook](../delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb): methods, before/after comparisons, weights, and interpretation.
 - [Reproduction guide](nested_tuning/README.md): environment setup and exact commands.
 - [Aggregate results](nested_tuning/results/tables/): outer-fold scores, paired changes, and selected candidates.
 - [Verification record](nested_tuning/results/validation.json): independent prediction replay and weight checks.

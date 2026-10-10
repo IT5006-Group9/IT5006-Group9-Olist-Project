@@ -146,7 +146,7 @@ plt.show()
 '''),
         md("""## Reproduction and Scope
 
-The accompanying README documents the three training/combination runners and independent verifier. Original notebooks, prior results, and published model code remain unchanged. Order-level predictions and fitted models are local files under the ignored `random_stacking/runs/nested_tuning_v1/` directory; only aggregate tables belong in the report.
+The [reproduction guide](../../random_stacking/nested_tuning/README.md) documents the three training/combination runners and independent verifier. Original notebooks, prior results, and published model code remain unchanged. Order-level predictions and fitted models are local files under the ignored `random_stacking/runs/nested_tuning_v1/` directory; only aggregate tables belong in the report.
 
 This experiment evaluates a bounded tuning procedure. It does not perform a final full-training deployment refit or a new holdout evaluation. The existing holdout has already informed earlier work. A new claim about future orders would require a later evaluation cohort and features available at prediction time.
 """),
@@ -158,7 +158,7 @@ print("Full verification requires the local training artifacts; notebook executi
     ]
     notebook.metadata = {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
                          "language_info": {"name": "python", "version": "3.12"}}
-    destination = ROOT / "notebooks/tuned_stacking_comparison.ipynb"
+    destination = ROOT.parents[1] / "delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb"
     destination.parent.mkdir(parents=True, exist_ok=True)
     nbf.write(notebook, destination)
     print(destination)

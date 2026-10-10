@@ -4,7 +4,7 @@
 
 ## Random-split stacking comparison
 
-Read the [tuned stacking notebook](random_stacking/nested_tuning/notebooks/tuned_stacking_comparison.ipynb) and [reproduction guide](random_stacking/nested_tuning/README.md) for the bounded Ridge/RF tuning and ensemble comparison. Mean outer-validation MAE is **4.2374 days** for the three-model stack versus **4.2378 days** for HGB, an improvement of approximately 36 seconds. HGB remains the final regression model; stacking is retained for discussion. The new selection and stacking procedure uses five outer folds and three inner folds within the existing training set. HGB was previously selected using these same folds, so the comparison remains retrospective development evidence rather than a new independent test.
+Read the [tuned stacking notebook](delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb) and [reproduction guide](random_stacking/nested_tuning/README.md) for the bounded Ridge/RF tuning and ensemble comparison. Mean outer-validation MAE is **4.2374 days** for the three-model stack versus **4.2378 days** for HGB, an improvement of approximately 36 seconds. HGB remains the final regression model; stacking is retained for discussion. The new selection and stacking procedure uses five outer folds and three inner folds within the existing training set. HGB was previously selected using these same folds, so the comparison remains retrospective development evidence rather than a new independent test.
 
 ## Historical temporal ensemble comparison
 

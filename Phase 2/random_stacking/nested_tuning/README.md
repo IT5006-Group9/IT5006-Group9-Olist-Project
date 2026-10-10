@@ -2,7 +2,7 @@
 
 This experiment evaluates a bounded tuning procedure on the existing 64,634 training orders. It searches 12 Ridge and 6 random-forest configurations, then compares fixed averages and constrained MAE combinations with the published HGB reference. The existing 31,836-order test set is not loaded or scored by these runners.
 
-The main report is [tuned_stacking_comparison.ipynb](notebooks/tuned_stacking_comparison.ipynb). HGB remains the final regression model; stacking is retained as an exploratory comparison. Its mean outer-validation MAE is 4.2374 days versus 4.2378 for HGB, a reduction of approximately 36 seconds. HGB receives 97.6%–99.4% of the learned weight, with zero Ridge weight in every fold.
+The main report is [tuned_stacking_comparison.ipynb](../../delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb), alongside the latest random-split regression notebook. HGB remains the final regression model; stacking is retained as an exploratory comparison. Its mean outer-validation MAE is 4.2374 days versus 4.2378 for HGB, a reduction of approximately 36 seconds. HGB receives 97.6%–99.4% of the learned weight, with zero Ridge weight in every fold.
 
 ## Evaluation
 
@@ -37,7 +37,7 @@ Run from `Phase 2`:
 .venv/bin/python random_stacking/nested_tuning/scripts/verify_nested_tuning.py
 .venv/bin/python -m unittest discover -s random_stacking/nested_tuning/tests -v
 .venv/bin/python random_stacking/nested_tuning/scripts/build_notebook.py
-.venv/bin/python scripts/run_notebook.py random_stacking/nested_tuning/notebooks/tuned_stacking_comparison.ipynb
+.venv/bin/python scripts/run_notebook.py delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb
 ```
 
 The two base runners may execute concurrently. Each freezes its source, protocol, and reference hashes and supports resuming verified checkpoints. Private fitted models, prediction matrices, and fold audits stay under the ignored `../runs/nested_tuning_v1/` directory. A changed protocol or modeling implementation requires a new run directory; do not overwrite the frozen identity of an existing run.
