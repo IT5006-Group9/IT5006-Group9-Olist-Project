@@ -7,4 +7,4 @@
 
 The final model remains the retained HGB. These are unchanged notebook/evidence copies, with the
 existing manifest fingerprint refreshed for its already-updated validation record. Launch instructions
-and review execution are in the [Notebooks Final index](../README.md).
+and review execution are in the [Final Notebooks index](../README.md).

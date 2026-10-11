@@ -723,39 +723,39 @@
     "src/stacking_tuning.py": "c92552e4a2d54b61f07038797017b2ccded3370f0c5dfc8df7cb4c22593d3e0e"
   },
   "notebook_copies": {
-    "Phase 2/Notebooks Final/Classification/notebooks/classification_complete_pipeline.ipynb": {
+    "Phase 2/Final Notebooks/Classification/notebooks/classification_complete_pipeline.ipynb": {
       "source": "Phase 2/Classification Work/notebooks/classification_complete_pipeline.ipynb",
       "sha256": "a57f586384ac7ebffa1f985420e69879aabb322fcb4daa4286dcc08160887f79"
     },
-    "Phase 2/Notebooks Final/Classification/notebooks/data_preparation_audit.ipynb": {
+    "Phase 2/Final Notebooks/Classification/notebooks/data_preparation_audit.ipynb": {
       "source": "Phase 2/Classification Work/notebooks/data_preparation_audit.ipynb",
       "sha256": "b00197d441726c47380a4bf534e8aa0e4ac0f951e9ee7b44741a2e8872f0cbf3"
     },
-    "Phase 2/Notebooks Final/Classification/notebooks/sampling_comparison.ipynb": {
+    "Phase 2/Final Notebooks/Classification/notebooks/sampling_comparison.ipynb": {
       "source": "Phase 2/Classification Work/notebooks/sampling_comparison.ipynb",
       "sha256": "943b8b97a0cc07b033a6c3031d768421b48c4716b88448f10dc56f139a2f6bc4"
     },
-    "Phase 2/Notebooks Final/Classification/notebooks/baseline_variant_review.ipynb": {
+    "Phase 2/Final Notebooks/Classification/notebooks/baseline_variant_review.ipynb": {
       "source": "Phase 2/Classification Work/notebooks/baseline_variant_review.ipynb",
       "sha256": "e1df25edee31fc3f8d15bc757a3152ee1898aee0cdca9922622f066064ca6813"
     },
-    "Phase 2/Notebooks Final/Classification/notebooks/ensemble_comparison.ipynb": {
+    "Phase 2/Final Notebooks/Classification/notebooks/ensemble_comparison.ipynb": {
       "source": "Phase 2/Classification Work/notebooks/ensemble_comparison.ipynb",
       "sha256": "a5186b2b1bc51008d99b68cc0b94c561a816031a0cc3845e367f263f0b04d2cf"
     },
-    "Phase 2/Notebooks Final/Regression/delivery_regression_best/notebooks/report_supplement_review.ipynb": {
+    "Phase 2/Final Notebooks/Regression/delivery_regression_best/notebooks/report_supplement_review.ipynb": {
       "source": "Phase 2/Regression Work/delivery_regression_best/notebooks/report_supplement_review.ipynb",
       "sha256": "8cd9cb14e1cf5536a6e2811f17fac7ab3eb97573461efe2d115eec6a77ae84d5"
     },
-    "Phase 2/Notebooks Final/Regression/delivery_regression_best/notebooks/best_scheme_review.ipynb": {
+    "Phase 2/Final Notebooks/Regression/delivery_regression_best/notebooks/best_scheme_review.ipynb": {
       "source": "Phase 2/Regression Work/delivery_regression_best/notebooks/best_scheme_review.ipynb",
       "sha256": "e139d56a3f29cf875ebecefcc427ff58f7587a0cb2ca5f041c7de8eac88fbdf0"
     },
-    "Phase 2/Notebooks Final/Regression/delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb": {
+    "Phase 2/Final Notebooks/Regression/delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb": {
       "source": "Phase 2/Regression Work/delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb",
       "sha256": "48eb049fc52ec51bcc81317020ee5f2e4bf1980279aa42faff6345bfd45049af"
     },
-    "Phase 2/Notebooks Final/Regression/delivery_regression_best/notebooks/delivery_regression_complete.ipynb": {
+    "Phase 2/Final Notebooks/Regression/delivery_regression_best/notebooks/delivery_regression_complete.ipynb": {
       "source": "Phase 2/Regression Work/delivery_regression_best/notebooks/delivery_regression_complete.ipynb",
       "sha256": "6cfac00a73b9c27729b8f214ff26156887ab44b6c0254bbee78de8825e67ee5a"
     }
@@ -791,5 +791,27 @@
     "classification_training_repeated": false,
     "regression_models_refitted": false,
     "pre_existing_manifest_stale_validation_hash_refreshed": true
+  },
+  "final_folder_rename": {
+    "base_commit": "f94eac115d4295bde0e819dcc8272ac103fbc2c7",
+    "moves": {
+      "Phase 2/Notebooks Final": "Phase 2/Final Notebooks",
+      "Phase 2/Reports Final": "Phase 2/Final Reports"
+    },
+    "all_notebooks_and_saved_outputs_unchanged": true,
+    "report_evidence_retained_until_approved_pdf_available": true,
+    "navigation_updated": [
+      "README.md",
+      "Phase 2/README.md",
+      "Phase 2/Final Reports/README.md",
+      "Phase 2/Final Notebooks/README.md",
+      "Phase 2/Final Notebooks/Regression/README.md",
+      "Phase 2/Final Reports/Regression/README.md"
+    ],
+    "validation": {
+      "all_28_notebooks_byte_identical": true,
+      "review_runner_passed_after_rename": true,
+      "navigation_links_checked": 86
+    }
   }
 }

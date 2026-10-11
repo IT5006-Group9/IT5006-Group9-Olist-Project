@@ -1,4 +1,4 @@
-# Notebooks Final
+# Final Notebooks
 
 | Submission entry | Scope | Execution status |
 |---|---|---|
