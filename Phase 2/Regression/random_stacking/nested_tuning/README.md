@@ -2,7 +2,9 @@
 
 This experiment evaluates a bounded tuning procedure on the existing 64,634 training orders. It searches 12 Ridge and 6 random-forest configurations, then compares fixed averages and constrained MAE combinations with the published HGB reference. The existing 31,836-order test set is not loaded or scored by these runners.
 
-The main report is [tuned_stacking_comparison.ipynb](../../delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb), alongside the latest random-split regression notebook. HGB remains the final regression model; stacking is retained as an exploratory comparison. Its mean outer-validation MAE is 4.2374 days versus 4.2378 for HGB, a reduction of approximately 36 seconds. HGB receives 97.6%–99.4% of the learned weight, with zero Ridge weight in every fold.
+The shared report is [tuned_stacking_comparison.ipynb](../../delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb), alongside the integrated random-split regression notebook. This directory records the original nested Ridge/RF tuning experiment; the shared report also includes the later [log-target RF and ExtraTrees follow-up](../ensemble_followup/README.md). HGB remains the final regression model. The tuned three-model stack recorded here has mean outer-validation MAE of 4.2374 days versus 4.2378 for HGB, a reduction of approximately 36 seconds. HGB receives 97.6%–99.4% of the learned weight, with zero Ridge weight in every fold.
+
+The tuned RF here uses the **original target** and F1 plus time encoding. All five outer folds selected depth 24, minimum leaf size 10 and feature fraction 0.8, matching the original tree settings. Its improvement over the fixed baseline therefore comes from the selected feature pack. It is distinct from the fixed **log-target F1 RF** used by the later follow-up. This experiment's eight before/after combinations remain in the shared notebook's 12-row appendix.
 
 ## Evaluation
 

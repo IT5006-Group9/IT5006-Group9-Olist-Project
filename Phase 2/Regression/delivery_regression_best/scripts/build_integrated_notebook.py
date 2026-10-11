@@ -36,7 +36,7 @@ md('''## Context & Methods
 The primary sample contains **96,470 completed deliveries** from the course archive, with one row per order. Phase 1 found a right-skewed duration distribution: median **10.22 days**, mean **12.56**, P90 **23.10**, with **306** orders above 60 days. The same target definition and valid extremes are preserved in modelling.
 
 - **Prediction point:** order placement. Inputs describe what is assumed available then; the receipt timestamp is used only to construct y.
-- **Main comparison:** linear and tree baselines, their variants, and a later HGB/stacking comparison under one random-order protocol.
+- **Main comparison:** linear and tree baselines, their variants, and later HGB/stacking and ExtraTrees comparisons under one random-order protocol.
 - **Selection:** five-fold training CV MAE. Test scores describe frozen comparisons, rather than define the objective or choose this stage's parameter winner.
 - **Evaluation:** errors are in days. RMSE, signed bias, ±3-day coverage and outcome/route slices supplement the average error.
 - **Reproducibility:** exact preparation and split manifests are checked; source data, order-level predictions and models remain local. Published tables and plots contain aggregate results.
@@ -47,7 +47,7 @@ md('''### Execution and source
 
 The input is the unchanged course Olist ZIP, supplied through `OLIST_ARCHIVE`. The default `review` run rebuilds the data and partitions when the ZIP is supplied, then displays and checks the saved results of fitted experiments. Without the ZIP, it uses labelled aggregate preparation evidence. `RUN_MODE="reproduce"` refits the fixed model specifications; `WITH_CV=True` also repeats their five-fold evaluation.
 
-The search and latest stacking results are retained from their completed experiments, rather than rerun by default. Fitting code is in the supplied `src/` and `scripts/` modules; the [README](../README.md) gives the reproduction commands. This separation keeps expensive fitting and the submission narrative on the same recorded inputs and configurations.''')
+The search, nested stacking and ensemble follow-up results are retained from their completed experiments, rather than rerun by default. The follow-up section checks its saved verification record and published artifact hashes; it does not replay fitted models. Keep the sibling `random_stacking/ensemble_followup/` directory with this notebook when reviewing the full repository. Fitting code is in the supplied `src/` and `scripts/` modules; the [README](../README.md) gives the reproduction commands. This separation keeps expensive fitting and the submission narrative on the same recorded inputs and configurations.''')
 code('''from pathlib import Path
 import sys
 import json
@@ -244,9 +244,9 @@ forest_choices["Setting"] = forest_choices.Setting.astype(int) + 1
 display(forest_choices)''')
 md('''**Random-forest finding.** Mean outer MAE decreases from **4.8062 to 4.6002 days**, a **4.29%** reduction against the fixed F0 forest. Every fold selects **F1_time with Setting 1**: depth 24, minimum leaf size 10 and feature fraction 0.8. The selected tree parameters match the control, so this observed gain comes from changing the feature pack, rather than selecting different tree settings. The bundled feature additions do not isolate one particular feature as the cause.
 
-This result does not make the tuned raw-target forest the strongest forest variant in the notebook: the separately evaluated log-target F1 forest in Section 4.1 has a lower reported CV MAE of **4.5386 days**. These rows describe different configurations and selection procedures, not a uniform replacement of all earlier forest results.
+The tuned original-target forest and the fixed log-target forests remain separate experiments. The **F1 log-target forest** from Section 4.1 has lower reported CV MAE of **4.5386 days** and is reused as a fixed member of the ensemble follow-up. The stronger published **F1 log-target + time/risk forest** in Section 4.3 reaches **4.4152 days**, but is not included in either ensemble experiment. Neither log-target result comes from this six-candidate nested search.
 
-**Connection to stacking.** The fold-selected Ridge and forest supply the base predictions in Section 6. Their separate-model improvements motivate that combination experiment, but do not establish an advantage over HGB. Detailed runners, per-candidate inner scores and reproduction commands are in the [nested tuning guide](../../random_stacking/nested_tuning/README.md); the [stacking notebook](tuned_stacking_comparison.ipynb) reports the combination results. The reused folds remain retrospective development evidence.
+**Connection to stacking.** The fold-selected Ridge and original-target forest supply base predictions for the earlier three-model stack in Section 6. Their separate-model improvements motivate that combination experiment, but do not establish an advantage over HGB. Detailed runners, per-candidate inner scores and reproduction commands are in the [nested tuning guide](../../random_stacking/nested_tuning/README.md); the [ensemble notebook](tuned_stacking_comparison.ipynb) reports both that experiment and the later log-target RF/ExtraTrees follow-up. The reused folds remain retrospective development evidence.
 ''')
 md('''### 4.3 Enriched purchase information and HGB
 
@@ -263,7 +263,7 @@ parameter_results = pd.read_csv(ROOT / "results/tables/parameter_comparison.csv"
 risk_comparison = parameter_results.loc[parameter_results.configuration.eq("leaves63"),
                                         ["pack", "CV_MAE"]]
 display(risk_comparison.rename(columns={"pack": "Inputs", "CV_MAE": "CV MAE"}).round(6))''')
-md('''**Finding.** Expanded-purchase HGB has CV MAE **4.4052 days**. Adding time and risk reduces it to **4.2729** with 31 leaves. The same input additions improve OLS, the single tree, Ridge and the log-target forest. At 63 leaves, however, time-only MAE is **4.2399**, versus **4.2378** with risk: just **0.0021 days** of additional benefit.
+md('''**Finding.** Expanded-purchase HGB has CV MAE **4.4052 days**. Adding time and risk reduces it to **4.2729** with 31 leaves. The same input additions improve OLS, the single tree, Ridge and the log-target forest. The row labelled **RF + time/risk** uses a log-transformed target and reaches **4.4152 days**; it is distinct from the fixed F1 forest and the nested original-target forest. At 63 leaves, however, time-only MAE is **4.2399**, versus **4.2378** with risk: just **0.0021 days** of additional benefit.
 
 **Interpretation.** Much of the later improvement comes from representing the purchase period more specifically. The risk feature summarises patterns already learnable from X; it does not supply a new operational observation. Its very small marginal benefit should not be presented as solving the long-tail problem.
 
@@ -286,28 +286,56 @@ md('''## 6. Does combining models add useful improvement?
 
 Stacking is tested because models from different families may make complementary errors. An equal average is a simple combination reference. The MAE-weighted combination learns non-negative weights summing to one from out-of-fold base predictions; it cannot rely on fitting-set predictions as if they were unseen observations.
 
-In the latest experiment, Ridge and random forest use the fold-specific tuning procedure documented in **Section 4.2**, with **three inner folds** inside each of the **five outer training folds**. HGB is held at its selected setting, with its risk construction rebuilt within the appropriate training boundaries. Outer-validation labels do not fit the corresponding combination. The fold-tuned Ridge/RF configurations differ from the fixed variants in Section 4.1, so their results are listed separately. This experiment supplies outer CV evidence only, with no final full-training stack or test score.''')
-code('''stack = pd.read_csv(TABLES / "stacking_outer_cv_comparison.csv")
-stack["CV SD"] = stack.fold_MAE_SD_days * np.sqrt(4 / 5)  # convert sample to population SD
-stack_view = stack[["label", "mean_fold_MAE_days", "CV SD"]].rename(columns={
-    "label": "Model", "mean_fold_MAE_days": "CV MAE"})
-display(stack_view.round(6))
+**Earlier nested experiment.** Ridge and original-target random forest use the fold-specific tuning procedure in **Section 4.2**, with **three inner folds** inside each of the **five outer training folds**. HGB stays at its selected setting, with risk rebuilt within the corresponding training boundaries. The resulting three-model stack is retained below as the previous comparator.
 
-weights = pd.read_csv(TABLES / "stacking_fold_weights.csv")
-selected_weights = weights.loc[weights.model.eq("stack_three_tuned")]
+**Bounded ensemble follow-up.** The same training orders and outer folds now test HGB with the fixed **F1 log-target RF**, or with **ExtraTrees using F1_time**. ExtraTrees uses 100 trees, depth 24, minimum leaf size 10, feature fraction 0.8, no bootstrap and seed 33. Its only search compares original versus log-transformed targets using three-inner-fold MAE; all five outer partitions select the log target. These RF and ExtraTrees routes exclude the learned risk feature. The stronger RF + time/risk row in Section 4.3 is not tested here.
+
+The follow-up reuses verified HGB predictions only within their matching inner/outer partitions. ExtraTrees target selection and learned weights share inner OOF predictions; outer-validation outcomes fit neither. The four main rows below compare HGB, the previous stack and the two HGB/ExtraTrees combinations. All single-model and combination results remain in the existing [ensemble notebook](tuned_stacking_comparison.ipynb), with protocol and audit details in the [follow-up guide](../../random_stacking/ensemble_followup/README.md). Both experiments report outer CV only, with no new final full-training combination or test score.''')
+code('''import hashlib
+
+FOLLOWUP = ROOT.parent / "random_stacking/ensemble_followup"
+followup_results = FOLLOWUP / "results"
+audit = json.loads((followup_results / "validation.json").read_text())
+sha256 = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+assert audit["status"] == "passed" and all(audit["checks"].values())
+assert (audit["train_n"], audit["outer_folds"], audit["inner_folds"]) == (64634, 5, 3)
+assert audit["holdout_read_or_scored_by_verifier"] is False
+assert sha256(FOLLOWUP / "config/protocol.json") == audit["protocol_sha256"]
+assert sha256(FOLLOWUP / "scripts/verify_followup.py") == audit["verifier_source_sha256"]
+for relative, expected in audit["public_artifact_sha256"].items():
+    assert sha256(followup_results / relative) == expected, relative
+summary = json.loads((followup_results / "summary.json").read_text())
+assert summary["test_set_read_or_scored"] is False and summary["deployment_refit"] is False
+assert summary["protocol_sha256"] == audit["protocol_sha256"]
+print("Checked saved audit, protocol, verifier source and", len(audit["public_artifact_sha256"]),
+      "published follow-up artifacts; no fitting or holdout scoring.")
+
+ensemble = pd.read_csv(followup_results / "tables/comparison.csv").set_index("model")
+# Match reused comparators to the immutable earlier experiment.
+np.testing.assert_allclose(
+    ensemble.loc[["hgb", "previous_stack"], "mean_fold_MAE_days"],
+    classic_cv.loc[["hgb", "stack_three_tuned"], "mean_fold_MAE_days"], atol=1e-12, rtol=0)
+ensemble["CV SD"] = ensemble.fold_MAE_SD_days * np.sqrt(4 / 5)  # sample to population SD
+main_ensembles = ["hgb", "previous_stack", "mean_hgb_extra_trees", "stack_hgb_extra_trees"]
+display(ensemble.loc[main_ensembles, ["label", "mean_fold_MAE_days", "CV SD", "mean_fold_RMSE_days"]]
+        .rename(columns={"label": "Model", "mean_fold_MAE_days": "CV MAE",
+                         "mean_fold_RMSE_days": "CV RMSE"}).reset_index(drop=True).round(6))
+
+weights = pd.read_csv(followup_results / "tables/weights.csv")
+selected_weights = weights.loc[weights.model.eq("stack_hgb_extra_trees")]
 display(selected_weights.groupby("base_model").weight.agg(["min", "max"]).round(4))''')
-md('''**Finding.** Equal averaging of tuned Ridge, random forest and HGB gives CV MAE **4.4441 days**, worse than HGB alone. The learned three-model combination reaches **4.2374**, compared with HGB's **4.2378**: a reduction of **0.000419 days**, about **36 seconds** of mean absolute error.
+md('''**Finding.** The previous tuned Ridge/RF/HGB stack reaches **4.2374 days**, a reduction of **0.000419 days** against HGB's **4.2378**. The later HGB/ExtraTrees **50/50 average is worse at 4.2745**, while its **MAE-weighted combination reaches 4.2365**. That weighted combination improves by **0.001342 days (1.93 minutes, 0.032%)** versus HGB and **0.000923 days (1.33 minutes)** versus the previous stack, improving in four of five folds against both. These minute equivalents describe reduced average prediction error, not delivery-time savings. Its mean RMSE remains slightly worse than the previous stack's.
 
-The weights explain the limited gain. HGB receives **97.6%–99.4%** across folds, Ridge receives zero, and random forest supplies only a small correction. Combining different model names is insufficient when the extra models provide little complementary signal.
+The learned ExtraTrees weight is **5.62%–11.24%**, leaving **88.76%–94.38%** on HGB. For the separate fixed log-target RF follow-up, every learned weight is **100% HGB and 0% RF**, exactly reproducing HGB; its 50/50 average is worse at **4.3263 days**. In the earlier three-model stack, HGB receives **97.6%–99.4%**, Ridge zero and original-target RF a small correction. The two RF experiments therefore remain distinct.
 
-**Retention decision.** Keep single HGB for the final Train–CV–Test evaluation. The latest stack adds complexity for negligible improvement, and has no final test evaluation to report. HGB was previously selected using these outer folds, so this comparison is not independent nested validation of the entire development history.''')
+**Retention decision.** Keep single HGB for the final Train–CV–Test evaluation. The ExtraTrees combination has the lowest observed outer MAE, but the gain is small and there is no final combination test evaluation. HGB was previously selected using these folds, so this is retrospective development evidence, not independent nested validation of the entire development history. The bounded ExtraTrees search and five dependent folds do not establish statistical significance or rule out other settings.''')
 md('''## 7. Evaluate the retained model
 
 ### 7.1 Train–CV–Test on the same orders
 
 The table below reports all fixed configurations on the same training population, CV folds and **31,836 test orders**. Training error measures fit to the fitting design, including cross-fitted risk where used. CV measures held-out error during development; test scores compare the frozen choices on the common holdout. Their differences help assess how much of a training improvement carries over to unseen rows.
 
-RMSE and R² supplement MAE. R² compares squared error with variation around the test mean; **0.3675 is not 36.75% accuracy**. The latest fold-tuned stacking procedures have no final Train/Test scores and are therefore not inserted into this table.''')
+RMSE and R² supplement MAE. R² compares squared error with variation around the test mean; **0.3675 is not 36.75% accuracy**. The combination procedures in Section 6 have no final Train/Test scores and are therefore not inserted into this table.''')
 code('''display(model_scores(comparison.model.tolist(), include_test=True))
 final = comparison.set_index("model").loc["Final HGB (63 leaves)"]
 np.testing.assert_allclose(final.Test_MAE_days, 4.150491686642425, atol=1e-12, rtol=0)
@@ -365,7 +393,7 @@ md('''**Finding.** Shuffling geography/routes increases MAE by **1.3504 days**, 
 **Interpretation.** The Phase 1 geographic and promise associations remain useful after joint modelling, and the temporal signal helps distinguish periods within this historical sample. A smaller permutation increment does not show that a feature is useless: other correlated inputs may substitute for it. Shuffled combinations can also be unrealistic. These increments are neither causal effects nor additive percentages of total error.''')
 md('''## 9. Implications and limitations
 
-**Retained approach.** Start with OLS and a bounded single tree, compare regularised and ensemble variants, then retain the expanded-purchase/time/risk HGB with 63 leaves. The common evaluation shows improvement over both fitted baselines and the fixed/statistical references. Latest stacking adds too little to justify retaining a separate final combination.
+**Retained approach.** Start with OLS and a bounded single tree, compare regularised and ensemble variants, then retain the expanded-purchase/time/risk HGB with 63 leaves. The common evaluation shows improvement over both fitted baselines and the fixed/statistical references. The later HGB/ExtraTrees combination has the lowest observed outer MAE, but its small gain does not justify retaining a separate final combination on the available evidence.
 
 **Business use.** Customer-service and fulfilment teams could use the estimate to support arrival-expectation communication and identify orders needing human follow-up. It is a point estimate, not a guaranteed date or a tested intervention. No effect on satisfaction, logistics cost or operational decisions has been measured.
 

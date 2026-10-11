@@ -1,0 +1,6 @@
+outer_fold,rf_log,extra_trees
+1,rf_log_F1,extra_trees_F1_time_log
+2,rf_log_F1,extra_trees_F1_time_log
+3,rf_log_F1,extra_trees_F1_time_log
+4,rf_log_F1,extra_trees_F1_time_log
+5,rf_log_F1,extra_trees_F1_time_log

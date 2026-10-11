@@ -4,6 +4,7 @@ import json
 import sys
 import nbformat
 from nbclient import NotebookClient
+from jupyter_client import AsyncKernelManager
 from jupyter_client.kernelspec import KernelSpecManager
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,10 +16,11 @@ spec_dir.mkdir(parents=True, exist_ok=True)
     'display_name':'Delivery Regression', 'language':'python'}))
 path = ROOT / (sys.argv[1] if len(sys.argv) > 1 else 'notebooks/delivery_regression_phase2.ipynb')
 nb = nbformat.read(path, as_version=4)
-client = NotebookClient(nb, timeout=1200, kernel_name='delivery-regression',
-                        resources={'metadata':{'path':str(ROOT)}},
-                        kernel_spec_manager=KernelSpecManager(kernel_dirs=[str(kernel_root)]))
-client.execute()
+manager = AsyncKernelManager(kernel_name='delivery-regression',
+                            kernel_spec_manager=KernelSpecManager(kernel_dirs=[str(kernel_root)]))
+client = NotebookClient(nb, timeout=1200, km=manager,
+                        resources={'metadata':{'path':str(ROOT)}})
+client.execute(cleanup_kc=True)
 nbformat.write(nb,path)
 errors=[out for c in nb.cells if c.cell_type=='code' for out in c.get('outputs',[]) if out.output_type=='error']
 assert not errors
