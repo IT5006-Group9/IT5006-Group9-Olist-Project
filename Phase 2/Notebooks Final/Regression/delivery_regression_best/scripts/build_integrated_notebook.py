@@ -1,0 +1,552 @@
+"""Build the submission notebook. Execute it before publishing saved outputs."""
+from pathlib import Path
+import nbformat as nbf
+
+root = Path(__file__).resolve().parents[1]
+cells = []
+
+def md(text):
+    cells.append(nbf.v4.new_markdown_cell(text.strip()))
+
+
+def code(text):
+    cells.append(nbf.v4.new_code_cell(text.strip()))
+
+
+md('''# Delivery Lead-Time Regression
+
+**IT5006 · Phase 2**
+
+**Modelling question:** at order placement, how many fractional days will an order take to reach its customer, and can a learned model improve on the quoted delivery promise and simpler regression baselines?
+
+Phase 1 established that delivery duration was related to distance, the quoted promise, freight and purchase timing. This notebook develops that candidate into a prediction task: it defines the eligible orders and purchase-time inputs, compares linear and tree model families, examines feature and parameter changes, and evaluates the retained model. The target remains purchase-to-receipt duration, not days late relative to the promise.''')
+md('''## Problem Scoping Checklist
+
+| Course check | Assessment for delivery lead-time regression |
+|---|---|
+| **Derivable target** | Purchase and receipt timestamps directly define fractional duration; no external labels are needed. |
+| **Realistic features** | Order, location, quote and archived product/seller inputs only. Post-purchase outcomes are excluded; attribute availability is an assumption. |
+| **Sufficient signal** | Phase 1 associations motivate candidate inputs; Phase 2 compares fitted predictions with shared-protocol references. |
+| **Manageable imbalance/skew** | Retain valid long durations, compare loss/target representations within training, and report MAE, RMSE and tail errors. No classification resampling of the regression target. |
+| **Clear stakeholder** | Customer-service and fulfilment teams can use an estimate for expectation communication and human follow-up. |
+''')
+md('''## Context & Methods
+
+The primary sample contains **96,470 completed deliveries** from the course archive, with one row per order. Phase 1 found a right-skewed duration distribution: median **10.22 days**, mean **12.56**, P90 **23.10**, with **306** orders above 60 days. The same target definition and valid extremes are preserved in modelling.
+
+- **Prediction point:** order placement. Inputs describe what is assumed available then; the receipt timestamp is used only to construct y.
+- **Main comparison:** linear and tree baselines, their variants, and later HGB/stacking and ExtraTrees comparisons under one random-order protocol.
+- **Selection:** five-fold training CV MAE. Test scores describe frozen comparisons, rather than define the objective or choose this stage's parameter winner.
+- **Evaluation:** errors are in days. RMSE, signed bias, ±3-day coverage and outcome/route slices supplement the average error.
+- **Reproducibility:** exact preparation and split manifests are checked; source data, order-level predictions and models remain local. Published tables and plots contain aggregate results.
+
+Archived input availability, completed-delivery coverage and repeated development exposure qualify the interpretation. They are discussed with the relevant results and in the final limitations.
+''')
+md('''### Execution and source
+
+The input is the unchanged course Olist ZIP, supplied through `OLIST_ARCHIVE`. The default `review` run rebuilds the data and partitions when the ZIP is supplied, then displays and checks the saved results of fitted experiments. Without the ZIP, it uses labelled aggregate preparation evidence. `RUN_MODE="reproduce"` refits the fixed model specifications; `WITH_CV=True` also repeats their five-fold evaluation.
+
+The search, nested stacking, ensemble follow-up and RF replacement results are retained from their completed experiments, rather than rerun by default. Section 6 checks all three ensemble packages' saved verification records, published artifact hashes and shared metrics; it does not replay fitted models. Keep the sibling `random_stacking/nested_tuning/`, `ensemble_followup/` and `rf_risk_upgrade/` directories with this notebook. Fitting code is in the supplied `src/` and `scripts/` modules; the [README](../README.md) gives the reproduction commands. This separation keeps expensive fitting and the submission narrative on the same recorded inputs and configurations.''')
+code('''from pathlib import Path
+import sys
+import json
+import numpy as np
+import pandas as pd
+from IPython.display import display, Image
+
+ROOT = next(candidate for parent in [Path.cwd(), *Path.cwd().parents]
+            for candidate in [parent, parent / "delivery_regression_best",
+                              parent / "Regression/delivery_regression_best",
+                              parent / "Phase 2/Regression/delivery_regression_best"]
+            if (candidate / "config/report_models.json").is_file())
+for folder in [ROOT / "src", ROOT / "scripts"]:
+    sys.path.insert(0, str(folder))
+from integrated_notebook_support import start, audit_sources, prepare_orders, refit_models, finish
+
+RUN_MODE = "review"
+WITH_CV = False
+context = start(ROOT, RUN_MODE, WITH_CV)
+RESULTS = ROOT / "results/report_supplement"
+TABLES = RESULTS / "tables"
+pd.set_option("display.max_columns", 10)
+print("Model execution:", "reconstruction requested" if RUN_MODE == "reproduce" else "saved fitted experiments")
+print("Source data:", "course ZIP" if context["archive"] else "published aggregate audit")''')
+md('''## 1. Prepare the order-level modelling sample
+
+### 1.1 Source tables and join checks
+
+Seven course tables supply the inputs: orders, customers, items, sellers, products, geography and category translation. Orders link to customers; item rows link to sellers and products. Payments and reviews are not predictors for this purchase-time task.
+
+Joins are checked as `many_to_one` or `one_to_one` where appropriate. Items are aggregated before modelling so that an order with several items does not receive extra weight. Duplicate geographic postal prefixes are expected reference observations, rather than duplicate order keys. The checks below cover keys, foreign-key relationships, missing fields, statuses, timestamp parsing and value ranges. They follow the course data-contract approach using pandas, without claiming to run the Great Expectations library.''')
+code('''source_tables, quality_checks = audit_sources(context)
+display(source_tables[["table", "rows"]])
+
+# Show source exceptions; full check results are retained in the supporting CSV.
+exceptions = quality_checks.loc[quality_checks.unexpected_rows.gt(0)]
+display(exceptions[["check", "unexpected_rows", "action"]])''')
+md('''### 1.2 Target definition, exclusions and missingness
+
+For each completed delivery, define **lead time = `(receipt timestamp − purchase timestamp).total_seconds() / 86400`**. This preserves fractions of a day; timestamps are used as supplied, without adding a timezone conversion. Only delivered orders with a valid, non-negative duration enter the target population. A missing target cannot be imputed as if the delivery had been observed.
+
+The Phase 2 geographic preparation screens coordinates to latitude [−35, 6] and longitude [−75, −25], removes duplicate coordinate pairs, and uses postal-prefix medians. This reduces the influence of implausible coordinates and heavily repeated reference points. The label `V2` here refers to this preparation revision; it is not a newer external dataset or the Phase 1 consolidated table's version label.
+
+Missing predictor values remain eligible. Distance is the maximum **observed** seller–customer great-circle distance, not a road route. An order is cross-state if any seller is outside the customer's state. Imputation is learned from training data; missingness flags preserve information about incomplete measurements.''')
+code('''train, test = prepare_orders(context)
+display(pd.read_csv(TABLES / "regression_cohort_flow.csv"))
+
+if train is not None:
+    # Verify one row per order after aggregation and the unchanged target population.
+    assert len(train) + len(test) == 96470
+    assert train.order_id.is_unique and test.order_id.is_unique
+    assert set(train.order_id).isdisjoint(test.order_id)
+    assert train.lead_time_days.ge(0).all() and test.lead_time_days.ge(0).all()''')
+md('''**Finding.** The source contains 96,478 delivered orders; eight have no receipt timestamp and cannot provide y. The modelling sample therefore contains **96,470** valid completed deliveries, including **306** above 60 days. No upper-duration cutoff is imposed.
+
+The source checks flag **29 geographic rows** outside the screen and **six product records** with missing/non-positive weight. After joins and order aggregation, **477 orders** lack maximum distance and **22** lack complete average weight. These are different grains, not counts to add together. Missing predictors do not remove otherwise valid targets. Zero freight is allowed.
+
+**Modelling implication.** The cohort measures delivery duration conditional on completion; it cannot establish performance on orders that are cancelled or still unresolved. Geography is a proxy, and incomplete measurements need fold-fitted handling rather than target-based exclusions.
+''')
+md('''## 2. Define the inputs and evaluation protocol
+
+### 2.1 What can be known at purchase?
+
+The baseline package **F0** contains 16 purchase attributes: distance and missingness, promise duration, price/freight, item and seller counts, product weight, customer state, route/category and purchase calendar. **F1** adds six cyclic calendar terms, three promise/distance/cross-state interactions and one state-route category. Cyclic terms keep adjacent hours or weekdays close across a calendar boundary; interactions allow the effect of a promise or distance to vary by route.
+
+The expanded purchase package adds primary seller identity, finer geographic routes and product composition. The primary seller and dominant category are selected by the largest summed item price, with deterministic ID/name tie-breaking; counts and shares still account for all items. Order/customer IDs remain join and audit keys, while seller identity is deliberately treated as categorical information.
+
+Actual delivery, carrier handover, final status, reviews and outcome-derived lateness are excluded from X. The archive has no complete revision history for the quote, seller and product attributes, so their availability at purchase is an explicit assumption.''')
+code('''feature_groups = pd.DataFrame({
+    "Feature set": ["F0", "F1", "Expanded purchase", "Time", "Risk"],
+    "Added information": ["16 original purchase attributes", "Calendar cycles and interactions",
+                          "Seller, route and product composition", "Absolute date and year-month",
+                          "Predicted probability of delivery exceeding 30 days"]})
+display(feature_groups)
+# Individual field definitions are in final_feature_catalogue.csv.
+feature_catalogue = pd.read_csv(TABLES / "final_feature_catalogue.csv")''')
+md('''### 2.2 Random split and training-only preprocessing
+
+The 96,470 eligible orders are split **67/33** into **64,634 training / 31,836 test orders**, using seed **33**. Five shuffled folds within training (seed 33) select variants and settings. Each fold fits on four parts and scores the remaining part; there is no separate validation set. The 67/33 ratio is adapted from Zaghloul et al. (2024), while the seed and fold count are project choices.
+
+Phase 1 proposed a later-period holdout. The Phase 2 team adopted random splitting for a common historical-comparison protocol. This changes the evaluation question: the scores describe new held-out orders from the same historical mixture, rather than performance in a future period. Historical time-split experiments are kept separately.
+
+Numeric medians, categorical fill values, scaling, rare-category rules and encoding vocabularies are fitted inside each training partition. The basic F0/F1 pipeline uses one-hot encoding with a rare-category threshold of 20; the expanded purchase encoder uses 30. Test values do not determine these rules. Predictions are assessed in original days, with negative predictions floored at zero.''')
+code('''display(pd.read_csv(TABLES / "split_population.csv"))
+comparison = pd.read_csv(TABLES / "train_cv_test_comparison.csv")
+
+# CV statistics use equal weighting of the five validation folds.
+# SD below uses ddof=0, consistent with sklearn's std_test_score.
+def model_scores(names, include_test=False):
+    columns = ["model", "Train_MAE_days", "CV_MAE_mean_days", "CV_MAE_SD_population_days"]
+    if include_test:
+        columns += ["Test_MAE_days", "Test_RMSE_days", "Test_R2"]
+    return comparison.set_index("model").loc[names].reset_index()[columns].rename(columns={
+        "model": "Model", "Train_MAE_days": "Train MAE", "CV_MAE_mean_days": "CV MAE",
+        "CV_MAE_SD_population_days": "CV SD", "Test_MAE_days": "Test MAE",
+        "Test_RMSE_days": "Test RMSE", "Test_R2": "Test R²"}).round(4)''')
+md('''### 2.3 Why the risk feature needs cross-fitting
+
+The candidate `risk_p30` is a predicted probability of duration exceeding 30 days. It summarises purchase-time X through an auxiliary classifier, rather than reveal whether the current order actually becomes slow. If a classifier trained on an order's label produced that same order's regression input, its fitted probability could transmit the label into the regressor.
+
+Within each outer regression fold, **three inner folds** generate held-out risk values for the fitting orders. A classifier fitted on the complete outer-training part predicts risk for outer validation. Final regression training uses **five-fold** risk OOF values, while test risks come from a full-training classifier. Thus validation/test outcomes never create their own risk inputs. The inner three-fold versus final five-fold construction is a recorded implementation difference, not an additional raw information source.
+''')
+md('''## 3. Establish fitted baselines and reference rules
+
+Two simple fitted models represent the chosen families. **OLS** tests how far additive linear relationships can explain duration. A **single decision tree** (depth 8, minimum leaf size 20) permits nonlinear splits and interactions while keeping the initial tree model bounded. Both use F0. These baselines establish what extra complexity must improve upon.
+
+Three additional reference rules answer simpler questions. The **delivery promise** predicts the quoted purchase-to-estimated-delivery duration directly, without fitting. The **training mean** and **training median** predict a constant calculated only from fitting labels, including separately within each CV fold. The median is particularly relevant for a skewed target evaluated by absolute error. These references do not replace the fitted family baselines.
+
+For errors `e = prediction − observed duration`, **MAE = mean(|e|)** and **RMSE = sqrt(mean(e²))**. MAE is the main selection criterion; RMSE gives larger errors more influence. CV means average the five fold scores equally. Displayed CV SD uses `ddof=0`, consistent with sklearn's `std_test_score`; the source CSV also supplies explicitly labelled sample SD.''')
+code('''# Optional reconstruction uses the same frozen specifications and split.
+refit_models(context)
+baselines = ["Delivery promise", "Training mean", "Training median",
+             "OLS baseline", "Single-tree baseline"]
+display(model_scores(baselines))''')
+md('''**Finding.** OLS gives CV MAE **5.0196 days**, and the single tree **5.0585 days**. Their training errors are close to CV errors, so the initial comparison does not show a large training-versus-validation gap. Neither simple family clearly dominates.
+
+The training median reference has CV MAE **6.1480 days**, better than the mean's **6.4439**, consistent with the right-skewed target. The promise rule is much worse at **12.7308 days**. Phase 1 already showed that correlation with the promise does not make it an accurate point estimate; the common-fold comparison confirms that learned predictors can improve on using it directly.
+
+**Modelling implication.** The fitted baselines provide useful signal, but errors around five days leave room to test regularisation, nonlinear ensembles and more specific purchase-time inputs.''')
+md('''## 4. Test model and feature variants
+
+### 4.1 Ridge and random forest: historical fixed variants
+
+Ridge adds an L2 penalty to the linear route to stabilise coefficients across correlated and encoded predictors. The retained variant uses F1, selected log-transformed non-negative inputs and alpha **100**. A larger penalty discourages large coefficients; it does not itself create nonlinear relationships.
+
+Random forest averages **100** bootstrapped trees, with depth **24**, minimum leaf size **10**, `max_features=0.8` and `max_samples=0.8`. Averaging aims to reduce the instability of a single tree. We compare the original duration target with a **log1p target**, transformed back using `expm1`. The latter reduces the scale of extreme labels during fitting, but does not guarantee accurate long-delivery predictions or an unbiased arithmetic-mean estimate after inversion.
+
+These variants also change the feature representation from F0 to F1, so their difference from the baselines is not an isolated algorithm-only effect. These fixed rows document development history. The current three-model stack in Section 6 uses one RF specification: log-target F1 + time/risk.''')
+code('''variants = ["Ridge F1", "RF F1", "RF log-target F1"]
+display(model_scores(variants))''')
+md('''**Finding.** Ridge gives CV MAE **4.9836 days**, only a small change from OLS. Random forest improves to **4.7269**, and its log-target version to **4.5386**. The latter shows that target representation matters under the MAE objective.
+
+The forest's training MAE is lower than its CV MAE (3.7645 versus 4.5386 days for the log-target variant). It captures more fitting detail, but not every training gain generalises. This motivates checking CV rather than choosing the model with the lowest training error.
+
+**Next comparison.** Continue the nonlinear tree route while testing more specific purchase information and an absolute-error fitting objective. Retain the linear/tree baselines as references rather than rewriting their definitions after later improvements.
+''')
+md('''### 4.2 Historical nested tuning of Ridge and random forest
+
+The next experiment asks whether a bounded search can improve each classic model before combining their predictions. It uses the same **64,634 training orders** and five outer folds. Inside each outer training partition, **three shuffled inner folds (seed 33)** select candidates by mean MAE. Imputation, scaling, category encoding and time encoding are fitted within each corresponding inner training fold. The selected candidate is refitted on that outer training partition and evaluated on its held-out outer fold.
+
+The controls here are **F0 Ridge with log inputs and alpha 1,000**, and **F0 random forest with depth 24, minimum leaf size 10 and feature fraction 0.8**. They are different configurations from the fixed F1 variants in Section 4.1. Before/after gains below compare each nested experiment's fixed control with its own tuned procedure on the same outer validation orders.
+
+`F1_time` combines F1 calendar/interactions with fold-fitted elapsed purchase days and year-month encoding. Neither classic model uses the learned risk feature in this search. All candidates predict the original duration target; a log-input option changes X, not y. The existing test set is not loaded or scored by this experiment. Each outer fold has its own selection, rather than one final full-training model.
+''')
+md('''#### 4.2.1 Ridge: regularisation and input representation
+
+Ridge is sensitive to both the penalty and the representation of correlated numeric inputs. The search crosses the following choices, giving **12 candidates**:
+
+| Choice | Values searched |
+|---|---|
+| Feature pack | F0; F1 with time encoding (`F1_time`) |
+| Numeric inputs | Raw; selected non-negative inputs transformed with log1p |
+| L2 penalty alpha | 100; 1,000; 10,000 |
+
+The table below reports the fixed control and the complete inner-selection procedure. MAE and RMSE are mean outer-fold scores in days; lower is better. The fold-selection table shows which configuration supplied each outer validation prediction.
+''')
+code('''classic_cv = pd.read_csv(TABLES / "stacking_outer_cv_comparison.csv").set_index("model")
+classic_choices = pd.read_csv(TABLES / "stacking_selected_candidates.csv")
+
+def classic_tuning_scores(family):
+    rows = classic_cv.loc[[family + "_fixed", family + "_tuned"]].copy()
+    rows["MAE reduction (%)"] = 100 * (1 - rows.mean_fold_MAE_days / rows.iloc[0].mean_fold_MAE_days)
+    return rows[["label", "mean_fold_MAE_days", "mean_fold_RMSE_days", "MAE reduction (%)"]].rename(columns={
+        "label": "Model", "mean_fold_MAE_days": "Outer MAE", "mean_fold_RMSE_days": "Outer RMSE"
+    }).reset_index(drop=True).round(4)
+
+display(classic_tuning_scores("ridge"))
+ridge_choices = classic_choices.selected_ridge.str.extract(
+    r"ridge_(?P<Inputs>.+)_(?P<Transform>raw|log)_a(?P<Alpha>\\d+)")
+ridge_choices.insert(0, "Outer fold", classic_choices.outer_fold)
+ridge_choices["Transform"] = ridge_choices.Transform.map({"raw": "Raw inputs", "log": "Selected log1p inputs"})
+display(ridge_choices)''')
+md('''**Ridge finding.** Mean outer MAE decreases from **5.0352 to 4.9219 days**, a **2.25%** reduction against the fixed F0 control. Every fold selects **F1_time and alpha 100**. Folds 1, 2, 4 and 5 select log-transformed inputs; fold 3 selects raw inputs. Thus a single global statement that the tuned Ridge always uses log inputs would be inaccurate.
+
+The improvement combines a feature-pack change and a smaller penalty. This grid does not attribute the entire gain to alpha alone. The outer scores assess the tuning procedure; the selected configurations are fold-specific and have no new final Train/Test scores.
+''')
+md('''#### 4.2.2 Random forest: tree settings and time features
+
+The forest search crosses **F0 / F1_time** with three tree settings, giving **six candidates**:
+
+| Setting | Maximum depth | Minimum leaf size | Feature fraction |
+|---|---:|---:|---:|
+| 1 | 24 | 10 | 0.8 |
+| 2 | Unrestricted | 5 | 0.8 |
+| 3 | 16 | 20 | 0.6 |
+
+Every candidate uses **100 trees**, bootstrap sampling, `max_samples=0.8` and seed **33**. Depth and leaf size control how finely individual trees can fit; feature sampling varies the inputs available to each split. The original duration target is used throughout this search. The log-target forest from Section 4.1 is a separate fixed variant and is not one of these six candidates.
+''')
+code('''display(classic_tuning_scores("forest"))
+forest_choices = classic_choices.selected_forest.str.extract(r"forest_(?P<Inputs>.+)_(?P<Setting>\\d+)")
+forest_choices.insert(0, "Outer fold", classic_choices.outer_fold)
+# Candidate IDs use zero-based setting indices; the table above numbers them 1–3.
+forest_choices["Setting"] = forest_choices.Setting.astype(int) + 1
+display(forest_choices)''')
+md('''**Random-forest finding.** Mean outer MAE decreases from **4.8062 to 4.6002 days**, a **4.29%** reduction against the fixed F0 forest. Every fold selects **F1_time with Setting 1**: depth 24, minimum leaf size 10 and feature fraction 0.8. The selected tree parameters match the control, so this observed gain comes from changing the feature pack, rather than selecting different tree settings. The bundled feature additions do not isolate one particular feature as the cause.
+
+The tuned original-target forest and fixed log-target forests document separate development experiments. Historical **F1 log-target RF** from Section 4.1 has CV MAE **4.5386 days** and was used in the earlier two-model follow-up. The published **F1 log-target RF + time/risk** in Section 4.3 reaches **4.4152 days** and is now the **sole RF specification in the current three-model stack** in Section 6. Neither log-target result comes from this historical six-candidate search.
+
+**Connection to stacking.** The fold-selected Ridge and original-target forest supply base predictions for the earlier three-model stack in Section 6. Their separate-model improvements motivate that combination experiment, but do not establish an advantage over HGB. Detailed runners, per-candidate inner scores and reproduction commands are in the [nested tuning guide](../../random_stacking/nested_tuning/README.md); the [ensemble notebook](tuned_stacking_comparison.ipynb) reports both that experiment and the later log-target RF/ExtraTrees follow-up. The reused folds remain retrospective development evidence.
+''')
+md('''### 4.3 Enriched purchase information and HGB
+
+HistGradientBoostingRegressor (HGB) adds trees sequentially to improve the current prediction. The retained route uses **absolute-error loss**, aligning fitting more closely with the MAE objective and reducing the influence of very large labels relative to squared loss. It estimates a central duration from purchase information; the loss is not designed to guarantee unbiased predictions in rare outcome-defined tails.
+
+Seller identity, finer routes and product composition are added to distinguish orders that coarse state-level features treat as similar. Later, absolute purchase date and specific year-month distinguish changes between years that a cyclic month feature cannot represent. A learned slow-order risk is then added as a separate candidate feature.
+
+The following table follows the same model families through the input changes. The matched time-only comparison checks the risk contribution with model parameters held fixed. It uses the 63-leaf setting selected in Section 5 and is shown here to isolate the input decision.''')
+code('''feature_variants = ["OLS + time/risk", "Single tree + time/risk", "Ridge + time/risk",
+                    "RF + time/risk", "HGB all purchase", "HGB + time/risk (31 leaves)"]
+display(model_scores(feature_variants))
+
+parameter_results = pd.read_csv(ROOT / "results/tables/parameter_comparison.csv")
+risk_comparison = parameter_results.loc[parameter_results.configuration.eq("leaves63"),
+                                        ["pack", "CV_MAE"]]
+display(risk_comparison.rename(columns={"pack": "Inputs", "CV_MAE": "CV MAE"}).round(6))''')
+md('''**Finding.** Expanded-purchase HGB has CV MAE **4.4052 days**. Adding time and risk reduces it to **4.2729** with 31 leaves. The same input additions improve OLS, the single tree, Ridge and the log-target forest. The row labelled **RF + time/risk** uses a log-transformed target and reaches **4.4152 days**; it is distinct from the fixed F1 forest and the nested original-target forest. At 63 leaves, however, time-only MAE is **4.2399**, versus **4.2378** with risk: just **0.0021 days** of additional benefit.
+
+**Interpretation.** Much of the later improvement comes from representing the purchase period more specifically. The risk feature summarises patterns already learnable from X; it does not supply a new operational observation. Its very small marginal benefit should not be presented as solving the long-tail problem.
+
+Earlier controlled experiments also considered tail weighting and quantile outputs. Tail weighting did not improve the selected overall-MAE objective and was not retained. Quantile endpoints answer a distributional question rather than the same point-prediction objective. The workflow adopts literature ideas about geography, timing and tail evaluation without claiming to reproduce quantile forests or a dual-graph architecture.''')
+md('''## 5. Select HGB parameters using training CV
+
+The next comparison holds the expanded purchase, time and cross-fitted risk design fixed and varies HGB complexity. Eight settings test leaf count, minimum leaf size, L2 regularisation, boosting rounds and learning rate. A time-only check follows for the selected leaf setting. The table contains ten configurations in total, including the original controls; each has five fold scores.
+
+More leaves allow finer partitions, minimum leaf size limits small-sample splits, and regularisation discourages overly large leaf predictions. Learning rate and iteration count govern the size and number of sequential updates. Each configuration is evaluated on the same folds, so mean CV MAE determines this stage's selection. Test scores do not select the winner. The table and figure show the completed bounded search; the optional reproduction mode refits frozen model rows rather than repeating every historical candidate.''')
+code('''tuning_columns = ["candidate", "CV_MAE", "max_iter", "learning_rate",
+                  "max_leaf_nodes", "min_samples_leaf", "l2_regularization"]
+display(parameter_results[tuning_columns].sort_values("CV_MAE").round(4))
+selected = json.loads((ROOT / "config/selected_model.json").read_text())
+assert parameter_results.loc[parameter_results.CV_MAE.idxmin(), "candidate"] == selected["candidate"]
+display(Image(filename=str(ROOT / "results/figures/cv_parameter_comparison.png")))''')
+md('''**Finding.** Increasing the maximum leaf count from **31 to 63** reduces CV MAE from **4.2729 to 4.2378 days**. The chosen setting uses absolute-error loss, **300 iterations**, learning rate **0.05**, minimum leaf size **30**, L2 regularisation **10**, no early stopping and seed **33**. Increasing rounds or learning rate also helps relative to the control, but does not beat the selected setting on mean CV MAE.
+
+**Selection decision.** Retain the 63-leaf time/risk model. Its gain is small and it is the best of the settings evaluated, not a global optimum. The tuning table's `fit_MAE` is mean fitting error within the outer folds, not the final full-training score reported later. Earlier development had already exposed these folds and test orders; this search is further development evidence.''')
+md('''## 6. Does combining models add useful improvement?
+
+Stacking tests whether models from different families make complementary errors. An equal average is the combination reference. A MAE-weighted combination learns non-negative weights summing to one, with no intercept, from aligned inner out-of-fold predictions. Five outer folds then evaluate those weights on held-out orders.
+
+**One current RF specification.** The current Ridge + RF + HGB stack uses the published **RF log-target F1 + time/risk**: 100 bootstrapped trees, depth 24, minimum leaf size 10, feature fraction 0.8, bootstrap fraction 0.8 and seed 33. RF fits `log1p(y)` and returns `expm1` predictions, floored at zero; numeric inputs are not log-transformed. Time adds fold-fitted elapsed purchase days and year-month encoding. Learned risk estimates the probability of duration exceeding 30 days. RF's direct regression inputs exclude the expanded purchase block, although its shared auxiliary risk classifier uses purchase attributes from that block.
+
+**Controlled replacement.** Only RF changes from the earlier three-model stack. The matching inner-selected Ridge and audited HGB inner/outer predictions are reused. RF's specification is frozen, with no parameter search. Within each regression fitting partition, three-fold risk cross-fitting creates its training risk values, and a classifier fitted on that partition supplies risk for scoring rows. The inner regression folds and their deeper risk folds stay inside the relevant outer training partition. This prevents the outer validation outcomes from entering risk features or learned weights. The change combines a log target and risk input, so it does not isolate either addition's individual effect.
+
+**ExtraTrees comparison.** ExtraTrees uses F1_time, 100 trees, depth 24, minimum leaf size 10, feature fraction 0.8, no bootstrap and seed 33. Its bounded search compares original versus log targets using three-inner-fold MAE; all five outer partitions select the log target. It excludes learned risk. Target selection and combination weights share inner OOF predictions; their fitting errors are not validation scores.
+
+The four main rows show HGB, the current three-model stack and the two HGB/ExtraTrees combinations. The existing [ensemble notebook](tuned_stacking_comparison.ipynb) contains the same-fold comparison plot, current learned weights and all **14 unique combinations**: eight historical nested candidates, four follow-up candidates and two RF replacement candidates. Historical original-target RF and log-target RF without time/risk remain audit rows; they are not additional current RF definitions. See the [RF replacement guide](../../random_stacking/rf_risk_upgrade/README.md) for its fixed protocol and audit. None of these three ensemble experiments loads or scores the test set, and no final full-training combination is fitted.''')
+code('''from pathlib import Path
+import hashlib
+import json
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from IPython.display import display, Markdown
+
+def formatted_table(frame, formats):
+    """Format a display copy without pandas Styler's optional dependencies."""
+    shown = frame.copy()
+    if isinstance(formats, str):
+        formats = {column: formats for column in shown.columns}
+    for column, template in formats.items():
+        shown[column] = shown[column].map(template.format)
+    return shown
+
+def locate_regression_root():
+    for parent in [Path.cwd(), *Path.cwd().parents]:
+        for candidate in [parent, parent / "Regression", parent / "Phase 2/Regression"]:
+            if (candidate / "random_stacking/nested_tuning/config/protocol.json").is_file():
+                return candidate
+    raise FileNotFoundError("Run from the project or a directory below Phase 2/Regression.")
+
+REGRESSION = locate_regression_root()
+
+def load_verified_package(name):
+    root = REGRESSION / "random_stacking" / name
+    results = root / "results"
+    validation = json.loads((results / "validation.json").read_text())
+    assert validation["status"] == "passed" and all(validation["checks"].values()), name
+    for relative, expected in validation["public_artifact_sha256"].items():
+        assert hashlib.sha256((results / relative).read_bytes()).hexdigest() == expected, (name, relative)
+    summary = json.loads((results / "summary.json").read_text())
+    protocol = json.loads((root / "config/protocol.json").read_text())
+    actual_protocol_sha = hashlib.sha256((root / "config/protocol.json").read_bytes()).hexdigest()
+    assert actual_protocol_sha == summary["protocol_sha256"] == validation["protocol_sha256"]
+    verifier = {"nested_tuning": "verify_nested_tuning.py", "ensemble_followup": "verify_followup.py",
+                "rf_risk_upgrade": "verify_rf_risk_upgrade.py"}[name]
+    assert hashlib.sha256((root / "scripts" / verifier).read_bytes()).hexdigest() == validation["verifier_source_sha256"]
+    assert summary["train_n"] == protocol["train_n"] == validation["train_n"] == 64634
+    assert summary["outer_folds"] == protocol["outer_folds"] == validation["outer_folds"] == 5
+    assert summary["inner_folds"] == protocol["inner_folds"] == validation["inner_folds"] == 3
+    assert summary["test_set_read_or_scored"] is False and summary["deployment_refit"] is False
+    tables = {path.stem: pd.read_csv(path) for path in (results / "tables").glob("*.csv")
+              if f"tables/{path.name}" in validation["public_artifact_sha256"]}
+    assert tables["comparison"].model.is_unique
+    assert tables["comparison"].n.eq(summary["train_n"]).all()
+    assert tables["comparison"].outer_folds.eq(summary["outer_folds"]).all()
+    return {"root": root, "summary": summary, "protocol": protocol,
+            "validation": validation, "tables": tables}
+
+nested = load_verified_package("nested_tuning")
+followup = load_verified_package("ensemble_followup")
+upgrade = load_verified_package("rf_risk_upgrade")
+nc = nested["tables"]["comparison"].set_index("model")
+fc = followup["tables"]["comparison"].set_index("model")
+uc = upgrade["tables"]["comparison"].set_index("model")
+nf = nested["tables"]["outer_fold_metrics"]
+ff = followup["tables"]["outer_fold_metrics"]
+uf = upgrade["tables"]["outer_fold_metrics"]
+assert hashlib.sha256((nested["root"] / "results/validation.json").read_bytes()).hexdigest() == (
+    followup["validation"]["reused_reference"]["previous_validation_sha256"])
+for name, package in [("nested_tuning", nested), ("ensemble_followup", followup)]:
+    assert hashlib.sha256((package["root"] / "results/validation.json").read_bytes()).hexdigest() == (
+        upgrade["summary"]["reference_validation_sha256"][name])
+
+# References recur across source packages, but are counted only once in this report.
+shared_metrics = ["n", "outer_folds", "mean_fold_MAE_days", "fold_MAE_SD_days", "mean_fold_RMSE_days",
+                  "pooled_MAE_days", "MAE_change_vs_HGB_days"]
+def assert_reference_agreement(left_comparison, left_folds, old, right_comparison, right_folds, reused):
+    np.testing.assert_allclose(left_comparison.loc[old, shared_metrics].astype(float),
+                               right_comparison.loc[reused, shared_metrics].astype(float), rtol=0, atol=1e-12)
+    left = left_folds.loc[left_folds.model.eq(old)].set_index("outer_fold").sort_index()
+    right = right_folds.loc[right_folds.model.eq(reused)].set_index("outer_fold").sort_index()
+    np.testing.assert_array_equal(left.index, right.index)
+    numeric = left.select_dtypes(include="number").columns.intersection(right.columns)
+    np.testing.assert_allclose(left[numeric], right[numeric], rtol=0, atol=1e-12)
+
+for old, reused in [("hgb", "hgb"), ("stack_three_tuned", "previous_stack")]:
+    assert_reference_agreement(nc, nf, old, fc, ff, reused)
+for old, reused in [("hgb", "hgb"), ("stack_three_tuned", "previous_stack"),
+                    ("ridge_tuned", "ridge_tuned"), ("forest_tuned", "previous_rf")]:
+    assert_reference_agreement(nc, nf, old, uc, uf, reused)
+assert_reference_agreement(fc, ff, "stack_hgb_extra_trees", uc, uf, "extra_trees_stack")
+
+nested_ids = [f"{method}_{size}_{setting}" for setting in ["fixed", "tuned"]
+              for size in ["two", "three"] for method in ["mean", "stack"]]
+followup_ids = [f"{method}_hgb_{family}" for family in ["rf_log", "extra_trees"]
+               for method in ["mean", "stack"]]
+upgrade_ids = ["mean_three_rf_risk", "stack_three_rf_risk"]
+ensembles = pd.concat([nc.loc[nested_ids], fc.loc[followup_ids], uc.loc[upgrade_ids]])
+assert len(nested_ids) == 8 and len(followup_ids) == 4 and len(upgrade_ids) == 2
+assert len(ensembles) == ensembles.index.nunique() == 14
+assert "hgb" not in ensembles.index and "previous_stack" not in ensembles.index
+assert set(nc.index[nc.index.str.startswith(("mean_", "stack_"))]) == set(nested_ids)
+assert set(fc.index[fc.index.str.startswith(("mean_", "stack_"))]) == set(followup_ids)
+assert set(uc.index[uc.index.str.startswith(("mean_", "stack_"))]) == set(upgrade_ids)
+
+outer_folds = followup["summary"]["outer_folds"]
+current = pd.concat([fc.loc[["hgb", "mean_hgb_extra_trees", "stack_hgb_extra_trees"]],
+                     uc.loc[["stack_three_rf_risk"]]])
+main_ids = ["hgb", "stack_three_rf_risk", "mean_hgb_extra_trees", "stack_hgb_extra_trees"]
+main_labels = ["HGB (final model)", "Ridge + RF time/risk + HGB: MAE-weighted", "HGB + ExtraTrees: 50/50",
+               "HGB + ExtraTrees: MAE-weighted"]
+fold_mae = uf.pivot(index="outer_fold", columns="model", values="MAE_days").sort_index()
+fold_mae["stack_hgb_extra_trees"] = ff.loc[ff.model.eq("stack_hgb_extra_trees")].set_index("outer_fold").MAE_days
+assert len(fold_mae) == outer_folds and not fold_mae.isna().any().any()
+print(f"Verified: all three saved packages, protocol hashes, shared metrics/folds, and {len(ensembles)} unique ensembles.")
+print(f"Training orders: {followup['summary']['train_n']:,} | Outer folds: {outer_folds} | "
+      f"Inner folds: {followup['summary']['inner_folds']} | New test evaluation: False | Deployment refit: False")
+
+main = current.loc[main_ids, ["mean_fold_MAE_days", "fold_MAE_SD_days", "mean_fold_RMSE_days"]].copy()
+main["MAE change vs HGB (minutes)"] = (main.mean_fold_MAE_days - fc.loc["hgb", "mean_fold_MAE_days"]) * 1440
+main["fold_MAE_SD_days"] *= np.sqrt(4 / 5)  # sample to population SD
+main.index = pd.Index(main_labels, name="Model")
+main = main.rename(columns={"mean_fold_MAE_days": "Mean MAE (days)", "fold_MAE_SD_days": "CV SD",
+                            "mean_fold_RMSE_days": "Mean RMSE (days)"})
+display(formatted_table(main, {"Mean MAE (days)": "{:.6f}", "CV SD": "{:.4f}",
+                           "Mean RMSE (days)": "{:.6f}", "MAE change vs HGB (minutes)": "{:+.2f}"}))
+for name, label in [("stack_three_rf_risk", "Current three-model stack"),
+                     ("stack_hgb_extra_trees", "HGB/ExtraTrees weighted combination")]:
+    change = current.loc[name, "mean_fold_MAE_days"] - current.loc["hgb", "mean_fold_MAE_days"]
+    fold_change = fold_mae[name] - fold_mae.hgb
+    wins, ties = int((fold_change < -1e-10).sum()), int((fold_change.abs() <= 1e-10).sum())
+    display(Markdown(f"**{label}:** MAE change versus HGB **{change:+.6f} days "
+                     f"({change * 1440:+.2f} minutes; {change / current.loc['hgb', 'mean_fold_MAE_days'] * 100:+.3f}%)**. "
+                     f"Across the {outer_folds} folds: **{wins} lower, {ties} tied, "
+                     f"{outer_folds - wins - ties} higher MAE** (tie tolerance: 1e-10 days)."))
+display(Markdown("Minute equivalents describe average absolute prediction error, not delivery-time savings. "
+                 "Negative changes favor the combination. "
+                 "These comparisons are retrospective development evidence; the five overlapping training folds "
+                 "do not establish statistical significance or independent confirmation."))
+current_stack_weights = upgrade["tables"]["weights"].query("model == 'stack_three_rf_risk'").pivot(
+    index="outer_fold", columns="base_model", values="weight")
+assert len(current_stack_weights) == outer_folds
+assert current_stack_weights.ridge_tuned.eq(0).all() and current_stack_weights.rf_time_risk.eq(0).all()
+assert current_stack_weights.hgb.eq(1).all()
+np.testing.assert_allclose(fold_mae.stack_three_rf_risk, fold_mae.hgb, rtol=0, atol=1e-12)
+display(Markdown(
+    "**The current three-model stack reduces to HGB:** every outer partition assigns **0% to Ridge, "
+    "0% to RF time/risk and 100% to HGB**. Improving RF's standalone MAE therefore produces "
+    "no combination gain under this fitted weighting procedure. "
+    "**Retain single HGB.** ExtraTrees gives the lowest observed combination MAE, but its small gain "
+    "and lack of a final combination test evaluation do not justify replacing the retained model."))
+
+
+# Short historical comparison; the previous stack stays in the detailed appendix.
+stack_change = uc.loc["stack_three_rf_risk", "mean_fold_MAE_days"] - uc.loc["previous_stack", "mean_fold_MAE_days"]
+display(Markdown(
+    f"The RF replacement changes standalone MAE from **{uc.loc['previous_rf', 'mean_fold_MAE_days']:.6f}** "
+    f"to **{uc.loc['rf_time_risk', 'mean_fold_MAE_days']:.6f} days**. "
+    f"The historical three-model stack had MAE **{uc.loc['previous_stack', 'mean_fold_MAE_days']:.6f} days**; "
+    f"the current stack changes this by **{stack_change:+.6f} days ({stack_change * 1440:+.2f} minutes)**. "
+    "CV SD above uses population SD, consistent with the rest of this notebook; the ensemble appendix labels its sample fold SD."))
+''')
+md('''**Finding and retention decision.** The current RF reproduces the published **4.415217-day** standalone MAE, but receives zero weight alongside Ridge. The three-model procedure therefore reproduces HGB at **4.237815 days**. Improving a base model does not guarantee useful complementary errors. The HGB/ExtraTrees weighted combination has the lowest observed mean MAE, **4.236474 days**, only **0.001342 days (1.93 minutes, 0.032%)** below HGB. Its tiny gain does not justify a separate final combination; **retain single HGB**.
+
+**Interpretation.** The model and feature specifications were previously developed using these same folds. The replacement has a clean current nesting boundary, but it remains retrospective development evidence rather than independent validation of the entire development history. Random folds assess the historical order mixture, and their overlapping training sets are not independent replications. The bounded comparisons do not establish statistical significance or rule out other settings.
+
+The full historical fixed-model Train–CV–Test table below retains its recorded definitions and scores. The newly evaluated combinations have outer-CV evidence only.''')
+md('''## 7. Evaluate the retained model
+
+### 7.1 Train–CV–Test on the same orders
+
+The table below reports all fixed configurations on the same training population, CV folds and **31,836 test orders**. Training error measures fit to the fitting design, including cross-fitted risk where used. CV measures held-out error during development; test scores compare the frozen choices on the common holdout. Their differences help assess how much of a training improvement carries over to unseen rows.
+
+RMSE and R² supplement MAE. R² compares squared error with variation around the test mean; **0.3675 is not 36.75% accuracy**. The combination procedures in Section 6 have no final Train/Test scores and are therefore not inserted into this table.''')
+code('''display(model_scores(comparison.model.tolist(), include_test=True))
+final = comparison.set_index("model").loc["Final HGB (63 leaves)"]
+np.testing.assert_allclose(final.Test_MAE_days, 4.150491686642425, atol=1e-12, rtol=0)
+display(Image(filename=str(RESULTS / "figures/train_cv_test_comparison.png")))''')
+md('''**Finding.** Final HGB has **Train MAE 3.9295**, **CV MAE 4.2378** and **Test MAE 4.1505 days**. Test RMSE is **7.4651 days**, R² **0.3675**, and **56.93%** of predictions lie within three days of the observed duration. CV and test errors are similar, while training error is lower; the model fits training data better without a large additional test-error jump under this random protocol.
+
+Test MAE is **16.33% lower than OLS**, **17.48% lower than the single tree** and **31.68% lower than the training-median reference**. These comparisons include model and feature changes. The final leaf-count change alone improves test MAE by about **1.00%**, from 4.1923 to 4.1505 days.
+
+**Interpretation.** The retained model is useful relative to the specified references, but a four-day average error is still material for arrival communication. RMSE being much larger than MAE indicates a minority of large misses. The next breakdown checks where those misses occur rather than treating the overall average as sufficient evidence.''')
+md('''### 7.2 Which deliveries are still difficult?
+
+Residuals are **predicted minus observed duration**: negative bias indicates underprediction. Actual-duration groups are diagnostic slices defined after receipt, never features available at purchase. Route groups use the all-sellers/any-seller rule; they provide a second partition of the same test set, so their counts or errors must not be added to the duration partition.
+
+Alongside per-order error, the contribution table weights each group's MAE by its order count to calculate its share of total absolute error. Squared-error shares similarly use `n × RMSE²`. This separates severe errors in a small group from a large group's contribution to the overall score.''')
+code('''error_groups = pd.read_csv(TABLES / "hgb_test_error_groups.csv")
+display(error_groups.round(4))
+display(Image(filename=str(RESULTS / "figures/hgb_test_errors.png")))''')
+code('''duration_errors = error_groups.loc[error_groups.dimension.eq("actual duration")].copy()
+# A group's mean error must be weighted by its size to obtain its total contribution.
+duration_errors["order_share_pct"] = 100 * duration_errors.n / 31836
+absolute_total = 31836 * final.Test_MAE_days
+squared_total = 31836 * final.Test_RMSE_days ** 2
+duration_errors["absolute_error_share_pct"] = 100 * duration_errors.n * duration_errors.MAE_days / absolute_total
+duration_errors["squared_error_share_pct"] = 100 * duration_errors.n * duration_errors.RMSE_days ** 2 / squared_total
+np.testing.assert_allclose(duration_errors.absolute_error_share_pct.sum(), 100, atol=1e-8)
+np.testing.assert_allclose(duration_errors.squared_error_share_pct.sum(), 100, atol=1e-8)
+display(duration_errors[["group", "n", "order_share_pct", "absolute_error_share_pct",
+                         "squared_error_share_pct"]].round(2))
+''')
+md('''**Finding.** For 0–7-day and 7–14-day orders, MAE is **2.2940** and **2.6044 days**. Error increases to **5.3738 days** at 14–30 days, **18.8525** at 30–60 days (n=1,365), and **66.1881** above 60 days (n=99). Bias in the slowest groups is almost as negative as MAE, showing systematic underprediction rather than balanced over- and underestimates. Overall signed bias is **−1.3349 days**.
+
+Orders above 30 days account for **4.60%** of test rows and **24.43%** of absolute error, but **64.20%** of squared error. The >60-day group alone contributes **4.96%** of absolute error. Thus the tail is particularly important for RMSE and service risk, while it does not explain all of the overall MAE: the much larger 14–30-day group contributes **34.38%** of absolute error.
+
+Cross-state MAE is **4.8205 days**, compared with **2.9544** for same-state orders. This is consistent with more difficult geographic routes, but the unadjusted comparison does not identify a causal state-border effect. Purchase information can distinguish broad risk patterns; it cannot directly observe later carrier delays or operational incidents.''')
+md('''### 7.3 Timestamp sensitivity
+
+Some orders have receipt earlier than another recorded event despite a valid non-negative purchase-to-receipt target. The archive cannot resolve which event timestamp is wrong. The **84** such orders are flagged and retained: **59 training / 25 test**. The check below removes flagged test rows at evaluation only, using the same fitted model.
+''')
+code('''sensitivity = pd.read_csv(TABLES / "chronology_evaluation_sensitivity.csv")
+display(sensitivity[["evaluation_cohort", "n", "MAE_days", "RMSE_days", "bias_days"]].round(4))
+''')
+md('''**Finding.** Removing 25 flagged test orders changes MAE from **4.1505 to 4.1523 days**, leaving 31,811 rows. These flags do not explain the overall error magnitude. This is not a test of retraining without the 59 training flags, nor proof that the remaining timestamps are error-free.
+''')
+md('''## 8. Which input groups does the final model rely on?
+
+HGB does not provide linear coefficients. We use **grouped permutation importance**: shuffle related raw fields together, recompute their derived features and auxiliary risk, and measure how much MAE increases for the frozen model. This tests predictive reliance on an input group, including its path through derived features, without fitting the model again.
+
+The evaluation uses a fixed **8,000-test-order subset**, seed 33, with **five shuffles per group**. Its baseline MAE is **4.1280 days**, different from the complete test-set MAE. Importance is measured in added error days, so groups can be compared on the same scale. The reported SD describes variability across shuffles, not a confidence interval for deployment performance.''')
+code('''importance = pd.read_csv(TABLES / "hgb_grouped_permutation_importance.csv")
+display(importance[["group", "MAE_increase_mean_days", "MAE_increase_SD_days"]].round(4))
+display(Image(filename=str(RESULTS / "figures/hgb_grouped_permutation_importance.png")))
+finish(context, final)''')
+md('''**Finding.** Shuffling geography/routes increases MAE by **1.3504 days**, purchase date/calendar by **0.9771**, and quoted promise by **0.5302**. These are the strongest group-level dependencies. Seller identity/composition adds **0.1026 days** of shuffled error; price/freight, category/composition and weight/volume each add less than 0.05 days.
+
+**Interpretation.** The Phase 1 geographic and promise associations remain useful after joint modelling, and the temporal signal helps distinguish periods within this historical sample. A smaller permutation increment does not show that a feature is useless: other correlated inputs may substitute for it. Shuffled combinations can also be unrealistic. These increments are neither causal effects nor additive percentages of total error.''')
+md('''## 9. Implications and limitations
+
+**Retained approach.** Start with OLS and a bounded single tree, compare regularised and ensemble variants, then retain the expanded-purchase/time/risk HGB with 63 leaves. The common evaluation shows improvement over both fitted baselines and the fixed/statistical references. Replacing the current stack's RF with the published log-target time/risk version improves RF alone, but the learned stack still gives HGB 100% weight. HGB/ExtraTrees has the lowest observed outer MAE by a tiny margin; its gain does not justify a separate final combination. The Train–CV–Test evaluation retains the published single HGB configuration.
+
+**Business use.** Customer-service and fulfilment teams could use the estimate to support arrival-expectation communication and identify orders needing human follow-up. It is a point estimate, not a guaranteed date or a tested intervention. No effect on satisfaction, logistics cost or operational decisions has been measured.
+
+**Coverage and remaining error.** The target is observed completed delivery, so cancellations and unresolved orders are outside the evaluated population. Long deliveries remain substantially underestimated. An apparently short prediction does not establish that an order is safe from delay, and the auxiliary risk feature has only a small marginal regression benefit.
+
+**Evaluation limits.** Random splitting includes the same historical periods and recurring sellers/routes on both sides; it does not test future periods or unseen entities. Archived input availability remains an assumption. CV and test data were exposed during earlier development, so the results are retrospective development comparisons rather than fresh external confirmation. Different rows use different input representations, and the parameter search is bounded.
+
+## Takeaways
+
+Delivery-duration regression is supported by measurable purchase-time signal and improves on the specified references. The main useful additions are more detailed purchase information and time representation; tuning adds a smaller gain. Retain single HGB, report both overall and duration/route errors, and preserve the long-tail and completed-delivery limits when describing its use.
+
+### Sources
+
+- [Phase 1 delivery-regression notebook](https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project/blob/main/notebooks/phase1/03_delivery_lead_time_regression_eda.ipynb), cells 1–3, 17, 20–26 and 29–35: question, target, EDA signal, promise reference and initial evaluation proposal.
+- [Official IT5006 project brief](https://prakashsukhwal.github.io/IT5006/IT5006_Project_Description_2026Aug_V2.html); course Olist starter cells 19–21 and Great Expectations lab cells 18–23: schema, joins and data-contract practice, adapted to this order-level task.
+- Zaghloul et al. (2024), DOI **10.1016/j.jretconser.2024.103865**, §3.3 supplies the 67/33 ratio; split seed and CV folds are project adaptations. Literature and report-ready evidence are recorded in the [report evidence guide](../docs/report_evidence_guide.md).
+- Implementations and frozen specifications: `src/` and `config/`; [reproduction instructions](../README.md), [course alignment](../docs/notebook_alignment.md), detailed [tuning](best_scheme_review.ipynb), [report evidence](report_supplement_review.ipynb) and [stacking](tuned_stacking_comparison.ipynb) notebooks.''')
+
+nb = nbf.v4.new_notebook(cells=cells, metadata={
+    'kernelspec': {'display_name': 'Delivery Regression', 'language': 'python', 'name': 'delivery-regression'},
+    'language_info': {'name': 'python', 'version': '3.12'}})
+# Preserve existing cell IDs when rebuilding this fixed 51-cell report.
+destination = root / 'notebooks/delivery_regression_complete.ipynb'
+if destination.is_file():
+    previous = nbf.read(destination, as_version=4)
+    assert len(previous.cells) == len(nb.cells) == 51
+    for old, new in zip(previous.cells, nb.cells):
+        assert old.cell_type == new.cell_type
+        new.id = old.id
+nbf.validate(nb)
+nbf.write(nb, destination)
+print('Generated', len(cells), 'cells;', sum(c.cell_type == 'code' for c in cells), 'code cells')

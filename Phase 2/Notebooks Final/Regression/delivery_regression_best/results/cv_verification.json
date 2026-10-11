@@ -1,0 +1,10 @@
+{
+  "fold_metric_rows_verified": 50,
+  "nested_risk_boundaries_reverified": 15,
+  "controls_reproduced": true,
+  "time_and_risk_scaling_fold_local": true,
+  "selection_training_only": true,
+  "stage_B_uses_only_stage_A_selected_parameters": true,
+  "prior_artifacts_unchanged": true,
+  "stacking": false
+}

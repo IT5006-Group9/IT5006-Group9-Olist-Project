@@ -1,0 +1,8 @@
+{
+  "archive_sha256": "90ee50730a9e799aa2d3c7b1758fef680cbbc366f61a287870144796a37156d4",
+  "checks": 19,
+  "hard_checks_passed": true,
+  "rule_violations_are_not_a_unique_order_count": true,
+  "GX_library_used": false,
+  "cohort_or_model_changed": false
+}

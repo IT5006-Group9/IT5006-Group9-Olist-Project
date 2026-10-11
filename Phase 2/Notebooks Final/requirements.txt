@@ -1,0 +1,7 @@
+# Submission review and notebook runtime; Python 3.12.
+-r Regression/delivery_regression_best/requirements.txt
+catboost>=1.2
+pyarrow>=15
+imbalanced-learn>=0.12
+shap>=0.45
+jupyterlab>=4

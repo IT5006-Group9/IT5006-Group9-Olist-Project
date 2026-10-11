@@ -1,0 +1,21 @@
+{
+  "executed_code_cells": 7,
+  "embedded_figures": 2,
+  "figure_dimensions": {
+    "cv_parameter_comparison.png": [
+      1530,
+      1020
+    ],
+    "test_comparison.png": [
+      1360,
+      765
+    ]
+  },
+  "relative_links_checked": 12,
+  "private_files_git_ignored": 116,
+  "prior_hashes_unchanged": true,
+  "plots_visually_checked": true,
+  "stacking": false,
+  "uploaded": false,
+  "visual_review": "Both figures viewed; values match tables; no clipping; test bars start at zero; fold SD distinguished from confidence intervals."
+}

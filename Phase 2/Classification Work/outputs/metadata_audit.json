@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "failures": [],
+  "strict_sources": true,
+  "scope": "saved artifacts and available predictions",
+  "training_rerun": false,
+  "protocol_sha256": "828d5bfb544751ced80a82875751895510d4318863d5c764b3a39374e4c3e402"
+}

@@ -1,0 +1,16 @@
+{
+  "encoded_base_columns": 1019,
+  "encoded_time_columns": 22,
+  "risk_columns": 1,
+  "regression_input_columns": 1042,
+  "groups": [
+    "Geography and route",
+    "Purchase date and calendar",
+    "Quoted promise",
+    "Price and freight",
+    "Seller identity and composition",
+    "Product category and composition",
+    "Product weight and volume"
+  ],
+  "risk_input": "F1 plus all purchase extensions; excludes new absolute date fields"
+}

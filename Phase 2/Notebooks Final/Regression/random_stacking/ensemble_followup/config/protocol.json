@@ -1,0 +1,39 @@
+{
+  "experiment": "HGB combinations with log-target random forest and ExtraTrees",
+  "seed": 33,
+  "train_n": 64634,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "rf_log": {
+    "selection": "Frozen published RF log-target F1 specification; no new parameter search",
+    "candidates": [
+      {"name": "rf_log_F1", "family": "rf_log", "feature_pack": "F1", "log_inputs": false, "log_target": true,
+       "params": {"n_estimators": 100, "max_depth": 24, "min_samples_leaf": 10, "max_features": 0.8,
+                  "bootstrap": true, "max_samples": 0.8, "random_state": 33}}
+    ]
+  },
+  "extra_trees": {
+    "selection": "Mean three-inner-fold MAE; candidate order resolves exact ties",
+    "candidates": [
+      {"name": "extra_trees_F1_time_raw", "family": "extra_trees", "feature_pack": "F1_time", "log_inputs": false, "log_target": false,
+       "params": {"n_estimators": 100, "max_depth": 24, "min_samples_leaf": 10, "max_features": 0.8,
+                  "bootstrap": false, "max_samples": null, "random_state": 33}},
+      {"name": "extra_trees_F1_time_log", "family": "extra_trees", "feature_pack": "F1_time", "log_inputs": false, "log_target": true,
+       "params": {"n_estimators": 100, "max_depth": 24, "min_samples_leaf": 10, "max_features": 0.8,
+                  "bootstrap": false, "max_samples": null, "random_state": 33}}
+    ]
+  },
+  "hgb": "Frozen published leaves63__time_risk. Reuse verified nested HGB OOF only within its matching outer training partition; reuse published HGB outer predictions only on the matching outer validation fold.",
+  "combinations": ["50/50 mean of HGB and the family prediction", "Nonnegative MAE-optimal weights summing to one, with zero intercept, fitted only on inner OOF"],
+  "comparators": ["Published HGB", "Previous tuned Ridge/RF/HGB constrained MAE stack", "Frozen RF log-target F1", "Inner-selected ExtraTrees"],
+  "evaluation": "Keep the existing outer fold assignment. Generate inner OOF using KFold(3, shuffle=True, random_state=33) on the sorted outer training rows. Fit every preprocessing step within its fitting partition. Select ExtraTrees raw versus log target using only inner-fold MAE. Freeze combination weights before scoring outer validation. Report mean outer-fold MAE, RMSE and paired fold changes.",
+  "holdout_policy": "Do not load, predict or score the existing test set. Do not fit a final deployment model.",
+  "target_transform": "For log-target candidates, fit log1p(y) and return expm1 predictions; floor predictions at zero in original days.",
+  "feature_policy": "F1 is the published calendar/interaction feature pack. F1_time additionally uses fold-fitted elapsed purchase days and year-month encoding. RF and ExtraTrees do not use the learned risk feature.",
+  "limitations": [
+    "The HGB and RF configurations, dataset and evaluation folds have informed earlier development; this is further retrospective development, not a new independent confirmation.",
+    "The ExtraTrees search only compares two target representations with fixed tree settings and one feature pack; it does not establish the best attainable ExtraTrees performance.",
+    "Different input representations and objectives may contribute to differences between model families.",
+    "Random folds describe the same historical order mixture, not future periods or unseen sellers."
+  ]
+}

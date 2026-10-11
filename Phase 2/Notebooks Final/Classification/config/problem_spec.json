@@ -1,0 +1,216 @@
+{
+  "problem": "low_review_classification",
+  "question": "Will an order receive a 1-2 star review?",
+  "target": {
+    "name": "is_low_review",
+    "definition": "1 if review_score in {1, 2} else 0",
+    "grain": "one row per order_id, one review per order (earliest kept)"
+  },
+  "cohort": "reviewed orders with at least one line item, delivered or not, purchase months 2016-09 to 2018-08, review answered after the prediction point T (97,490 orders; 426 answered before T excluded)",
+  "prediction_point": {
+    "name": "survey trigger T",
+    "definition": "min(order_delivered_customer_date, order_estimated_delivery_date)",
+    "rationale": "Olist emails the review survey when the order is delivered or the estimated date passes; every delivery feature is evaluated as of T",
+    "T_dependent_features": [
+      "is_delivered",
+      "actual_delivery_time",
+      "delivery_time_delta",
+      "carrier_shipped",
+      "carrier_handover_days",
+      "carrier_transit_days",
+      "delivery_vs_seller_prior",
+      "wd_actual_delivery_time",
+      "wd_delivery_time_delta"
+    ],
+    "flag": "config/feature_roles.csv column T_dependent; clf_config.features_at_T(); audit notebook Section 3"
+  },
+  "stakeholder": {
+    "role": "Olist customer-experience / seller-quality team",
+    "decision": "rank orders at T by low-review risk and route the top of the list to proactive outreach; aggregate by seller for quality reviews"
+  },
+  "protocol": {
+    "split_scheme": "stratified",
+    "design": "Zaghloul, Barakat & Rezk (2024), J. Retailing and Consumer Services 79:103865 - stratified 67/33 train+validation / test on is_low_review - with a validation set added: stratified 80/20 train / validation of the 67% (overall ~54 / 13 / 33)",
+    "test_size": 0.33,
+    "validation_size_of_dev": 0.2,
+    "seed": 5006,
+    "manifest": "data/split_manifest.csv (order_id -> split; git-ignored, rebuilt deterministically by data_preparation_audit)",
+    "roles": {
+      "train": "fit pipelines; 5-fold stratified shuffled CV for hyperparameters and OOF probabilities",
+      "validation": "baselines vs ladder, CatBoost early stopping, F1 threshold, stacking / ensemble retention rule",
+      "test": "scored once per final model"
+    },
+    "cv": {
+      "kind": "StratifiedKFold",
+      "n_splits": 5,
+      "shuffle": true
+    },
+    "history_features": "outcome events (delivery, review answered) aggregated by a fold-fitted pipeline step (features.HistoryInPipeline) from the rows the pipeline is fitted on - per CV / stacking / OOF fold; orders placed counted over all rows",
+    "chronological_reference": {
+      "source": "Phase 2/Regression/historical_temporal/src/delivery_regression.py",
+      "windows": {
+        "train": [
+          "2016-09",
+          "2018-02"
+        ],
+        "validation": [
+          "2018-03",
+          "2018-03"
+        ],
+        "maturation_gap": [
+          "2018-04",
+          "2018-06"
+        ],
+        "test": [
+          "2018-07",
+          "2018-08"
+        ]
+      },
+      "use": "drift figure and the robustness check in docs/current_progress.md only"
+    },
+    "label_known_column": "review_answer_timestamp (when the customer submitted the score; review_creation_date is the survey-sent date)",
+    "test_set_discipline": "every selection (final model, ensemble retention, imbalance strategy, thresholds) uses validation only; test scored once per row; verify_classification.py re-derives each choice"
+  },
+  "families": {
+    "A_linear": [
+      "LogisticRegression (balanced) baseline",
+      "LogisticRegression C tuned"
+    ],
+    "B_tree": [
+      "DecisionTreeClassifier (balanced) baseline",
+      "RandomForestClassifier (balanced_subsample)",
+      "CatBoostClassifier (auto_class_weights Balanced)"
+    ],
+    "C_ensemble": [
+      "sklearn StackingClassifier check (baseline_variant_review)",
+      "mean / convex / logistic stack on matured OOF probabilities (ensemble_comparison)"
+    ]
+  },
+  "class_imbalance": {
+    "positive_rate_train": 0.146,
+    "strategy": "stratified split keeps the positive rate equal across train / validation / test; class weights in every model; threshold tuned on validation to maximise F1 then frozen",
+    "resampling": "RandomOverSampler, SMOTE and ADASYN compared with none and class weights for all four models in sampling_comparison (Zaghloul et al. 2024 Experiment 4); resampling inside imblearn pipelines on training rows only",
+    "evidence": "class-balance study in ensemble_comparison; full grid in outputs/tables/sampling_comparison.csv"
+  },
+  "metrics": {
+    "primary": "PR-AUC (average precision) on the test window, threshold-free",
+    "secondary": [
+      "ROC-AUC",
+      "balanced accuracy",
+      "Brier",
+      "precision / recall / F1 at frozen threshold",
+      "recall in top 10%"
+    ],
+    "baselines": [
+      "majority class (PR-AUC = positive rate)",
+      "rule: not delivered by T implies low review"
+    ],
+    "selection": "validation PR-AUC; ensemble retained only if >= 1% relative gain over best single model"
+  },
+  "success_criteria": {
+    "pr_auc": "at least 2x the no-skill level",
+    "operating_point": "recall >= 0.60 with precision >= 0.35 at the frozen threshold (set 6 Oct, before modelling)"
+  },
+  "excluded_inputs": [
+    "delivery_days",
+    "has_review_comment",
+    "is_low_review",
+    "is_on_time",
+    "order_delivered_carrier_date",
+    "order_delivered_customer_date",
+    "order_status",
+    "review_answer_timestamp",
+    "review_creation_date",
+    "review_score",
+    "survey_trigger_time"
+  ],
+  "feature_groups": {
+    "order": [
+      "n_items",
+      "n_distinct_products",
+      "n_sellers",
+      "total_price",
+      "total_freight",
+      "freight_ratio",
+      "total_order_value"
+    ],
+    "product": [
+      "total_weight_g",
+      "max_weight_g",
+      "total_volume_cm3",
+      "max_dimension_cm",
+      "main_category",
+      "n_categories"
+    ],
+    "geography": [
+      "max_distance_km",
+      "any_distance_missing",
+      "same_state",
+      "same_city",
+      "customer_state",
+      "seller_state",
+      "customer_region",
+      "seller_region",
+      "customer_zip2"
+    ],
+    "timing": [
+      "promised_days",
+      "days_to_shipping_limit",
+      "purchase_month_num",
+      "purchase_dow",
+      "purchase_hour",
+      "is_weekend",
+      "black_friday_week",
+      "approval_lag_hours"
+    ],
+    "payment": [
+      "main_payment_type",
+      "payment_max_installments",
+      "n_payment_methods",
+      "payment_total"
+    ],
+    "seller_history": [
+      "seller_prior_orders",
+      "seller_tenure_days",
+      "seller_prior_mean_delivery_days",
+      "seller_prior_late_rate",
+      "seller_prior_low_review_rate",
+      "seller_id_enc"
+    ],
+    "route_history": [
+      "route_prior_orders",
+      "route_prior_mean_delivery_days",
+      "route_prior_late_rate"
+    ],
+    "delivery": [
+      "is_delivered",
+      "actual_delivery_time",
+      "delivery_time_delta",
+      "carrier_shipped",
+      "carrier_handover_days",
+      "carrier_transit_days",
+      "delivery_vs_seller_prior",
+      "wd_actual_delivery_time",
+      "wd_delivery_time_delta"
+    ]
+  },
+  "test_scored": "once per final model inside each notebook",
+  "literature_features": {
+    "source": "Zaghloul et al. (2024) Section 3.4",
+    "mapping": {
+      "wd_actual_delivery_time": "wd_actual_delivery_time (same name; evaluated as of T, NaN if not delivered by T)",
+      "wd_delivery_time_delta": "wd_delivery_time_delta (same name; working days delivered - promised, as of T)",
+      "payment_value": "payment_total",
+      "total_order_value": "total_order_value (price + freight)",
+      "order_freight_ratio": "freight_ratio (freight / price)"
+    },
+    "not_adopted": {
+      "review_comment_message": "part of the review itself (post-outcome)"
+    },
+    "working_days": "Mon-Fri excluding Brazilian national holidays 2016-2018 (clf_config.BR_HOLIDAYS)"
+  },
+  "interpretability": {
+    "permutation_importance": "validation set, baseline_variant_review",
+    "shap": "TreeExplainer on the final forest (validation sample), grouped by original feature; CatBoost SHAP and exact linear SHAP as cross-checks; sampling_comparison"
+  }
+}

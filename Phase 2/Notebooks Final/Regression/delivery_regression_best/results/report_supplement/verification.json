@@ -1,0 +1,81 @@
+{
+  "models": [
+    {
+      "model": "OLS baseline",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "Single-tree baseline",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "Ridge F1",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "RF F1",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "RF log-target F1",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "OLS + time/risk",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "Single tree + time/risk",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "Ridge + time/risk",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "RF + time/risk",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "HGB all purchase",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "HGB + time/risk (31 leaves)",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    },
+    {
+      "model": "Final HGB (63 leaves)",
+      "complete_test_prediction_matches_saved": true,
+      "complete_OOF_matches_training_ids_labels_and_folds": true,
+      "train_scoring": "full regressor fit design, cross-fitted risk retained where applicable"
+    }
+  ],
+  "source_artifacts_unchanged": true,
+  "train_test_counts_match": true,
+  "CV_metrics_recomputed_from_complete_saved_OOF": true,
+  "references_use_fold_training_labels_only": true,
+  "no_model_refit_or_selection": true
+}

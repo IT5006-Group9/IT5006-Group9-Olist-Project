@@ -1,0 +1,20 @@
+check,table,rows_checked,unexpected_rows,gate,result,action
+order_id present and unique,orders,99441,0,STOP,PASS,Stop before joins.
+customer_id present and unique,customers,99441,0,STOP,PASS,Stop before joins.
+seller_id present and unique,sellers,3095,0,STOP,PASS,Stop before joins.
+product_id present and unique,products,32951,0,STOP,PASS,Stop before joins.
+product_category_name present and unique,translation,71,0,STOP,PASS,Stop before joins.
+Item composite key present and unique,items,112650,0,STOP,PASS,Stop before aggregation.
+Item order_id foreign key exists,items,112650,0,STOP,PASS,Stop before joins.
+Item product_id foreign key exists,items,112650,0,STOP,PASS,Stop before joins.
+Item seller_id foreign key exists,items,112650,0,STOP,PASS,Stop before joins.
+Order customer foreign key exists,orders,99441,0,STOP,PASS,Stop before joins.
+Purchase timestamp present and parseable,orders,99441,0,STOP,PASS,Stop before target creation.
+Order status in allowed values,orders,99441,0,STOP,PASS,Stop and reconcile.
+Order count within teaching sanity range,orders,99441,0,STOP,PASS,Stop and reconcile the source.
+Item price strictly positive,items,112650,0,REVIEW,PASS,Review unexpected values; do not silently change the frozen cohort.
+Freight non-negative (zero allowed),items,112650,0,REVIEW,PASS,Review unexpected values; zero freight is allowed.
+Delivered receipt timestamp observable,orders,99441,8,REVIEW,FLAG,"Exclude the 8 unobservable targets, not all missing raw receipts."
+Delivered purchase-to-receipt target non-negative,orders,99441,0,REVIEW,PASS,Exclude invalid targets; retain valid long durations.
+Coordinates inside conservative Brazil envelope,geo,1000163,29,REVIEW,FLAG,"Screen these 29 coordinate rows, deduplicate pairs, then use postal-prefix medians."
+Product weight observable and positive,products,32951,6,REVIEW,FLAG,Keep orders; mark incomplete weight and fit imputation inside the training partition.

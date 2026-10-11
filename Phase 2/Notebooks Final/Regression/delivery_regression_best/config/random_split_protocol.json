@@ -1,0 +1,64 @@
+{
+  "status": "experiments_complete",
+  "decision_date": "2026-10-09",
+  "task": "delivery_lead_time_regression",
+  "split_policy": "random_order_holdout",
+  "reference_doi": "10.1016/j.jretconser.2024.103865",
+  "reference_method_verified": true,
+  "parameter_evidence": "Zaghloul2024 HTML sec3.3: train67/test33; sec3.4 validation unspecified; sec4.3.3 Grid Search, Table3 model seeds33 only. CV/seed require explicitly documented project adaptation.",
+  "train_fraction": 0.67,
+  "validation_fraction": 0.0,
+  "test_fraction": 0.33,
+  "random_seed": 33,
+  "cv_folds": 5,
+  "regression_stratification": "none",
+  "input": "versions/preparation_v2/data/eligible_orders.csv",
+  "input_sha256": "c606a8792a2d4ed96225c6ac9c25489c11c482db5db29cf06927c00024b6570b",
+  "prediction_point": "order_purchase_timestamp",
+  "cohort": "all 96470 eligible completed deliveries; retain all 306 targets above 60 days",
+  "preprocessing": "fit imputation, encoding, scaling and learned feature selection on each fitting partition only",
+  "metric": "MAE in days; retain RMSE, R2, bias, error-window and tail diagnostics",
+  "population_interpretation": "held-out orders from the same historical mixture, not prospective later-month performance",
+  "known_data_reuse": "This archive and some former holdout outcomes have already informed development. A new random holdout is not a completely untouched external confirmation.",
+  "output_directory": "versions/random_split_v1",
+  "fit_status": "complete",
+  "stacking_scope": "aligned OOF handoff; stacking fitting remains separate",
+  "paper_reported_settings": {
+    "train_fraction": 0.67,
+    "test_fraction": 0.33,
+    "split_random_seed": "not_reported",
+    "shuffle": "not_reported",
+    "stratification": "not_reported",
+    "validation_fraction": "not_reported",
+    "cv_folds": "not_reported",
+    "model_random_state": {
+      "GBC": 33,
+      "LR": 33
+    },
+    "feature_selection": "SelectKBest with mutual_info_regression; 39 to 20 features",
+    "tuning": "Grid Search; full search grid not reported",
+    "classification_resamplers": [
+      "RandomOverSampler",
+      "SMOTE",
+      "ADASYN"
+    ]
+  },
+  "settings_origin": "Project choices authorized by the instruction to start these plans; seed33/CV5 are not reported paper split/CV settings.",
+  "implementation": {
+    "selection": "training-only five-fold MAE; bounded staged development; all test candidates frozen together",
+    "feature_selection": "fold-local MI; explicit discrete mask; 25/50/75/100% encoded columns",
+    "absolute_loss_implementation": "matched HistGradientBoosting squared/absolute losses; RF L1 is omitted for documented compute cost",
+    "OOF": "fixed-config training OOF; candidate selection uses these development folds, not nested assessment",
+    "quantile": "ordinary gradient boosting quantiles, not Salari asymmetric-split QRF replication",
+    "stacking": "input handoff only"
+  },
+  "holdout_scored": true,
+  "frozen_selection": "versions/random_split_v1/outputs/frozen_selection.json",
+  "authorized_project_adaptations": {
+    "random_seed": 33,
+    "cv_folds": 5,
+    "shuffle": true,
+    "independent_validation_fraction": 0.0,
+    "explanation": "Training-only five-fold validation and seed33 were project choices authorized for these trials; neither is a paper-reported split/CV parameter."
+  }
+}

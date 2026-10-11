@@ -1,0 +1,363 @@
+{
+  "date": "2026-10-10",
+  "source_sha256": "e1c0d259ae1be451ad5558ecfd461ef195962c3d99e143c49dc0ebd0212ea89e",
+  "base_source_sha256": "bcccefee8717b9ad1d11d3e267a077e89dcd0a21c05bfca7efa47ba2db14a5be",
+  "archive_sha256": "90ee50730a9e799aa2d3c7b1758fef680cbbc366f61a287870144796a37156d4",
+  "input_sha256": "c606a8792a2d4ed96225c6ac9c25489c11c482db5db29cf06927c00024b6570b",
+  "enrichment_sha256": "bddfaaecb8313ed7c7c7fb47a4edf3d220d2be090461c8be887fd04597d48c52",
+  "split_manifest_sha256": "a00ac0309896576745e4c0bf4bb0b04c535ab9cb39c6344ee13c178bcb8cb9ab",
+  "cv_manifest_sha256": "d6d32a3dad6fbf2f8ad3d5479197efc9477e30749f9b87eb6536c4f191abc504",
+  "train_n": 64634,
+  "test_n": 31836,
+  "seed": 33,
+  "cv_folds": 5,
+  "test_previously_exposed": true,
+  "selection": "minimum training five-fold mean MAE; freeze both routes before this-stage test access",
+  "candidate_design": "8 fixed XGBoost configurations; 6 fixed feature/encoding ablations; same F1 baseline and partitions",
+  "CV_is_development_not_nested_unbiased_estimate": true,
+  "new_features": {
+    "seller": {
+      "numeric": [
+        "primary_seller_price_share",
+        "seller_state_count"
+      ],
+      "categorical": [
+        "primary_seller_id"
+      ]
+    },
+    "route": {
+      "numeric": [],
+      "categorical": [
+        "primary_seller_state",
+        "primary_seller_city",
+        "customer_city",
+        "primary_state_route",
+        "primary_city_route",
+        "primary_zip_zone_route"
+      ]
+    },
+    "product": {
+      "numeric": [
+        "distinct_product_count",
+        "category_count_observed",
+        "dominant_category_price_share",
+        "max_product_weight_g",
+        "total_known_weight_g",
+        "max_product_volume_cm3",
+        "total_known_volume_cm3",
+        "mean_unit_price",
+        "any_volume_missing"
+      ],
+      "categorical": [
+        "dominant_category"
+      ]
+    }
+  },
+  "candidates": {
+    "X": {
+      "X_shallow_squarederror": {
+        "algorithm": "xgboost",
+        "role": "algorithm_baseline",
+        "groups": [],
+        "encoding": "existing_F1",
+        "params": {
+          "objective": "reg:squarederror",
+          "max_depth": 3,
+          "n_estimators": 200,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "reg_lambda": 10,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "reg_alpha": 0,
+          "tree_method": "hist",
+          "max_bin": 256,
+          "n_jobs": 4,
+          "random_state": 33,
+          "eval_metric": "mae"
+        }
+      },
+      "X_shallow_absoluteerror": {
+        "algorithm": "xgboost",
+        "role": "variant",
+        "groups": [],
+        "encoding": "existing_F1",
+        "params": {
+          "objective": "reg:absoluteerror",
+          "max_depth": 3,
+          "n_estimators": 200,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "reg_lambda": 10,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "reg_alpha": 0,
+          "tree_method": "hist",
+          "max_bin": 256,
+          "n_jobs": 4,
+          "random_state": 33,
+          "eval_metric": "mae"
+        }
+      },
+      "X_medium_squarederror": {
+        "algorithm": "xgboost",
+        "role": "variant",
+        "groups": [],
+        "encoding": "existing_F1",
+        "params": {
+          "objective": "reg:squarederror",
+          "max_depth": 5,
+          "n_estimators": 400,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "reg_lambda": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.9,
+          "reg_alpha": 0,
+          "tree_method": "hist",
+          "max_bin": 256,
+          "n_jobs": 4,
+          "random_state": 33,
+          "eval_metric": "mae"
+        }
+      },
+      "X_medium_absoluteerror": {
+        "algorithm": "xgboost",
+        "role": "variant",
+        "groups": [],
+        "encoding": "existing_F1",
+        "params": {
+          "objective": "reg:absoluteerror",
+          "max_depth": 5,
+          "n_estimators": 400,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "reg_lambda": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.9,
+          "reg_alpha": 0,
+          "tree_method": "hist",
+          "max_bin": 256,
+          "n_jobs": 4,
+          "random_state": 33,
+          "eval_metric": "mae"
+        }
+      },
+      "X_deep_squarederror": {
+        "algorithm": "xgboost",
+        "role": "variant",
+        "groups": [],
+        "encoding": "existing_F1",
+        "params": {
+          "objective": "reg:squarederror",
+          "max_depth": 7,
+          "n_estimators": 500,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "reg_lambda": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.9,
+          "reg_alpha": 0,
+          "tree_method": "hist",
+          "max_bin": 256,
+          "n_jobs": 4,
+          "random_state": 33,
+          "eval_metric": "mae"
+        }
+      },
+      "X_deep_absoluteerror": {
+        "algorithm": "xgboost",
+        "role": "variant",
+        "groups": [],
+        "encoding": "existing_F1",
+        "params": {
+          "objective": "reg:absoluteerror",
+          "max_depth": 7,
+          "n_estimators": 500,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "reg_lambda": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.9,
+          "reg_alpha": 0,
+          "tree_method": "hist",
+          "max_bin": 256,
+          "n_jobs": 4,
+          "random_state": 33,
+          "eval_metric": "mae"
+        }
+      },
+      "X_regularized_squarederror": {
+        "algorithm": "xgboost",
+        "role": "variant",
+        "groups": [],
+        "encoding": "existing_F1",
+        "params": {
+          "objective": "reg:squarederror",
+          "max_depth": 5,
+          "n_estimators": 600,
+          "learning_rate": 0.03,
+          "min_child_weight": 60,
+          "reg_lambda": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.9,
+          "reg_alpha": 0,
+          "tree_method": "hist",
+          "max_bin": 256,
+          "n_jobs": 4,
+          "random_state": 33,
+          "eval_metric": "mae"
+        }
+      },
+      "X_regularized_absoluteerror": {
+        "algorithm": "xgboost",
+        "role": "variant",
+        "groups": [],
+        "encoding": "existing_F1",
+        "params": {
+          "objective": "reg:absoluteerror",
+          "max_depth": 5,
+          "n_estimators": 600,
+          "learning_rate": 0.03,
+          "min_child_weight": 60,
+          "reg_lambda": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.9,
+          "reg_alpha": 0,
+          "tree_method": "hist",
+          "max_bin": 256,
+          "n_jobs": 4,
+          "random_state": 33,
+          "eval_metric": "mae"
+        }
+      }
+    },
+    "F": {
+      "F_seller": {
+        "algorithm": "hist_boost",
+        "role": "feature_variant",
+        "groups": [
+          "seller"
+        ],
+        "encoding": "native",
+        "params": {
+          "loss": "absolute_error",
+          "max_iter": 300,
+          "learning_rate": 0.05,
+          "max_leaf_nodes": 31,
+          "min_samples_leaf": 30,
+          "l2_regularization": 10
+        }
+      },
+      "F_route": {
+        "algorithm": "hist_boost",
+        "role": "feature_variant",
+        "groups": [
+          "route"
+        ],
+        "encoding": "native",
+        "params": {
+          "loss": "absolute_error",
+          "max_iter": 300,
+          "learning_rate": 0.05,
+          "max_leaf_nodes": 31,
+          "min_samples_leaf": 30,
+          "l2_regularization": 10
+        }
+      },
+      "F_product": {
+        "algorithm": "hist_boost",
+        "role": "feature_variant",
+        "groups": [
+          "product"
+        ],
+        "encoding": "native",
+        "params": {
+          "loss": "absolute_error",
+          "max_iter": 300,
+          "learning_rate": 0.05,
+          "max_leaf_nodes": 31,
+          "min_samples_leaf": 30,
+          "l2_regularization": 10
+        }
+      },
+      "F_all": {
+        "algorithm": "hist_boost",
+        "role": "feature_variant",
+        "groups": [
+          "seller",
+          "route",
+          "product"
+        ],
+        "encoding": "native",
+        "params": {
+          "loss": "absolute_error",
+          "max_iter": 300,
+          "learning_rate": 0.05,
+          "max_leaf_nodes": 31,
+          "min_samples_leaf": 30,
+          "l2_regularization": 10
+        }
+      },
+      "F_route_product": {
+        "algorithm": "hist_boost",
+        "role": "feature_variant",
+        "groups": [
+          "route",
+          "product"
+        ],
+        "encoding": "native",
+        "params": {
+          "loss": "absolute_error",
+          "max_iter": 300,
+          "learning_rate": 0.05,
+          "max_leaf_nodes": 31,
+          "min_samples_leaf": 30,
+          "l2_regularization": 10
+        }
+      },
+      "F_all_onehot": {
+        "algorithm": "hist_boost",
+        "role": "feature_variant",
+        "groups": [
+          "seller",
+          "route",
+          "product"
+        ],
+        "encoding": "onehot",
+        "params": {
+          "loss": "absolute_error",
+          "max_iter": 300,
+          "learning_rate": 0.05,
+          "max_leaf_nodes": 31,
+          "min_samples_leaf": 30,
+          "l2_regularization": 10
+        }
+      }
+    }
+  },
+  "native_categories": "training-only >=30 occurrences, top127 plus seen-rare bin; unseen missing; never numeric rank",
+  "feature_ablation_control": "existing HGB F1; base transform unchanged, HGB hyperparameters fixed; native flag required for new categorical fields only; matched all_onehot checks encoding effect",
+  "prediction_time": "purchase; archived product metadata/seller/quote availability assumed, no revision history",
+  "excluded": [
+    "receipt",
+    "final order status",
+    "reviews",
+    "approval/shipping outcome",
+    "customer IDs",
+    "target means/history"
+  ],
+  "primary_seller": "largest sum of ordered item price; tie by seller ID; shares/counts cover all sellers",
+  "dominant_category": "largest sum of ordered item price; tie by category name; missing explicit",
+  "volume": "positive nonmissing dimensions multiplied; partial known sums plus missing indicator; never infer unavailable weight/volume",
+  "environment": {
+    "xgboost": "3.1.1",
+    "scikit-learn": "1.7.2",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "joblib": "1.6.0"
+  },
+  "stacking": "unchanged, no new fitting",
+  "sharing": "local only",
+  "stage": "F"
+}

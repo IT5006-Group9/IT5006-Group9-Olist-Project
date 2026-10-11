@@ -1,0 +1,20 @@
+{
+  "candidate": "leaves63__time_risk",
+  "configuration": "leaves63",
+  "pack": "time_risk",
+  "params": {
+    "loss": "absolute_error",
+    "max_iter": 300,
+    "learning_rate": 0.05,
+    "max_leaf_nodes": 63,
+    "min_samples_leaf": 30,
+    "l2_regularization": 10
+  },
+  "stage_A_best_parameters": "leaves63",
+  "selection_metric": "training five-fold mean MAE",
+  "summary_sha256": "1617eb068be511b9631aed523c5bf5157b6ca7743c57f18e9eac0f58cdf900c3",
+  "source_sha256": "a9694e1709e6c534e1f8c5ee536124ba81d61b649b030c95ee4f649ddf2873e6",
+  "frozen_before_test": true,
+  "test_previously_exposed": true,
+  "stacking": false
+}

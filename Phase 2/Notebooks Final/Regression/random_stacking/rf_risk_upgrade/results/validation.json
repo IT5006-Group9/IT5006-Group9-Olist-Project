@@ -1,0 +1,102 @@
+{
+  "status": "passed",
+  "train_n": 64634,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "model_replay_sample_per_scoring_partition": 256,
+  "risk_partitions_verified": 80,
+  "risk_models_sample_replayed": 65,
+  "risk_predictions_sample_replayed": 16640,
+  "outer_risk_oof_values_matched": 258536,
+  "rf_inner_models_sample_replayed": 15,
+  "rf_outer_models_sample_replayed": 5,
+  "rf_sample_predictions_replayed": 5120,
+  "rf_tree_root_log_target_checks": 2000,
+  "outer_comparators": 8,
+  "outer_score_rows": 40,
+  "meta_optimality_checks": 5,
+  "certificates": {
+    "outer_1/stack_three_rf_risk": {
+      "primal_MAE_days": 4.270509143621302,
+      "independent_dual_MAE_days": 4.270509143621321,
+      "optimality_gap_days": -1.865174681370263e-14
+    },
+    "outer_2/stack_three_rf_risk": {
+      "primal_MAE_days": 4.274327130230881,
+      "independent_dual_MAE_days": 4.274327130230894,
+      "optimality_gap_days": -1.3322676295501878e-14
+    },
+    "outer_3/stack_three_rf_risk": {
+      "primal_MAE_days": 4.2602478416109415,
+      "independent_dual_MAE_days": 4.260247841610915,
+      "optimality_gap_days": 2.6645352591003757e-14
+    },
+    "outer_4/stack_three_rf_risk": {
+      "primal_MAE_days": 4.287762084612552,
+      "independent_dual_MAE_days": 4.287762084612523,
+      "optimality_gap_days": 2.930988785010413e-14
+    },
+    "outer_5/stack_three_rf_risk": {
+      "primal_MAE_days": 4.286562704375217,
+      "independent_dual_MAE_days": 4.286562704375241,
+      "optimality_gap_days": -2.398081733190338e-14
+    }
+  },
+  "reused_reference": {
+    "previous_validation_sha256": "fd8d8f74618c336690d3a53f9108f758aa5b3c82ac6e3769f027a7957b7319e9",
+    "previous_hgb_inner_checkpoints_verified": 15,
+    "previous_hgb_models_replayed_this_audit": 0,
+    "note": "Prior HGB/risk model replay is certified by the existing audit; this audit rechecks its artifact hashes and OOF partitions.",
+    "nested_audit_sha256": "fd8d8f74618c336690d3a53f9108f758aa5b3c82ac6e3769f027a7957b7319e9",
+    "followup_audit_sha256": "23911055605dd5a806d3aa58352aa57b372465d8160743833e9412644a310c96",
+    "prior_verifier_sources_hash_verified": true,
+    "ridge_selection_and_exact_predictions_verified": true,
+    "extra_trees_stack_exact_predictions_verified": true
+  },
+  "holdout_read_or_scored_by_verifier": false,
+  "deployment_refit": false,
+  "checks": {
+    "Reconstructed sorted training IDs and all outer/inner/deeper risk folds": true,
+    "Frozen RF specification exactly matches published RF + time/risk": true,
+    "All 20 saved RF models replayed without target/outcome columns": true,
+    "All 2000 bootstrap tree roots match their log-target sample means": true,
+    "Fitting-only numeric, categorical, time and risk preprocessing verified": true,
+    "All 80 risk boundaries exclude scoring rows from their classifier fit": true,
+    "All 65 retained risk models replayed without target/outcome columns": true,
+    "Outer risk OOF exactly matches audited nested inner-score probabilities": true,
+    "All five RF outer scores reproduce published model metrics": true,
+    "Previously selected Ridge, HGB and comparison ensemble predictions preserved": true,
+    "Every meta-training row comes from matching inner OOF only": true,
+    "Every learned three-weight MAE objective has an independent dual certificate": true,
+    "All outer metrics, weights and public comparison tables recomputed": true,
+    "New source call paths do not load or score holdout data or perform a deployment refit": true
+  },
+  "method_limitations": [
+    "RF and HGB specifications were previously chosen using these development folds; this is retrospective development, not new independent confirmation.",
+    "Only RF is changed; Ridge remains the earlier inner-selected variant to preserve the controlled comparison.",
+    "Random folds assess the historical order mixture rather than future periods or unseen sellers.",
+    "Predictive model replay uses deterministic samples; all stored prediction rows are checked for alignment and metrics.",
+    "Prior full HGB regression and classic-model replay relies on the hash-verified earlier independent audits.",
+    "No new predictive models were fitted by this verifier; no independent confirmation sample was introduced."
+  ],
+  "protocol_sha256": "c8973b1d16ffb7b67217bcca9eef986b32287560b14c9a0aa915afb1faa66826",
+  "verifier_source_sha256": "f3bb458811ec15f12d98a266aab3f3a00b9757c00cf656de2c4628ade292c1fb",
+  "source_sha256": {
+    "rf_risk_models.py": "6025714b101b939a269ad1c86700a5345aa3bb3397c05714e21601d1571520d9",
+    "upgrade_ensembles.py": "d9a3437237c11f664d45818158359ae4b5b36ce661728f7d27f5a3836d0a7329"
+  },
+  "input_sha256": {
+    "training_frame": "5e2d941bf1a1d3ba3ff837d1ee76ad121367a49b6e00f38486f35a479c40dc50",
+    "cv_manifest": "d6d32a3dad6fbf2f8ad3d5479197efc9477e30749f9b87eb6536c4f191abc504",
+    "rf_identity": "892374854139ea8fcdc22964c6796d5dcd27e7c3b56b668e1048a5cff0a5d95b",
+    "rf_complete": "a5b1fafae5e552e7164c4769bff5cdb951dd0a1bba7f61e30096833bcbef9603"
+  },
+  "public_artifact_sha256": {
+    "summary.json": "f04411ad02bd812b1437811e9d921a8059eb5f752e8b0aefe3befbfa9980801d",
+    "tables/comparison.csv": "24555fae67984637cc47e2922b04b7a005241b7f15a8421ab3d99cd92a4c0613",
+    "tables/outer_fold_metrics.csv": "450fa94ddce2c6065aeb2259e1a636236ad19a22d824b03f184abba26290915a",
+    "tables/paired_changes.csv": "d3b7ede7d2998325e3f7157b46dc3fad12e5ec2bf3511599c513e6755d0c89c7",
+    "tables/selected_candidates.csv": "523cac2567aa58cf2bf599dd2ba8f44e032178ba796cb90f622851a2ca14a30e",
+    "tables/weights.csv": "e2380b6a0fe09ec6f261c55ccfa09f7aa3376ab710f39c847bd31c2286157f1b"
+  }
+}

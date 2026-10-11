@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-10",
+  "report_document_id": "1kLPfJ4EiG_Ka_1Drb3SC_Kyi9q8kiuen",
+  "report_snapshot_modified_at": "2026-10-10T15:03:55.601Z",
+  "shared_report_edited": false,
+  "report_notebook_code_cells_executed": 7,
+  "notebook_errors": 0,
+  "figures_visually_verified": 3,
+  "aggregate_arithmetic_verified": true,
+  "complete_saved_OOF_metrics_recalculated": true,
+  "original_models_and_test_results_unchanged": true,
+  "fresh_fixed_Train_Test_reproduction_models_or_references": 15,
+  "fresh_full_regression_CV_reproduction_completed": false,
+  "fresh_permutation_second_full_run_completed": false,
+  "full_reproduction_no_tuning_or_model_selection": true,
+  "test_diagnostic_explanations_not_used_for_selection": true,
+  "latest_team_snapshot_read": "2406243",
+  "latest_stacking_aggregate_means_and_SD_recalculated": true,
+  "latest_stacking_private_models_refitted": false
+}

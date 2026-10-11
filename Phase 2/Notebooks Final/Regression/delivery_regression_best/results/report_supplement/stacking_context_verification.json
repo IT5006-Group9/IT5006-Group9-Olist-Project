@@ -1,0 +1,9 @@
+{
+  "source_repository_commit": "2406243",
+  "aggregate_fold_means_and_SD_independently_recomputed": true,
+  "public_artifact_digests_match_published_verifier": true,
+  "private_model_replay_performed_in_this_review": false,
+  "final_stack_full_training_refit": false,
+  "stack_test_scored": false,
+  "fixed_classic_configurations_differ_from_report_main_Ridge_RF": true
+}
