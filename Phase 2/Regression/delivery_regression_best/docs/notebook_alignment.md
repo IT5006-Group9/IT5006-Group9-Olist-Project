@@ -36,7 +36,7 @@ The regression notebook borrows the **reader order**, clear numbered Markdown se
 
 The same narrative need not force the same labels, sample counts, random seeds, metrics or validation column. HGB remains final; a stack is not retained merely to fill an ensemble stage.
 
-Classification run metadata also differs across entries: `selected_models.json` is `quick_mode=False`; ensemble/sampling summaries are `quick_mode=True`. Their current model-comparison CSV was updated at `534a802`, while some descriptive README/progress text still refers to the earlier dry run. This integration does not change their code, results, or provenance. A final report should name the actual run for each comparison.
+Classification metadata was rechecked at `29910e0` on 2026-10-11. The selected-model, ensemble and sampling records now all state `quick_mode=False`, and their notebooks set `QUICK=False`; `docs/current_progress.md` and `outputs/experiment_protocol.json` still describe a quick run. The principal model ladder and the ensemble/sampling tables also contain different configurations and scores. This review does not change classification artifacts. The report must identify each actual comparison instead of mixing scores across configurations or claiming that all entries are still dry runs.
 
 ## 2. What the course notebooks' standards mean
 
@@ -92,3 +92,9 @@ The style reference is the project's submitted Phase 1 regression notebook, [03_
 The Phase 2 notebook follows that analysis style with a Context & Methods section, the five scoping checks, explicit cohort/feature/split definitions, and substantive result explanations. It explains why OLS/tree are baselines; what Ridge, forests, log targets and HGB change; how risk cross-fitting prevents label reuse; how parameters are selected; why latest stacking is not retained; and what overall, tail, route and permutation results mean. Error-share calculations weight subgroup errors by sample size and keep MAE versus squared-error contributions distinct.
 
 This adopts presentation, not Phase 1's planned temporal evaluation: the existing Phase 2 random protocol remains unchanged and its changed interpretation is stated. Execution modes and detailed provenance stay in supporting code/docs. Models, configurations, source CSVs and figures remain byte-identical; this revision does not retrain or choose a new model.
+
+## 6. Current regression entry recheck (2026-10-11)
+
+Reviewed team main `29910e0`. The 51-cell integrated notebook includes the Ridge/RF nested tuning, all three current ensemble packages and the RF time/risk replacement. All 17 code cells executed with the fixed course ZIP; source contracts, V2 inputs and split hashes were rebuilt. The 15 fixed-model Train–CV–Test rows, 75 fold records, subgroup error contributions and ensemble hashes/reference alignment passed. Four embedded figures were inspected. The notebook's model definitions, saved results and selected HGB were not changed.
+
+The default `scripts/run_notebook.py` entry now opens this existing integrated notebook. README and the report evidence guide distinguish the historical 36-second three-model gain from the current HGB-only three-model weights and the 1.93-minute ExtraTrees gain. These ensemble comparisons have development outer-CV evidence only. Full model fitting and all historical searches were not repeated during this review.

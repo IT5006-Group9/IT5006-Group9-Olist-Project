@@ -31,7 +31,7 @@
 
 [报告证据 Notebook](notebooks/report_supplement_review.ipynb) · [按报告章节填写的指南（数字、英文段落与图片）](docs/report_evidence_guide.md) · [完整 Train–CV–Test 表](results/report_supplement/tables/train_cv_test_comparison.csv)。补齐15行同随机切分的参照／baseline／variant、最终模型训练成绩、HGB分组置换重要性、误差图、分组样本数和时间矛盾的评价敏感性。最终模型／参数／测试成绩不变。
 
-最新 stacking 结果另列：外层CV4.2374 vs HGB4.2378天，约36秒收益；未拟合最终stack或评分测试，不填造Train/Test。共享报告由整合流程更新，本包仅补充工程证据。
+当前集成结果见 [tuned_stacking_comparison.ipynb](notebooks/tuned_stacking_comparison.ipynb)：替换为 log-target F1 + time/risk RF 的三模型组合在每折都给 HGB 100% 权重，CV MAE 与 HGB 同为4.237815天。HGB + ExtraTrees 加权组合达到4.236474天，仅改善约1.93分钟（0.032%）；保留单 HGB。此前4.2374天／约36秒收益属于旧 original-target RF 三模型组合，保留为历史对照。新组合只有开发外层CV，没有最终全训练组合或测试成绩，不能填造Train/Test。共享报告由整合流程更新，本包仅补充工程证据。
 
 固定模型的完整重建命令与 `--with-cv` 说明见报告证据指南。数据、逐单预测和模型仍不上传。
 
@@ -43,6 +43,7 @@
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python scripts/verify_bundle.py
+.venv/bin/python scripts/run_notebook.py  # default: delivery_regression_complete.ipynb
 .venv/bin/python scripts/run_notebook.py notebooks/best_scheme_review.ipynb
 ```
 

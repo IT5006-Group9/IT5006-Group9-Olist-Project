@@ -193,7 +193,7 @@
 
 > Mean five-fold MAE selected the 63-leaf HGB, with CV MAE of 4.2378 ± 0.0369 days and full-training MAE of 3.9295 days. The 31-leaf time-plus-risk control had CV MAE of 4.2729 days. The final comparison includes model-specific feature representations, so gains over OLS or a single tree cannot be attributed to algorithm choice alone. No separate regression validation set was used.
 
-### E2. 草稿现有 Fixed/Tuned 行的正确对应（开发 CV）
+### E2. 历史 nested-tuning Fixed/Tuned 行的正确对应（开发 CV）
 
 | 模型／程序 | Outer-CV MAE mean ± SD (days) | 最终 Train | 说明 |
 | --- | --- | --- | --- |
@@ -214,14 +214,33 @@
 - 草稿 **Fixed Ridge 5.0352** = **F0、log inputs、alpha 1000**；不是 E1 的 **Ridge F1 alpha100（4.9836）**。
 - 草稿 **Fixed RF 4.8062** = **F0、100树、depth24、leaf10、max_features0.8、max_samples0.8**；不是 E1 的 **RF F1（4.7269）**。
 - 草稿 **Tuned Ridge 4.9219 / Tuned RF 4.6002** = 每外折训练内3折选参数的程序成绩；没有对应最终 Train/Test。RF 不是“final configuration to confirm”，应改为 **Nested-tuned RF (outer-CV only)**。
-- 最新 stacking：5外折／3内折，12 Ridge候选、6 RF候选；非负权重和为1、截距0、按内层OOF最小化MAE。HGB内层OOF重新构建，风险继续内部cross-fit；现成HGB外折预测只用于对应外折评价。
+- 历史 nested-tuning stacking：5外折／3内折，12 Ridge候选、6 RF候选；非负权重和为1、截距0、按内层OOF最小化MAE。HGB内层OOF重新构建，风险继续内部cross-fit；现成HGB外折预测只用于对应外折评价。
 - HGB 外折也曾用于之前开发，因此这不是对整个历史选择过程的新独立嵌套验证。
 
-**Stacking 结果段落，可直接使用：**
+**历史 nested-tuning 结果段落（若保留该实验）：**
 
 > The nested-tuned three-model stack achieved outer-CV MAE of 4.2374 ± 0.0371 days versus 4.2378 ± 0.0369 for HGB. The gain was 0.000419 days, approximately 36 seconds (0.0099%). HGB received approximately 97.6%–99.4% of the learned weight and Ridge received zero in every fold. This limited gain did not justify retaining the more complex combination. The procedure was not refitted on all training orders or evaluated on the test set; HGB remains the selected final model.
 
 来源：[E1 完整成绩](../results/report_supplement/tables/train_cv_test_comparison.csv)、[75条逐折指标](../results/report_supplement/tables/cv_fold_metrics.csv)、[E2 程序比较](../results/report_supplement/tables/stacking_outer_cv_comparison.csv)、[最新 stacking Notebook](../notebooks/tuned_stacking_comparison.ipynb)。
+
+### E3. 当前集成对照：与整体 Notebook 第 6 节一致
+
+E2 保留历史配置。当前三模型组合中的 RF 已换成固定的 **log-target F1 + time/risk**，不能把旧 original-target RF 的权重和36秒改善写成新组合结果。以下 MAE ± SD 采用**五折样本 SD（ddof=1）**，与本指南 E1/E2 一致；整体 Notebook 展示的是 population SD（ddof=0），均值不变。
+
+| 当前模型／组合 | Outer-CV MAE mean ± sample SD (days) | Mean fold RMSE (days) | 结论 |
+| --- | --- | --- | --- |
+| HGB | 4.2378 ± 0.0369 | 7.7450 | 保留的最终单模型 |
+| Ridge + RF time/risk + HGB：MAE-weighted | 4.2378 ± 0.0369 | 7.7450 | 每折100% HGB、0% Ridge/RF；无增益 |
+| HGB + ExtraTrees：50/50 mean | 4.2745 ± 0.0432 | 7.7541 | MAE 高于 HGB |
+| HGB + ExtraTrees：MAE-weighted | 4.2365 ± 0.0378 | 7.7398 | 最低观察 MAE，但改善极小，不保留 |
+
+上述组合未拟合最终全训练组合，也未测评测试集。HGB 的最终 Train/Test 成绩见 E1/F；不能把 HGB 测试成绩贴到组合名下。
+
+**当前集成段落，可直接使用：**
+
+> Replacing the forest member with the log-target F1 plus time/risk configuration improved its standalone outer-CV MAE to 4.4152 days, but the three-model MAE-weighted combination assigned 100% weight to HGB in every outer fold and reproduced HGB's MAE of 4.2378 days. The HGB/ExtraTrees MAE-weighted combination achieved 4.2365 days, an observed improvement of only 0.001342 days (about 1.93 minutes, 0.032%). This small retrospective development gain did not justify replacing single HGB. The new combinations were evaluated through outer CV only; no final full-training combination or test score was produced.
+
+来源：[当前集成 Notebook](../notebooks/tuned_stacking_comparison.ipynb)、[RF time/risk 对照](../../random_stacking/rf_risk_upgrade/results/tables/comparison.csv)、[ExtraTrees 对照](../../random_stacking/ensemble_followup/results/tables/comparison.csv)。各组合的候选定义、折内风险与权重拟合边界见相邻 README；全部14组对照保留在 Notebook 附录。
 
 <a id="test-errors"></a>
 
