@@ -1,7 +1,7 @@
 {
   "experiment": "classification_low_review",
   "record_kind": "saved_artifact_snapshot",
-  "recorded_at_utc": "2026-10-11T08:45:36.343298+00:00",
+  "recorded_at_utc": "2026-10-11T14:08:39.434398+00:00",
   "quick_mode": false,
   "seed": 5006,
   "split_scheme": "stratified",
@@ -90,11 +90,13 @@
     "outputs/tables/fold_summary.csv": "eb83e0f802cd63b5b132169d20668ed4a6eeaf1868e217cd30571d7b62b427d0",
     "outputs/tables/late_vs_low_review_correlation.csv": "79e1726c4d81cb4960f7a9590c26ba344fe14800479febd64aa28cd18d7e2677",
     "outputs/tables/model_comparison.csv": "a06e3890a1a800f62b30ec7c4f45a98dcd09fc68792f1a70081c36ab159e355c",
+    "outputs/tables/operating_points.csv": "34146f9839497c706d1e1fca77ec4cd982d851680ab0dcfd0119b3d6f836e7b1",
+    "outputs/tables/operating_subgroups.csv": "9ae114b74e98b3d0accda94fa75352fdd82369f52255b2d569a2180a2ab07864",
     "outputs/tables/permutation_importance.csv": "52fd0764d08462878fd4d163805a7b2c6836ca937e661af83e4513490de49d1b",
     "outputs/tables/rf_operating_points.csv": "935edff17ad1f501af158785ff8dffb88d773f22450420935ba4750d01c18131",
-    "outputs/tables/sampling_comparison.csv": "8f4c1badf669a51ed8e3a551555dd2f47c2921ebd955c923a0c53591f80c49d1",
-    "outputs/tables/shap_cross_model.csv": "821b4fd0506fd2e5920d9457a9e3327a4e73b3f199d6a1c909e38ed747f57b29",
-    "outputs/tables/shap_importance.csv": "a7aed6c072cc5edcc4b11174d87460cd9504b375a44b1aee9654ace4ddd96070",
+    "outputs/tables/sampling_comparison.csv": "e87f26b637ee50d3220e55e39c6584fbe04c102c3cf3327c90ab926e4ebbaaa6",
+    "outputs/tables/shap_cross_model.csv": "f71239be03466fab4d592648e5e46c9a5ab7bf61581c0d0ae306a7c9909db7f7",
+    "outputs/tables/shap_importance.csv": "df1ac7212bc2f5e6df51bfc84e519bb4f31799ab96c181dccde083da3c26ac06",
     "outputs/tables/single_feature_auc.csv": "8b15af8ca768742148a93b6e7162694ae4c69379f538f3f5e064cda953ae1830",
     "outputs/tables/smote_sensitivity.csv": "efc0172dd8f23586aa040a787e159ab719ecca2f9e68045b72015c4a583d554f",
     "outputs/tables/split_summary.csv": "58eb713b1bf25839018f2256554be1a32ffb1a29bc5f133ed046e55f9eb5e7f0"
@@ -117,14 +119,15 @@
     "outputs/data_quality.json": "6f823cf6fbe14d514b78b81f3796f9f6a3cb793c23ade6c3012f462b57874942",
     "outputs/ensemble_summary.json": "af7fa8bbf07a9cb72787977746c3a6b33a6aef8f3be23d10d7f2c88834f8d1c3",
     "outputs/rf_operating_points_provenance.json": "4d0d68b845c9d50463607ed8dfb839f56a90404db1aac4970bed6d16609a5679",
-    "outputs/sampling_summary.json": "4b18c57f005340a835fd9e304a43e5c423242cdafc852bdb17b6df94c11769d6",
+    "outputs/sampling_summary.json": "77b92e303431224cd234ea7145e5bd50e5bc0ba5fff4e01854c29c1240830912",
     "outputs/selected_models.json": "cc08637682311e9edb4e67f338a9d4d32f7b4920fab6d86983854037fc5dc7eb"
   },
   "notebook_sha256": {
     "notebooks/baseline_variant_review.ipynb": "e1df25edee31fc3f8d15bc757a3152ee1898aee0cdca9922622f066064ca6813",
+    "notebooks/classification_complete_pipeline.ipynb": "dfbc9895fa3148d52a6ac60d43ebbccdb1ff720ac63e89818567c7f7e460731b",
     "notebooks/data_preparation_audit.ipynb": "b00197d441726c47380a4bf534e8aa0e4ac0f951e9ee7b44741a2e8872f0cbf3",
-    "notebooks/ensemble_comparison.ipynb": "a5186b2b1bc51008d99b68cc0b94c561a816031a0cc3845e367f263f0b04d2cf",
-    "notebooks/sampling_comparison.ipynb": "943b8b97a0cc07b033a6c3031d768421b48c4716b88448f10dc56f139a2f6bc4"
+    "notebooks/ensemble_comparison.ipynb": "0687637c555e99c5357fe5578fb02aaa410f837c2f4ea5decf53a3157d5d6d84",
+    "notebooks/sampling_comparison.ipynb": "1619ee60597ea80e1b5922cdfe7dffd569a3b3bd4983dbd5e7002a7196030be5"
   },
   "saved_notebook_evidence": {
     "data_preparation_audit": {
@@ -143,7 +146,7 @@
       "metric_tolerance": 0.0005
     },
     "ensemble_comparison": {
-      "sha256": "a5186b2b1bc51008d99b68cc0b94c561a816031a0cc3845e367f263f0b04d2cf",
+      "sha256": "0687637c555e99c5357fe5578fb02aaa410f837c2f4ea5decf53a3157d5d6d84",
       "executed_code_cells": 10,
       "quick_mode": false,
       "recorded_python": "3.14.7",
@@ -152,7 +155,7 @@
       "metric_tolerance": 0.0005
     },
     "sampling_comparison": {
-      "sha256": "943b8b97a0cc07b033a6c3031d768421b48c4716b88448f10dc56f139a2f6bc4",
+      "sha256": "1619ee60597ea80e1b5922cdfe7dffd569a3b3bd4983dbd5e7002a7196030be5",
       "executed_code_cells": 11,
       "quick_mode": false,
       "recorded_python": "3.14.7",
@@ -163,6 +166,5 @@
     "limits": "Saved execution counts, settings and rounded result tables were cross-checked. No training was rerun. Current source hashes identify this snapshot, not a contemporaneous execution manifest. Original package versions and execution timestamps were not captured and cannot be reconstructed from these artifacts."
   },
   "execution_environment": null,
-  "training_rerun": false,
-  "final_layout_note": "Final presentation uses the four executed source notebooks; compiled notebook is retained in Classification Work. Only path discovery and snapshot indexing changed; no model was retrained."
+  "training_rerun": false
 }
