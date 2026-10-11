@@ -184,7 +184,71 @@ The forest's training MAE is lower than its CV MAE (3.7645 versus 4.5386 days fo
 
 **Next comparison.** Continue the nonlinear tree route while testing more specific purchase information and an absolute-error fitting objective. Retain the linear/tree baselines as references rather than rewriting their definitions after later improvements.
 ''')
-md('''### 4.2 Enriched purchase information and HGB
+md('''### 4.2 Nested tuning of Ridge and random forest
+
+The next experiment asks whether a bounded search can improve each classic model before combining their predictions. It uses the same **64,634 training orders** and five outer folds. Inside each outer training partition, **three shuffled inner folds (seed 33)** select candidates by mean MAE. Imputation, scaling, category encoding and time encoding are fitted within each corresponding inner training fold. The selected candidate is refitted on that outer training partition and evaluated on its held-out outer fold.
+
+The controls here are **F0 Ridge with log inputs and alpha 1,000**, and **F0 random forest with depth 24, minimum leaf size 10 and feature fraction 0.8**. They are different configurations from the fixed F1 variants in Section 4.1. Before/after gains below compare each nested experiment's fixed control with its own tuned procedure on the same outer validation orders.
+
+`F1_time` combines F1 calendar/interactions with fold-fitted elapsed purchase days and year-month encoding. Neither classic model uses the learned risk feature in this search. All candidates predict the original duration target; a log-input option changes X, not y. The existing test set is not loaded or scored by this experiment. Each outer fold has its own selection, rather than one final full-training model.
+''')
+md('''#### 4.2.1 Ridge: regularisation and input representation
+
+Ridge is sensitive to both the penalty and the representation of correlated numeric inputs. The search crosses the following choices, giving **12 candidates**:
+
+| Choice | Values searched |
+|---|---|
+| Feature pack | F0; F1 with time encoding (`F1_time`) |
+| Numeric inputs | Raw; selected non-negative inputs transformed with log1p |
+| L2 penalty alpha | 100; 1,000; 10,000 |
+
+The table below reports the fixed control and the complete inner-selection procedure. MAE and RMSE are mean outer-fold scores in days; lower is better. The fold-selection table shows which configuration supplied each outer validation prediction.
+''')
+code('''classic_cv = pd.read_csv(TABLES / "stacking_outer_cv_comparison.csv").set_index("model")
+classic_choices = pd.read_csv(TABLES / "stacking_selected_candidates.csv")
+
+def classic_tuning_scores(family):
+    rows = classic_cv.loc[[family + "_fixed", family + "_tuned"]].copy()
+    rows["MAE reduction (%)"] = 100 * (1 - rows.mean_fold_MAE_days / rows.iloc[0].mean_fold_MAE_days)
+    return rows[["label", "mean_fold_MAE_days", "mean_fold_RMSE_days", "MAE reduction (%)"]].rename(columns={
+        "label": "Model", "mean_fold_MAE_days": "Outer MAE", "mean_fold_RMSE_days": "Outer RMSE"
+    }).reset_index(drop=True).round(4)
+
+display(classic_tuning_scores("ridge"))
+ridge_choices = classic_choices.selected_ridge.str.extract(
+    r"ridge_(?P<Inputs>.+)_(?P<Transform>raw|log)_a(?P<Alpha>\\d+)")
+ridge_choices.insert(0, "Outer fold", classic_choices.outer_fold)
+ridge_choices["Transform"] = ridge_choices.Transform.map({"raw": "Raw inputs", "log": "Selected log1p inputs"})
+display(ridge_choices)''')
+md('''**Ridge finding.** Mean outer MAE decreases from **5.0352 to 4.9219 days**, a **2.25%** reduction against the fixed F0 control. Every fold selects **F1_time and alpha 100**. Folds 1, 2, 4 and 5 select log-transformed inputs; fold 3 selects raw inputs. Thus a single global statement that the tuned Ridge always uses log inputs would be inaccurate.
+
+The improvement combines a feature-pack change and a smaller penalty. This grid does not attribute the entire gain to alpha alone. The outer scores assess the tuning procedure; the selected configurations are fold-specific and have no new final Train/Test scores.
+''')
+md('''#### 4.2.2 Random forest: tree settings and time features
+
+The forest search crosses **F0 / F1_time** with three tree settings, giving **six candidates**:
+
+| Setting | Maximum depth | Minimum leaf size | Feature fraction |
+|---|---:|---:|---:|
+| 1 | 24 | 10 | 0.8 |
+| 2 | Unrestricted | 5 | 0.8 |
+| 3 | 16 | 20 | 0.6 |
+
+Every candidate uses **100 trees**, bootstrap sampling, `max_samples=0.8` and seed **33**. Depth and leaf size control how finely individual trees can fit; feature sampling varies the inputs available to each split. The original duration target is used throughout this search. The log-target forest from Section 4.1 is a separate fixed variant and is not one of these six candidates.
+''')
+code('''display(classic_tuning_scores("forest"))
+forest_choices = classic_choices.selected_forest.str.extract(r"forest_(?P<Inputs>.+)_(?P<Setting>\\d+)")
+forest_choices.insert(0, "Outer fold", classic_choices.outer_fold)
+# Candidate IDs use zero-based setting indices; the table above numbers them 1–3.
+forest_choices["Setting"] = forest_choices.Setting.astype(int) + 1
+display(forest_choices)''')
+md('''**Random-forest finding.** Mean outer MAE decreases from **4.8062 to 4.6002 days**, a **4.29%** reduction against the fixed F0 forest. Every fold selects **F1_time with Setting 1**: depth 24, minimum leaf size 10 and feature fraction 0.8. The selected tree parameters match the control, so this observed gain comes from changing the feature pack, rather than selecting different tree settings. The bundled feature additions do not isolate one particular feature as the cause.
+
+This result does not make the tuned raw-target forest the strongest forest variant in the notebook: the separately evaluated log-target F1 forest in Section 4.1 has a lower reported CV MAE of **4.5386 days**. These rows describe different configurations and selection procedures, not a uniform replacement of all earlier forest results.
+
+**Connection to stacking.** The fold-selected Ridge and forest supply the base predictions in Section 6. Their separate-model improvements motivate that combination experiment, but do not establish an advantage over HGB. Detailed runners, per-candidate inner scores and reproduction commands are in the [nested tuning guide](../../random_stacking/nested_tuning/README.md); the [stacking notebook](tuned_stacking_comparison.ipynb) reports the combination results. The reused folds remain retrospective development evidence.
+''')
+md('''### 4.3 Enriched purchase information and HGB
 
 HistGradientBoostingRegressor (HGB) adds trees sequentially to improve the current prediction. The retained route uses **absolute-error loss**, aligning fitting more closely with the MAE objective and reducing the influence of very large labels relative to squared loss. It estimates a central duration from purchase information; the loss is not designed to guarantee unbiased predictions in rare outcome-defined tails.
 
@@ -222,7 +286,7 @@ md('''## 6. Does combining models add useful improvement?
 
 Stacking is tested because models from different families may make complementary errors. An equal average is a simple combination reference. The MAE-weighted combination learns non-negative weights summing to one from out-of-fold base predictions; it cannot rely on fitting-set predictions as if they were unseen observations.
 
-In the latest experiment, Ridge and random forest are tuned with **three inner folds** inside each of the **five outer training folds**. HGB is held at its selected setting, with its risk construction rebuilt within the appropriate training boundaries. Outer-validation labels do not fit the corresponding combination. The fold-tuned Ridge/RF configurations differ from the fixed variants in Section 4, so their results are listed separately. This experiment supplies outer CV evidence only, with no final full-training stack or test score.''')
+In the latest experiment, Ridge and random forest use the fold-specific tuning procedure documented in **Section 4.2**, with **three inner folds** inside each of the **five outer training folds**. HGB is held at its selected setting, with its risk construction rebuilt within the appropriate training boundaries. Outer-validation labels do not fit the corresponding combination. The fold-tuned Ridge/RF configurations differ from the fixed variants in Section 4.1, so their results are listed separately. This experiment supplies outer CV evidence only, with no final full-training stack or test score.''')
 code('''stack = pd.read_csv(TABLES / "stacking_outer_cv_comparison.csv")
 stack["CV SD"] = stack.fold_MAE_SD_days * np.sqrt(4 / 5)  # convert sample to population SD
 stack_view = stack[["label", "mean_fold_MAE_days", "CV SD"]].rename(columns={
