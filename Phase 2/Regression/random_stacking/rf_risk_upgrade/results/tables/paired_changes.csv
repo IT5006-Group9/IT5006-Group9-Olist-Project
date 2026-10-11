@@ -1,0 +1,9 @@
+candidate,reference,mean_MAE_change_days,change_minutes,better_folds,tied_folds,worse_folds,folds
+rf_time_risk,previous_rf,-0.1850067011768118,-266.409649694609,5,0,0,5
+rf_time_risk,hgb,0.1774016313401658,255.45834912983872,0,0,5,5
+mean_three_rf_risk,hgb,0.15910839673393226,229.11609129686246,0,0,5,5
+mean_three_rf_risk,previous_stack,0.15952741404619833,229.7194762265256,0,0,5,5
+mean_three_rf_risk,extra_trees_stack,0.16045013180987908,231.04818980622588,0,0,5,5
+stack_three_rf_risk,hgb,0.0,0.0,0,5,0,5
+stack_three_rf_risk,previous_stack,0.00041901731226605675,0.6033849296631217,0,0,5,5
+stack_three_rf_risk,extra_trees_stack,0.001341735075946815,1.9320985093634135,1,0,4,5

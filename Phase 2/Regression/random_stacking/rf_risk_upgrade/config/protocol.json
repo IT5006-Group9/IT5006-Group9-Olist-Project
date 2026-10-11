@@ -1,0 +1,60 @@
+{
+  "experiment": "Replace the original-target RF in the three-model ensemble with published log-target RF plus time/risk",
+  "seed": 33,
+  "train_n": 64634,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "rf": {
+    "model": "RF + time/risk",
+    "role": "input variant",
+    "feature_design": "F1 log1p target + time/risk",
+    "form": "bundle",
+    "specification": {
+      "feature_pack": "F1",
+      "mi_fraction": 1.0,
+      "log_inputs": false,
+      "log_target": true,
+      "weight_policy": "uniform",
+      "output_role": "point",
+      "kind": "forest",
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      }
+    },
+    "pack": "time_risk",
+    "uses_purchase_extension": false
+  },
+  "rf_defaults": {
+    "n_estimators": 100,
+    "bootstrap": true,
+    "max_samples": 0.8,
+    "random_state": 33
+  },
+  "risk_params": {
+    "learning_rate": 0.05,
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 40,
+    "l2_regularization": 10.0,
+    "early_stopping": false,
+    "random_state": 33
+  },
+  "report_models_sha256": "53105c3b653d3c8b569c496f47f13590b5e56afbec26ec138bf2d142a9536716",
+  "ridge": "Reuse the previously inner-selected Ridge from nested_tuning for each outer partition; no new Ridge search.",
+  "hgb": "Reuse exact audited nested HGB inner OOF and matching outer predictions; no global OOF inputs to meta-training.",
+  "risk": "Use the identical published cross-fitted risk procedure: 3-fold risk OOF entirely within each regression fitting partition plus a risk classifier fitted on that partition for scoring. Verified matching nested_hgb inner risk caches and HGB reference outer risk caches may be reused; record hash and partition provenance before use.",
+  "ensembles": [
+    "Equal mean of Ridge, RF log-target plus time/risk, and HGB",
+    "Constrained MAE weights for Ridge, RF log-target plus time/risk, and HGB"
+  ],
+  "combiner": "Nonnegative weights summing to one, zero intercept, fitted on matching inner OOF only.",
+  "evaluation": "Same sorted training orders and KFold(shuffle=True, random_state=33): outer5 and inner3. The RF specification is frozen; no parameter search. Refit it on each outer training partition. Compare mean outer MAE/RMSE and paired changes with HGB, prior three-model stack, and HGB/ExtraTrees stack.",
+  "holdout_policy": "Do not load, predict or score test data. No final full-training deployment refit.",
+  "limitations": [
+    "RF and HGB specifications were previously chosen using these development folds; this is retrospective development, not new independent confirmation.",
+    "Only RF is changed; Ridge remains the earlier inner-selected variant to preserve the controlled comparison.",
+    "Random folds assess the historical order mixture rather than future periods or unseen sellers."
+  ]
+}

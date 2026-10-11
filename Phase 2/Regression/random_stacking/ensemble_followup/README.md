@@ -2,7 +2,7 @@
 
 This bounded follow-up checks whether a different ensemble member provides a useful improvement over the published HGB and the previous Ridge/RF/HGB constrained MAE stack. The existing 64,634 training orders and five outer fold assignments are unchanged. The existing test set is not loaded, predicted or scored by these runners.
 
-The [shared ensemble notebook](../../delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb) explains ExtraTrees and presents the main four-model comparison, with all 12 random-split combination versions in its appendix. No separate ExtraTrees notebook is needed. The [integrated regression notebook](../../delivery_regression_best/notebooks/delivery_regression_complete.ipynb) provides the single-model context.
+The [shared ensemble notebook](../../delivery_regression_best/notebooks/tuned_stacking_comparison.ipynb) explains ExtraTrees and presents four main comparisons, with all 14 random-split combination versions in its appendix, including the later [RF time/risk replacement](../rf_risk_upgrade/README.md). No separate ExtraTrees notebook is needed. The [integrated regression notebook](../../delivery_regression_best/notebooks/delivery_regression_complete.ipynb) provides the single-model context.
 
 ## Predeclared candidates
 
@@ -10,7 +10,7 @@ The [shared ensemble notebook](../../delivery_regression_best/notebooks/tuned_st
 - **ExtraTrees:** F1 plus fold-fitted elapsed days/year-month; 100 trees, depth 24, minimum leaf size 10, feature fraction 0.8, no bootstrap and seed 33. Compare original versus log-transformed targets using mean three-inner-fold MAE separately within each outer training partition. This is a two-candidate comparison, not an exhaustive ExtraTrees search.
 - **HGB:** retain the published 63-leaf purchase/time/risk model. Reuse verified nested HGB predictions only for their matching inner and outer partitions. Previously published global OOF predictions never become inner meta-training inputs.
 
-The RF used here is distinct from the earlier nested-tuned RF, which used the original target and F1 plus time encoding (mean outer MAE 4.6002 days). The published log-target RF with time and learned-risk features (CV MAE 4.4152 days) is another separate variant and has not been tested in these combinations.
+The RF used here is distinct from the earlier nested-tuned RF, which used the original target and F1 plus time encoding (mean outer MAE 4.6002 days). The published log-target RF with time and learned-risk features (CV MAE 4.4152 days) was subsequently evaluated in a [separate three-model replacement experiment](../rf_risk_upgrade/README.md), where the learned weights also assigned all weight to HGB. The results below retain this follow-up's original RF definition.
 
 The full frozen definition is in [protocol.json](config/protocol.json). Both new model routes exclude the learned risk feature. Model/input differences therefore both matter when interpreting comparisons with HGB.
 
