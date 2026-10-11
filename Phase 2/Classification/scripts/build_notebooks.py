@@ -512,8 +512,10 @@ empty for orders not delivered by T). The empirical checks below go further:
   known before the order's purchase time *and belonging to training rows* contributed (the smoothed seller
   late rate is rebuilt and compared exactly);
 * **at_T** — internal consistency of the delivery-as-of-T block;
-* **review_time** — share of reviews written before T. The survey trigger T = min(delivered, estimated) is an
-  assumption about Olist's process; reviews dated before T are cases where that assumption does not hold;
+* **review_time** — two timestamps, kept apart. Reviews *answered* before T must be 0: the cohort rule excludes
+  those 426 orders, so no label exists before the prediction point. Surveys *created* before T (2.7%) are
+  informational: T = min(delivered, estimated) reconstructs Olist's survey trigger from two timestamps rather
+  than logging it, and this share bounds how often the reconstruction is early;
 * **single_feature_auc** — ranking power of each feature alone on validation. A feature with AUC near 1.0
   would be encoding the label. `is_delivered` leading at about 0.77 is the delivery effect that Phase 1
   documented (late orders average 2.57 stars), not leakage: it is known at T by construction."""),
@@ -690,9 +692,9 @@ Read these against the tables above before quoting any number in the report.
 4. **The ensemble gain is small by construction.** The three base models rank the same orders similarly (see
    the OOF correlation matrix), so averaging mostly reduces variance. Keep the retention rule honest: if the
    best ensemble is not at least 1% better on validation, the report says so and keeps the single model.
-5. **Survey-trigger assumption.** About 3% of reviews are dated before T. These orders' delivery-as-of-T
-   features describe information that arrived after the customer wrote the review; the share is small but it
-   belongs in Limitations.
+5. **Survey-trigger reconstruction.** T = min(delivered, estimated) is derived, not logged. No cohort order was
+   *answered* before T (the 426 that were are excluded); 2.7% of surveys were *created* before T, which bounds the
+   error of the reconstruction and belongs in Limitations as such — not as reviews written before T.
 6. **Validation and test can still disagree on the ensemble** because the retention rule uses one 13% slice.
    The OOF rows (all training rows) are a larger selection set; if the team prefers "better on OOF *and* not
    worse on validation", decide that before reading the full-run test numbers and record it in

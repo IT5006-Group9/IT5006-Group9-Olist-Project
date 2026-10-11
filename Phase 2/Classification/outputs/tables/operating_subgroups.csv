@@ -1,0 +1,5 @@
+subgroup,orders,positive_rate,pr_auc,recall_at_frozen,precision_at_frozen
+undelivered_at_T,3186,0.588512,0.740489,0.993067,0.597561
+delivered_by_T,28986,0.0923894,0.227098,0.193801,0.330784
+single_item,28922,0.126409,0.492327,0.48605,0.577886
+multi_item,3250,0.276,0.501533,0.673356,0.375155

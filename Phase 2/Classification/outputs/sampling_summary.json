@@ -19,7 +19,7 @@
     "B_tree_base": "class_weight"
   },
   "final_model": "B_rf",
-  "final_strategy": "none",
+  "final_strategy": "class_weight",
   "quick_mode": false,
   "test_pr_auc": {
     "A_linear_tuned/none": 0.493,
@@ -45,14 +45,14 @@
   },
   "shap_top10": [
     "n_items",
+    "is_delivered",
+    "seller_id_enc",
     "actual_delivery_time",
-    "wd_actual_delivery_time",
+    "delivery_vs_seller_prior",
     "wd_delivery_time_delta",
     "carrier_transit_days",
-    "is_delivered",
+    "wd_actual_delivery_time",
     "delivery_time_delta",
-    "delivery_vs_seller_prior",
-    "seller_id_enc",
-    "carrier_handover_days"
+    "seller_prior_low_review_rate"
   ]
 }
