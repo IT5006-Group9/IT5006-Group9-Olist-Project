@@ -63,23 +63,34 @@ python scripts/run_notebook.py                        # data_preparation_audit (
 python scripts/run_notebook.py notebooks/baseline_variant_review.ipynb   # 1-2 h with QUICK = False
 python scripts/run_notebook.py notebooks/ensemble_comparison.ipynb       # 10-40 min
 python scripts/run_notebook.py notebooks/sampling_comparison.ipynb       # 15-60 min (20 fits + SHAP)
-python scripts/reproduce_classification.py --protocol-only              # digests -> outputs/experiment_protocol.json
-python scripts/verify_classification.py               # re-checks split, tables and audits
+python scripts/reproduce_rf_operating_points.py                         # report B5 from saved predictions, no refitting
+python scripts/reproduce_classification.py --protocol-only              # checked snapshot -> outputs/experiment_protocol.json
+python scripts/verify_classification.py --strict-sources  # rebuilds split and leakage audits; checks all recorded artifacts
+python scripts/verify_classification.py --metadata-only --strict-sources  # saved artifacts only; no raw CSVs required
 python -m unittest discover -s tests -v
 ```
 
-`scripts/reproduce_classification.py [--quick]` runs the three notebooks' code headlessly
+`scripts/reproduce_classification.py [--quick]` runs the four notebooks' code headlessly
 and writes `outputs/experiment_protocol.json` with source and output digests
-(`--protocol-only` rewrites the digests after `run_notebook.py`).
+(`--protocol-only` checks saved execution counts, QUICK settings and the displayed result
+tables against the CSVs before recording a snapshot; it does not rerun training).
 `scripts/build_notebooks.py` regenerates the notebooks from their definition (clears outputs).
 
 Outputs: `outputs/tables/` (published CSVs), `outputs/figures/`, `outputs/selected_models.json`,
 `outputs/ensemble_summary.json`, `outputs/sampling_summary.json`, `outputs/data_quality.json`. Git-ignored and regenerated locally:
 `data/` (feature table), `models/`, `outputs/predictions/`, `outputs/oof/`.
 
-The committed notebooks were executed with `QUICK = True` (dry run, 4 search draws,
-small forests) on 9 Oct 2026 to validate the code path; the report numbers come from a
-`QUICK = False` run.
+The current committed notebooks contain full-run (`QUICK = False`) outputs. Their saved
+baseline, ensemble and sampling result tables agree with the published CSVs at displayed
+precision, and `outputs/selected_models.json` records the full-run RF configuration.
+`notebooks/classification_complete_pipeline.ipynb` compiles those outputs into one document.
+The protocol records the current notebook, source, result and configuration hashes.
+Because the original execution did not capture a contemporaneous environment/source manifest,
+this is explicitly a **saved-artifact snapshot**, not a fresh-training attestation; the
+recording environment is separate from the original notebook Python version. The verifier
+can rebuild the cohort and leakage audits from the course CSVs without training models.
+Local per-order predictions, when available, additionally support independent PR-AUC checks.
+The audit records its scope and the exact protocol digest it verified.
 
 ## Directory migration (2026-10-11)
 

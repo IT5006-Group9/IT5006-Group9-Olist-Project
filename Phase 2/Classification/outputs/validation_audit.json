@@ -1,5 +1,8 @@
 {
   "passed": true,
   "failures": [],
-  "strict_sources": false
+  "strict_sources": true,
+  "scope": "raw-data reconstruction, saved artifacts and available predictions",
+  "training_rerun": false,
+  "protocol_sha256": "40886f6504d9b07a47ed3b6a07817362ceb985c42789c3b093b6e732a6dbbd8e"
 }

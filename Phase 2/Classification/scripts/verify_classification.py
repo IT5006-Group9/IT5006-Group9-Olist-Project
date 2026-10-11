@@ -1,7 +1,7 @@
 """Independent verification of the published classification outputs (mirrors the
 regression package's verify_* scripts).
 
-    python scripts/verify_classification.py [--strict-sources]
+    python scripts/verify_classification.py [--strict-sources] [--metadata-only]
 
 Checks, without refitting any model:
   * the feature table rebuilds to the recorded cohort sizes and passes both leakage audits
@@ -9,7 +9,7 @@ Checks, without refitting any model:
     or the regression package's windows / folds (chronological scheme)
   * every published table matches its digest in experiment_protocol.json
   * source digests match (warning by default; --strict-sources makes it an error)
-  * selection used validation only; the test window was scored once per final model
+  * saved model and strategy selections match validation maximisers (not proof of test access history)
   * PR-AUC in the model comparison is reproduced from an independent implementation on
     saved validation predictions, when outputs/predictions/ exists locally
 """
@@ -55,6 +55,7 @@ def manual_average_precision(y, p):
 
 def main() -> None:
     ap = argparse.ArgumentParser(); ap.add_argument("--strict-sources", action="store_true")
+    ap.add_argument("--metadata-only", action="store_true", help="check saved artifacts and predictions without rebuilding raw features")
     args = ap.parse_args()
     failures: list = []
     protocol = json.loads((OUT / "experiment_protocol.json").read_text())
@@ -67,44 +68,44 @@ def main() -> None:
         require(protocol["windows"] == {k: list(v) for k, v in config.WINDOWS.items()} or protocol["windows"] == config.WINDOWS,
                 "windows in protocol equal clf_config.WINDOWS", failures)
 
-    # feature table, split manifest and cohort
-    df = features.build_feature_table(save=False)
-    p2 = features.cohort(df, "p2")
-    quality = json.loads((OUT / "data_quality.json").read_text())
-    counts = split.window_summary(p2, "p2").orders.to_dict()
-    require(counts == quality["windows"], f"cohort splits rebuild to the recorded sizes {quality['windows']}", failures)
-    if config.SPLIT_MANIFEST.exists():
-        manifest = pd.read_csv(config.SPLIT_MANIFEST).set_index("order_id").split
-        rebuilt = p2.set_index("order_id").split.reindex(manifest.index)
-        require(bool((rebuilt == manifest).all()) and len(manifest) == len(p2),
-                "split rebuilds to the committed data/split_manifest.csv (same seed, same rows)", failures)
-    else:
-        print("SKIP data/split_manifest.csv not present locally (git-ignored data/); rebuilt split used")
-    if config.SPLIT_SCHEME == "stratified":
-        rates = p2.groupby("split").is_low_review.mean()
-        require(float(rates.max() - rates.min()) < 0.005, f"positive rate equal across splits (stratified): {rates.round(4).to_dict()}", failures)
-        require(abs(len(p2[p2.split == "test"]) / len(p2) - config.TEST_SIZE) < 0.005, "test share equals TEST_SIZE (0.33)", failures)
-    features.assert_no_leakage(p2, "p2")
-    audit = features.leakage_audit(p2, "p2", sample=1000, full=df)
-    require(audit["history"]["only outcomes known before purchase"] == 1.0, "point-in-time history uses no future outcomes", failures)
-    require(audit["history"]["late rate rebuilt from training-row outcomes only"] == 1.0,
-            "history features use outcomes of training rows only (no validation / test label in any feature)", failures)
-    require(audit["history"]["low-review rate rebuilt from reviews answered before purchase"] == 1.0,
-            "review history uses review_answer_timestamp (label known when answered)", failures)
-    require(float((p2.review_answer_timestamp < p2.survey_trigger_time).mean()) == 0.0,
-            "no cohort order has its review answered before the prediction point T", failures)
-    # fold-level isolation: a history step fitted on fold-fit rows carries no event from the held-out rows
-    import clf_pipelines as pipelines
-    tr = split.split_frame(p2)["train"]; fit_idx, score_idx = split.cv_folds(tr, "p2")[0]
-    X_tr, _ = split.xy(tr, "p2")
-    h = pipelines.history_step()[1].fit(X_tr.iloc[fit_idx])
-    held = set(X_tr.iloc[score_idx].order_id)
-    ev_ids = set(tr.iloc[fit_idx].order_id)
-    require(len(h.seller_delivery_events_) <= len(fit_idx) and not (held & ev_ids),
-            "fold-fitted history step stores events from fold-fit rows only", failures)
-    features.assert_history_context_dropped(h, X_tr)
-    print("PASS history step drops key / timestamp / outcome columns before the preprocessor")
-    require(audit["single_feature_auc"].roc_auc.max() < 0.9, "no single feature encodes the label", failures)
+    if not args.metadata_only:
+        # feature table, split manifest and cohort
+        df = features.build_feature_table(save=False)
+        p2 = features.cohort(df, "p2")
+        quality = json.loads((OUT / "data_quality.json").read_text())
+        counts = split.window_summary(p2, "p2").orders.to_dict()
+        require(counts == quality["windows"], f"cohort splits rebuild to the recorded sizes {quality['windows']}", failures)
+        if config.SPLIT_MANIFEST.exists():
+            manifest = pd.read_csv(config.SPLIT_MANIFEST).set_index("order_id").split
+            rebuilt = p2.set_index("order_id").split.reindex(manifest.index)
+            require(bool((rebuilt == manifest).all()) and len(manifest) == len(p2),
+                    "split rebuilds to the committed data/split_manifest.csv (same seed, same rows)", failures)
+        else:
+            print("SKIP data/split_manifest.csv not present locally (git-ignored data/); rebuilt split used")
+        if config.SPLIT_SCHEME == "stratified":
+            rates = p2.groupby("split").is_low_review.mean()
+            require(float(rates.max() - rates.min()) < 0.005, f"positive rate equal across splits (stratified): {rates.round(4).to_dict()}", failures)
+            require(abs(len(p2[p2.split == "test"]) / len(p2) - config.TEST_SIZE) < 0.005, "test share equals TEST_SIZE (0.33)", failures)
+        features.assert_no_leakage(p2, "p2")
+        audit = features.leakage_audit(p2, "p2", sample=1000, full=df)
+        require(audit["history"]["only outcomes known before purchase"] == 1.0, "point-in-time history uses no future outcomes", failures)
+        require(audit["history"]["late rate rebuilt from training-row outcomes only"] == 1.0,
+                "history features use outcomes of training rows only (no validation / test label in any feature)", failures)
+        require(audit["history"]["low-review rate rebuilt from reviews answered before purchase"] == 1.0,
+                "review history uses review_answer_timestamp (label known when answered)", failures)
+        require(float((p2.review_answer_timestamp < p2.survey_trigger_time).mean()) == 0.0,
+                "no cohort order has its review answered before the prediction point T", failures)
+        # fold-level isolation: a history step fitted on fold-fit rows carries no event from the held-out rows
+        tr = split.split_frame(p2)["train"]; fit_idx, score_idx = split.cv_folds(tr, "p2")[0]
+        X_tr, _ = split.xy(tr, "p2")
+        h = features.HistoryInPipeline().fit(X_tr.iloc[fit_idx])
+        held = set(X_tr.iloc[score_idx].order_id)
+        ev_ids = set(tr.iloc[fit_idx].order_id)
+        require(len(h.seller_delivery_events_) <= len(fit_idx) and not (held & ev_ids),
+                "fold-fitted history step stores events from fold-fit rows only", failures)
+        features.assert_history_context_dropped(h, X_tr)
+        print("PASS history step drops key / timestamp / outcome columns before the preprocessor")
+        require(audit["single_feature_auc"].roc_auc.max() < 0.9, "no single feature encodes the label", failures)
 
     # published tables
     for rel, digest in protocol["output_sha256"].items():
@@ -118,6 +119,36 @@ def main() -> None:
         else:
             print(("PASS " if ok else "WARN ") + f"source unchanged: {rel}")
 
+    # Metadata/notebooks are part of this snapshot, not evidence of a fresh fit.
+    for field in ("metadata_sha256", "notebook_sha256"):
+        for rel, digest in protocol.get(field, {}).items():
+            require((ROOT / rel).is_file() and sha256(ROOT / rel) == digest,
+                    f"saved artifact unchanged: {rel}", failures)
+    for rel, digest in protocol.get("regression_source_sha256", {}).items():
+        p = paths.REGRESSION / rel
+        require(p.is_file() and sha256(p) == digest, f"shared regression source unchanged: {rel}", failures)
+    if protocol.get("record_kind") == "saved_artifact_snapshot":
+        from reproduce_classification import saved_notebook_evidence
+        try:
+            quick, evidence = saved_notebook_evidence()
+            require(quick == protocol["quick_mode"], "QUICK agrees across protocol, selected model and notebooks", failures)
+            require(evidence == protocol["saved_notebook_evidence"], "saved notebook results match the recorded evidence", failures)
+        except (ValueError, KeyError) as exc:
+            require(False, f"saved notebook evidence: {exc}", failures)
+
+    operating_record = OUT / "rf_operating_points_provenance.json"
+    if operating_record.exists():
+        record = json.loads(operating_record.read_text())
+        for rel, digest in record["source_sha256"].items():
+            p = ROOT / rel
+            if not p.exists() and rel.startswith("outputs/predictions/"):
+                print(f"SKIP private operating-point input absent locally: {rel}")
+                continue
+            require(p.is_file() and sha256(p) == digest,
+                    f"operating-point input matches its provenance: {rel}", failures)
+        require(sha256(OUT / "tables/rf_operating_points.csv") == record["table_sha256"],
+                "operating-point table matches its provenance", failures)
+
     # selection discipline
     selected = json.loads((OUT / "selected_models.json").read_text())
     comparison = pd.read_csv(OUT / "tables" / "model_comparison.csv", index_col=0)
@@ -125,7 +156,7 @@ def main() -> None:
     require(selected["final_model"] in comparison.index, "final model is a row of the comparison table", failures)
     if not selected.get("stacking_retained"):
         require(selected["final_model"] == comparison.loc[ladder, "val_pr_auc"].idxmax(),
-                "final single model is the validation PR-AUC maximiser (selection used validation, not test)", failures)
+                "saved final single model matches the validation PR-AUC maximiser", failures)
 
     # sampling study: strategy choice must be the validation maximiser
     samp = OUT / "tables" / "sampling_comparison.csv"
@@ -133,7 +164,7 @@ def main() -> None:
         sc = pd.read_csv(samp, index_col=[0, 1]); ss = json.loads((OUT / "sampling_summary.json").read_text())
         chosen = ss["best_strategy_by_model_on_validation"]
         ok = all(sc.loc[m].val_pr_auc.idxmax() == s for m, s in chosen.items())
-        require(ok, "sampling study: retained strategy per model is the validation PR-AUC maximiser (test never used)", failures)
+        require(ok, "saved sampling strategy per model matches the validation PR-AUC maximiser", failures)
 
     # independent PR-AUC on saved validation predictions (local only)
     pred = OUT / "predictions" / "validation_predictions.csv"
@@ -149,8 +180,10 @@ def main() -> None:
         print("SKIP validation predictions not present locally (git-ignored); PR-AUC cross-check runs inside the notebooks")
 
     print("\nRESULT:", "all checks passed" if not failures else f"{len(failures)} check(s) failed")
-    (OUT / "validation_audit.json").write_text(json.dumps({"passed": not failures, "failures": failures,
-                                                            "strict_sources": args.strict_sources}, indent=2))
+    audit_file = "metadata_audit.json" if args.metadata_only else "validation_audit.json"
+    (OUT / audit_file).write_text(json.dumps({"passed": not failures, "failures": failures,
+        "strict_sources": args.strict_sources, "scope": "saved artifacts and available predictions" if args.metadata_only else "raw-data reconstruction, saved artifacts and available predictions",
+        "training_rerun": False, "protocol_sha256": sha256(OUT / "experiment_protocol.json")}, indent=2))
     sys.exit(1 if failures else 0)
 
 
