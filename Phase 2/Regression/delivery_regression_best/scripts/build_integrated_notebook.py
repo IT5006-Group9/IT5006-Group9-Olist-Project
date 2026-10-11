@@ -529,13 +529,12 @@ md('''## 9. Implications and limitations
 
 Delivery-duration regression is supported by measurable purchase-time signal and improves on the specified references. The main useful additions are more detailed purchase information and time representation; tuning adds a smaller gain. Retain single HGB, report both overall and duration/route errors, and preserve the long-tail and completed-delivery limits when describing its use.
 
-### Sources and AI disclosure
+### Sources
 
 - [Phase 1 delivery-regression notebook](https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project/blob/main/notebooks/phase1/03_delivery_lead_time_regression_eda.ipynb), cells 1–3, 17, 20–26 and 29–35: question, target, EDA signal, promise reference and initial evaluation proposal.
 - [Official IT5006 project brief](https://prakashsukhwal.github.io/IT5006/IT5006_Project_Description_2026Aug_V2.html); course Olist starter cells 19–21 and Great Expectations lab cells 18–23: schema, joins and data-contract practice, adapted to this order-level task.
 - Zaghloul et al. (2024), DOI **10.1016/j.jretconser.2024.103865**, §3.3 supplies the 67/33 ratio; split seed and CV folds are project adaptations. Literature and report-ready evidence are recorded in the [report evidence guide](../docs/report_evidence_guide.md).
-- Implementations and frozen specifications: `src/` and `config/`; [reproduction instructions](../README.md), [course alignment](../docs/notebook_alignment.md), detailed [tuning](best_scheme_review.ipynb), [report evidence](report_supplement_review.ipynb) and [stacking](tuned_stacking_comparison.ipynb) notebooks.
-- **AI assistance:** AI assisted code and explanatory text. The notebook was executed and key data/metric calculations checked against saved fitted experiments. This statement does not assert human approval or final submission.''')
+- Implementations and frozen specifications: `src/` and `config/`; [reproduction instructions](../README.md), [course alignment](../docs/notebook_alignment.md), detailed [tuning](best_scheme_review.ipynb), [report evidence](report_supplement_review.ipynb) and [stacking](tuned_stacking_comparison.ipynb) notebooks.''')
 
 nb = nbf.v4.new_notebook(cells=cells, metadata={
     'kernelspec': {'display_name': 'Delivery Regression', 'language': 'python', 'name': 'delivery-regression'},
