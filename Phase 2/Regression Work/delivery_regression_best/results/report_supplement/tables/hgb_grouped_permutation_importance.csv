@@ -1,0 +1,8 @@
+group,MAE_increase_mean_days,MAE_increase_SD_days,permuted_MAE_mean_days,sample_n,repeats,baseline_MAE_days,input_columns
+Geography and route,1.350421522322813,0.03284546893481442,5.478470033863813,8000,5,4.128048511541,max_distance_km;any_distance_missing;customer_state;route_group;primary_seller_state;primary_seller_city;customer_city;primary_state_route;primary_city_route;primary_zip_zone_route
+Purchase date and calendar,0.977125152745131,0.0212493959316261,5.105173664286132,8000,5,4.128048511541,purchase_ts;purchase_month;purchase_weekday;purchase_hour
+Quoted promise,0.5302004105202004,0.01550815742510337,4.6582489220612,8000,5,4.128048511541,promised_lead_time_days
+Seller identity and composition,0.10264850255495936,0.008243786270979324,4.23069701409596,8000,5,4.128048511541,primary_seller_id;seller_count;seller_state_count;primary_seller_price_share
+Price and freight,0.045096696362807796,0.006909134642580259,4.173145207903808,8000,5,4.128048511541,total_price;total_freight;freight_ratio;mean_unit_price
+Product category and composition,0.030985675670991596,0.004762486793711081,4.159034187211992,8000,5,4.128048511541,category_group;dominant_category;item_count;distinct_product_count;category_count_observed;dominant_category_price_share
+Product weight and volume,0.02659569749738875,0.005132307872224279,4.1546442090383895,8000,5,4.128048511541,avg_product_weight_g;any_weight_missing;max_product_weight_g;total_known_weight_g;max_product_volume_cm3;total_known_volume_cm3;any_volume_missing

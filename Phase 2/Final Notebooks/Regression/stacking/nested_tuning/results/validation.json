@@ -1,0 +1,145 @@
+{
+  "status": "passed",
+  "train_n": 64634,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "classic_inner_models_replayed": 270,
+  "classic_outer_models_replayed": 20,
+  "historical_fixed_trial_parity": {
+    "status": "checked",
+    "matched": true
+  },
+  "hgb_inner_regressions_replayed": 15,
+  "nested_risk_models_replayed": 60,
+  "outer_comparators": 13,
+  "outer_score_rows": 65,
+  "meta_optimality_checks": 20,
+  "certificates": {
+    "outer_1/stack_two_fixed": {
+      "primal_MAE_days": 4.839505632850956,
+      "independent_optimum_MAE_days": 4.839505632850956,
+      "optimality_gap_days": 0.0
+    },
+    "outer_1/stack_three_fixed": {
+      "primal_MAE_days": 4.270509143621302,
+      "independent_optimum_MAE_days": 4.270509143621321,
+      "optimality_gap_days": -1.865174681370263e-14
+    },
+    "outer_1/stack_two_tuned": {
+      "primal_MAE_days": 4.637979179315309,
+      "independent_optimum_MAE_days": 4.637979179315309,
+      "optimality_gap_days": 0.0
+    },
+    "outer_1/stack_three_tuned": {
+      "primal_MAE_days": 4.2704829019570365,
+      "independent_optimum_MAE_days": 4.270482901957053,
+      "optimality_gap_days": -1.687538997430238e-14
+    },
+    "outer_2/stack_two_fixed": {
+      "primal_MAE_days": 4.819579696800417,
+      "independent_optimum_MAE_days": 4.819579696800417,
+      "optimality_gap_days": 0.0
+    },
+    "outer_2/stack_three_fixed": {
+      "primal_MAE_days": 4.274327130230881,
+      "independent_optimum_MAE_days": 4.274327130230894,
+      "optimality_gap_days": -1.3322676295501878e-14
+    },
+    "outer_2/stack_two_tuned": {
+      "primal_MAE_days": 4.633255560377337,
+      "independent_optimum_MAE_days": 4.633255560377337,
+      "optimality_gap_days": 0.0
+    },
+    "outer_2/stack_three_tuned": {
+      "primal_MAE_days": 4.274190178944276,
+      "independent_optimum_MAE_days": 4.2741901789442895,
+      "optimality_gap_days": -1.3322676295501878e-14
+    },
+    "outer_3/stack_two_fixed": {
+      "primal_MAE_days": 4.827530769312107,
+      "independent_optimum_MAE_days": 4.827530769312107,
+      "optimality_gap_days": 0.0
+    },
+    "outer_3/stack_three_fixed": {
+      "primal_MAE_days": 4.2602478416109415,
+      "independent_optimum_MAE_days": 4.260247841610915,
+      "optimality_gap_days": 2.6645352591003757e-14
+    },
+    "outer_3/stack_two_tuned": {
+      "primal_MAE_days": 4.625138711169922,
+      "independent_optimum_MAE_days": 4.625138711169922,
+      "optimality_gap_days": 0.0
+    },
+    "outer_3/stack_three_tuned": {
+      "primal_MAE_days": 4.259979859412019,
+      "independent_optimum_MAE_days": 4.259979859412005,
+      "optimality_gap_days": 1.4210854715202004e-14
+    },
+    "outer_4/stack_two_fixed": {
+      "primal_MAE_days": 4.847021271680789,
+      "independent_optimum_MAE_days": 4.847021271680789,
+      "optimality_gap_days": 0.0
+    },
+    "outer_4/stack_three_fixed": {
+      "primal_MAE_days": 4.287762084612552,
+      "independent_optimum_MAE_days": 4.287762084612523,
+      "optimality_gap_days": 2.930988785010413e-14
+    },
+    "outer_4/stack_two_tuned": {
+      "primal_MAE_days": 4.651119379824376,
+      "independent_optimum_MAE_days": 4.651119379824376,
+      "optimality_gap_days": 0.0
+    },
+    "outer_4/stack_three_tuned": {
+      "primal_MAE_days": 4.287553447808777,
+      "independent_optimum_MAE_days": 4.287553447808752,
+      "optimality_gap_days": 2.4868995751603507e-14
+    },
+    "outer_5/stack_two_fixed": {
+      "primal_MAE_days": 4.847010152728045,
+      "independent_optimum_MAE_days": 4.847010152728045,
+      "optimality_gap_days": 0.0
+    },
+    "outer_5/stack_three_fixed": {
+      "primal_MAE_days": 4.286562704375217,
+      "independent_optimum_MAE_days": 4.286562704375241,
+      "optimality_gap_days": -2.398081733190338e-14
+    },
+    "outer_5/stack_two_tuned": {
+      "primal_MAE_days": 4.641969935891961,
+      "independent_optimum_MAE_days": 4.641969935891961,
+      "optimality_gap_days": 0.0
+    },
+    "outer_5/stack_three_tuned": {
+      "primal_MAE_days": 4.286266819914138,
+      "independent_optimum_MAE_days": 4.28626681991416,
+      "optimality_gap_days": -2.220446049250313e-14
+    }
+  },
+  "checks": {
+    "Exact published training IDs and outer fold assignments": true,
+    "Every candidate selected by mean inner-fold MAE with predefined tie order": true,
+    "All classic inner and outer prediction models replayed": true,
+    "Optional parity against previous fixed-trial OOF": "checked",
+    "Fold-fitted classic imputation and time encodings": true,
+    "All 15 HGB regressors and all 60 deeper risk models replayed": true,
+    "HGB risk feature fitting excludes its prediction rows and outer validation": true,
+    "HGB outer predictions used only as corresponding outer scores": true,
+    "Meta matrices use only inner OOF within each outer training partition": true,
+    "Every learned simplex objective checked against an independent optimum": true,
+    "Every outer score and public comparison recomputed": true,
+    "Source review confirms no old holdout load, prediction or scoring route": true
+  },
+  "old_holdout_read_or_scored_by_verifier": false,
+  "protocol_sha256": "3604b3039b37f89bf9d1aa588b1fb726d8e0d208b851c9a89bc109c60134487f",
+  "verifier_source_sha256": "2a9116a851b092c8ed91173c34ea7ab8e296b8cf2653b1386a3bd0d0e2a2eb58",
+  "public_artifact_sha256": {
+    "summary.json": "54942dde0158edb73fe08c7b8d791013837fca84fa0dee8532115d82ba1b9b0e",
+    "tables/comparison.csv": "b31041c4621827f93f62934cc037cf501bff0b44210f034420822cf68349a441",
+    "tables/inner_candidate_metrics.csv": "8b82e809c472d7924206e54984b2a11c9e7050a5918496cc4e646e43f03b2a05",
+    "tables/outer_fold_metrics.csv": "3a7527d9881b8d6c481c49c32fba0f4dfaaf500166b1facc8b2006e6b3b61976",
+    "tables/paired_changes.csv": "9009a3b1630ea616d421fcb9ed2b3587f3614450386aae2ad451932166528fe5",
+    "tables/selected_candidates.csv": "d3d27e36dbd120f78aaa2f7315ad0eb233d2d38d7659e4ae5423302634996af0",
+    "tables/weights.csv": "bed9240b2f306ecf820ae9c39032ad831364b0678a99de375917a4ee754e5b61"
+  }
+}

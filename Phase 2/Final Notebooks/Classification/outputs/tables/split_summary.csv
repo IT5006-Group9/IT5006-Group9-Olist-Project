@@ -1,0 +1,4 @@
+window,orders,first purchase,last purchase,positives,positive rate,delivered by T share
+train,52254,2016-09-04,2018-08-29,7394,0.1415,0.901
+validation,13064,2016-10-03,2018-08-28,1849,0.1415,0.904
+test,32172,2016-10-03,2018-08-29,4553,0.1415,0.901

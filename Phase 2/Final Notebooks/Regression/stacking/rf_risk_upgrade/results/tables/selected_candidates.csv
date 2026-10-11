@@ -1,0 +1,6 @@
+outer_fold,selected_ridge,rf_specification
+1,ridge_F1_time_log_a100,RF + time/risk
+2,ridge_F1_time_log_a100,RF + time/risk
+3,ridge_F1_time_raw_a100,RF + time/risk
+4,ridge_F1_time_log_a100,RF + time/risk
+5,ridge_F1_time_log_a100,RF + time/risk

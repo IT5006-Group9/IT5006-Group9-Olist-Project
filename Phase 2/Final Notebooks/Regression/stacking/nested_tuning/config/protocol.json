@@ -1,0 +1,34 @@
+{
+  "experiment": "Bounded Ridge and random-forest tuning with nested stacking validation",
+  "seed": 33,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "train_n": 64634,
+  "selection_metric": "mean inner-fold MAE in days; ties resolved by candidate order",
+  "ridge_grid": {"feature_packs": ["F0", "F1_time"], "log_inputs": [false, true], "alphas": [100, 1000, 10000]},
+  "forest_grid": {
+    "feature_packs": ["F0", "F1_time"],
+    "settings": [
+      {"max_depth": 24, "min_samples_leaf": 10, "max_features": 0.8},
+      {"max_depth": null, "min_samples_leaf": 5, "max_features": 0.8},
+      {"max_depth": 16, "min_samples_leaf": 20, "max_features": 0.6}
+    ],
+    "n_estimators": 100, "max_samples": 0.8, "bootstrap": true
+  },
+  "features": {
+    "F0": "Original purchase-time baseline inputs",
+    "F1_time": "Published F1 calendar/interactions plus fold-fitted elapsed purchase days and year-month encoding; no outcome-derived risk feature"
+  },
+  "hgb": "Frozen published leaves63__time_risk configuration; reconstruct its inner OOF inside each outer training partition, including a further three-fold cross-fit for its risk feature. Reuse only exact matching published outer validation predictions.",
+  "ensembles": ["mean_two", "stack_two", "mean_three", "stack_three"],
+  "combiner": "MAE-optimal nonnegative weights summing to one; no intercept; fitted on selected inner OOF predictions only",
+  "baseline_comparators": "Previous fixed log-input Ridge, fixed RF, HGB, and previous fixed-candidate stacking refitted within each outer training partition",
+  "evaluation": "For each published outer fold, tune Ridge/RF and fit all stack weights only on the other four folds. Score once on that outer fold. Inner OOF used for both selecting candidates and fitting weights is internal training evidence, not independent performance. Outer validation is the reported estimate of the complete current selection-and-combination procedure.",
+  "holdout_policy": "The existing 31836-order test set is not loaded, predicted or scored in this tuning experiment. This run evaluates and selects a workflow; it does not fit a final full-training deployment model.",
+  "limitations": [
+    "The dataset, published HGB configuration and these outer folds have informed earlier development. Nested assessment prevents new fold contamination but is not a new independent confirmation.",
+    "Random folds assess the same historical order mixture, not future-month forecasting.",
+    "HGB retains richer purchase and learned-risk features than the classic controls.",
+    "The candidate grid is limited; lack of improvement does not exhaust all possible stacking methods."
+  ]
+}

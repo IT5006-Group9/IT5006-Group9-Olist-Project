@@ -1,0 +1,19 @@
+{
+  "status": "completed; independent verification recorded separately",
+  "train_n": 64634,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "models_compared": 8,
+  "test_set_read_or_scored": false,
+  "deployment_refit": false,
+  "protocol_sha256": "c8973b1d16ffb7b67217bcca9eef986b32287560b14c9a0aa915afb1faa66826",
+  "reference_validation_sha256": {
+    "nested_tuning": "fd8d8f74618c336690d3a53f9108f758aa5b3c82ac6e3769f027a7957b7319e9",
+    "ensemble_followup": "23911055605dd5a806d3aa58352aa57b372465d8160743833e9412644a310c96"
+  },
+  "limitations": [
+    "RF and HGB specifications were previously chosen using these development folds; this is retrospective development, not new independent confirmation.",
+    "Only RF is changed; Ridge remains the earlier inner-selected variant to preserve the controlled comparison.",
+    "Random folds assess the historical order mixture rather than future periods or unseen sellers."
+  ]
+}

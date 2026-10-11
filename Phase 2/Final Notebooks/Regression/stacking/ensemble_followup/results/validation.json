@@ -1,0 +1,100 @@
+{
+  "status": "passed",
+  "train_n": 64634,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "model_replay_sample_per_scoring_partition": 256,
+  "families": {
+    "rf_log": {
+      "inner_models_replayed": 15,
+      "outer_models_replayed": 5,
+      "replayed_predictions": 5120
+    },
+    "extra_trees": {
+      "inner_models_replayed": 30,
+      "outer_models_replayed": 5,
+      "replayed_predictions": 8960
+    }
+  },
+  "reused_reference": {
+    "previous_validation_sha256": "fd8d8f74618c336690d3a53f9108f758aa5b3c82ac6e3769f027a7957b7319e9",
+    "previous_hgb_inner_checkpoints_verified": 15,
+    "previous_hgb_models_replayed_this_audit": 0,
+    "note": "Prior HGB/risk model replay is certified by the existing audit; this audit rechecks its artifact hashes and OOF partitions."
+  },
+  "outer_score_rows": 40,
+  "meta_optimality_checks": 10,
+  "certificates": {
+    "outer_1/stack_hgb_rf_log": {
+      "achieved_MAE_days": 4.270509143621302,
+      "independent_optimum_MAE_days": 4.270509143621302,
+      "optimality_gap_days": 0.0
+    },
+    "outer_1/stack_hgb_extra_trees": {
+      "achieved_MAE_days": 4.269786376152454,
+      "independent_optimum_MAE_days": 4.269786376152454,
+      "optimality_gap_days": 0.0
+    },
+    "outer_2/stack_hgb_rf_log": {
+      "achieved_MAE_days": 4.274327130230881,
+      "independent_optimum_MAE_days": 4.274327130230881,
+      "optimality_gap_days": 0.0
+    },
+    "outer_2/stack_hgb_extra_trees": {
+      "achieved_MAE_days": 4.272497791892121,
+      "independent_optimum_MAE_days": 4.272497791892121,
+      "optimality_gap_days": 0.0
+    },
+    "outer_3/stack_hgb_rf_log": {
+      "achieved_MAE_days": 4.2602478416109415,
+      "independent_optimum_MAE_days": 4.2602478416109415,
+      "optimality_gap_days": 0.0
+    },
+    "outer_3/stack_hgb_extra_trees": {
+      "achieved_MAE_days": 4.25868781973874,
+      "independent_optimum_MAE_days": 4.25868781973874,
+      "optimality_gap_days": 0.0
+    },
+    "outer_4/stack_hgb_rf_log": {
+      "achieved_MAE_days": 4.287762084612552,
+      "independent_optimum_MAE_days": 4.287762084612552,
+      "optimality_gap_days": 0.0
+    },
+    "outer_4/stack_hgb_extra_trees": {
+      "achieved_MAE_days": 4.286155193373495,
+      "independent_optimum_MAE_days": 4.286155193373495,
+      "optimality_gap_days": 0.0
+    },
+    "outer_5/stack_hgb_rf_log": {
+      "achieved_MAE_days": 4.286562704375217,
+      "independent_optimum_MAE_days": 4.286562704375217,
+      "optimality_gap_days": 0.0
+    },
+    "outer_5/stack_hgb_extra_trees": {
+      "achieved_MAE_days": 4.283984979140054,
+      "independent_optimum_MAE_days": 4.283984979140055,
+      "optimality_gap_days": -8.881784197001252e-16
+    }
+  },
+  "holdout_read_or_scored_by_verifier": false,
+  "checks": {
+    "Reconstructed outer and inner folds match saved assignments": true,
+    "Candidate selection uses inner-fold mean MAE with predefined tie order": true,
+    "All 55 new models replayed on deterministic scoring samples": true,
+    "Fitting-only preprocessing statistics and transformed tree target means verified": true,
+    "Prior audited HGB cache hashes and nested OOF partitions verified": true,
+    "Previous stacking comparator matches its published fold metrics": true,
+    "All 10 learned weight objectives independently certified": true,
+    "All outer metrics and aggregate comparison tables recomputed": true
+  },
+  "protocol_sha256": "6b356211a98e58f828fddb540332f732e3a17ab467d6ff3ca33c96ac6b2cc4d7",
+  "verifier_source_sha256": "1a29641f7a05f2ba052b3ecd81f7c9f92064e3eabb9402979a2e9472c503cb4e",
+  "public_artifact_sha256": {
+    "summary.json": "46bcb19916b0fafae58a0dd4ae531a91f34bd7fa3429a84e0f8e44cf2a6b45a3",
+    "tables/comparison.csv": "f6f539ad597cadab5f37a7079773ce426afe7017f0b245ae823695a60641e0f1",
+    "tables/outer_fold_metrics.csv": "6ebe2f66cea789aa477fbc3154f5b8f7e0ed620259233a60acabe91f2a35c0b6",
+    "tables/paired_changes.csv": "3f9ee0724c593c36da2faf678f387b4eb130371bd47f120b32b0f7fa4e440596",
+    "tables/selections.csv": "037c2b79ee99e787046862b381d1f8766cf04a37eed49e4999bcbc0e05c9dbaf",
+    "tables/weights.csv": "ca59ef7575222338983b57512c2ff62dabffb3f9fc9275bbdf24f489e2a4a3d5"
+  }
+}

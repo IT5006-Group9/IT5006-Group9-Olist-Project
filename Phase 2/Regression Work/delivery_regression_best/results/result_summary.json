@@ -1,0 +1,23 @@
+{
+  "CV_selected_candidate": "leaves63__time_risk",
+  "params": {
+    "loss": "absolute_error",
+    "max_iter": 300,
+    "learning_rate": 0.05,
+    "max_leaf_nodes": 63,
+    "min_samples_leaf": 30,
+    "l2_regularization": 10
+  },
+  "CV_MAE_days": 4.237815375209932,
+  "CV_fold_SD_days": 0.0368997865897926,
+  "previous_best_test_MAE_days": 4.192270945105909,
+  "selected_test_MAE_days": 4.150491686642425,
+  "test_MAE_reduction_days": 0.041779258463483515,
+  "test_MAE_reduction_pct": 0.9965782033305114,
+  "selected_test_RMSE_days": 7.465068534905168,
+  "selected_test_R2": 0.3675426636427428,
+  "within_3_days_pct": 56.93240356828747,
+  "test_previously_exposed": true,
+  "no_new_stacking": true,
+  "search_is_bounded_not_global_optimum": true
+}

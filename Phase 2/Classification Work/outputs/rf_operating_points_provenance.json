@@ -1,0 +1,41 @@
+{
+  "purpose": "Corrected report Table B5, final random forest operating points",
+  "model": "B_rf",
+  "model_parameters": {
+    "model__max_depth": 21,
+    "model__max_features": 0.3559767322742953,
+    "model__min_samples_leaf": 70,
+    "model__n_estimators": 478
+  },
+  "validation_rows": 13064,
+  "test_rows": 32172,
+  "test_positive_count": 4553,
+  "test_negative_count": 27619,
+  "threshold_selection": {
+    "capacity": "Validation probability quantiles at 1 - capacity, linear interpolation; frozen before test evaluation.",
+    "f1": "Original selected_models.json cutoff, verified as F1 optimal using saved validation probabilities.",
+    "test_contact_share": "Observed at the frozen cutoff, not constrained to equal validation capacity."
+  },
+  "probability_serialization": {
+    "format": "%.10g",
+    "original_f1_threshold": 0.5896010355388625,
+    "serialized_f1_threshold": 0.5896010355,
+    "validation_replay": "Uses the serialized cutoff to include its boundary observation consistently with the original saved scores.",
+    "test_decisions_unchanged_by_cutoff_rounding": true
+  },
+  "checks": {
+    "validation_test_disjoint": true,
+    "validation_f1_cutoff_verified": true,
+    "validation_test_threshold_metrics_match_model_comparison": true
+  },
+  "no_models_retrained": true,
+  "analysis_scope": "Retrospective descriptive operating-point table; the additional capacity policies do not replace the selected final model or frozen F1 cutoff.",
+  "source_sha256": {
+    "outputs/predictions/validation_predictions.csv": "213896a9110bd4c76a6069e24d2accec31e651e17445f5722fa3bd8deab1675b",
+    "outputs/predictions/test_predictions.csv": "0b2899a3c22cb9bd82c7560b338a386262ad1167058fe1bad8c72ff43b29ef35",
+    "outputs/selected_models.json": "cc08637682311e9edb4e67f338a9d4d32f7b4920fab6d86983854037fc5dc7eb",
+    "outputs/tables/model_comparison.csv": "a06e3890a1a800f62b30ec7c4f45a98dcd09fc68792f1a70081c36ab159e355c",
+    "scripts/reproduce_rf_operating_points.py": "1a371737d7759d6737e5100d3ed9939ecdab20defaf0ebba8a8f96ea352d139d"
+  },
+  "table_sha256": "935edff17ad1f501af158785ff8dffb88d773f22450420935ba4750d01c18131"
+}

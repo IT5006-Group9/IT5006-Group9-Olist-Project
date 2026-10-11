@@ -1,0 +1,6 @@
+outer_fold,selected_ridge,selected_forest
+1,ridge_F1_time_log_a100,forest_F1_time_0
+2,ridge_F1_time_log_a100,forest_F1_time_0
+3,ridge_F1_time_raw_a100,forest_F1_time_0
+4,ridge_F1_time_log_a100,forest_F1_time_0
+5,ridge_F1_time_log_a100,forest_F1_time_0

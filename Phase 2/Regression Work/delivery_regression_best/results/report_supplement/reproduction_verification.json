@@ -1,0 +1,8 @@
+{
+  "fixed_models": 15,
+  "train_and_test_match_published": true,
+  "CV_recomputed": false,
+  "CV_matches_published": null,
+  "no_tuning_or_selection": true,
+  "risk_training_features_cross_fitted": true
+}

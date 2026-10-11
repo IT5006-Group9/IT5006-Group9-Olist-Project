@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-10",
+  "course_and_split_unchanged": true,
+  "train_n": 64634,
+  "test_n": 31836,
+  "folds": 5,
+  "CV_mean": "equal-weight mean of fold scores",
+  "train_metric": "resubstitution on full regressor fit design; risk is cross-fitted as used in fitting",
+  "CV_SD": "both sample ddof=1 and population ddof=0 supplied; not confidence intervals",
+  "test_previously_exposed": true,
+  "interpretability": {
+    "method": "end-to-end grouped permutation, MAE increase in days",
+    "test_n": 31836,
+    "sample_n": 8000,
+    "seed": 33,
+    "repeats": 5,
+    "baseline_subset_MAE_days": 4.128048511541,
+    "subset_ids_sha256": "2c18a3604c998100d32639075df53c415a4fbd6a331dab7370b83367bd185ca5",
+    "groups": {
+      "Geography and route": [
+        "max_distance_km",
+        "any_distance_missing",
+        "customer_state",
+        "route_group",
+        "primary_seller_state",
+        "primary_seller_city",
+        "customer_city",
+        "primary_state_route",
+        "primary_city_route",
+        "primary_zip_zone_route"
+      ],
+      "Purchase date and calendar": [
+        "purchase_ts",
+        "purchase_month",
+        "purchase_weekday",
+        "purchase_hour"
+      ],
+      "Quoted promise": [
+        "promised_lead_time_days"
+      ],
+      "Price and freight": [
+        "total_price",
+        "total_freight",
+        "freight_ratio",
+        "mean_unit_price"
+      ],
+      "Seller identity and composition": [
+        "primary_seller_id",
+        "seller_count",
+        "seller_state_count",
+        "primary_seller_price_share"
+      ],
+      "Product category and composition": [
+        "category_group",
+        "dominant_category",
+        "item_count",
+        "distinct_product_count",
+        "category_count_observed",
+        "dominant_category_price_share"
+      ],
+      "Product weight and volume": [
+        "avg_product_weight_g",
+        "any_weight_missing",
+        "max_product_weight_g",
+        "total_known_weight_g",
+        "max_product_volume_cm3",
+        "total_known_volume_cm3",
+        "any_volume_missing"
+      ]
+    },
+    "risk_recomputed_after_permutation": true,
+    "derived_calendar_and_interactions_recomputed": true,
+    "refitting_or_selection_performed": false,
+    "causal_interpretation": false,
+    "repeat_SD_is_confidence_interval": false,
+    "increments_additive": false
+  },
+  "source_hashes": {
+    "versions/preparation_v2/data/eligible_orders.csv": "c606a8792a2d4ed96225c6ac9c25489c11c482db5db29cf06927c00024b6570b",
+    "versions/random_split_v1/data/split_manifest.csv": "a00ac0309896576745e4c0bf4bb0b04c535ab9cb39c6344ee13c178bcb8cb9ab",
+    "versions/random_split_v1/data/cv_manifest.csv": "d6d32a3dad6fbf2f8ad3d5479197efc9477e30749f9b87eb6536c4f191abc504",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/data/final_train_risk.csv.gz": "695433ee9875f2793b44416ade498f3630776cb53029069cc79247308c9a07f0",
+    "versions/random_split_v1/experiments/00_baselines/models/baseline_linear.joblib": "05ec159e19db7fda8ac0b505fbe3b40478d8c2c36439b874ae4c4ca22f40c824",
+    "versions/random_split_v1/experiments/00_baselines/outputs/oof/baseline_linear.csv.gz": "2876d15f83f12b338e9f44410dd0cade4a0f8d5f87e7df61e074ba675e980409",
+    "versions/random_split_v1/experiments/00_baselines/outputs/predictions/test_predictions.csv.gz": "33915d40b6d6e0a8528bd76eb5aca35af2d1b83435448b794b99d0356b0d5848",
+    "versions/random_split_v1/experiments/00_baselines/models/baseline_tree_d8.joblib": "86eff17333d0138b12ca1e3789945d5d805d0651824184cc3737a770e7fa7cfb",
+    "versions/random_split_v1/experiments/00_baselines/outputs/oof/baseline_tree_d8.csv.gz": "76442580d452128cd6476a0483867637c13f32a7bb2e0faec6b64d79bb1b4ac1",
+    "versions/random_split_v1/experiments/02_B_feature_combinations/models/B_ridge_F1_mi100.joblib": "b0daee94ad31430cac78583848b4a5bd4a9d0d7508d349e1d9474553c5b370ed",
+    "versions/random_split_v1/experiments/02_B_feature_combinations/outputs/oof/B_ridge_F1_mi100.csv.gz": "d922daa6cfbbdaffd73a521bc2d5d4be0c0ad9e5f4eeac385d8c26d5482b0821",
+    "versions/random_split_v1/experiments/02_B_feature_combinations/outputs/predictions/test_predictions.csv.gz": "46c5c565782c06c783d1f5f89669d4983a8cd18d5d5b5129c9ff7c9f8bf46f63",
+    "versions/random_split_v1/experiments/02_B_feature_combinations/models/B_forest_F1_mi100.joblib": "d23e29b749cfef342b59c912bb4f4ba685c6c3320fbdd9130a72b89c18a5efe6",
+    "versions/random_split_v1/experiments/02_B_feature_combinations/outputs/oof/B_forest_F1_mi100.csv.gz": "805a800e63038f7e0152bdcdee951b2dd40f0916141c70dd2838b3ebb11bd070",
+    "versions/random_split_v1/experiments/03_C_target_and_loss/models/C_rf_logy_F1.joblib": "0be41ad59a76b5498cb3a96a94ab5898300a8758b8e5fe4e7b1686b5cf0079f9",
+    "versions/random_split_v1/experiments/03_C_target_and_loss/outputs/oof/C_rf_logy_F1.csv.gz": "60b387fb08be06859d62783a7c3541f07b2cdb359c41dc660f924432726a6479",
+    "versions/random_split_v1/experiments/03_C_target_and_loss/outputs/predictions/test_predictions.csv.gz": "64c6fa10b7897eb8cc8cbaf3a817f1c3a9af422b4d7412be77785c485d8bfe6e",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/models/OLS_time_risk.joblib": "fb22846846898cff8da3d75f4b94f134954bd5fd88479cb5533ec6487b68f6bb",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/oof/OLS_time_risk.csv.gz": "2796d54e84ec0a0001673b4c13f956ab02423f33d7737209c0d19807911ef0fa",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/predictions/OLS_time_risk.csv.gz": "c3203e3fcc3f9fd1bb036916a0d275ed8418b7754fcf5710b52fd851d3d438ec",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/models/Tree_time_risk.joblib": "f7d01e203146f35d37c8cf266a40cc304bb24724fa2607a8e9e6c87a5f517ba1",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/oof/Tree_time_risk.csv.gz": "487a68d3f84a53aacbeb6cbae4466922a2a5a8497682c951588d6a988e8c851b",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/predictions/Tree_time_risk.csv.gz": "6c351602d17e0ba8c5905168daeb533a52ac177326553c618be593a6f4e72ac3",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/models/Ridge_time_risk.joblib": "0f654909eaf9ddee4b350bfb295978f8d520d3b69bdf1b35dce6432de8a20ec5",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/oof/Ridge_time_risk.csv.gz": "1309f0bf5dfede3467c33c58eb2bc71144c772be8d42c9da40db154a7a00f9a8",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/predictions/Ridge_time_risk.csv.gz": "68a11d4d293a3a56378eefdcb2c3d6f120b18ccdce61dfca296ec0f41058e648",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/models/RF_log_time_risk.joblib": "77fbad3f6158a0c27692051f572a771136a6cd965dca046be022fa6b929b640b",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/oof/RF_log_time_risk.csv.gz": "b40776168dc92e766788d63cf3d09e84194950efa5f7284b736c9004d8308189",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/predictions/RF_log_time_risk.csv.gz": "928666908610879d9c24c68ab539d5fef1197d139a878b58e69cef70e9013328",
+    "versions/random_split_v1/experiments/09_purchase_feature_enrichment/models/F_all_onehot.joblib": "ccdb958f3487c7063e1f6646f9aec93990f67140d9a1097e54dbe0a99125cabb",
+    "versions/random_split_v1/experiments/09_purchase_feature_enrichment/outputs/oof/F_all_onehot.csv.gz": "7ac30309aede29ac8f42ed42ef8303b1e8ed7f3580640d875495cbd2b2f6409d",
+    "versions/random_split_v1/experiments/09_purchase_feature_enrichment/outputs/predictions/test_predictions.csv.gz": "499c5be427f25c6aaca3b025c0bb04e666acd6ca964b9ba2199b9f38edd08367",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/models/HGB_best_time_risk.joblib": "0454f541bbad981e68e5dc8aa019540cc2dbc146b08e6352b8fb0cd89e7a2b3e",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/oof/HGB_best_time_risk.csv.gz": "3894ac8da97b743eb5d41dc0ca63280fd2875763d7c9fb9dc0ba64efa72480e0",
+    "versions/random_split_v1/experiments/11_time_and_risk_features/outputs/predictions/HGB_best_time_risk.csv.gz": "812edf7a513120d4b67d2657e3f2aac235655986c61ed910944e037a84c6114d",
+    "versions/random_split_v1/experiments/12_hgb_parameter_tuning/models/leaves63__time_risk.joblib": "2efd2afa586a0fc61c54812a57638be2073f11fe1396b10c317dab1767954906",
+    "versions/random_split_v1/experiments/12_hgb_parameter_tuning/outputs/oof/leaves63__time_risk.csv.gz": "6b8a8ac5a3333f005a1eed8edb100c6857f6d13db9823bd5d60b49cf09c78a1f",
+    "versions/random_split_v1/experiments/12_hgb_parameter_tuning/outputs/predictions/leaves63__time_risk.csv.gz": "07d008d31d76d2c50f98ac5fbc338f9dc21b8e2248e31cd3ad259941063f5822"
+  }
+}

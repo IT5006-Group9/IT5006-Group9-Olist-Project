@@ -1,0 +1,10 @@
+{
+  "test_metric_rows_verified": 3,
+  "saved_models_reloaded_in_fresh_process": true,
+  "outcome_columns_not_required": true,
+  "duration_groups_independently_verified": true,
+  "previous_best_test_MAE_reproduced": true,
+  "previous_test_exposure_disclosed": true,
+  "prior_artifacts_unchanged": true,
+  "no_new_stacking": true
+}

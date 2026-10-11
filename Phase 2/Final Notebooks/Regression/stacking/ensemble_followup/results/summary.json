@@ -1,0 +1,16 @@
+{
+  "status": "completed; independent verification recorded separately",
+  "train_n": 64634,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "models_compared": 8,
+  "test_set_read_or_scored": false,
+  "deployment_refit": false,
+  "protocol_sha256": "6b356211a98e58f828fddb540332f732e3a17ab467d6ff3ca33c96ac6b2cc4d7",
+  "limitations": [
+    "The HGB and RF configurations, dataset and evaluation folds have informed earlier development; this is further retrospective development, not a new independent confirmation.",
+    "The ExtraTrees search only compares two target representations with fixed tree settings and one feature pack; it does not establish the best attainable ExtraTrees performance.",
+    "Different input representations and objectives may contribute to differences between model families.",
+    "Random folds describe the same historical order mixture, not future periods or unseen sellers."
+  ]
+}

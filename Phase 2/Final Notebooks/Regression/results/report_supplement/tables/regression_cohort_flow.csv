@@ -1,0 +1,10 @@
+step,n
+Source orders,99441
+Orders marked delivered,96478
+Delivered missing receipt (excluded),8
+Eligible completed orders with valid target and items,96470
+Negative target durations among remaining orders,0
+Eligible orders missing item records,0
+Retained valid targets above 60 days,306
+Missing maximum distance (retained),477
+Missing average product weight (retained),22
