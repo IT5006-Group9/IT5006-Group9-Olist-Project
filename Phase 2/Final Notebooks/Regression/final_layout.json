@@ -1,0 +1,95 @@
+{
+  "scope": "Final submission layout only; mathematical models, result CSVs and figures unchanged",
+  "path_adapters": {
+    "stacking/src/hgb_reference.py": {
+      "before_sha256": "8ce075e10e67edbed73b2baa8e19dacb212b20843ddb569d88e329664f054b25",
+      "after_sha256": "3894fda4d53f39f32cbe2419c2fc6690123f762347a33c238d68afb055eaf8b5",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/src/stacking_trial.py": {
+      "before_sha256": "0800fce7a7f2fb4902a17f8e5676a511be5fad91e870bf90694e34a6feca7b8e",
+      "after_sha256": "0de8201cdd7bd7adf07a6356a9148335a7554d5738ea47072b6e3edc5d639e68",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/ensemble_followup/scripts/verify_followup.py": {
+      "before_sha256": "1a29641f7a05f2ba052b3ecd81f7c9f92064e3eabb9402979a2e9472c503cb4e",
+      "after_sha256": "64f810a23c433bd932bc90d731ef9ae24313a6451843a7c179d44c63004f3b3c",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/ensemble_followup/src/followup_ensembles.py": {
+      "before_sha256": "3f1a93e53a3502883ce25598dfe1a17bb7713fcfbf1f4c692ed1b178d7df9b8a",
+      "after_sha256": "9d7ce14066dacee8ae8ff9f77530a59f1b54dc49f60e38ffb668beb397c3aed6",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/ensemble_followup/src/followup_models.py": {
+      "before_sha256": "2c0722ce118d0ab3c0dce1d2538a75151d0417d8dba6b28e1286bc4434862b15",
+      "after_sha256": "e19724f939a5be348699ec0783e5e655e84fe646fe230c169d87217e1e0ee8e1",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/nested_tuning/scripts/verify_nested_tuning.py": {
+      "before_sha256": "2a9116a851b092c8ed91173c34ea7ab8e296b8cf2653b1386a3bd0d0e2a2eb58",
+      "after_sha256": "9334532f200338610708bbed1eaeb4bb30b6c997b47a8efc2f7e77c7a3564f65",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/nested_tuning/scripts/build_notebook.py": {
+      "before_sha256": "c46f04f050b6606ad290481fb37675e65d279c2e493be77351608457ba61eb4e",
+      "after_sha256": "957bf6b562857f7e34c820a14bfe1870a2c9ffe37acaf70f458b71a01087a264",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/nested_tuning/src/nested_hgb.py": {
+      "before_sha256": "6fbb5879dd6971a7f3f22506c1bcaafad20ce79581bb28fb467d41db221c64f5",
+      "after_sha256": "8c0aa1d2373686599ab89fd0723cb3d71935e03c649e6426f1df517ef7e649b8",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/nested_tuning/src/nested_meta.py": {
+      "before_sha256": "278dc072cde1d9a814377c61575c55acf98e2799a1be1ebcd2bcdd3247d8e0f4",
+      "after_sha256": "15c2a0d6dd2186297bc226d90a0e7e52d7da8af817be39a6a77fab5e67e45335",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/nested_tuning/src/nested_classic.py": {
+      "before_sha256": "330408b9e123d93e6c01af6d91f27f8ecabf8dac6417fa0717b7b85cb2c8969c",
+      "after_sha256": "9c756928f815d9bcb13d92cfa9bfc661f65de565238daae9599fc8c6cb73c73a",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/rf_risk_upgrade/scripts/verify_rf_risk_upgrade.py": {
+      "before_sha256": "f3bb458811ec15f12d98a266aab3f3a00b9757c00cf656de2c4628ade292c1fb",
+      "after_sha256": "7da68b69a73d555942da7335edb6f527b763b2160c8e3b2626c418ebe1be4f9d",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/rf_risk_upgrade/src/upgrade_ensembles.py": {
+      "before_sha256": "d9a3437237c11f664d45818158359ae4b5b36ce661728f7d27f5a3836d0a7329",
+      "after_sha256": "aa37e2ac4c7f7c391bfdbeea90070e326a633ff6166fc404e776aee0c6ab2643",
+      "scope": "Path references only; original model audit records retained"
+    },
+    "stacking/rf_risk_upgrade/src/rf_risk_models.py": {
+      "before_sha256": "6025714b101b939a269ad1c86700a5345aa3bb3397c05714e21601d1571520d9",
+      "after_sha256": "6a368409652e81666a8b967f7b712c205cf242be8f8e2ee40d069f0d00f87508",
+      "scope": "Path references only; original model audit records retained"
+    }
+  },
+  "retained_notebooks": {
+    "Classification": [
+      "data_preparation_audit",
+      "baseline_variant_review",
+      "ensemble_comparison",
+      "sampling_comparison"
+    ],
+    "Regression": [
+      "delivery_regression_complete",
+      "tuned_stacking_comparison"
+    ]
+  },
+  "full_training_rerun": false,
+  "validation": {
+    "Work_and_Phase1_preserved": true,
+    "classification_four_notebooks_byte_identical": true,
+    "all_result_CSVs_and_PNGs_byte_identical_to_originals": true,
+    "regression_notebook_outputs_and_execution_counts_preserved": true,
+    "classification_metadata_and_raw_course_audit_passed": true,
+    "classification_existing_tests_passed": 13,
+    "nested_stacking_existing_tests_passed": 12,
+    "regression_two_notebooks_executed_in_review_with_course_ZIP": true,
+    "published_model_refit": false,
+    "classification_full_training_rerun_completed": false
+  }
+}

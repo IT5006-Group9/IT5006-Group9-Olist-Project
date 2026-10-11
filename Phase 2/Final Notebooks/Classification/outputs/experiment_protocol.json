@@ -65,7 +65,7 @@
     "wd_delivery_time_delta"
   ],
   "source_sha256": {
-    "src/paths.py": "bd35b8c8e5bc22902b81f3a3e424d85ab86d2c89b5164dd7b0fdff336f142007",
+    "src/paths.py": "c66c3c94ff84790a4b7474f0710c32bc314f23a27266383372f8f4d67ef0d5ab",
     "src/clf_config.py": "a26c93196a0cbab3a152c6b94cb82aa667b9455aa15eb5d55d2f355b22358703",
     "src/clf_data.py": "34baf1675a0ea408f5a21626d552abe280adabcd25bac577ffb7ff5ee235dfe4",
     "src/clf_features.py": "4949ce5e41b48f98d1898937dd8c326114f131afbab609dbcf0e66c899fdca13",
@@ -122,7 +122,6 @@
   },
   "notebook_sha256": {
     "notebooks/baseline_variant_review.ipynb": "e1df25edee31fc3f8d15bc757a3152ee1898aee0cdca9922622f066064ca6813",
-    "notebooks/classification_complete_pipeline.ipynb": "a57f586384ac7ebffa1f985420e69879aabb322fcb4daa4286dcc08160887f79",
     "notebooks/data_preparation_audit.ipynb": "b00197d441726c47380a4bf534e8aa0e4ac0f951e9ee7b44741a2e8872f0cbf3",
     "notebooks/ensemble_comparison.ipynb": "a5186b2b1bc51008d99b68cc0b94c561a816031a0cc3845e367f263f0b04d2cf",
     "notebooks/sampling_comparison.ipynb": "943b8b97a0cc07b033a6c3031d768421b48c4716b88448f10dc56f139a2f6bc4"
@@ -164,5 +163,6 @@
     "limits": "Saved execution counts, settings and rounded result tables were cross-checked. No training was rerun. Current source hashes identify this snapshot, not a contemporaneous execution manifest. Original package versions and execution timestamps were not captured and cannot be reconstructed from these artifacts."
   },
   "execution_environment": null,
-  "training_rerun": false
+  "training_rerun": false,
+  "final_layout_note": "Final presentation uses the four executed source notebooks; compiled notebook is retained in Classification Work. Only path discovery and snapshot indexing changed; no model was retrained."
 }

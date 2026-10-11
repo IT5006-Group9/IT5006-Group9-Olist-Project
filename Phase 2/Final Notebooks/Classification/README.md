@@ -2,7 +2,7 @@
 
 Classification workflow alongside [Regression](../Regression/README.md). Same layout and
 seed; the shared geographic helpers and protocol constants in
-`../Regression/historical_temporal/src` are imported, not copied. The split
+`../Regression/src` are imported, not copied. The split
 follows Zaghloul, Barakat & Rezk (2024, *J. Retailing and Consumer Services* 79:103865),
 the published study on the same target, with a validation set added; the regression
 package's chronological protocol is kept as a switch (`clf_config.SPLIT_SCHEME`).
@@ -28,7 +28,7 @@ Sampling and SHAP write-up: [`docs/sampling_comparison.md`](docs/sampling_compar
 
 ## What is shared with the regression package
 
-| From `../Regression/historical_temporal/src` | Used for |
+| From `../Regression/src` | Used for |
 |---|---|
 | `delivery_regression.SEED` | seed (5006) |
 | `delivery_regression.VALIDATION_START`, `VALIDATION_END`, `TEST_START`, `FOLDS` | the chronological scheme (`SPLIT_SCHEME = "chronological"`) and the drift figure |
@@ -58,7 +58,7 @@ strategies as imblearn pipelines), `clf_explain` (SHAP helpers).
 From this folder, with the course CSVs available (the repo's `data/` folder, or `OLIST_CSV_DIR`, `notebooks/data/`, or `OLIST_ARCHIVE`):
 
 ```bash
-python -m pip install -r requirements.txt            # on top of ../Regression/historical_temporal/requirements.txt
+python -m pip install -r requirements.txt            # on top of ../Regression/requirements.txt
 python scripts/run_notebook.py                        # data_preparation_audit (writes data/split_manifest.csv)
 python scripts/run_notebook.py notebooks/baseline_variant_review.ipynb   # 1-2 h with QUICK = False
 python scripts/run_notebook.py notebooks/ensemble_comparison.ipynb       # 10-40 min
@@ -74,7 +74,7 @@ python -m unittest discover -s tests -v
 and writes `outputs/experiment_protocol.json` with source and output digests
 (`--protocol-only` checks saved execution counts, QUICK settings and the displayed result
 tables against the CSVs before recording a snapshot; it does not rerun training).
-`scripts/build_notebooks.py` regenerates the notebooks from their definition (clears outputs).
+Notebook generators remain in Classification Work; the Final notebooks preserve their saved outputs.
 
 Outputs: `outputs/tables/` (published CSVs), `outputs/figures/`, `outputs/selected_models.json`,
 `outputs/ensemble_summary.json`, `outputs/sampling_summary.json`, `outputs/data_quality.json`. Git-ignored and regenerated locally:
@@ -83,7 +83,7 @@ Outputs: `outputs/tables/` (published CSVs), `outputs/figures/`, `outputs/select
 The current committed notebooks contain full-run (`QUICK = False`) outputs. Their saved
 baseline, ensemble and sampling result tables agree with the published CSVs at displayed
 precision, and `outputs/selected_models.json` records the full-run RF configuration.
-`notebooks/classification_complete_pipeline.ipynb` compiles those outputs into one document.
+The compiled complete pipeline in Classification Work compiles those outputs into one document.
 The protocol records the current notebook, source, result and configuration hashes.
 Because the original execution did not capture a contemporaneous environment/source manifest,
 this is explicitly a **saved-artifact snapshot**, not a fresh-training attestation; the
@@ -92,11 +92,13 @@ can rebuild the cohort and leakage audits from the course CSVs without training 
 Local per-order predictions, when available, additionally support independent PR-AUC checks.
 The audit records its scope and the exact protocol digest it verified.
 
-## Directory migration (2026-10-11)
+## Final submission layout (2026-10-11)
 
 This package moved from `Phase 2/classification` to `Phase 2/Classification` when Phase 2 was
 organised into `Classification/` and `Regression/` workstreams; the shared regression modules are
-now found under `../Regression/historical_temporal/src`. Only discovery and shared-module paths
+now found under `../Regression/src`. Only discovery and shared-module paths
 changed in that move. The leakage fixes of 2026-10-10 (fold-fitted history step,
 `review_answer_timestamp`, cohort rule) are a separate, substantive change and are documented in
 [docs/current_progress.md](docs/current_progress.md).
+
+The Final copy intentionally contains only the four source notebooks, in the order listed above. They contain full-mode saved outputs; the compiled complete pipeline remains in Classification Work. Their saved outputs and all model implementations are unchanged. A fresh full rerun was stopped before completion; it exposed a CatBoost categorical-missing compatibility issue in that environment. That trial's experimental fix is not adopted by this packaging change, and a successful fresh full retraining run is not claimed. Shared preparation modules now come directly from `../Regression/src`.

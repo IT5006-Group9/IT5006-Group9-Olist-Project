@@ -813,5 +813,22 @@
       "review_runner_passed_after_rename": true,
       "navigation_links_checked": 86
     }
+  },
+  "final_package_revision": {
+    "classification_notebooks": [
+      "Phase 2/Final Notebooks/Classification/notebooks/baseline_variant_review.ipynb",
+      "Phase 2/Final Notebooks/Classification/notebooks/data_preparation_audit.ipynb",
+      "Phase 2/Final Notebooks/Classification/notebooks/ensemble_comparison.ipynb",
+      "Phase 2/Final Notebooks/Classification/notebooks/sampling_comparison.ipynb"
+    ],
+    "regression_notebooks": [
+      "Phase 2/Final Notebooks/Regression/notebooks/delivery_regression_complete.ipynb",
+      "Phase 2/Final Notebooks/Regression/notebooks/tuned_stacking_comparison.ipynb"
+    ],
+    "classification_compiled_final_copy_removed": true,
+    "regression_layout": "Flat notebooks/src/config/scripts/results plus stacking support; historical_time_split subtree removed from Final",
+    "Work_notebooks_unchanged": true,
+    "original_snapshot_records": "Preserved above as the previous publication snapshot; current final paths listed here",
+    "full_model_retraining": false
   }
 }

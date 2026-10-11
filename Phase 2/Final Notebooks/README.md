@@ -1,43 +1,32 @@
 # Final Notebooks
 
-| Submission entry | Scope | Execution status |
+| Task | Start here | Supporting evidence |
 |---|---|---|
-| [Classification complete pipeline](Classification/notebooks/classification_complete_pipeline.ipynb) | Low-review risk: data audit, baselines, variants, ensembles, sampling and SHAP | Unchanged compilation of the four source notebooks' saved full-mode outputs; a fresh complete retraining run was stopped and is not claimed as completed |
-| [Delivery regression complete](Regression/delivery_regression_best/notebooks/delivery_regression_complete.ipynb) | Purchase-to-receipt duration: preparation through retained HGB and evaluation | Executed review mode; fitting and CV evidence comes from the recorded completed experiments |
+| Classification | [Data preparation](Classification/notebooks/data_preparation_audit.ipynb) → [Baseline and variants](Classification/notebooks/baseline_variant_review.ipynb) → [Ensembles](Classification/notebooks/ensemble_comparison.ipynb) → [Sampling and SHAP](Classification/notebooks/sampling_comparison.ipynb) | [Classification files and execution notes](Classification/README.md) |
+| Regression | [Delivery regression complete](Regression/notebooks/delivery_regression_complete.ipynb) | [Stacking comparison](Regression/notebooks/tuned_stacking_comparison.ipynb), [runtime and reproduction](Regression/README.md) |
 
-These are byte-identical copies of the Work notebooks. Content questions from the review remain pending;
-this packaging step does not resolve them or change the model choice. For classification, the ladder's
-weighted RF and the sampling study's unweighted RF remain distinct recorded configurations.
+Classification's four notebooks retain their original full-mode saved outputs. The unfinished fresh rerun is not presented as completed; its compiled notebook remains in Work rather than Final. Regression's two notebooks read and check the completed experiment evidence in review mode. The retained model is HGB; the stacking notebook supports the report's combination comparison, not a new final stacking test score.
 
-The folders include the original code, configuration, aggregate results, figures, source notebook snapshots
-needed by the verifier, and the three current regression ensemble evidence packages. The small
-`Regression/historical_temporal/` subtree supplies unchanged shared preparation modules and a reference
-inventory. Historical time-split experiments, legacy root models, raw data, per-order predictions and OOF
-files are kept in Work or generated locally, rather than included in this final package.
+Each task exposes `notebooks`, `src`, `config`, `scripts`, and saved aggregate results. Regression also keeps `stacking/` with the code, configurations and aggregate evidence used by the two notebooks. Historical time-split experiments and redundant review notebooks remain in [Regression Work](../Regression%20Work/README.md). The former top-level `scripts/` reviewer was optional and has been removed; task-specific scripts are required reproduction tools.
 
-## Open and check
+## Environment and course data
 
-Use Python 3.12 and the package dependencies. Launch Jupyter from this directory so the notebooks' original
-path discovery works without editing their cells:
+Use Python 3.12:
 
 ```bash
 python -m pip install -r requirements.txt
 jupyter lab
-python scripts/review_submission.py --task both
 ```
 
-The review command verifies the classification's saved result/source metadata without fitting; it executes
-the regression notebook in its default review mode in memory, preserving the saved file. Supply
-`OLIST_ARCHIVE` if the regression source-data reconstruction is required. Model training needs the fixed
-course ZIP (`OLIST_ARCHIVE`) or the classification course CSVs (`OLIST_CSV_DIR`); no new dataset is substituted.
+Use the fixed course dataset, not a newly downloaded Olist revision. Set `OLIST_ARCHIVE` to its ZIP, or `OLIST_CSV_DIR` for classification's extracted course CSVs. Raw data, fitted models, per-order predictions and OOF files are generated locally and are not included here.
 
-To request full classification training, enter `Classification/` and use its original runner. This is
-expensive and was not completed during this packaging task. A CatBoost categorical-missing compatibility
-issue was observed in the interrupted rerun environment; its local experimental fix is not included while
-classification content remains frozen. Full-training success is therefore not attested here. Regression
-`RUN_MODE="reproduce"` and `WITH_CV=True` invoke its existing fitting/CV runners.
+Fast checks without retraining:
 
-The Phase 1 source moved to [the Phase 1 notebook folder](../../Phase%201/notebooks/phase1/).
-Any old absolute GitHub `main/notebooks/phase1/...` source links retained inside the unchanged notebooks
-refer to the pre-migration location; use this current link. Work instructions may likewise contain historical
-path spellings. The submission entries above and these commands are the current navigation.
+```bash
+python Classification/scripts/verify_classification.py --metadata-only --strict-sources
+python Regression/scripts/review_notebooks.py
+```
+
+With `OLIST_ARCHIVE`, the regression review additionally rebuilds and verifies the source data, V2 preparation, purchase features, random holdout and CV assignments. Classification's full raw-data audit is `python Classification/scripts/verify_classification.py --strict-sources`.
+
+A fresh complete classification training run was stopped earlier. The unresolved categorical-missing CatBoost compatibility issue from that environment remains documented in Classification's README; this layout change does not modify model implementations or certify a fresh full run. Regression frozen-model reproduction is documented in its README. All published scores and analytical saved outputs are preserved.

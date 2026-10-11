@@ -23,9 +23,9 @@ from pathlib import Path
 SRC = Path(__file__).resolve().parent
 ROOT = SRC.parent                          # Phase 2/Classification
 PHASE2 = ROOT.parent                       # Phase 2
-REGRESSION = PHASE2 / "Regression" / "historical_temporal"
+REGRESSION = PHASE2 / "Regression"
 PHASE2_SRC = REGRESSION / "src"
-REPO = PHASE2.parent
+REPO = next((p for p in ROOT.parents if (p / "Phase 1").is_dir() and (p / "Phase 2").is_dir()), PHASE2.parent)
 
 for p in (SRC, PHASE2_SRC):
     if str(p) not in sys.path:

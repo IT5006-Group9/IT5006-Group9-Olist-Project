@@ -1,5 +1,5 @@
 # Submission review and notebook runtime; Python 3.12.
--r Regression/delivery_regression_best/requirements.txt
+-r Regression/requirements.txt
 catboost>=1.2
 pyarrow>=15
 imbalanced-learn>=0.12

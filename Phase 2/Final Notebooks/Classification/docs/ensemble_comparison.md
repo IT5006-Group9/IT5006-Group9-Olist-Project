@@ -4,7 +4,7 @@ Updated: 2026-10-10 (stratified split, fold-fitted history, dry run `QUICK = Tru
 
 The [executed Notebook](../notebooks/ensemble_comparison.ipynb) is the single entry point for the
 Family C comparison. It mirrors the regression package's
-[ensemble_comparison.ipynb](../../Regression/historical_temporal/notebooks/ensemble_comparison.ipynb): base models are refitted per
+[ensemble_comparison.ipynb](../../../Regression%20Work/historical_temporal/notebooks/ensemble_comparison.ipynb): base models are refitted per
 fold to produce out-of-fold (OOF) probabilities, the combiners are fitted on those OOF rows only,
 selection happens on the validation set, and the test set is scored once per method with an
 independent PR-AUC implementation as a cross-check.
