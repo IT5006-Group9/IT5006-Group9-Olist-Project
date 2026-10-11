@@ -3,7 +3,7 @@
 | Folder | Purpose |
 |---|---|
 | [Final Notebooks](Final%20Notebooks/README.md) | Four executed classification notebooks and two regression reading notebooks with runtime support |
-| [Final Reports](Final%20Reports/README.md) | Current report evidence; final report PDF pending |
+| [Final Reports](Final%20Reports/Team9_Phase2_IT5006_AY2627Sem1.pdf) | Submitted Phase 2 report PDF |
 | [Classification Work](Classification%20Work/README.md) | Original classification notebooks, experiments, source and detailed evidence |
 | [Regression Work](Regression%20Work/README.md) | Original regression development, current model and ensemble experiments |
 
