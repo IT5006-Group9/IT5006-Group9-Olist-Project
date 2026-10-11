@@ -14,7 +14,7 @@ spec_dir.mkdir(parents=True, exist_ok=True)
 (spec_dir/'kernel.json').write_text(json.dumps({
     'argv':[sys.executable, '-m', 'ipykernel_launcher', '-f', '{connection_file}'],
     'display_name':'Delivery Regression', 'language':'python'}))
-path = ROOT / (sys.argv[1] if len(sys.argv) > 1 else 'notebooks/delivery_regression_phase2.ipynb')
+path = ROOT / (sys.argv[1] if len(sys.argv) > 1 else 'notebooks/delivery_regression_complete.ipynb')
 nb = nbformat.read(path, as_version=4)
 manager = AsyncKernelManager(kernel_name='delivery-regression',
                             kernel_spec_manager=KernelSpecManager(kernel_dirs=[str(kernel_root)]))
