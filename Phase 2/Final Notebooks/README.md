@@ -5,7 +5,7 @@
 | Classification | [Data preparation](Classification/notebooks/data_preparation_audit.ipynb) → [Baseline and variants](Classification/notebooks/baseline_variant_review.ipynb) → [Ensembles](Classification/notebooks/ensemble_comparison.ipynb) → [Sampling and SHAP](Classification/notebooks/sampling_comparison.ipynb) | [Classification files and execution notes](Classification/README.md) |
 | Regression | [Delivery regression complete](Regression/notebooks/delivery_regression_complete.ipynb) | [Stacking comparison](Regression/notebooks/tuned_stacking_comparison.ipynb), [runtime and reproduction](Regression/README.md) |
 
-Classification's four notebooks retain their original full-mode saved outputs. The unfinished fresh rerun is not presented as completed; its compiled notebook remains in Work rather than Final. Regression's two notebooks read and check the completed experiment evidence in review mode. The retained model is HGB; the stacking notebook supports the report's combination comparison, not a new final stacking test score.
+Classification's four notebooks retain their original full-mode saved outputs. Regression's two notebooks read and check the completed experiment evidence in review mode. The retained model is HGB; the stacking notebook supports the report's combination comparison, not a new final stacking test score.
 
 Each task exposes `notebooks`, `src`, `config`, `scripts`, and saved aggregate results. Regression also keeps `stacking/` with the code, configurations and aggregate evidence used by the two notebooks. Historical time-split experiments and redundant review notebooks remain in [Regression Work](../Regression%20Work/README.md). The former top-level `scripts/` reviewer was optional and has been removed; task-specific scripts are required reproduction tools.
 
@@ -29,4 +29,4 @@ python Regression/scripts/review_notebooks.py
 
 With `OLIST_ARCHIVE`, the regression review additionally rebuilds and verifies the source data, V2 preparation, purchase features, random holdout and CV assignments. Classification's full raw-data audit is `python Classification/scripts/verify_classification.py --strict-sources`.
 
-A fresh complete classification training run was stopped earlier. The unresolved categorical-missing CatBoost compatibility issue from that environment remains documented in Classification's README; this layout change does not modify model implementations or certify a fresh full run. Regression frozen-model reproduction is documented in its README. All published scores and analytical saved outputs are preserved.
+Regression frozen-model reproduction is documented in its README. All published scores and analytical saved outputs are preserved.

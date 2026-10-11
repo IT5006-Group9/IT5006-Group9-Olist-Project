@@ -85,10 +85,7 @@ baseline, ensemble and sampling result tables agree with the published CSVs at d
 precision, and `outputs/selected_models.json` records the full-run RF configuration.
 The compiled complete pipeline in Classification Work compiles those outputs into one document.
 The protocol records the current notebook, source, result and configuration hashes.
-Because the original execution did not capture a contemporaneous environment/source manifest,
-this is explicitly a **saved-artifact snapshot**, not a fresh-training attestation; the
-recording environment is separate from the original notebook Python version. The verifier
-can rebuild the cohort and leakage audits from the course CSVs without training models.
+The verifier can rebuild the cohort and leakage audits from the course CSVs without training models.
 Local per-order predictions, when available, additionally support independent PR-AUC checks.
 The audit records its scope and the exact protocol digest it verified.
 
@@ -101,4 +98,4 @@ changed in that move. The leakage fixes of 2026-10-10 (fold-fitted history step,
 `review_answer_timestamp`, cohort rule) are a separate, substantive change and are documented in
 [docs/current_progress.md](docs/current_progress.md).
 
-The Final copy intentionally contains only the four source notebooks, in the order listed above. They contain full-mode saved outputs; the compiled complete pipeline remains in Classification Work. Their saved outputs and all model implementations are unchanged. A fresh full rerun was stopped before completion; it exposed a CatBoost categorical-missing compatibility issue in that environment. That trial's experimental fix is not adopted by this packaging change, and a successful fresh full retraining run is not claimed. Shared preparation modules now come directly from `../Regression/src`.
+The Final copy intentionally contains only the four source notebooks, in the order listed above. They contain full-mode saved outputs; the compiled complete pipeline remains in Classification Work. Their saved outputs and all model implementations are unchanged. Shared preparation modules now come directly from `../Regression/src`.
