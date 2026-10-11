@@ -1,38 +1,38 @@
 {
   "best_params": {
     "A_linear_tuned": {
-      "model__C": 10
+      "model__C": 0.1
     },
     "B_tree_base": {
-      "model__max_depth": 10,
-      "model__min_samples_leaf": 194
+      "model__max_depth": 9,
+      "model__min_samples_leaf": 138
     },
     "B_rf": {
-      "model__max_depth": 14,
-      "model__max_features": 0.4843096393967686,
-      "model__min_samples_leaf": 72,
-      "model__n_estimators": 594
+      "model__max_depth": 21,
+      "model__max_features": 0.3559767322742953,
+      "model__min_samples_leaf": 70,
+      "model__n_estimators": 478
     },
     "B_catboost": {
-      "model__depth": 7,
-      "model__iterations": 300,
-      "model__l2_leaf_reg": 1.0310881642091188,
-      "model__learning_rate": 0.03429933990810608,
+      "model__depth": 4,
+      "model__iterations": 1000,
+      "model__l2_leaf_reg": 8.056457031623271,
+      "model__learning_rate": 0.03175627015060992,
       "model__one_hot_max_size": 2,
-      "model__random_strength": 0.8158393115766814,
-      "model__subsample": 0.734982047878261
+      "model__random_strength": 0.6849971323085097,
+      "model__subsample": 0.7713606405249578
     }
   },
   "final_model": "B_rf",
   "thresholds": {
     "baseline_majority": 1.0,
     "baseline_rule_late": 0.5,
-    "A_linear_base": 0.6573786980553703,
-    "A_linear_tuned": 0.6574152071780969,
-    "B_tree_base": 0.667927193003571,
-    "B_rf": 0.6469386230375662,
-    "B_catboost": 0.669665810426949,
-    "C_stacking": 0.25310827274181086
+    "A_linear_base": 0.6757299571887146,
+    "A_linear_tuned": 0.6835459916646599,
+    "B_tree_base": 0.604287704178556,
+    "B_rf": 0.5896010355388625,
+    "B_catboost": 0.6338493962545698,
+    "C_stacking": 0.3093889973423109
   },
   "seed": 5006,
   "stacking_retained": false,
@@ -90,6 +90,15 @@
     "carrier_transit_days",
     "delivery_vs_seller_prior",
     "wd_actual_delivery_time",
-    "wd_delivery_time_delta"
+    "wd_delivery_time_delta",
+    "order_id",
+    "seller_id",
+    "order_purchase_timestamp",
+    "order_delivered_customer_date",
+    "delivery_days",
+    "is_on_time",
+    "review_answer_timestamp",
+    "review_score",
+    "is_low_review"
   ]
 }

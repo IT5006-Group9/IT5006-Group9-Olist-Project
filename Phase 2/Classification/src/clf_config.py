@@ -44,7 +44,9 @@ WINDOWS = {
 COHORT_MONTHS = ("2016-09", "2018-08")
 # Expanding-window CV folds = the regression package's FOLDS
 CV_CUTOFFS = [start for start, _ in base.FOLDS] + [base.FOLDS[-1][1]]
-LABEL_KNOWN_COLUMN = {"p1": "order_delivered_customer_date", "p2": "review_creation_date"}
+# A review label exists when the customer *answered* the survey (review_answer_timestamp);
+# review_creation_date is when Olist sent the survey and is not a label time.
+LABEL_KNOWN_COLUMN = {"p1": "order_delivered_customer_date", "p2": "review_answer_timestamp"}
 
 # --------------------------------------------------------------------------- split scheme
 # "stratified"    (default) Zaghloul et al. (2024) design with a validation set added:

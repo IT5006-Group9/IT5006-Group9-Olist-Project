@@ -52,6 +52,8 @@ class SplitTests(unittest.TestCase):
         ts = pd.Timestamp("2017-01-01") + pd.to_timedelta(rng.integers(0, 500, n), unit="D")
         return pd.DataFrame({"order_id": [f"o{i}" for i in range(n)], "seller_id": "s",
                              "order_purchase_timestamp": ts, "purchase_month": ts.strftime("%Y-%m"),
+                             "survey_trigger_time": ts + pd.Timedelta(days=10),
+                             "review_answer_timestamp": ts + pd.Timedelta(days=12),
                              "is_low_review": (rng.uniform(size=n) < 0.15).astype(float)})
 
     def test_stratified_split_is_deterministic_and_stratified(self):
@@ -77,9 +79,9 @@ class MaturedFoldTests(unittest.TestCase):
     def test_folds_use_only_known_labels(self):
         ts = pd.date_range("2017-01-01", "2018-02-28", freq="D")
         frame = pd.DataFrame({"order_purchase_timestamp": ts,
-                              "review_creation_date": ts + pd.Timedelta(days=40)})
+                              "review_answer_timestamp": ts + pd.Timedelta(days=40)})
         for fit, score in split.matured_cv(frame, "p2"):
-            cutoff_ok = frame.review_creation_date.iloc[fit] < frame.order_purchase_timestamp.iloc[score].min()
+            cutoff_ok = frame.review_answer_timestamp.iloc[fit] < frame.order_purchase_timestamp.iloc[score].min()
             self.assertTrue(cutoff_ok.all())
             self.assertTrue(frame.order_purchase_timestamp.iloc[fit].max() < frame.order_purchase_timestamp.iloc[score].min())
 
@@ -105,18 +107,46 @@ class DeliveryAtTTests(unittest.TestCase):
         self.assertEqual(df.wd_delivery_time_delta.tolist()[0], -8.0)
         self.assertTrue(np.isnan(df.wd_actual_delivery_time.iloc[1]))
 
-    def test_history_uses_training_outcomes_only(self):
+    def _hist_frame(self):
         ts = pd.to_datetime(["2017-01-01", "2017-02-01", "2017-03-01", "2017-04-01"])
-        df = pd.DataFrame({"order_id": list("abcd"), "seller_id": "s", "seller_state": "SP", "customer_state": "SP",
-                           "order_purchase_timestamp": ts, "order_delivered_customer_date": ts + pd.Timedelta(days=5),
-                           "delivery_days": 5.0, "is_on_time": [0.0, 0.0, 1.0, 1.0], "review_score": [1, 1, 5, 5],
-                           "review_creation_date": ts + pd.Timedelta(days=6), "is_low_review": [1.0, 1.0, 0.0, 0.0],
-                           "split": ["train", "test", "train", "train"], "window": "train"})
+        return pd.DataFrame({"order_id": list("abcd"), "seller_id": "s", "seller_state": "SP", "customer_state": "SP",
+                             "order_purchase_timestamp": ts, "order_delivered_customer_date": ts + pd.Timedelta(days=5),
+                             "delivery_days": 5.0, "is_on_time": [0.0, 0.0, 1.0, 1.0], "review_score": [1, 1, 5, 5],
+                             "review_creation_date": ts + pd.Timedelta(days=6),
+                             # a's review is answered 70 days after purchase (12 Mar): after c (1 Mar), before d (1 Apr)
+                             "review_answer_timestamp": ts + pd.to_timedelta([70, 7, 7, 7], unit="D"),
+                             "is_low_review": [1.0, 1.0, 0.0, 0.0], "actual_delivery_time": 5.0,
+                             "split": ["train", "test", "train", "train"], "window": "train"})
+
+    def test_history_uses_training_outcomes_only(self):
+        df = self._hist_frame()
         out = features.add_history_features(df).set_index("order_id")
         # order c (March): placed-before count sees a and b; outcome-based history sees a only (b is a test row)
         self.assertEqual(out.loc["c", "seller_prior_orders"], 2)
         m = config.HISTORY_SMOOTHING_M; g_late = 1 - df[df.split == "train"].is_on_time.mean()
         self.assertAlmostEqual(out.loc["c", "seller_prior_late_rate"], (1 + m * g_late) / (1 + m))
+
+    def test_review_history_waits_for_the_answer(self):
+        df = self._hist_frame()
+        out = features.add_history_features(df).set_index("order_id")
+        m = config.HISTORY_SMOOTHING_M; g_low = df[df.split == "train"].is_low_review.mean()
+        # c: no review answered before 1 Mar -> prior only; d: a (low, answered 12 Mar) and c (not low, 8 Mar) -> 1 of 2
+        self.assertAlmostEqual(out.loc["c", "seller_prior_low_review_rate"], g_low)
+        self.assertAlmostEqual(out.loc["d", "seller_prior_low_review_rate"], (1 + m * g_low) / (2 + m))
+
+    def test_history_step_is_fold_isolated_and_drops_context(self):
+        df = self._hist_frame(); feats = [c for c in config.features_for("p2") if c in df.columns]
+        X = df[feats + [c for c in features.HISTORY_CONTEXT_COLUMNS if c not in feats]]
+        # fit on rows a, c (as a CV fit fold); b and d are held out
+        step = features.HistoryInPipeline().fit(X.iloc[[0, 2]])
+        self.assertEqual(len(step.seller_delivery_events_), 2)
+        H = step.transform(X)
+        self.assertFalse(set(H.columns) & (set(features.HISTORY_CONTEXT_COLUMNS) - set(config.features_for("p2"))))
+        self.assertTrue(set(H.columns) <= set(config.features_for("p2")))
+        # d's history must not include b's (held-out) late delivery: only a and c contribute
+        m = config.HISTORY_SMOOTHING_M; g_late = 1 - X.iloc[[0, 2]].is_on_time.mean()
+        self.assertAlmostEqual(H.loc[3, "seller_prior_late_rate"], (1 + m * g_late) / (2 + m))
+        features.assert_history_context_dropped(step, X)
 
 
 class EnsembleTests(unittest.TestCase):

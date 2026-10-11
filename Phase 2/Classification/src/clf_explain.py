@@ -17,8 +17,13 @@ import clf_config as config
 
 
 def transformed(pipe, X: pd.DataFrame):
+    """Matrix the estimator sees: every step before the last (history -> preprocessor
+    [-> sampler, which is a no-op at transform time]) applied to X."""
     pre = pipe.named_steps["pre"]
-    M = pre.transform(X)
+    M = X
+    for name, step in pipe.steps[:-1]:
+        if hasattr(step, "transform"):
+            M = step.transform(M)
     if sp.issparse(M):
         M = M.toarray()
     M = np.asarray(M, dtype=float)

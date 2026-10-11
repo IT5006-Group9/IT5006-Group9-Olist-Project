@@ -58,7 +58,7 @@ What it does
 3. runs the leakage assertions and writes `data/orders_features.parquet`
 4. prints the split summary (report Table 3) and draws report Figure 1
 
-Raw CSVs are found via `OLIST_CSV_DIR`, then the repo's `notebooks/data/` or `data/Olist_CSV/`, else `OLIST_ARCHIVE`."""),
+Raw CSVs are found via `OLIST_CSV_DIR`, then the repo's `data/`, `notebooks/data/` or `data/Olist_CSV/`, else `OLIST_ARCHIVE`."""),
     ("code", SETUP),
     ("md", "## 1. Build"),
     ("code", '''df = features.build_feature_table(save=True)
@@ -179,7 +179,8 @@ p2.groupby("is_delivered").is_low_review.agg(["mean", "size"]).rename(columns={"
 empty for orders not delivered by T). `features.leakage_audit` adds empirical checks: seller history recomputed
 from scratch for a sample of orders — only outcomes known before purchase **and belonging to training rows** may
 contribute, and the smoothed seller late rate is rebuilt from those rows and compared exactly — internal consistency
-of the delivery-as-of-T block, the share of reviews written before the survey trigger T, and the ranking power of every
+of the delivery-as-of-T block, the share of reviews *answered* before the survey trigger T (must be zero: those orders are
+excluded from the cohort because their label existed at the prediction point), and the ranking power of every
 feature on its own (a value near 1.0 would mean a feature encodes the label; `is_delivered` leading at about 0.77
 is the delivery effect Phase 1 documented, not leakage)."""),
     ("code", '''features.assert_no_leakage(p2, "p2")
@@ -191,6 +192,8 @@ audit["single_feature_auc"].to_csv(config.RESULTS_DIR / "single_feature_auc.csv"
 display(audit["single_feature_auc"].head(12).round(3))
 assert audit["history"]["only outcomes known before purchase"] == 1.0
 assert audit["history"]["late rate rebuilt from training-row outcomes only"] == 1.0
+assert audit["history"]["low-review rate rebuilt from reviews answered before purchase"] == 1.0
+assert audit["review_time"]["reviews answered before T (must be 0: excluded from cohort)"] == 0.0
 assert audit["single_feature_auc"].roc_auc.max() < 0.9, "a single feature ranks the label almost perfectly: inspect it"
 split.window_summary(p2, "p2").to_csv(config.RESULTS_DIR / "split_summary.csv")
 split.fold_summary(split.split_frame(p2)["train"], "p2").to_csv(config.RESULTS_DIR / "fold_summary.csv")
@@ -198,7 +201,8 @@ import json
 json.dump({"orders": int(len(df)), "p2_cohort": int(len(p2)), "windows": split.window_summary(p2, "p2").orders.to_dict(),
            "split_scheme": config.SPLIT_SCHEME, "test_size": config.TEST_SIZE, "validation_size": config.VALIDATION_SIZE,
            "features": len(config.features_for("p2")), "leakage_audit_passed": True,
-           "reviews_before_T_share": float(audit["review_time"]["reviews created before T"])},
+           "reviews_answered_before_T_share": float(audit["review_time"]["reviews answered before T (must be 0: excluded from cohort)"]),
+           "surveys_sent_before_T_share": float(audit["review_time"]["surveys sent before T (creation date; informational)"])},
           open(config.ROOT / "outputs" / "data_quality.json", "w"), indent=2)
 print("OK - leakage audit passed")'''),
 ])
@@ -214,8 +218,10 @@ Protocol
 * stratified split after Zaghloul et al. (2024) with a validation set: 67/33 train+validation / test, then 80/20 train / validation, all stratified on the label (seed 5006; `data/split_manifest.csv`)
 * family ladder A (logistic) → B (decision tree → random forest → CatBoost) → C (stacking)
 * class weights, not resampling; threshold chosen on validation to maximise F1, then frozen
-* RandomizedSearchCV on the training rows with 5 stratified shuffled folds (`split.cv_folds`)
-* the test set is scored once, at the end, for every row of the table
+* RandomizedSearchCV on the training rows with 5 stratified shuffled folds (`split.cv_folds`); every pipeline's
+  first step recomputes the seller / route history from the fold's fit rows only (`features.HistoryInPipeline`)
+* **selection uses validation only**; the test set is scored once, at the end, for every row of the table, and
+  no decision in this package is taken on a test number
 
 Set `QUICK = True` for a dry run (4 search draws, small forests, full training window); the report numbers come from `QUICK = False`."""),
     ("code", SETUP + '''
@@ -236,7 +242,8 @@ X_tr, y_tr = split.xy(S["train"], PROBLEM)
 X_va, y_va = split.xy(S["validation"], PROBLEM)
 X_te, y_te = split.xy(S["test"], PROBLEM)
 CV = split.cv_folds(S["train"], PROBLEM)     # 5 stratified shuffled folds (config.SPLIT_SCHEME)
-print({k: v.shape for k, v in S.items()}, "| features:", X_tr.shape[1], "| split:", config.SPLIT_SCHEME)
+N_FEATURES = len(config.features_for(PROBLEM))
+print({k: v.shape for k, v in S.items()}, f"| features: {N_FEATURES} (+{X_tr.shape[1] - N_FEATURES} history-context columns consumed by the first pipeline step) | split:", config.SPLIT_SCHEME)
 display(split.window_summary(cohort, PROBLEM))
 split.fold_summary(S["train"], PROBLEM)'''),
     ("md", """## 2. Baselines on the same rows
@@ -287,6 +294,7 @@ for name, (pipe, space) in models.items():
         rs.fit(X_tr, y_tr); est = rs.best_estimator_; searches[name] = rs
         cv = evaluate.cv_summary(rs); best_params[name] = {k: (float(v) if isinstance(v, (np.floating, float)) else v) for k, v in rs.best_params_.items()}
     fitted[name] = est
+    features.assert_history_context_dropped(est, X_tr)   # no key / timestamp / outcome column reaches the preprocessor
     p_tr, p_va, p_te = (est.predict_proba(X)[:, 1] for X in (X_tr, X_va, X_te))
     thr = evaluate.best_threshold(y_va, p_va)
     record(name, p_tr, p_va, p_te, thr, extra=cv)
@@ -370,7 +378,9 @@ logistic coefficients as a linear cross-check. Zaghloul et al. (2024) rank `wd_d
 `wd_actual_delivery_time` third on the same data; their counterparts here are `wd_delivery_time_delta` and
 `wd_actual_delivery_time`."""),
     ("code", '''imp_model = best_single  # permutation importance on the best single model (a stacker's importances are not attributable)
-imp = evaluate.permutation_table(fitted[imp_model], X_va, y_va, SCORING, n_repeats=3 if QUICK else 5, top=15)
+# permute the 52 features after the (fitted) history step, so key / timestamp columns are never permuted
+H_va = fitted[imp_model].named_steps["history"].transform(X_va)
+imp = evaluate.permutation_table(fitted[imp_model][1:], H_va, y_va, SCORING, n_repeats=3 if QUICK else 5, top=15)
 imp.to_csv(config.RESULTS_DIR / "permutation_importance.csv", index=False)
 fig, ax = plt.subplots(figsize=(7, 5))
 ax.barh(imp.feature[::-1], imp.importance_mean[::-1], xerr=imp.importance_sd[::-1], color=ACCENT)
@@ -382,23 +392,27 @@ lin = fitted["A_linear_tuned"]
 names = lin.named_steps["pre"].get_feature_names_out()
 coef = pd.Series(lin.named_steps["model"].coef_[0], index=names).sort_values()
 pd.concat([coef.head(8), coef.tail(8)]).round(3).to_frame("logistic coefficient (standardised)")'''),
-    ("md", """## 8. Ablation: how much does the delivery-as-of-T block add?
+    ("md", """## 8. Ablation: how much does the delivery block add?
 
-Refits the best single configuration without the `delivery` group. The PR-AUC drop quantifies the
-Phase 1 finding that delivery performance drives satisfaction, and is the number to quote in Section 6.2."""),
+Refits the best single configuration without the `delivery` group — the nine **T-dependent** features flagged in
+`config/feature_roles.csv` (`config.features_at_T()`). The PR-AUC drop quantifies the Phase 1 finding that delivery
+performance drives satisfaction, and is the number to quote in Section 6.2."""),
     ("code", '''from sklearn.base import clone
-at_T = config.FEATURE_GROUPS["delivery"]
-keep = [c for c in X_tr.columns if c not in at_T]
+delivery = config.FEATURE_GROUPS["delivery"]            # the 9 T-dependent features (config.features_at_T())
+keep = [c for c in X_tr.columns if c not in delivery]   # history-context columns stay: the first step consumes them
 abl = clone(fitted[best_single])
 pre = abl.named_steps["pre"]
-# drop the at-T columns from every transformer's column list
-pre.set_params(transformers=[(n, t, [c for c in cols if c not in at_T]) for n, t, cols in pre.transformers])
+# drop the delivery block from every transformer's column list
+pre.set_params(transformers=[(n, t, [c for c in cols if c not in delivery]) for n, t, cols in pre.transformers])
 if best_single == "B_catboost":
     abl.set_params(model__cat_features=[c for c in abl.named_steps["model"].cat_features if c in keep])
 abl.fit(X_tr[keep], y_tr)
+# the history step derives delivery_vs_seller_prior from actual_delivery_time, so it is absent too
+assert not set(abl.named_steps["history"].transform(X_va[keep].head()).columns) & set(delivery)
 ap_full = evaluate.classification_metrics(y_va, val_proba[best_single])["pr_auc"]
 ap_abl = evaluate.classification_metrics(y_va, abl.predict_proba(X_va[keep])[:, 1])["pr_auc"]
-print(f"{best_single}: validation PR-AUC with delivery-at-T {ap_full:.3f} -> without {ap_abl:.3f}")'''),
+print(f"{best_single}: validation PR-AUC with the delivery block {ap_full:.3f} -> without {ap_abl:.3f}  "
+      f"({len(delivery)} T-dependent features removed: {', '.join(delivery)})")'''),
     ("md", """## 9. Optional sensitivity: class weights vs SMOTE (Appendix Table A3)
 
 Runs only if `imbalanced-learn` is installed. Two rows: logistic regression and random forest with SMOTE inside the
@@ -413,7 +427,7 @@ pipeline (so it is applied per fold, to training rows only), compared with their
                         ("B_rf_smote", RandomForestClassifier(n_estimators=100 if QUICK else 400, min_samples_leaf=20,
                                                                n_jobs=-1, random_state=config.RANDOM_STATE))]:
         kind = "linear" if name.startswith("A") else "tree"
-        pipe = ImbPipeline([("pre", pipelines.make_preprocessor(kind, PROBLEM)),
+        pipe = ImbPipeline([pipelines.history_step(), ("pre", pipelines.make_preprocessor(kind, PROBLEM)),
                             ("smote", SMOTE(random_state=config.RANDOM_STATE)), ("model", model)]).fit(X_tr, y_tr)
         p_va, p_te = pipe.predict_proba(X_va)[:, 1], pipe.predict_proba(X_te)[:, 1]
         thr = evaluate.best_threshold(y_va, p_va)
@@ -439,7 +453,7 @@ joblib.dump({"pipeline": fitted[FINAL], "threshold": thresholds[FINAL], "feature
 (config.ROOT / "outputs" / "predictions").mkdir(parents=True, exist_ok=True)
 for tag, frame, probas in (("validation", S["validation"], val_proba), ("test", S["test"], test_proba)):
     pd.DataFrame({"order_id": frame.order_id, "is_low_review": frame.is_low_review.astype(int), **probas}).to_csv(
-        config.ROOT / "outputs" / "predictions" / f"{tag}_predictions.csv", index=False)
+        config.ROOT / "outputs" / "predictions" / f"{tag}_predictions.csv", index=False, float_format="%.10g")
 print("final model:", FINAL, "| threshold:", round(thresholds[FINAL], 3))
 table7.loc[[FINAL]]'''),
 ])
@@ -462,7 +476,8 @@ Four combinations are compared on the **validation set** and the chosen one is s
 
 OOF probabilities come from the same five stratified shuffled folds as the searches (`split.cv_folds`), so the
 meta-learner only ever sees predictions made by a base model that had not seen that order; every training row
-gets exactly one OOF probability.
+gets exactly one OOF probability. Each base pipeline's first step rebuilds the seller / route history from the
+fold's fit rows, so the held-out fold's outcomes are absent from every feature the base model was trained on.
 
 The notebook also carries the two audits the report needs: an empirical **leakage audit** of the feature table
 and a **class-balance study** (weighting vs. none vs. resampling vs. calibration). Set `QUICK = True` for a
@@ -510,6 +525,7 @@ audit["single_feature_auc"].to_csv(OUT / "tables/single_feature_auc.csv", index=
 display(audit["single_feature_auc"].head(12).round(3))
 assert audit["history"]["only outcomes known before purchase"] == 1.0
 assert audit["history"]["late rate rebuilt from training-row outcomes only"] == 1.0
+assert audit["history"]["low-review rate rebuilt from reviews answered before purchase"] == 1.0
 assert audit["single_feature_auc"].roc_auc.max() < 0.9, "a single feature ranks the label almost perfectly: inspect it"
 print("leakage audit passed")"""),
     ("md", """## 3. Base models
@@ -610,7 +626,7 @@ for name, cw in variants.items():
 try:
     from imblearn.over_sampling import SMOTE
     from imblearn.pipeline import Pipeline as ImbPipeline
-    pipe = ImbPipeline([("pre", pipelines.make_preprocessor("tree", PROBLEM)), ("smote", SMOTE(random_state=config.RANDOM_STATE)),
+    pipe = ImbPipeline([pipelines.history_step(), ("pre", pipelines.make_preprocessor("tree", PROBLEM)), ("smote", SMOTE(random_state=config.RANDOM_STATE)),
                         ("model", RandomForestClassifier(random_state=config.RANDOM_STATE, n_jobs=-1, **rf_params))]).fit(X_tr, y_tr)
     probs["rf_smote"] = (pipe.predict_proba(X_va)[:, 1], pipe.predict_proba(X_te)[:, 1])
 except ImportError:
@@ -663,9 +679,11 @@ Read these against the tables above before quoting any number in the report.
    their scores estimate performance on the 2016-18 order mix, not on a future month; March 2018 (postal strike)
    is diluted into every partition. The chronological robustness check in `docs/current_progress.md` reports the
    same final configuration on the July-August 2018 hold-out so the drift cost is visible. Say both in the report.
-2. **Training features never see validation / test labels.** Seller and route history aggregate outcomes of
-   training rows only (audit row "late rate rebuilt from training-row outcomes only" = 1.0). This is stricter
-   than production, where all past outcomes would be available, so history features are slightly weaker here.
+2. **Training features never see held-out labels - at any level.** Seller and route history are a fold-fitted
+   pipeline step: the stored table uses training-split outcomes only (audit rows = 1.0), and inside CV, the
+   stacker and the OOF loop the step is refitted on each fold's fit rows. Review history uses the time the
+   customer *answered* the survey (`review_answer_timestamp`), and orders answered before T are excluded from
+   the cohort. This is stricter than production, where all past outcomes would be available.
 3. **Class weights distort probabilities, not rankings.** The balance study shows near-identical PR-AUC across
    weighting choices but very different Brier scores and flag rates at 0.5. If the risk score is shown to the CX
    team as a probability, use the calibrated variant; if it is only used to rank, weighting is harmless.
@@ -700,7 +718,9 @@ for (PR-AUC, balanced accuracy, Brier), then explains the final model with SHAP.
 * Resampling runs **inside** an imbalanced-learn pipeline after the preprocessor, on training rows only.
   CatBoost uses the forest's numeric matrix here (SMOTE / ADASYN cannot interpolate string categories); its native
   categorical result is the ladder row in `model_comparison.csv`.
-* Thresholds are chosen on validation (F1) and frozen; the test set is scored once per cell.
+* Thresholds are chosen on validation (F1) and frozen; the test set is scored once per cell. The strategy marked
+  `*` per model is chosen on **validation** PR-AUC; test columns are reported for every cell for completeness and
+  are never used to choose anything.
 * **SHAP**: TreeExplainer on the final forest (and CatBoost as a cross-check), with one-hot and indicator columns
   folded back onto the original features; the exact linear SHAP of the logistic model as a sanity check.
 
@@ -738,7 +758,7 @@ for model in sampling.MODELS:
         mv, mt = evaluate.classification_metrics(y_va, p_va, thr), evaluate.classification_metrics(y_te, p_te, thr)
         n_after = len(y_tr)
         if strategy not in ("none", "class_weight"):
-            n_after = len(pipe.named_steps["sample"].fit_resample(pipe.named_steps["pre"].transform(X_tr), y_tr)[1])
+            n_after = len(pipe.named_steps["sample"].fit_resample(pipe[:2].transform(X_tr), y_tr)[1])   # history -> pre
         rows.append({"model": model, "strategy": strategy, "fit_seconds": round(time.time() - t0, 1),
                      "train_rows_after_sampling": n_after, "threshold": thr,
                      **{f"val_{k}": v for k, v in mv.items() if k != "threshold"},

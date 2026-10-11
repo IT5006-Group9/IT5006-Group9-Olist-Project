@@ -6,7 +6,7 @@
     "definition": "1 if review_score in {1, 2} else 0",
     "grain": "one row per order_id, one review per order (earliest kept)"
   },
-  "cohort": "reviewed orders with at least one line item, delivered or not; purchase months 2016-09 to 2018-08 (78,085 orders)",
+  "cohort": "reviewed orders with at least one line item, delivered or not, purchase months 2016-09 to 2018-08, review answered after the prediction point T (97,490 orders; 426 answered before T excluded)",
   "prediction_point": {
     "name": "survey trigger T",
     "definition": "min(order_delivered_customer_date, order_estimated_delivery_date)",
@@ -45,9 +45,9 @@
       "n_splits": 5,
       "shuffle": true
     },
-    "history_features": "outcome events (delivery, review) aggregated from training rows only; orders placed counted over all rows",
+    "history_features": "outcome events (delivery, review answered) aggregated by a fold-fitted pipeline step (features.HistoryInPipeline) from the rows the pipeline is fitted on - per CV / stacking / OOF fold; orders placed counted over all rows",
     "chronological_reference": {
-      "source": "Phase 2/src/delivery_regression.py",
+      "source": "Phase 2/Regression/historical_temporal/src/delivery_regression.py",
       "windows": {
         "train": [
           "2016-09",
@@ -67,7 +67,9 @@
         ]
       },
       "use": "drift figure and the robustness check in docs/current_progress.md only"
-    }
+    },
+    "label_known_column": "review_answer_timestamp (when the customer submitted the score; review_creation_date is the survey-sent date)",
+    "test_set_discipline": "every selection (final model, ensemble retention, imbalance strategy, thresholds) uses validation only; test scored once per row; verify_classification.py re-derives each choice"
   },
   "families": {
     "A_linear": [

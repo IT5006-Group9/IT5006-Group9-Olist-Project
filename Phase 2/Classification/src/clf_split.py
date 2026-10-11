@@ -29,10 +29,20 @@ def split_frame(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
     return out
 
 
-def xy(frame: pd.DataFrame, problem: str):
-    """Feature matrix and target for a problem ('p1' or 'p2')."""
+def xy(frame: pd.DataFrame, problem: str, with_history_context: bool = True):
+    """Feature matrix and target for a problem ('p1' or 'p2').
+
+    With `with_history_context` (default) X also carries the key / timestamp / outcome
+    columns that the pipelines' first step (features.HistoryInPipeline) needs to
+    recompute seller / route history from the rows it is fitted on. That step drops
+    them before any preprocessor or estimator sees them; `features.assert_history_context_dropped`
+    checks it."""
+    from clf_features import HISTORY_CONTEXT_COLUMNS
     target = config.TARGET_REG if problem == "p1" else config.TARGET_CLF
-    X = frame[config.features_for(problem)].copy()
+    cols = config.features_for(problem)
+    if with_history_context:
+        cols = cols + [c for c in HISTORY_CONTEXT_COLUMNS if c not in cols]
+    X = frame[cols].copy()
     y = frame[target].astype(float if problem == "p1" else int)
     return X, y
 

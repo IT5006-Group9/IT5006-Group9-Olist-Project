@@ -172,34 +172,43 @@ class CatBoostSKRegressor(RegressorMixin, _CatBoostSK):
 
 
 # --------------------------------------------------------------------------- ladders
+def history_step():
+    """First step of every modelling pipeline: fold-fitted seller / route history
+    (clf_features.HistoryInPipeline). Refitted by RandomizedSearchCV, the stacker and
+    the OOF loop on each fold's fit rows, so a held-out order's outcome never enters a
+    training feature of that fold."""
+    from clf_features import HistoryInPipeline
+    return ("history", HistoryInPipeline())
+
+
 def classification_models(problem: str = "p2") -> dict[str, tuple[Pipeline, dict | None]]:
     """name -> (pipeline, param_distributions). None = no search (family baseline)."""
     pre = lambda k: make_preprocessor(k, problem)  # noqa: E731
     cats = catboost_cat_features(problem)
     return {
         "A_linear_base": (
-            Pipeline([("pre", pre("linear")),
+            Pipeline([history_step(), ("pre", pre("linear")),
                       ("model", LogisticRegression(C=1.0, class_weight="balanced",
                                                    max_iter=2000, random_state=SEED))]),
             None),
         "A_linear_tuned": (
-            Pipeline([("pre", pre("linear")),
+            Pipeline([history_step(), ("pre", pre("linear")),
                       ("model", LogisticRegression(class_weight="balanced",
                                                    max_iter=2000, random_state=SEED))]),
             {"model__C": [1e-3, 1e-2, 1e-1, 1, 10, 100, 1000]}),
         "B_tree_base": (
-            Pipeline([("pre", pre("tree")),
+            Pipeline([history_step(), ("pre", pre("tree")),
                       ("model", DecisionTreeClassifier(class_weight="balanced", random_state=SEED))]),
             {"model__max_depth": randint(3, 13), "model__min_samples_leaf": randint(20, 201)}),
         "B_rf": (
-            Pipeline([("pre", pre("tree")),
+            Pipeline([history_step(), ("pre", pre("tree")),
                       ("model", RandomForestClassifier(class_weight="balanced_subsample",
                                                        n_jobs=-1, random_state=SEED))]),
             {"model__n_estimators": randint(300, 601), "model__max_depth": randint(6, 25),
              "model__min_samples_leaf": randint(5, 101),
              "model__max_features": uniform(0.2, 0.6)}),
         "B_catboost": (
-            Pipeline([("pre", pre("catboost")),
+            Pipeline([history_step(), ("pre", pre("catboost")),
                       ("model", CatBoostSKClassifier(cat_features=cats,
                                                      auto_class_weights="Balanced"))]),
             {"model__iterations": [300, 600, 1000], "model__learning_rate": loguniform(0.02, 0.2),
@@ -218,13 +227,13 @@ def regression_models(problem: str = "p1") -> dict[str, tuple[Pipeline, dict | N
         "A_linear_base": (
             Pipeline([("pre", pre("linear")), ("model", log_target(LinearRegression()))]), None),
         "A_linear_tuned": (
-            Pipeline([("pre", pre("linear")), ("model", log_target(Ridge(random_state=SEED)))]),
+            Pipeline([history_step(), ("pre", pre("linear")), ("model", log_target(Ridge(random_state=SEED)))]),
             {"model__regressor__alpha": [1e-3, 1e-2, 1e-1, 1, 10, 100, 1000]}),
         "B_tree_base": (
-            Pipeline([("pre", pre("tree")), ("model", DecisionTreeRegressor(random_state=SEED))]),
+            Pipeline([history_step(), ("pre", pre("tree")), ("model", DecisionTreeRegressor(random_state=SEED))]),
             {"model__max_depth": randint(3, 13), "model__min_samples_leaf": randint(20, 201)}),
         "B_rf": (
-            Pipeline([("pre", pre("tree")),
+            Pipeline([history_step(), ("pre", pre("tree")),
                       ("model", RandomForestRegressor(n_jobs=-1, random_state=SEED))]),
             {"model__n_estimators": randint(300, 601), "model__max_depth": randint(6, 25),
              "model__min_samples_leaf": randint(5, 101), "model__max_features": uniform(0.2, 0.6)}),
@@ -245,8 +254,11 @@ def fit_catboost_early_stopping(pipe: Pipeline, X_tr, y_tr, X_val, y_val,
     validation window. Returns a fresh fitted pipeline; `best_iteration_` is stored on it."""
     pipe = clone(pipe)
     pre, model = pipe.named_steps["pre"], pipe.named_steps["model"]
-    Xt = pre.fit_transform(X_tr, y_tr)
-    Xv = pre.transform(X_val)
+    # fit every step before the estimator (history -> preprocessor) on the training rows
+    Xt, Xv = X_tr, X_val
+    for name, step in pipe.steps[:-1]:
+        Xt = step.fit_transform(Xt, y_tr)
+        Xv = step.transform(Xv)
     model.set_params(iterations=max_iterations, od_type="Iter", od_wait=od_wait,
                      use_best_model=True)
     model.fit(Xt, y_tr, eval_set=(Xv, y_val))

@@ -47,7 +47,7 @@ COURSE_FILES = {
 def course_csv_dir() -> Path | None:
     """Same resolution as the regression package: $OLIST_CSV_DIR, then the repo's
     CSV folders. None means fall back to the course ZIP ($OLIST_ARCHIVE)."""
-    for c in (os.environ.get("OLIST_CSV_DIR"), REPO / "notebooks" / "data", REPO / "data" / "Olist_CSV"):
+    for c in (os.environ.get("OLIST_CSV_DIR"), REPO / "data", REPO / "notebooks" / "data", REPO / "data" / "Olist_CSV"):
         if c and (Path(c) / COURSE_FILES["orders"]).exists():
             return Path(c)
     return None

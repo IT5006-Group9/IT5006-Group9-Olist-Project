@@ -1,7 +1,8 @@
 # Phase 2 · Low-review risk classification
 
-Classification workflow alongside [Regression](../Regression/README.md). Shared
-geographic helpers and historical protocol constants are reused; the regression modules in `../Regression/historical_temporal/src` are imported, not copied. The split
+Classification workflow alongside [Regression](../Regression/README.md). Same layout and
+seed; the shared geographic helpers and protocol constants in
+`../Regression/historical_temporal/src` are imported, not copied. The split
 follows Zaghloul, Barakat & Rezk (2024, *J. Retailing and Consumer Services* 79:103865),
 the published study on the same target, with a validation set added; the regression
 package's chronological protocol is kept as a switch (`clf_config.SPLIT_SCHEME`).
@@ -44,17 +45,17 @@ strategies as imblearn pipelines), `clf_explain` (SHAP helpers).
 
 ## Protocol
 
-- Cohort: 97,916 reviewed orders with ≥ 1 line item, 2016-09 to 2018-08.
-- Split (`SPLIT_SCHEME = "stratified"`): `train_test_split(test_size=0.33, stratify=is_low_review)` as in Zaghloul et al., then a stratified 80/20 train / validation split of the 67% → train 52,482 / validation 13,121 / test 32,313, positive rate 14.2% in each. Written to `data/split_manifest.csv`; the verifier rebuilds it from the seed.
+- Cohort: 97,490 reviewed orders with ≥ 1 line item, 2016-09 to 2018-08, review answered after the prediction point T.
+- Split (`SPLIT_SCHEME = "stratified"`): `train_test_split(test_size=0.33, stratify=is_low_review)` as in Zaghloul et al., then a stratified 80/20 train / validation split of the 67% → train 52,254 / validation 13,064 / test 32,172, positive rate 14.2% in each. Written to `data/split_manifest.csv`; the verifier rebuilds it from the seed.
 - CV: `StratifiedKFold(5, shuffle=True, random_state=5006)` on the training rows for every search, the sklearn stacker and the OOF probabilities.
-- Leakage under a random split: outcome-based history features (seller / route delivery and review history) aggregate **training rows only**; the audit recomputes them and asserts an exact match.
-- Primary metric PR-AUC; thresholds chosen on validation and frozen; ensembles retained only with ≥ 1% relative validation gain; test scored once per final model.
+- Leakage guards: outcome-based history features (seller / route delivery and review history) are a **fold-fitted pipeline step** (`features.HistoryInPipeline`) refitted on each CV / stacking / OOF fold's fit rows; review labels are dated by `review_answer_timestamp`; orders whose review was answered before T are excluded; the audit recomputes the history and asserts an exact match.
+- Primary metric PR-AUC; thresholds chosen on validation and frozen; ensembles retained only with ≥ 1% relative validation gain; every selection (model, ensemble, imbalance strategy) uses validation only and the verifier re-derives it; the test set is scored once per row and never used to choose.
 - Class imbalance: stratification keeps the rate equal across splits; the ladder uses class weights; `sampling_comparison` compares none / class weights / RandomOverSampler / SMOTE / ADASYN for all four models and shows that on this target the strategies move calibration, not ranking.
 - `SPLIT_SCHEME = "chronological"` restores the regression package's windows and label-matured expanding folds (used for the drift reference in `docs/current_progress.md`).
 
 ## Reproduce
 
-From this folder, with the course CSVs available (`OLIST_CSV_DIR`, or the repo's `notebooks/data/`, or `OLIST_ARCHIVE`):
+From this folder, with the course CSVs available (the repo's `data/` folder, or `OLIST_CSV_DIR`, `notebooks/data/`, or `OLIST_ARCHIVE`):
 
 ```bash
 python -m pip install -r requirements.txt            # on top of ../Regression/historical_temporal/requirements.txt
@@ -82,4 +83,9 @@ small forests) on 9 Oct 2026 to validate the code path; the report numbers come 
 
 ## Directory migration (2026-10-11)
 
-This package moved from `Phase 2/classification` to `Phase 2/Classification`. Only discovery and shared-module paths changed; saved notebook outputs, result tables and model settings were preserved. Historical experiment source hashes remain the evidence of their original runs; path adapters now have migration hashes in [the layout record](../Regression/layout_migration.json). A layout check does not imply a new model run.
+This package moved from `Phase 2/classification` to `Phase 2/Classification` when Phase 2 was
+organised into `Classification/` and `Regression/` workstreams; the shared regression modules are
+now found under `../Regression/historical_temporal/src`. Only discovery and shared-module paths
+changed in that move. The leakage fixes of 2026-10-10 (fold-fitted history step,
+`review_answer_timestamp`, cohort rule) are a separate, substantive change and are documented in
+[docs/current_progress.md](docs/current_progress.md).

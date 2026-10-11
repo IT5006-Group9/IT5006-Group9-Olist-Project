@@ -65,5 +65,5 @@ def build(model: str, strategy: str, problem: str = "p2", params: dict | None = 
     pipe.set_params(**{name: weighted if strategy == "class_weight" else plain})
     if strategy in ("none", "class_weight"):
         return pipe
-    return ImbPipeline([("pre", pipe.named_steps["pre"]), ("sample", sampler(strategy)),
-                        ("model", pipe.named_steps["model"])])
+    return ImbPipeline([("history", pipe.named_steps["history"]), ("pre", pipe.named_steps["pre"]),
+                        ("sample", sampler(strategy)), ("model", pipe.named_steps["model"])])

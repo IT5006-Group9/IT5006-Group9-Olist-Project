@@ -80,7 +80,9 @@ def add_static_features(df: pd.DataFrame) -> pd.DataFrame:
 def _eligible_p2(df: pd.DataFrame) -> pd.Series:
     """Rows that can enter the low-review cohort: a seller (>= 1 line item), a review,
     and a purchase month inside COHORT_MONTHS."""
-    return df.seller_id.notna() & df.is_low_review.notna() & df.purchase_month.between(*config.COHORT_MONTHS)
+    answered_after_T = ~(df.review_answer_timestamp < df.survey_trigger_time)   # label must not exist at T
+    return (df.seller_id.notna() & df.is_low_review.notna() & df.purchase_month.between(*config.COHORT_MONTHS)
+            & answered_after_T)
 
 
 def assign_split(df: pd.DataFrame, scheme: str | None = None, save: bool = True) -> pd.DataFrame:
@@ -154,24 +156,133 @@ def _smooth(sum_, n, prior, m=config.HISTORY_SMOOTHING_M):
     return (sum_ + m * prior) / (n + m)
 
 
-def add_history_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Seller and route (seller_state -> customer_state) history as of purchase time.
+# Columns a fitted HistoryFeatures transformer needs on the rows it transforms (keys and
+# timestamps only - no outcome of the row itself is read at transform time); and the
+# columns it reads from the rows it is *fitted* on (outcomes = the history events).
+HISTORY_KEY_COLUMNS = ["order_id", "seller_id", "seller_state", "customer_state", "order_purchase_timestamp"]
+HISTORY_EVENT_COLUMNS = ["order_delivered_customer_date", "delivery_days", "is_on_time",
+                         "review_answer_timestamp", "review_score", "is_low_review"]
+HISTORY_CONTEXT_COLUMNS = HISTORY_KEY_COLUMNS + HISTORY_EVENT_COLUMNS
+HISTORY_OUTPUT_COLUMNS = ["seller_prior_mean_delivery_days", "seller_prior_late_rate",
+                          "seller_prior_low_review_rate", "route_prior_orders",
+                          "route_prior_mean_delivery_days", "route_prior_late_rate", "seller_id_enc"]
 
-    Orders *placed* (no outcome involved) are counted over every row. Outcome events
-    (delivery dates / durations, review labels) come from `train` rows only: under the
-    stratified scheme that is `split == "train"`, so no validation or test label can
-    enter any feature; under the chronological scheme it is the training window, and
-    the as-of merge already guarantees that only outcomes known before purchase count.
+
+class HistoryFeatures:
+    """Outcome-based seller / route history as a fold-fitted transformer.
+
+    fit(rows)       stores the outcome events of `rows` (delivery dates / durations /
+                    lateness known when delivered; review labels known when the
+                    customer *answered* the survey), the global priors and the
+                    frequent-seller set - all from these rows only.
+    transform(rows) attaches, to every row, the smoothed statistics of stored events
+                    known strictly before that row's purchase time (merge_asof,
+                    allow_exact_matches=False). A row's own outcome is never read.
+
+    Used as the first step of every modelling pipeline, so inside RandomizedSearchCV,
+    the stacker and the OOF loop it is refitted on each fold's fit rows: a CV-held-out
+    order's outcome cannot reach any training feature of that fold. The same object
+    fitted on the training split builds the columns stored in the feature table.
+    sklearn-compatible (get_params / set_params / clone) without inheriting BaseEstimator
+    so that the pandas input passes through untouched.
+    """
+
+    def __init__(self, m: int = config.HISTORY_SMOOTHING_M, rare_min_count: int = config.RARE_CATEGORY_MIN_COUNT):
+        self.m = m
+        self.rare_min_count = rare_min_count
+
+    # -- sklearn plumbing
+    def get_params(self, deep=True):
+        return {"m": self.m, "rare_min_count": self.rare_min_count}
+
+    def set_params(self, **p):
+        for k, v in p.items():
+            setattr(self, k, v)
+        return self
+
+    def __sklearn_clone__(self):
+        return HistoryFeatures(self.m, self.rare_min_count)
+
+    @staticmethod
+    def _route(df):
+        return df.seller_state.fillna("NA") + "-" + df.customer_state.fillna("NA")
+
+    def fit(self, X: pd.DataFrame, y=None):
+        t = X
+        self.g_delivery_ = float(t.delivery_days.mean())
+        self.g_late_ = float(1 - t.is_on_time.mean())
+        self.g_low_ = float(t.is_low_review.mean())
+        dev = t.loc[t.order_delivered_customer_date.notna(),
+                    ["seller_id", "seller_state", "customer_state", "order_delivered_customer_date", "delivery_days", "is_on_time"]].copy()
+        dev["route"] = self._route(dev)
+        dev = dev.rename(columns={"order_delivered_customer_date": "known_time"})
+        dev["is_late"] = 1 - dev.is_on_time
+        self.seller_delivery_events_ = dev[["seller_id", "known_time", "delivery_days", "is_late"]]
+        self.route_delivery_events_ = dev[["route", "known_time", "delivery_days", "is_late"]]
+        # review label becomes known when the customer answers the survey, not when it is sent
+        rv = t.loc[t.review_score.notna() & t.review_answer_timestamp.notna(),
+                   ["seller_id", "review_answer_timestamp", "is_low_review"]]
+        self.seller_review_events_ = rv.rename(columns={"review_answer_timestamp": "known_time"})
+        counts = t.seller_id.value_counts()
+        self.frequent_sellers_ = set(counts[counts >= self.rare_min_count].index)
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        df = X[HISTORY_KEY_COLUMNS].copy()
+        df["route"] = self._route(df)
+        df = _asof_history(df, "seller_id", self.seller_delivery_events_, "sd", {"delivery_days": "days", "is_late": "late"})
+        df = _asof_history(df, "seller_id", self.seller_review_events_, "sr", {"is_low_review": "low"})
+        df = _asof_history(df, "route", self.route_delivery_events_, "rd", {"delivery_days": "days", "is_late": "late"})
+        out = pd.DataFrame(index=X.index)
+        out["seller_prior_mean_delivery_days"] = _smooth(df.sd_sum_days, df.sd_n, self.g_delivery_, self.m).values
+        out["seller_prior_late_rate"] = _smooth(df.sd_sum_late, df.sd_n, self.g_late_, self.m).values
+        out["seller_prior_low_review_rate"] = _smooth(df.sr_sum_low, df.sr_n, self.g_low_, self.m).values
+        out["route_prior_orders"] = df["rd_n"].values
+        out["route_prior_mean_delivery_days"] = _smooth(df.rd_sum_days, df.rd_n, self.g_delivery_, self.m).values
+        out["route_prior_late_rate"] = _smooth(df.rd_sum_late, df.rd_n, self.g_late_, self.m).values
+        out["seller_id_enc"] = np.where(X.seller_id.isin(self.frequent_sellers_), X.seller_id, "other")
+        return out
+
+    def fit_transform(self, X, y=None):
+        return self.fit(X, y).transform(X)
+
+
+class HistoryInPipeline(HistoryFeatures):
+    """Pipeline step: X carries the feature columns plus HISTORY_CONTEXT_COLUMNS; the
+    step recomputes the outcome-based history from the rows it is fitted on, writes the
+    HISTORY_OUTPUT_COLUMNS (and `delivery_vs_seller_prior`, which depends on them) and
+    drops the context columns, so nothing downstream ever sees a key, a timestamp or an
+    outcome."""
+
+    def __sklearn_clone__(self):
+        return HistoryInPipeline(self.m, self.rare_min_count)
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        hist = super().transform(X)
+        feats = set(config.features_for("p2"))
+        context_only = [c for c in HISTORY_CONTEXT_COLUMNS if c in X.columns and c not in feats]  # states are also features
+        out = X.drop(columns=context_only + HISTORY_OUTPUT_COLUMNS + ["delivery_vs_seller_prior"], errors="ignore").copy()
+        for c in HISTORY_OUTPUT_COLUMNS:
+            out[c] = hist[c].values
+        if "actual_delivery_time" in X.columns:   # absent in the delivery-block ablation
+            out["delivery_vs_seller_prior"] = X["actual_delivery_time"].values - hist["seller_prior_mean_delivery_days"].values
+        return out[[c for c in config.features_for("p2") if c in out.columns]]
+
+    def get_feature_names_out(self, input_features=None):
+        return np.asarray(config.features_for("p2"))
+
+
+def add_history_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Seller and route history as of purchase time, for the stored feature table.
+
+    Orders *placed* (no outcome involved) are counted over every row. Outcome-based
+    statistics come from HistoryFeatures fitted on the training rows (`split == "train"`,
+    or the training window under the chronological scheme), so no validation / test
+    label can enter any stored feature. The modelling pipelines refit the same
+    transformer per CV fold (HistoryInPipeline).
     """
     df = df.copy()
-    df["route"] = df.seller_state.fillna("NA") + "-" + df.customer_state.fillna("NA")
     train_mask = (df.split == "train") if "split" in df else (df.window == "train")
-    train = df[train_mask]
-
-    # global priors from the training rows only
-    g_delivery = train.delivery_days.mean()
-    g_late = 1 - train.is_on_time.mean()
-    g_low = train.is_low_review.mean()
 
     # --- seller: orders placed before (known at purchase; every row, no outcome used)
     placed = df[["seller_id", "order_purchase_timestamp"]].rename(
@@ -181,38 +292,11 @@ def add_history_features(df: pd.DataFrame) -> pd.DataFrame:
     first = df.groupby("seller_id").order_purchase_timestamp.transform("min")
     df["seller_tenure_days"] = (df.order_purchase_timestamp - first).dt.total_seconds() / 86400
 
-    # --- seller: delivery outcomes known before purchase (known when delivered), training rows only
-    dev = train.loc[train.order_delivered_customer_date.notna(),
-                    ["seller_id", "order_delivered_customer_date", "delivery_days", "is_on_time"]]
-    dev = dev.rename(columns={"order_delivered_customer_date": "known_time"})
-    dev["is_late"] = 1 - dev.is_on_time
-    df = _asof_history(df, "seller_id", dev, "sd", {"delivery_days": "days", "is_late": "late"})
-    df["seller_prior_mean_delivery_days"] = _smooth(df.sd_sum_days, df.sd_n, g_delivery)
-    df["seller_prior_late_rate"] = _smooth(df.sd_sum_late, df.sd_n, g_late)
-
-    # --- seller: review outcomes known before purchase (known when the review was written), training rows only
-    rv = train.loc[train.review_score.notna(), ["seller_id", "review_creation_date", "is_low_review"]]
-    rv = rv.rename(columns={"review_creation_date": "known_time"})
-    df = _asof_history(df, "seller_id", rv, "sr", {"is_low_review": "low"})
-    df["seller_prior_low_review_rate"] = _smooth(df.sr_sum_low, df.sr_n, g_low)
-
-    # --- route: delivery outcomes known before purchase, training rows only
-    rdev = train.loc[train.order_delivered_customer_date.notna(),
-                     ["route", "order_delivered_customer_date", "delivery_days", "is_on_time"]]
-    rdev = rdev.rename(columns={"order_delivered_customer_date": "known_time"})
-    rdev["is_late"] = 1 - rdev.is_on_time
-    df = _asof_history(df, "route", rdev, "rd", {"delivery_days": "days", "is_late": "late"})
-    df["route_prior_orders"] = df["rd_n"]
-    df["route_prior_mean_delivery_days"] = _smooth(df.rd_sum_days, df.rd_n, g_delivery)
-    df["route_prior_late_rate"] = _smooth(df.rd_sum_late, df.rd_n, g_late)
-
-    # --- seller id as a categorical with the long tail collapsed (threshold on train)
-    counts = train.seller_id.value_counts()
-    frequent = set(counts[counts >= config.RARE_CATEGORY_MIN_COUNT].index)
-    df["seller_id_enc"] = np.where(df.seller_id.isin(frequent), df.seller_id, "other")
-
-    drop = [c for c in df.columns if c.startswith(("sp_", "sd_", "sr_", "rd_"))]
-    return df.drop(columns=drop + ["route"])
+    # _asof_history re-indexes df (merge), so apply the mask positionally
+    hist = HistoryFeatures().fit(df[train_mask.to_numpy()]).transform(df)
+    for c in HISTORY_OUTPUT_COLUMNS:
+        df[c] = hist[c].values
+    return df.drop(columns=[c for c in df.columns if c.startswith("sp_")])
 
 
 # --------------------------------------------------------------------------- delivery as of T
@@ -318,6 +402,18 @@ def assert_no_leakage(df: pd.DataFrame, problem: str) -> None:
     assert df.loc[first, "seller_tenure_days"].eq(0).all()
 
 
+def assert_history_context_dropped(pipe_or_step, X: pd.DataFrame) -> None:
+    """The matrix after the history step must contain features only - no key,
+    timestamp or outcome column from HISTORY_CONTEXT_COLUMNS. Accepts a fitted
+    pipeline (uses its 'history' step) or a fitted HistoryInPipeline."""
+    step = pipe_or_step.named_steps["history"] if hasattr(pipe_or_step, "named_steps") else pipe_or_step
+    H = step.transform(X.head(50))
+    context_only = set(HISTORY_CONTEXT_COLUMNS) - set(config.features_for("p2"))
+    bad = set(H.columns) & (context_only | config.POST_OUTCOME_COLUMNS | config.IDENTIFIER_COLUMNS)
+    assert not bad, f"history step leaked context columns downstream: {bad}"
+    assert set(H.columns) <= set(config.features_for("p2")), set(H.columns) - set(config.features_for("p2"))
+
+
 def leakage_audit(df: pd.DataFrame, problem: str, sample: int = 3000,
                   random_state: int = config.RANDOM_STATE, full: pd.DataFrame | None = None) -> dict:
     """Empirical leakage checks on top of the structural `assert_no_leakage`.
@@ -350,18 +446,24 @@ def leakage_audit(df: pd.DataFrame, problem: str, sample: int = 3000,
         allowed = known[train_mask.loc[known.index]]
         late = (1 - allowed.is_on_time).sum()
         rate = (late + m * g_late) / (len(allowed) + m)
+        # review history: only reviews *answered* before this purchase, training rows only
+        rv = s[(s.review_answer_timestamp < r.order_purchase_timestamp) & train_mask.loc[s.index]]
+        g_low = train_rows.is_low_review.mean()
+        low_rate = (rv.is_low_review.sum() + m * g_low) / (len(rv) + m)
         rows.append({"order_id": r.order_id,
                      "prior_orders_ok": int(len(s) == r.seller_prior_orders),
                      "prior_delivery_n": len(allowed),
                      "no_future_outcome_used": int((s.order_delivered_customer_date.isna()
                                                    | (s.order_delivered_customer_date >= r.order_purchase_timestamp)
                                                    | s.index.isin(known.index)).all()),
-                     "train_only_rate_ok": int(abs(rate - r.seller_prior_late_rate) < 1e-9)})
+                     "train_only_rate_ok": int(abs(rate - r.seller_prior_late_rate) < 1e-9),
+                     "answer_time_rate_ok": int(abs(low_rate - r.seller_prior_low_review_rate) < 1e-9)})
     h = pd.DataFrame(rows)
     out["history"] = pd.Series({"orders checked": len(h),
                                 "seller_prior_orders exact match": h.prior_orders_ok.mean(),
                                 "only outcomes known before purchase": h.no_future_outcome_used.mean(),
-                                "late rate rebuilt from training-row outcomes only": h.train_only_rate_ok.mean()})
+                                "late rate rebuilt from training-row outcomes only": h.train_only_rate_ok.mean(),
+                                "low-review rate rebuilt from reviews answered before purchase": h.answer_time_rate_ok.mean()})
 
     if problem == "p2":
         not_by_T = df.is_delivered == 0
@@ -372,10 +474,12 @@ def leakage_audit(df: pd.DataFrame, problem: str, sample: int = 3000,
                 df.loc[df.carrier_shipped == 0, "carrier_handover_days"].isna().mean()),
             "is_delivered share": df.is_delivered.mean(),
         })
-        before = df.review_creation_date < df.survey_trigger_time
+        answered_before = df.review_answer_timestamp < df.survey_trigger_time
+        sent_before = df.review_creation_date < df.survey_trigger_time
         out["review_time"] = pd.Series({
-            "reviews created before T": before.mean(),
-            "median days from T to review": ((df.review_creation_date - df.survey_trigger_time)
+            "reviews answered before T (must be 0: excluded from cohort)": answered_before.mean(),
+            "surveys sent before T (creation date; informational)": sent_before.mean(),
+            "median days from T to answer": ((df.review_answer_timestamp - df.survey_trigger_time)
                                              .dt.total_seconds() / 86400).median(),
         })
 

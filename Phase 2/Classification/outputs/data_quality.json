@@ -1,15 +1,16 @@
 {
   "orders": 99421,
-  "p2_cohort": 97916,
+  "p2_cohort": 97490,
   "windows": {
-    "train": 52482,
-    "validation": 13121,
-    "test": 32313
+    "train": 52254,
+    "validation": 13064,
+    "test": 32172
   },
   "split_scheme": "stratified",
   "test_size": 0.33,
   "validation_size": 0.2,
   "features": 52,
   "leakage_audit_passed": true,
-  "reviews_before_T_share": 0.031098084072061768
+  "reviews_answered_before_T_share": 0.0,
+  "surveys_sent_before_T_share": 0.02686429377372038
 }

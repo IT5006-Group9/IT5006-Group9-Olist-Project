@@ -89,6 +89,21 @@ def main() -> None:
     require(audit["history"]["only outcomes known before purchase"] == 1.0, "point-in-time history uses no future outcomes", failures)
     require(audit["history"]["late rate rebuilt from training-row outcomes only"] == 1.0,
             "history features use outcomes of training rows only (no validation / test label in any feature)", failures)
+    require(audit["history"]["low-review rate rebuilt from reviews answered before purchase"] == 1.0,
+            "review history uses review_answer_timestamp (label known when answered)", failures)
+    require(float((p2.review_answer_timestamp < p2.survey_trigger_time).mean()) == 0.0,
+            "no cohort order has its review answered before the prediction point T", failures)
+    # fold-level isolation: a history step fitted on fold-fit rows carries no event from the held-out rows
+    import clf_pipelines as pipelines
+    tr = split.split_frame(p2)["train"]; fit_idx, score_idx = split.cv_folds(tr, "p2")[0]
+    X_tr, _ = split.xy(tr, "p2")
+    h = pipelines.history_step()[1].fit(X_tr.iloc[fit_idx])
+    held = set(X_tr.iloc[score_idx].order_id)
+    ev_ids = set(tr.iloc[fit_idx].order_id)
+    require(len(h.seller_delivery_events_) <= len(fit_idx) and not (held & ev_ids),
+            "fold-fitted history step stores events from fold-fit rows only", failures)
+    features.assert_history_context_dropped(h, X_tr)
+    print("PASS history step drops key / timestamp / outcome columns before the preprocessor")
     require(audit["single_feature_auc"].roc_auc.max() < 0.9, "no single feature encodes the label", failures)
 
     # published tables
@@ -112,14 +127,24 @@ def main() -> None:
         require(selected["final_model"] == comparison.loc[ladder, "val_pr_auc"].idxmax(),
                 "final single model is the validation PR-AUC maximiser (selection used validation, not test)", failures)
 
+    # sampling study: strategy choice must be the validation maximiser
+    samp = OUT / "tables" / "sampling_comparison.csv"
+    if samp.exists() and (OUT / "sampling_summary.json").exists():
+        sc = pd.read_csv(samp, index_col=[0, 1]); ss = json.loads((OUT / "sampling_summary.json").read_text())
+        chosen = ss["best_strategy_by_model_on_validation"]
+        ok = all(sc.loc[m].val_pr_auc.idxmax() == s for m, s in chosen.items())
+        require(ok, "sampling study: retained strategy per model is the validation PR-AUC maximiser (test never used)", failures)
+
     # independent PR-AUC on saved validation predictions (local only)
     pred = OUT / "predictions" / "validation_predictions.csv"
     if pred.exists():
         v = pd.read_csv(pred)
         for m in ladder:
             if m in v:
+                # tolerance 1e-4: near-tied tree-leaf probabilities (differences ~1e-16) are collapsed
+                # differently after the CSV round-trip, which moves step-wise average precision by ~3e-5
                 ap_ = manual_average_precision(v.is_low_review.values, v[m].values)
-                require(abs(ap_ - comparison.loc[m, "val_pr_auc"]) < 1e-6, f"validation PR-AUC reproduced for {m}", failures)
+                require(abs(ap_ - comparison.loc[m, "val_pr_auc"]) < 1e-4, f"validation PR-AUC reproduced for {m} (|diff| < 1e-4)", failures)
     else:
         print("SKIP validation predictions not present locally (git-ignored); PR-AUC cross-check runs inside the notebooks")
 

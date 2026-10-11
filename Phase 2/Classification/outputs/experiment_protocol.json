@@ -86,36 +86,36 @@
   ],
   "source_sha256": {
     "src/paths.py": "be7a19321a679c34a81ef66cd13b84dc1a4c6bcddf7f4be8a8cee0d9576a4ba1",
-    "src/clf_config.py": "b1a7611d28c80ce49fa28f68706212181de1d644d39df84e28815c0d4ca1e408",
+    "src/clf_config.py": "f2db9df75b675854ed7a85f362f83311c7ec132f3a697de8ac0c264aac25638f",
     "src/clf_data.py": "34baf1675a0ea408f5a21626d552abe280adabcd25bac577ffb7ff5ee235dfe4",
-    "src/clf_features.py": "4fdce276cad702927e8e29adff43a06f710bc5385a7d350a7c229f654969d847",
-    "src/clf_split.py": "5b70b19f7459cf8ba4845c1914c1ae9f8b8cc0223061a97062aefe6949dcbf72",
-    "src/clf_pipelines.py": "171bfa559949d400c476a91e670a9912014183bfd1f41e9f72b36a4fcffe114a",
+    "src/clf_features.py": "4949ce5e41b48f98d1898937dd8c326114f131afbab609dbcf0e66c899fdca13",
+    "src/clf_split.py": "0ade5a64f07d581b4dca4b10b8d18ee6df38748fe5ead767872b7541ff186583",
+    "src/clf_pipelines.py": "129000dd1c8e9c9f93b56e278318a0e07a2eedda28fb6ad9560cc077ddcdd5cc",
     "src/clf_evaluate.py": "c5d5da3da60944bf21d2307497a128b033d178ea1cae3150b419dbe5ac73514c",
     "src/clf_ensembles.py": "8d41bf27592fb60f8fa1f2805b7e352123e40c52a1b610ab5ba5021fb6cd9a7c",
-    "src/clf_sampling.py": "f6824429a127b445408d362e1e6f0376e3f20d4c6f82a87a3995be2283f7b476",
-    "src/clf_explain.py": "12974525b134d009bd4d952b7733436b96d092ae84e379292dc2651b19810d43",
+    "src/clf_sampling.py": "f6b4523e8581824675f92f989629e8fe41cbb9358eb5dd33c52f99406620b4ce",
+    "src/clf_explain.py": "ac8fc0cace415f012291f134a17b05f5d726e9180e0c26e35852cc6c8bc3781f",
     "scripts/reproduce_classification.py": "20b2f739fd27e378b887b893e4458a3518a406dbd4d085c7a88cb649a048115d",
-    "scripts/verify_classification.py": "91d474b103423f537dac5fa4b5292a374df06e139356abcf2ebc0133726af22d"
+    "scripts/verify_classification.py": "a772eb336aa2c781e4b5b5268146e86fe7cd674e995cbf820365c2d8760bbcf3"
   },
   "regression_source_sha256": {
     "src/delivery_regression.py": "eee6d063b86cd5e68e261b5b8c7d341017cbee32c0b093e3212a43dbf62f4908",
     "src/data_preparation_audit.py": "28768e0d90ca09e49b799835affc0bd06e310f8e066cf4164add27ee1d1d3773"
   },
   "output_sha256": {
-    "outputs/tables/class_balance_study.csv": "243be2f83646683a6629e8d79978852f3194a251b572aa15f67c74f40edab053",
-    "outputs/tables/ensemble_test_results.csv": "c72b3c6da5e462eed10e68f0050b4ac9751821d8e9b4c23eb6c075ecd3696207",
-    "outputs/tables/ensemble_weights.csv": "939f755624f1106d6a2200031937ac8cf2b215852df7a0491624629abab94d7a",
-    "outputs/tables/fold_summary.csv": "8d148c86b064fe8884570c23152c4fb5988fe92dbae55146d2b1715a1ad326be",
-    "outputs/tables/late_vs_low_review_correlation.csv": "83f9aed4796fa5e0471286c8086c0c31bb92cdf07bd3f974ed17ac6b0c75ab40",
-    "outputs/tables/model_comparison.csv": "5e77d69228b0e10f9f7f636f5abdd556351ea78bc51b96b5668bb150b5c93f47",
-    "outputs/tables/permutation_importance.csv": "b1398a4685a37fc7084fd3101b2cf6ed911e65decaadd6ac4106c3496f0d538f",
-    "outputs/tables/sampling_comparison.csv": "fbfbfd62c2b6412fb6a8606ec6c676b1d64c8eee2d1b0ed0dd427f24040d6c92",
-    "outputs/tables/shap_cross_model.csv": "a7cc9151a71706031a82377d6c362adf9234d636ea518b2555e20fa286ab2c5a",
-    "outputs/tables/shap_importance.csv": "469af6dc567b2208e384e5c380c5d9ef425b1f6c85dbc1832f22a86a20014442",
-    "outputs/tables/single_feature_auc.csv": "f480e2d0ab3f5c98229e848d9e0ee005240de6ff0783ae194f3eba5c3206e2c9",
-    "outputs/tables/smote_sensitivity.csv": "b5f31e4c258305b9d992223a52589f8c3ee8ea8c5a801b16b0d1f26f5f02b9cb",
-    "outputs/tables/split_summary.csv": "bdcc262b1a17aba0d0f256686fefa57bdb4292d7f32b594874ca295e10c84fb4"
+    "outputs/tables/class_balance_study.csv": "e42ce719b9f4a64ef3058282d2daee4d76c17a1e240f41a671fe245965582c26",
+    "outputs/tables/ensemble_test_results.csv": "34916bd09dd7cec78c2cfe58e30cb8c97e5730853b6f9872c7ff2325b259e596",
+    "outputs/tables/ensemble_weights.csv": "9d9c99a032ede08cd63258babf9ad7188e4127ea09f0b2377560d2403c23c0df",
+    "outputs/tables/fold_summary.csv": "eb83e0f802cd63b5b132169d20668ed4a6eeaf1868e217cd30571d7b62b427d0",
+    "outputs/tables/late_vs_low_review_correlation.csv": "7651ca1c53c69aefe2e8f94c021b2667cb40fc91446551919a919f7c8f7533d4",
+    "outputs/tables/model_comparison.csv": "e6705013059e6df6433d8a75a68c2feaa2d32d01bba0d75447239c5e32f196fa",
+    "outputs/tables/permutation_importance.csv": "f2b10f2177c04aaa81496696cb38aa89b6795201b782e704677e4cdf44065e58",
+    "outputs/tables/sampling_comparison.csv": "aaf521da5a0e7acf76556afa7332c5718f53de8e2805cffac05f22cba62d59c9",
+    "outputs/tables/shap_cross_model.csv": "fd6f7aa2bfebeed618550aac1f7f1d5885edf5300e3f97c9ba9f3e92eaf12fab",
+    "outputs/tables/shap_importance.csv": "ec7c9edef9d82043bb30a7524eb5fe622ddfbc4979ebb89aeb0f0741562ce033",
+    "outputs/tables/single_feature_auc.csv": "8b15af8ca768742148a93b6e7162694ae4c69379f538f3f5e064cda953ae1830",
+    "outputs/tables/smote_sensitivity.csv": "e50c12382e16cc6ead64fbecd334909666a0328ae998cc7576931d570b69b455",
+    "outputs/tables/split_summary.csv": "58eb713b1bf25839018f2256554be1a32ffb1a29bc5f133ed046e55f9eb5e7f0"
   },
   "python": "3.13.16",
   "environment": {
@@ -128,5 +128,5 @@
   },
   "test_scored": true,
   "note": "The test window is scored once per final model inside each notebook; selection uses validation only.",
-  "elapsed_seconds": 0
+  "elapsed_seconds": 1
 }
