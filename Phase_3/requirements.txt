@@ -1,0 +1,14 @@
+# Phase 3 classification pipeline. Verified on Python 3.14.7 with the versions in brackets.
+# Install:  python -m pip install -r requirements.txt
+pandas>=2.2          # (3.0.6)
+numpy>=2.0           # (2.5.3)
+scipy>=1.14          # (1.18.1)
+scikit-learn>=1.6    # (1.9.1)
+catboost>=1.2        # (1.2.10)
+pyarrow>=15          # (25.0.1) parquet feature table
+matplotlib>=3.9      # (3.11.2)
+joblib>=1.4
+# notebook
+jupyterlab>=4.0
+ipykernel>=6.29
+nbclient>=0.10       # executes the notebook headlessly

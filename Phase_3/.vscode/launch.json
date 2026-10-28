@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Classification: full pipeline",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/classification/run_pipeline.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Classification: quick smoke test",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/classification/run_pipeline.py",
+      "args": ["--quick"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Classification: one stage",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/classification/run_pipeline.py",
+      "args": ["--stage", "${input:stage}"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "stage",
+      "type": "pickString",
+      "description": "Stage to run",
+      "options": ["prepare", "select", "test", "reference", "figures"]
+    }
+  ]
+}

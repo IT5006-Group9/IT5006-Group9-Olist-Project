@@ -1,0 +1,2 @@
+[12:58:47] prepare: reading course CSVs
+[12:58:56] prepare: cohort 97,187 orders; purge gap k = 27 days (q99 of answer lag, 2017 orders); test window 21,058 orders locked

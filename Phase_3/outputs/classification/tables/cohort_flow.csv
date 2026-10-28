@@ -1,0 +1,6 @@
+step,orders,removed
+all source orders,99441,0
+has at least one line item,98666,775
+has a review,97917,749
+review answered after T (label not known at T),97490,427
+T in Jan 2017 - Aug 2018,97187,303

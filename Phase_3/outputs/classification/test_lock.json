@@ -1,0 +1,9 @@
+{
+  "test_window": [
+    "2018-06-01",
+    "2018-08-31"
+  ],
+  "test_orders": 21058,
+  "test_ids_sha256": "f87740ebb1f7a2f98fd0eeabd24c195124b52558c9733ab7368dabcffc8caffa",
+  "evaluations": []
+}

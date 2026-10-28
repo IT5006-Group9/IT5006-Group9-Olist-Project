@@ -1,0 +1,16 @@
+{
+  "reference_window": [
+    "2017-01-01",
+    "2018-01-01"
+  ],
+  "reference_orders": 41734,
+  "quantile": 0.99,
+  "lag_quantiles_days": {
+    "0.5": 2.26,
+    "0.9": 5.94,
+    "0.95": 8.74,
+    "0.99": 26.91
+  },
+  "gap_days": 27,
+  "gap_days_q95": 9
+}

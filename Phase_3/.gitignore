@@ -1,0 +1,8 @@
+# generated locally by the pipeline
+data/classification/
+models/
+outputs/*/predictions/
+outputs/*_quick/
+*.joblib
+__pycache__/
+.ipynb_checkpoints/
