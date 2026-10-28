@@ -1,0 +1,8 @@
+family,cv_pr_auc_mean,cv_pr_auc_sd,cv_recall_at_capacity_mean,train_pr_auc_mean,params
+random_forest,0.5463,0.0822,0.5934,0.5671,"{""model__max_depth"": 14, ""model__max_features"": 0.6290712064135155, ""model__min_samples_leaf"": 80, ""model__n_estimators"": 302}"
+catboost,0.5317,0.0727,0.5869,0.5342,"{""model__depth"": 4, ""model__iterations"": 1000, ""model__l2_leaf_reg"": 8.056457031623271, ""model__learning_rate"": 0.03175627015060992, ""model__one_hot_max_size"": 2, ""model__random_strength"": 0.6849971323085097, ""model__subsample"": 0.7713606405249578}"
+logistic_tuned,0.5294,0.0731,0.5941,0.4732,"{""model__C"": 0.01}"
+logistic_base,0.5278,0.0744,0.5919,0.4808,{}
+decision_tree,0.5186,0.0798,0.5771,0.4975,"{""model__max_depth"": 10, ""model__min_samples_leaf"": 194}"
+baseline_not_delivered_by_T,0.3832,0.0904,0.4994,,{}
+baseline_majority,0.1684,0.0443,0.2,,{}

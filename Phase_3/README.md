@@ -140,7 +140,7 @@ from classification.pipeline import load_table
 from classification.score import load_bundle, score_orders
 
 orders = load_table()
-test_orders = orders[orders.survey_trigger_time >= "2018-06-01"].head(5)   # held-out orders
+test_orders = orders[orders.survey_trigger_time >= "2018-06-01"].sample(5, random_state=5006)   # held-out orders
 score_orders(test_orders, load_bundle())   # order_id, risk_score, risk_rank, flagged (top 20% of the batch)
 ```
 

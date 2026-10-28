@@ -1,2 +1,68 @@
 [12:58:47] prepare: reading course CSVs
 [12:58:56] prepare: cohort 97,187 orders; purge gap k = 27 days (q99 of answer lag, 2017 orders); test window 21,058 orders locked
+[13:18:34] prepare: reading course CSVs
+[13:18:44] prepare: cohort 97,187 orders; purge gap k = 27 days (q99 of answer lag, 2017 orders); test window 21,058 orders locked
+[13:18:44] select: 5 folds, gap 27 days, QUICK=False
+[13:18:44] select: logistic_base - 1 candidate(s)
+[13:28:19] prepare: reading course CSVs
+[13:28:27] prepare: cohort 97,187 orders; purge gap k = 27 days (q99 of answer lag, 2017 orders); test window 21,058 orders locked
+[13:28:27] select: 5 folds, gap 27 days, QUICK=False
+[13:28:27] select: logistic_base - 1 candidate(s)
+[13:28:46]   logistic_base candidate 1/1: CV PR-AUC 0.5278 (sd 0.0744) in 18.9s
+[13:28:46] select: logistic_tuned - 7 candidate(s)
+[13:28:57]   logistic_tuned candidate 1/7: CV PR-AUC 0.5268 (sd 0.0727) in 10.8s
+[13:29:09]   logistic_tuned candidate 2/7: CV PR-AUC 0.5294 (sd 0.0731) in 12.1s
+[13:29:23]   logistic_tuned candidate 3/7: CV PR-AUC 0.5292 (sd 0.0740) in 14.5s
+[13:29:41]   logistic_tuned candidate 4/7: CV PR-AUC 0.5278 (sd 0.0744) in 18.0s
+[13:30:02]   logistic_tuned candidate 5/7: CV PR-AUC 0.5273 (sd 0.0745) in 20.3s
+[13:30:25]   logistic_tuned candidate 6/7: CV PR-AUC 0.5273 (sd 0.0745) in 23.0s
+[13:30:45]   logistic_tuned candidate 7/7: CV PR-AUC 0.5273 (sd 0.0745) in 20.5s
+[13:30:45] select: decision_tree - 20 candidate(s)
+[13:30:59]   decision_tree candidate 1/20: CV PR-AUC 0.5053 (sd 0.0807) in 13.8s
+[13:31:12]   decision_tree candidate 2/20: CV PR-AUC 0.4963 (sd 0.0832) in 12.9s
+[13:31:26]   decision_tree candidate 3/20: CV PR-AUC 0.4968 (sd 0.0827) in 13.6s
+[13:31:44]   decision_tree candidate 4/20: CV PR-AUC 0.5162 (sd 0.0811) in 18.3s
+[13:32:03]   decision_tree candidate 5/20: CV PR-AUC 0.5171 (sd 0.0800) in 18.9s
+[13:32:20]   decision_tree candidate 6/20: CV PR-AUC 0.5184 (sd 0.0777) in 17.4s
+[13:32:37]   decision_tree candidate 7/20: CV PR-AUC 0.5087 (sd 0.0740) in 17.1s
+[13:32:54]   decision_tree candidate 8/20: CV PR-AUC 0.5186 (sd 0.0798) in 16.5s
+[13:33:10]   decision_tree candidate 9/20: CV PR-AUC 0.4882 (sd 0.0832) in 16.1s
+[13:33:28]   decision_tree candidate 10/20: CV PR-AUC 0.5115 (sd 0.0833) in 17.7s
+[13:33:40]   decision_tree candidate 11/20: CV PR-AUC 0.4752 (sd 0.0800) in 11.9s
+[13:33:52]   decision_tree candidate 12/20: CV PR-AUC 0.4750 (sd 0.0802) in 12.1s
+[13:34:05]   decision_tree candidate 13/20: CV PR-AUC 0.5102 (sd 0.0818) in 13.7s
+[13:34:17]   decision_tree candidate 14/20: CV PR-AUC 0.4750 (sd 0.0802) in 11.1s
+[13:34:33]   decision_tree candidate 15/20: CV PR-AUC 0.5090 (sd 0.0760) in 16.6s
+[13:34:48]   decision_tree candidate 16/20: CV PR-AUC 0.5153 (sd 0.0801) in 14.7s
+[13:35:01]   decision_tree candidate 17/20: CV PR-AUC 0.5066 (sd 0.0809) in 13.6s
+[13:35:19]   decision_tree candidate 18/20: CV PR-AUC 0.5001 (sd 0.0787) in 17.6s
+[13:35:30]   decision_tree candidate 19/20: CV PR-AUC 0.4751 (sd 0.0801) in 11.4s
+[13:35:46]   decision_tree candidate 20/20: CV PR-AUC 0.5027 (sd 0.0740) in 15.2s
+[13:35:46] select: random_forest - 6 candidate(s)
+[13:42:00]   random_forest candidate 1/6: CV PR-AUC 0.5451 (sd 0.0833) in 374.7s
+[13:47:06]   random_forest candidate 2/6: CV PR-AUC 0.5418 (sd 0.0800) in 305.2s
+[13:51:27]   random_forest candidate 3/6: CV PR-AUC 0.5463 (sd 0.0822) in 261.0s
+[14:02:57]   random_forest candidate 4/6: CV PR-AUC 0.5357 (sd 0.0783) in 689.8s
+[14:10:37]   random_forest candidate 5/6: CV PR-AUC 0.5451 (sd 0.0823) in 460.2s
+[14:12:54]   random_forest candidate 6/6: CV PR-AUC 0.5462 (sd 0.0828) in 137.5s
+[14:12:54] select: catboost - 6 candidate(s)
+[14:26:02]   catboost candidate 1/6: CV PR-AUC 0.5204 (sd 0.0746) in 788.1s
+[14:40:57]   catboost candidate 2/6: CV PR-AUC 0.5220 (sd 0.0753) in 894.2s
+[15:01:30]   catboost candidate 3/6: CV PR-AUC 0.5068 (sd 0.0829) in 1233.4s
+[15:09:50]   catboost candidate 4/6: CV PR-AUC 0.5221 (sd 0.0754) in 500.2s
+[15:23:56]   catboost candidate 5/6: CV PR-AUC 0.5317 (sd 0.0727) in 845.6s
+[15:30:54]   catboost candidate 6/6: CV PR-AUC 0.5206 (sd 0.0773) in 418.0s
+[15:30:54] select: chosen family random_forest (mean CV PR-AUC 0.5463)
+[15:36:04] select: gap sensitivity no gap (k=0) done
+[15:41:47] select: gap sensitivity q95 gap (k=9) done
+[15:41:47] select: gap sensitivity q99 gap (k=27) - main done
+[15:43:57] select: selection frozen (44802a8d3291)
+[15:43:58] test: fitting random_forest on 70,136 orders (T before 2018-05-05)
+[15:45:35] test: PR-AUC 0.3749 (95% CI 0.356-0.397), recall in top 20% 0.532; evaluation #1 recorded
+[15:45:35] reference: stratified random split train 52,092 / validation 13,023 / test 32,072
+[15:45:40] reference: logistic_base test PR-AUC 0.4846 (5s)
+[15:45:43] reference: logistic_tuned test PR-AUC 0.4819 (3s)
+[15:45:47] reference: decision_tree test PR-AUC 0.4795 (4s)
+[15:46:59] reference: random_forest test PR-AUC 0.5021 (72s)
+[15:49:55] reference: catboost test PR-AUC 0.4938 (176s)
+[15:49:57] figures: written

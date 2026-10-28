@@ -1,0 +1,16 @@
+setting,gap_days,fold,train_rows,labels_answered_after_cutoff,val_pr_auc
+no gap (k=0),0,fold1,41734,0.01711,0.5137
+no gap (k=0),0,fold2,48107,0.01865,0.5388
+no gap (k=0),0,fold3,54043,0.01606,0.6484
+no gap (k=0),0,fold4,61449,0.01325,0.6087
+no gap (k=0),0,fold5,68996,0.01148,0.4517
+q95 gap (k=9),9,fold1,40309,0.00585,0.5092
+q95 gap (k=9),9,fold2,45792,0.00286,0.5365
+q95 gap (k=9),9,fold3,51754,0.00294,0.6447
+q95 gap (k=9),9,fold4,59390,0.00305,0.61
+q95 gap (k=9),9,fold5,66884,0.00224,0.4492
+q99 gap (k=27) - main,27,fold1,34984,0.0024,0.4889
+q99 gap (k=27) - main,27,fold2,42388,0.00172,0.5407
+q99 gap (k=27) - main,27,fold3,48380,0.00174,0.6471
+q99 gap (k=27) - main,27,fold4,54684,0.00163,0.6074
+q99 gap (k=27) - main,27,fold5,62205,0.00148,0.4473

@@ -1,0 +1,6 @@
+family,search_space,candidates_scored,selection
+logistic_base,fixed (no search),1,highest mean validation PR-AUC over 5 folds
+logistic_tuned,"C in {0.001, 0.01, 0.1, 1, 10, 100, 1000}",7,highest mean validation PR-AUC over 5 folds
+decision_tree,"max_depth integer uniform [3, 12]; min_samples_leaf integer uniform [20, 200]",20,highest mean validation PR-AUC over 5 folds
+random_forest,"n_estimators integer uniform [300, 600]; max_depth integer uniform [6, 24]; min_samples_leaf integer uniform [5, 100]; max_features uniform [0.2, 0.8]",6,highest mean validation PR-AUC over 5 folds
+catboost,"iterations in {300, 600, 1000}; learning_rate log-uniform [0.02, 0.2]; depth integer uniform [4, 8]; l2_leaf_reg log-uniform [1, 30]; subsample uniform [0.6, 1]; random_strength log-uniform [0.5, 5]; one_hot_max_size in {2, 10}",6,highest mean validation PR-AUC over 5 folds

@@ -1,0 +1,3 @@
+procedure,train_pr_auc,test_pr_auc,test_roc_auc,test_recall_at_capacity,test_positive_rate,test_orders,test_pr_auc_over_no_skill
+"chronological (main): train T < Jun 2018 minus gap, test Jun-Aug 2018",0.6099,0.3749,0.7392,0.5323,0.1126,21058,3.3299
+"stratified random 67/33 (reference, Phase 2 protocol)",0.5905,0.5021,0.7883,0.5924,0.1412,32072,3.5559

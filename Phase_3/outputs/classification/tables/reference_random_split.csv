@@ -1,0 +1,6 @@
+family,train_pr_auc,validation_pr_auc,test_pr_auc,test_roc_auc,test_recall_at_capacity,test_positive_rate,test_flag_rate_at_frozen_threshold
+logistic_base,0.5026,0.4839,0.4846,0.7849,0.5854,0.1412,0.1925
+logistic_tuned,0.4953,0.4831,0.4819,0.7817,0.5792,0.1412,0.1935
+decision_tree,0.5226,0.4841,0.4795,0.7687,0.5796,0.1412,0.1963
+random_forest,0.5905,0.5075,0.5021,0.7883,0.5924,0.1412,0.1932
+catboost,0.5559,0.4922,0.4938,0.7873,0.5918,0.1412,0.1929

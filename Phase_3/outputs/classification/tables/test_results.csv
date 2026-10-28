@@ -1,0 +1,6 @@
+model,split,pr_auc,roc_auc,brier,positive_rate,recall_at_capacity,precision_at_capacity,lift_at_capacity,n
+random_forest,train (in-sample),0.6099,0.8722,0.1358,0.1513,0.6482,0.4906,3.2412,70136.0
+random_forest,CV mean (5 validation months),0.5463,,,,0.5934,,,
+random_forest,test Jun-Aug 2018,0.3749,0.7392,0.1492,0.1126,0.5323,0.2996,2.6613,21058.0
+baseline_majority,test Jun-Aug 2018,0.1126,,,0.1126,0.2,,,21058.0
+baseline_not_delivered_by_T,test Jun-Aug 2018,0.2099,0.6284,0.1245,0.1126,0.4057,0.2284,2.0287,21058.0

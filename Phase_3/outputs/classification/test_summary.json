@@ -1,0 +1,47 @@
+{
+  "test": {
+    "pr_auc": 0.37492390709211937,
+    "roc_auc": 0.7391519154013044,
+    "brier": 0.14920892425040816,
+    "positive_rate": 0.1125937885839111,
+    "recall_at_capacity": 0.5322648671446647,
+    "precision_at_capacity": 0.2996201329534663,
+    "lift_at_capacity": 2.6613243357233234,
+    "n": 21058
+  },
+  "train": {
+    "pr_auc": 0.6098632049847399,
+    "roc_auc": 0.8722209887835675,
+    "brier": 0.13581508153796001,
+    "positive_rate": 0.1513488080301129,
+    "recall_at_capacity": 0.6482336316533208,
+    "precision_at_capacity": 0.49055393170314393,
+    "lift_at_capacity": 3.241168158266604,
+    "n": 70136
+  },
+  "bootstrap": {
+    "pr_auc_95ci": [
+      0.3564207876197637,
+      0.3966480416124372
+    ],
+    "recall_at_capacity_95ci": [
+      0.5139848653821031,
+      0.5509051961065683
+    ],
+    "n_boot": 1000
+  },
+  "success": [
+    {
+      "criterion": "PR-AUC >= 2 x no-skill",
+      "target": 0.2252,
+      "achieved": 0.3749,
+      "met": true
+    },
+    {
+      "criterion": "recall in top 20% >= 50%",
+      "target": 0.5,
+      "achieved": 0.5323,
+      "met": true
+    }
+  ]
+}

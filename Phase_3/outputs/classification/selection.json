@@ -1,0 +1,102 @@
+{
+  "selected_family": "random_forest",
+  "params": {
+    "model__max_depth": 14,
+    "model__max_features": 0.6290712064135155,
+    "model__min_samples_leaf": 80,
+    "model__n_estimators": 302
+  },
+  "gap_days": 27,
+  "features": [
+    "n_items",
+    "n_distinct_products",
+    "n_sellers",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "total_order_value",
+    "total_weight_g",
+    "max_weight_g",
+    "total_volume_cm3",
+    "max_dimension_cm",
+    "main_category",
+    "n_categories",
+    "max_distance_km",
+    "any_distance_missing",
+    "same_state",
+    "same_city",
+    "customer_state",
+    "seller_state",
+    "customer_region",
+    "seller_region",
+    "customer_zip2",
+    "purchase_month_num",
+    "purchase_dow",
+    "purchase_hour",
+    "is_weekend",
+    "promised_days",
+    "days_to_shipping_limit",
+    "approval_lag_hours",
+    "main_payment_type",
+    "payment_max_installments",
+    "n_payment_methods",
+    "payment_total",
+    "seller_prior_orders",
+    "seller_tenure_days",
+    "seller_prior_mean_delivery_days",
+    "seller_prior_late_rate",
+    "seller_prior_low_review_rate",
+    "seller_id_enc",
+    "route_prior_orders",
+    "route_prior_mean_delivery_days",
+    "route_prior_late_rate",
+    "is_delivered",
+    "actual_delivery_time",
+    "delivery_time_delta",
+    "carrier_shipped",
+    "carrier_handover_days",
+    "carrier_transit_days",
+    "delivery_vs_seller_prior",
+    "wd_actual_delivery_time",
+    "wd_delivery_time_delta"
+  ],
+  "thresholds": {
+    "capacity_threshold": 0.5474615225207792,
+    "f1_threshold": 0.6722317587401676,
+    "source": "pooled out-of-fold scores of the chosen model on the five validation months"
+  },
+  "family_best_params": {
+    "logistic_base": {},
+    "logistic_tuned": {
+      "model__C": 0.01
+    },
+    "decision_tree": {
+      "model__max_depth": 10,
+      "model__min_samples_leaf": 194
+    },
+    "random_forest": {
+      "model__max_depth": 14,
+      "model__max_features": 0.6290712064135155,
+      "model__min_samples_leaf": 80,
+      "model__n_estimators": 302
+    },
+    "catboost": {
+      "model__depth": 4,
+      "model__iterations": 1000,
+      "model__l2_leaf_reg": 8.056457031623271,
+      "model__learning_rate": 0.03175627015060992,
+      "model__one_hot_max_size": 2,
+      "model__random_strength": 0.6849971323085097,
+      "model__subsample": 0.7713606405249578
+    }
+  },
+  "cv": {
+    "cv_pr_auc_mean": 0.5463,
+    "cv_pr_auc_sd": 0.0822,
+    "cv_recall_at_capacity_mean": 0.5934,
+    "train_pr_auc_mean": 0.5671
+  },
+  "quick": false,
+  "frozen_at": "2026-10-28T07:43:57.883257+00:00",
+  "selection_sha256": "44802a8d32918a6cbb701d6f5240c5a20d6892d9eb9f72b2aefe4d79d214f675"
+}
