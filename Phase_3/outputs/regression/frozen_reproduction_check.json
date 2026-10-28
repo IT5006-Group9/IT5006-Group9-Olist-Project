@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "raw_archive_rebuilt": true,
+  "new_empty_directory": true,
+  "derived_caches_reused": false,
+  "selected_regressor_and_temporal_auxiliary_pipeline_refitted": true,
+  "full_search_repeated": false,
+  "selected_candidate": "HGB_risk",
+  "test_n": 18603,
+  "test_metrics": {
+    "n": 18603,
+    "mae": 3.434250952543771,
+    "rmse": 5.0924862666216635,
+    "r2": 0.2346612120156042,
+    "bias": 1.0053335946204955,
+    "within3": 0.5593183895070688
+  },
+  "training_metrics": {
+    "n": 68916,
+    "mae": 4.718950267991093,
+    "rmse": 8.413488498417092,
+    "r2": 0.29362725515041976,
+    "bias": -1.715472298587807,
+    "within3": 0.5161936270242033
+  },
+  "test_ids_sha256": "0a64a488c59ed84f7ef5b242cf39171732d9113b6657c2eb3dc0fc534f05ceff",
+  "input_sha256": "cb6cec0dba60300108de54fd8dd724e0074c08cbac4c72acc514851d6a2d173d"
+}

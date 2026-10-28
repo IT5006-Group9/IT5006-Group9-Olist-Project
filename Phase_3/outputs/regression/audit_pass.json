@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "stage": "pre-model audit; no estimator fitted",
+  "raw_target_rows_verified": 96203,
+  "basket_orders_independently_verified": 120,
+  "post_outcome_perturbation_rows_verified": 98666,
+  "time_boundary_tests": true,
+  "zero_future_training_labels": true,
+  "zero_unavailable_selection_labels": true,
+  "train_score_disjoint": true,
+  "test_excluded_from_development": true,
+  "input_sha256": "cb6cec0dba60300108de54fd8dd724e0074c08cbac4c72acc514851d6a2d173d",
+  "manifest_sha256": "81ce903ee4c78735131830e1f95ae857266a7f75aba1e05dc63379e31a788e46",
+  "source_hashes": {
+    "config": "e5dc06f7dc5fb910acb813570eff27006390071256af362ff1bc8e15a440fa82",
+    "data": "206af0ecb173b2d0a67e6c06fdffea1adc02d6037a5c9ea8f754bb5325d30445",
+    "splits": "7eac936b84c28310dd8e0e44cb3864ed23b447a891daf21f7fe4fe5d440eef12",
+    "audit": "87c90a27ef06dd157956d180563084cdf1b8cdeacad93be3749943bebe64d1c1"
+  },
+  "reference_v2_fields_verified": [
+    "lead_time_days",
+    "max_distance_km",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "item_count",
+    "seller_count",
+    "avg_product_weight_g",
+    "any_distance_missing",
+    "any_weight_missing",
+    "promised_lead_time_days"
+  ],
+  "limitations": [
+    "Archived quote, seller and product attributes assumed known at purchase.",
+    "Static geography reference has no historical availability log.",
+    "Evaluation conditional on observed completed deliveries; source snapshot has no authoritative extraction cutoff.",
+    "Selection-label coverage excludes outcomes not yet observed by June 1; see per-fold coverage.",
+    "An embargo does not resolve completion selection bias; strict observed-label filtering remains required."
+  ]
+}

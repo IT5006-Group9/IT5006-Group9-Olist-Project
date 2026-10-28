@@ -1,0 +1,3 @@
+procedure,candidate,n,mae,rmse,r2,split,bias,within3
+Chronological main; best single,HGB_risk,18603,3.434250952543771,5.0924862666216635,0.2346612120156042,,,
+Random reference; fixed chronological configuration,HGB_risk,31747,4.586836952679972,8.17968641718831,0.2968305206252587,test,-1.0022716930945113,0.5203011308155101

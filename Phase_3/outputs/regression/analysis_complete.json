@@ -1,0 +1,6 @@
+{
+  "importance_n": 3000,
+  "importance_repeats": 5,
+  "importance_scope": "May validation; outcomes observed before Jun 1; conditional on completed deliveries.",
+  "future_outcome_diagnostics_used_for_selection": false
+}

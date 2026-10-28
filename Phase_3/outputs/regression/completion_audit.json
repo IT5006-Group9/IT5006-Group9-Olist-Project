@@ -1,0 +1,24 @@
+{
+  "complete": true,
+  "requirements": {
+    "raw_data_and_time_audit": "audit_pass.json; fold_table.csv; frozen_reproduction_check.json",
+    "matched_models_and_bounded_search": "115 primary fits, 23 candidates, five folds each",
+    "feature_loss_and_gap_experiments": "35 diagnostic fits, seven configurations",
+    "time_oof_ensemble": "five outer folds; 15 inner windows; discard decision recorded",
+    "train_cv_test_and_references": "train_cv_test_comparison.csv; model_metrics_by_stage.csv",
+    "monthly_route_tail_errors": "test_by_month.csv; test_by_route.csv; test_error_groups.csv",
+    "validation_interpretation": "permutation_importance_groups.csv; 30 joint-group repeats",
+    "fixed_random_reference": "chronological_vs_random.csv; reference_complete.json",
+    "executed_notebooks": [
+      "delivery_regression_chronological.ipynb",
+      "stacking_chronological.ipynb"
+    ],
+    "figures": "nine standalone PNGs visually inspected; ten embedded notebook images",
+    "report_and_presentation": "docs/regression/report_evidence_guide.md; presentation_notes.md",
+    "deployment": "20 isolated golden predictions; local portable ZIP verified",
+    "phase2_and_classification_preservation": "574 original file blobs unchanged; delivery_validation.json"
+  },
+  "scope": "R3 regression engineering and handoff materials. Team report/slides/app integration is a separate role.",
+  "online_shared_document_edited": false,
+  "course_submission_performed": false
+}

@@ -1,0 +1,47 @@
+{
+  "hgb_config": {
+    "family": "HGB",
+    "params": {
+      "loss": "absolute_error",
+      "max_leaf_nodes": 15,
+      "l2_regularization": 1.0,
+      "min_samples_leaf": 30,
+      "max_iter": 300,
+      "learning_rate": 0.05
+    }
+  },
+  "packs": [
+    "no_calendar",
+    "calendar",
+    "absolute",
+    "risk"
+  ],
+  "rf_log_target_config": {
+    "family": "RF",
+    "params": {
+      "max_depth": 12,
+      "min_samples_leaf": 80,
+      "n_estimators": 100,
+      "max_features": 0.7,
+      "max_samples": 0.8
+    }
+  },
+  "gap_sensitivity": [
+    0,
+    26,
+    39
+  ],
+  "gap_strict_label_eligibility_always": true,
+  "risk_parameters": {
+    "loss": "log_loss",
+    "max_iter": 120,
+    "learning_rate": 0.05,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 50,
+    "l2_regularization": 10.0,
+    "early_stopping": false,
+    "random_state": 5006
+  },
+  "risk_cold_start": "Jan-Mar 2017 score=0 plus unavailable flag; later monthly strictly past cross-fit",
+  "stack_rule": "One Ridge/RF/HGB convex stack; retain only if mean outer validation MAE improves >=1% over best single model."
+}

@@ -1,5 +1,6 @@
 # generated locally by the pipeline
 data/classification/
+data/regression/
 models/
 outputs/*/predictions/
 outputs/*_quick/

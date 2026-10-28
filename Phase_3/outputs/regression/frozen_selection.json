@@ -1,0 +1,63 @@
+{
+  "best_single": {
+    "candidate": "HGB_risk",
+    "spec": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 15,
+        "l2_regularization": 1.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    },
+    "pack": "risk",
+    "log_target": false
+  },
+  "deploy_ensemble": false,
+  "family_winners": {
+    "Ridge": "Ridge_a100",
+    "OLS": "OLS",
+    "RF": "RF_d12_l80",
+    "HGB": "HGB_leaves15_l21",
+    "Tree": "Tree_d6_l30"
+  },
+  "selection_metric": "mean MAE across Jan-May monthly validation, labels observed before Jun 1",
+  "ensemble_threshold": 0.01,
+  "gap_days": 39,
+  "test_comparisons": [
+    "Mean",
+    "Median",
+    "Promise",
+    "Ridge_a100",
+    "OLS",
+    "RF_d12_l80",
+    "HGB_leaves15_l21",
+    "Tree_d6_l30",
+    "HGB_risk"
+  ],
+  "success_criteria": {
+    "mae_reduction_vs_training_median": 0.05,
+    "beat_delivery_promise": true
+  },
+  "test_previously_exposed": true,
+  "source_hashes": {
+    "config.py": "e5dc06f7dc5fb910acb813570eff27006390071256af362ff1bc8e15a440fa82",
+    "audit.py": "87c90a27ef06dd157956d180563084cdf1b8cdeacad93be3749943bebe64d1c1",
+    "models.py": "ccc5939936ee496a397006cfe6d2e5147d2fd46b3908c710b774a1c0b19aac28",
+    "__init__.py": "a65ee2c9b3fcca07117b361cea7ca2af7db77299f841506ca264070b58b48eb7",
+    "extensions.py": "82883c4fb540685f476ba5ba924751135cf6f07afc339d83daed01353e2e56ea",
+    "run_pipeline.py": "f22ad72565cc1d4f9f2dd46281e92156de69c1fde8ccae7e7d50c48508a97729",
+    "pipeline.py": "10ff99ec53e99f92083d05ba2040142dbac47cb3bb94ea320f9bff05a5314886",
+    "finalise.py": "2ded4128d2fc93a0082a5cf71057467b0900f3b2c518f5f131f2157a5174c748",
+    "risk.py": "9c15f6dcd1db6e8b7056d4b4e9a593c8c4ad3451c67ee7d5791c6fa6a5528753",
+    "splits.py": "7eac936b84c28310dd8e0e44cb3864ed23b447a891daf21f7fe4fe5d440eef12",
+    "verify.py": "885185bb0603672b363590b11bfc25c30c3ed26f3b335ebacee4a865340195a2",
+    "data.py": "206af0ecb173b2d0a67e6c06fdffea1adc02d6037a5c9ea8f754bb5325d30445",
+    "score.py": "e08c7064539b4082f2003fb0fb703798820b2a5b975b772daff3d2e6771e364a",
+    "reporting.py": "aa1a47d916db41c5737638a291129191d7c7a995e92c8982a7598f75f8405ca9"
+  },
+  "selection_sha256": "7fc38caa2590ac666fbb8cd7338dbbc7863015f356306d1d38d7b6773d47e764",
+  "frozen_at": "2026-10-28T18:02:10.523528+00:00"
+}

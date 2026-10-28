@@ -1,0 +1,26 @@
+{
+  "test_start": "2018-06-01",
+  "test_end_exclusive": "2018-09-01",
+  "n": 18603,
+  "ids_sha256": "0a64a488c59ed84f7ef5b242cf39171732d9113b6657c2eb3dc0fc534f05ceff",
+  "evaluations": [
+    {
+      "date": "2026-10-28T18:04:02.812091+00:00",
+      "selection_sha256": "7fc38caa2590ac666fbb8cd7338dbbc7863015f356306d1d38d7b6773d47e764",
+      "comparisons": [
+        "Mean",
+        "Median",
+        "Promise",
+        "Ridge_a100",
+        "OLS",
+        "RF_d12_l80",
+        "HGB_leaves15_l21",
+        "Tree_d6_l30",
+        "HGB_risk"
+      ],
+      "results_sha256": "5408ede6c52c9061d3adb3661da5872001bf3dc878336bbc0c58495f54d4cdda"
+    }
+  ],
+  "previous_exposure": "These historical orders were used in earlier Phase 2 experiments; not an unseen external test.",
+  "rule": "Freeze configuration and comparison list before scoring; no changes based on test performance."
+}

@@ -1,6 +1,16 @@
 # Phase 3 · IT5006 Group 9 · Olist e-commerce analytics
 
-Phase 3 rebuilds the Phase 2 models around a **chronological evaluation** (TA feedback) and prepares them for deployment. This folder currently holds the **low-review risk classification** pipeline. The regression pipeline will be added under `src/regression/` using the same calendar break points and the shared helpers in `src/common/`.
+Phase 3 rebuilds the Phase 2 models around a **chronological evaluation** (TA feedback) and prepares them for deployment. It contains separate **low-review risk classification** and **delivery lead-time regression** branches with shared calendar break points and helpers in `src/common/`. Each branch uses its own prediction point and label-availability rules.
+
+## Regression entry
+
+- [Complete executed regression notebook](notebooks/regression/delivery_regression_chronological.ipynb)
+- [Temporal ensemble comparison](notebooks/regression/stacking_chronological.ipynb)
+- [Regression report and presentation materials](docs/regression/README.md)
+- [Regression runner and reproduction instructions](src/regression/README.md)
+- [Aggregate regression evidence](outputs/regression/)
+
+Regression uses purchase time, a 39-day embargo **and** receipt before the training cutoff. Its selected HGB with a past-only slow-order risk feature has test MAE 3.4343 days on 18,603 June–August orders; the labels available for May selection cover only 65.3% of eventual completed May orders. The guide explains this limitation, prior test exposure and the small validation margin over Ridge. Use the separate pinned `requirements-regression.lock.txt` for its verified environment. The classification instructions below retain their original task-specific settings.
 
 | Start here | What it is |
 |---|---|

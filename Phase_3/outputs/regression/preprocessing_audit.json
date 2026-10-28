@@ -1,0 +1,42 @@
+[
+  {
+    "fold": "fold1",
+    "fit_n": 34246,
+    "fit_ids_sha256": "e7ea4a2e3b00704f9713bb584877ce5728d2fe633d375997f4e0acdbe39bed3b",
+    "encoded_features": 545,
+    "numeric_medians_verified": true,
+    "categorical_dictionary_training_only": true
+  },
+  {
+    "fold": "fold2",
+    "fit_n": 42450,
+    "fit_ids_sha256": "83f681a656a85e6dd9163a68d6eda19b36efad275acac1b8c6412e3ca745ec16",
+    "encoded_features": 555,
+    "numeric_medians_verified": true,
+    "categorical_dictionary_training_only": true
+  },
+  {
+    "fold": "fold3",
+    "fit_n": 47940,
+    "fit_ids_sha256": "2d705aa62e32f44860ee07b51c3fd656bc318c3053adaf91bdbcafae535edc86",
+    "encoded_features": 557,
+    "numeric_medians_verified": true,
+    "categorical_dictionary_training_only": true
+  },
+  {
+    "fold": "fold4",
+    "fit_n": 54882,
+    "fit_ids_sha256": "77f3c24c355090c0446378967bf8dc86b77c7b0040c5420b4bfd43046ea9ac4a",
+    "encoded_features": 561,
+    "numeric_medians_verified": true,
+    "categorical_dictionary_training_only": true
+  },
+  {
+    "fold": "fold5",
+    "fit_n": 62130,
+    "fit_ids_sha256": "f7f2f709b2fbba7115a052160b2019c2a265a0aa025537ac50874db0027fdd42",
+    "encoded_features": 566,
+    "numeric_medians_verified": true,
+    "categorical_dictionary_training_only": true
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "golden_n": 20,
+  "isolated_process": true,
+  "raw_course_data_needed_for_inference": false,
+  "bundle_sha256": "bdca068f7853506d2a0966601191f9f0174c8b2514c7350d7f87e3d794018f4e",
+  "bundle_bytes": 1020185,
+  "result": "20 isolated bundle predictions match the frozen evidence.",
+  "publication": "Local handoff only; model and per-order example records remain git-ignored."
+}

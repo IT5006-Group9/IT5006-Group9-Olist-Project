@@ -1,0 +1,219 @@
+{
+  "candidates": {
+    "OLS": {
+      "family": "OLS",
+      "params": {}
+    },
+    "Ridge_a1": {
+      "family": "Ridge",
+      "params": {
+        "alpha": 1.0
+      }
+    },
+    "Ridge_a10": {
+      "family": "Ridge",
+      "params": {
+        "alpha": 10.0
+      }
+    },
+    "Ridge_a100": {
+      "family": "Ridge",
+      "params": {
+        "alpha": 100.0
+      }
+    },
+    "Ridge_a1000": {
+      "family": "Ridge",
+      "params": {
+        "alpha": 1000.0
+      }
+    },
+    "Tree_d6_l30": {
+      "family": "Tree",
+      "params": {
+        "max_depth": 6,
+        "min_samples_leaf": 30
+      }
+    },
+    "Tree_d6_l100": {
+      "family": "Tree",
+      "params": {
+        "max_depth": 6,
+        "min_samples_leaf": 100
+      }
+    },
+    "Tree_d10_l30": {
+      "family": "Tree",
+      "params": {
+        "max_depth": 10,
+        "min_samples_leaf": 30
+      }
+    },
+    "Tree_d10_l100": {
+      "family": "Tree",
+      "params": {
+        "max_depth": 10,
+        "min_samples_leaf": 100
+      }
+    },
+    "RF_d12_l30": {
+      "family": "RF",
+      "params": {
+        "max_depth": 12,
+        "min_samples_leaf": 30,
+        "n_estimators": 100,
+        "max_features": 0.7,
+        "max_samples": 0.8
+      }
+    },
+    "RF_d12_l80": {
+      "family": "RF",
+      "params": {
+        "max_depth": 12,
+        "min_samples_leaf": 80,
+        "n_estimators": 100,
+        "max_features": 0.7,
+        "max_samples": 0.8
+      }
+    },
+    "RF_d20_l30": {
+      "family": "RF",
+      "params": {
+        "max_depth": 20,
+        "min_samples_leaf": 30,
+        "n_estimators": 100,
+        "max_features": 0.7,
+        "max_samples": 0.8
+      }
+    },
+    "RF_d20_l80": {
+      "family": "RF",
+      "params": {
+        "max_depth": 20,
+        "min_samples_leaf": 80,
+        "n_estimators": 100,
+        "max_features": 0.7,
+        "max_samples": 0.8
+      }
+    },
+    "RF_dNone_l30": {
+      "family": "RF",
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 30,
+        "n_estimators": 100,
+        "max_features": 0.7,
+        "max_samples": 0.8
+      }
+    },
+    "RF_dNone_l80": {
+      "family": "RF",
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 80,
+        "n_estimators": 100,
+        "max_features": 0.7,
+        "max_samples": 0.8
+      }
+    },
+    "HGB_leaves15_l21": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 15,
+        "l2_regularization": 1.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    },
+    "HGB_leaves15_l210": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 15,
+        "l2_regularization": 10.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    },
+    "HGB_leaves31_l21": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 31,
+        "l2_regularization": 1.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    },
+    "HGB_leaves31_l210": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 31,
+        "l2_regularization": 10.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    },
+    "HGB_leaves63_l21": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 63,
+        "l2_regularization": 1.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    },
+    "HGB_leaves63_l210": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 63,
+        "l2_regularization": 10.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    },
+    "HGB_leaves127_l21": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 127,
+        "l2_regularization": 1.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    },
+    "HGB_leaves127_l210": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 127,
+        "l2_regularization": 10.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    }
+  },
+  "pack": "calendar",
+  "selection": "mean five monthly MAEs; tie fewer effective parameters",
+  "planned_later_diagnostics": [
+    "calendar ablation",
+    "RF original/log target",
+    "gap sensitivity",
+    "temporal risk feature",
+    "one convex stack"
+  ],
+  "source_sha256": "ccc5939936ee496a397006cfe6d2e5147d2fd46b3908c710b774a1c0b19aac28",
+  "written_before_fitting": true
+}

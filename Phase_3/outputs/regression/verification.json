@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "test_comparators_recomputed": [
+    "HGB_leaves15_l21",
+    "HGB_risk",
+    "Mean",
+    "Median",
+    "OLS",
+    "Promise",
+    "RF_d12_l80",
+    "Ridge_a100",
+    "Tree_d6_l30"
+  ],
+  "primary_cv_predictions_verified": 115,
+  "primary_cv_summary_rows_verified": 23,
+  "test_model_reloads": 6,
+  "duration_groups_reconcile": true,
+  "golden_order_n": 20,
+  "outcome_deletion_and_perturbation_invariance": true,
+  "unknown_category_and_missing_numeric": true,
+  "interface_errors_checked": 3,
+  "stack_inner_windows_checked": 15,
+  "risk_inner_windows_checked": 80,
+  "test_evaluation_count": 1,
+  "model_sha256": "3b9e617a68f72b75a4baffc7f514cc1c53cf84f21b95d254c8c725c78518c65a",
+  "full_hyperparameter_search_repeated": false,
+  "frozen_reproduction_record": "frozen_reproduction_check.json",
+  "limitations": "This verifier reconciles existing fitted evidence; a separate frozen reproduction record documents a fresh raw-ZIP pipeline refit."
+}

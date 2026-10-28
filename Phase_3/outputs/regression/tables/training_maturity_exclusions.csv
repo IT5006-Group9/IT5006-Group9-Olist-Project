@@ -1,0 +1,61 @@
+fold,scope,duration_group,n
+fold1,Before embargo,0-14,29048
+fold1,Before embargo,14-30,12487
+fold1,Before embargo,30-60,1751
+fold1,Before embargo,>60,140
+fold1,Embargo-eligible,0-14,24280
+fold1,Embargo-eligible,14-30,8995
+fold1,Embargo-eligible,30-60,915
+fold1,Embargo-eligible,>60,99
+fold1,Excluded: label pending after embargo,0-14,0
+fold1,Excluded: label pending after embargo,14-30,0
+fold1,Excluded: label pending after embargo,30-60,24
+fold1,Excluded: label pending after embargo,>60,19
+fold2,Before embargo,0-14,33326
+fold2,Before embargo,14-30,14832
+fold2,Before embargo,30-60,2165
+fold2,Before embargo,>60,172
+fold2,Embargo-eligible,0-14,28491
+fold2,Embargo-eligible,14-30,12171
+fold2,Embargo-eligible,30-60,1715
+fold2,Embargo-eligible,>60,135
+fold2,Excluded: label pending after embargo,0-14,0
+fold2,Excluded: label pending after embargo,14-30,0
+fold2,Excluded: label pending after embargo,30-60,27
+fold2,Excluded: label pending after embargo,>60,35
+fold3,Before embargo,0-14,36459
+fold3,Before embargo,14-30,17534
+fold3,Before embargo,30-60,2831
+fold3,Before embargo,>60,226
+fold3,Embargo-eligible,0-14,31913
+fold3,Embargo-eligible,14-30,13947
+fold3,Embargo-eligible,30-60,2002
+fold3,Embargo-eligible,>60,159
+fold3,Excluded: label pending after embargo,0-14,0
+fold3,Excluded: label pending after embargo,14-30,0
+fold3,Excluded: label pending after embargo,30-60,43
+fold3,Excluded: label pending after embargo,>60,38
+fold4,Before embargo,0-14,40111
+fold4,Before embargo,14-30,20041
+fold4,Before embargo,30-60,3638
+fold4,Before embargo,>60,263
+fold4,Embargo-eligible,0-14,35541
+fold4,Embargo-eligible,14-30,16710
+fold4,Embargo-eligible,30-60,2538
+fold4,Embargo-eligible,>60,196
+fold4,Excluded: label pending after embargo,0-14,0
+fold4,Excluded: label pending after embargo,14-30,0
+fold4,Excluded: label pending after embargo,30-60,50
+fold4,Excluded: label pending after embargo,>60,53
+fold5,Before embargo,0-14,45106
+fold5,Before embargo,14-30,21601
+fold5,Before embargo,30-60,3862
+fold5,Before embargo,>60,282
+fold5,Embargo-eligible,0-14,39027
+fold5,Embargo-eligible,14-30,19464
+fold5,Embargo-eligible,30-60,3513
+fold5,Embargo-eligible,>60,259
+fold5,Excluded: label pending after embargo,0-14,0
+fold5,Excluded: label pending after embargo,14-30,0
+fold5,Excluded: label pending after embargo,30-60,61
+fold5,Excluded: label pending after embargo,>60,72

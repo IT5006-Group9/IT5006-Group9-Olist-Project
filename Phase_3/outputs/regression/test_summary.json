@@ -1,0 +1,22 @@
+{
+  "selected_candidate": "HGB_risk",
+  "test": {
+    "candidate": "HGB_risk",
+    "split": "test",
+    "n": 18603,
+    "mae": 3.434250952543771,
+    "rmse": 5.0924862666216635,
+    "r2": 0.2346612120156042,
+    "bias": 1.0053335946204955,
+    "within3": 0.5593183895070688
+  },
+  "success": {
+    "mae_reduction_vs_median": 0.32133402499586783,
+    "minimum_reduction": 0.05,
+    "median_criterion_met": true,
+    "promise_criterion_met": true
+  },
+  "selection_sha256": "7fc38caa2590ac666fbb8cd7338dbbc7863015f356306d1d38d7b6773d47e764",
+  "test_n": 18603,
+  "train_n": 68916
+}

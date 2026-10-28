@@ -1,0 +1,26 @@
+{
+  "source_orders": 99441,
+  "valid_all_dates": 96470,
+  "cohort_orders": 96203,
+  "valid_over60_all_dates": 306,
+  "reference_v2_fields_verified": [
+    "lead_time_days",
+    "max_distance_km",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "item_count",
+    "seller_count",
+    "avg_product_weight_g",
+    "any_distance_missing",
+    "any_weight_missing",
+    "promised_lead_time_days"
+  ],
+  "input_sha256": "79c64e7a3c29deadcf4e0d62354c4a00c3600ae988874abdb1673903b4dacead",
+  "timezone": "Source timezone-naive local timestamps retained; no invented UTC conversion.",
+  "assumptions": [
+    "Archived quote, seller and product attributes assumed known at purchase.",
+    "Static geography reference has no historical availability log.",
+    "Evaluation conditional on observed completed deliveries; source snapshot has no authoritative extraction cutoff."
+  ]
+}

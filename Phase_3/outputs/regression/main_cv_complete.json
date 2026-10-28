@@ -1,0 +1,13 @@
+{
+  "family_winners": {
+    "Ridge": "Ridge_a100",
+    "OLS": "OLS",
+    "RF": "RF_d12_l80",
+    "HGB": "HGB_leaves15_l21",
+    "Tree": "Tree_d6_l30"
+  },
+  "best_candidate": "Ridge_a100",
+  "new_fits": 115,
+  "search_sha256": "4d71f0b4612e095c83f07bef37a26de43622f4d04836371f396cd6f9f0f636ba",
+  "cv_table_sha256": "4498b9fc4899ff94767bf5dfcff0a1e67052a53d565cfccba8441faf40b75fbe"
+}

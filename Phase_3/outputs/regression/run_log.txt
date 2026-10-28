@@ -1,0 +1,180 @@
+2026-10-28T17:28:35.483631+00:00 select fold1 OLS: MAE 5.4335, 0.5s
+2026-10-28T17:28:35.571772+00:00 select fold1 Ridge_a1: MAE 5.4299, 0.1s
+2026-10-28T17:28:35.652418+00:00 select fold1 Ridge_a10: MAE 5.4254, 0.1s
+2026-10-28T17:28:35.731309+00:00 select fold1 Ridge_a100: MAE 5.4325, 0.1s
+2026-10-28T17:28:35.815001+00:00 select fold1 Ridge_a1000: MAE 5.4651, 0.1s
+2026-10-28T17:28:36.239928+00:00 select fold1 Tree_d6_l30: MAE 5.6132, 0.4s
+2026-10-28T17:28:36.665074+00:00 select fold1 Tree_d6_l100: MAE 5.6409, 0.4s
+2026-10-28T17:28:37.229453+00:00 select fold1 Tree_d10_l30: MAE 5.6213, 0.6s
+2026-10-28T17:28:37.767671+00:00 select fold1 Tree_d10_l100: MAE 5.6729, 0.5s
+2026-10-28T17:28:45.495498+00:00 select fold1 RF_d12_l30: MAE 5.4877, 7.7s
+2026-10-28T17:28:52.370822+00:00 select fold1 RF_d12_l80: MAE 5.5023, 6.9s
+2026-10-28T17:29:00.291259+00:00 select fold1 RF_d20_l30: MAE 5.4953, 7.9s
+2026-10-28T17:29:07.781141+00:00 select fold1 RF_d20_l80: MAE 5.5084, 7.5s
+2026-10-28T17:29:15.978504+00:00 select fold1 RF_dNone_l30: MAE 5.5013, 8.2s
+2026-10-28T17:29:23.483239+00:00 select fold1 RF_dNone_l80: MAE 5.5085, 7.5s
+2026-10-28T17:29:32.898074+00:00 select fold1 HGB_leaves15_l21: MAE 5.6575, 9.4s
+2026-10-28T17:29:42.263257+00:00 select fold1 HGB_leaves15_l210: MAE 5.6781, 9.3s
+2026-10-28T17:29:53.593196+00:00 select fold1 HGB_leaves31_l21: MAE 5.7025, 11.3s
+2026-10-28T17:30:04.976860+00:00 select fold1 HGB_leaves31_l210: MAE 5.6968, 11.3s
+2026-10-28T17:30:19.857455+00:00 select fold1 HGB_leaves63_l21: MAE 5.6624, 14.8s
+2026-10-28T17:30:32.947774+00:00 select fold1 HGB_leaves63_l210: MAE 5.6912, 13.0s
+2026-10-28T17:30:50.059046+00:00 select fold1 HGB_leaves127_l21: MAE 5.6953, 17.1s
+2026-10-28T17:31:07.807054+00:00 select fold1 HGB_leaves127_l210: MAE 5.6942, 17.7s
+2026-10-28T17:31:08.994704+00:00 select fold2 OLS: MAE 6.4146, 0.5s
+2026-10-28T17:31:09.105869+00:00 select fold2 Ridge_a1: MAE 6.4142, 0.1s
+2026-10-28T17:31:09.192381+00:00 select fold2 Ridge_a10: MAE 6.4107, 0.1s
+2026-10-28T17:31:09.280438+00:00 select fold2 Ridge_a100: MAE 6.4133, 0.1s
+2026-10-28T17:31:09.366057+00:00 select fold2 Ridge_a1000: MAE 6.4568, 0.1s
+2026-10-28T17:31:09.873645+00:00 select fold2 Tree_d6_l30: MAE 7.0138, 0.5s
+2026-10-28T17:31:10.373884+00:00 select fold2 Tree_d6_l100: MAE 6.9294, 0.5s
+2026-10-28T17:31:11.043351+00:00 select fold2 Tree_d10_l30: MAE 7.1231, 0.7s
+2026-10-28T17:31:11.680758+00:00 select fold2 Tree_d10_l100: MAE 7.0041, 0.6s
+2026-10-28T17:31:20.061025+00:00 select fold2 RF_d12_l30: MAE 6.8621, 8.4s
+2026-10-28T17:31:27.644829+00:00 select fold2 RF_d12_l80: MAE 6.8222, 7.6s
+2026-10-28T17:31:36.538978+00:00 select fold2 RF_d20_l30: MAE 6.8869, 8.9s
+2026-10-28T17:31:44.327251+00:00 select fold2 RF_d20_l80: MAE 6.8404, 7.8s
+2026-10-28T17:31:53.077975+00:00 select fold2 RF_dNone_l30: MAE 6.8803, 8.7s
+2026-10-28T17:32:00.773523+00:00 select fold2 RF_dNone_l80: MAE 6.8411, 7.7s
+2026-10-28T17:32:11.908433+00:00 select fold2 HGB_leaves15_l21: MAE 7.4081, 11.1s
+2026-10-28T17:32:23.421000+00:00 select fold2 HGB_leaves15_l210: MAE 7.3980, 11.5s
+2026-10-28T17:32:36.662852+00:00 select fold2 HGB_leaves31_l21: MAE 7.3532, 13.2s
+2026-10-28T17:32:50.252912+00:00 select fold2 HGB_leaves31_l210: MAE 7.3493, 13.6s
+2026-10-28T17:33:06.677994+00:00 select fold2 HGB_leaves63_l21: MAE 7.3128, 16.4s
+2026-10-28T17:33:23.612962+00:00 select fold2 HGB_leaves63_l210: MAE 7.3313, 16.9s
+2026-10-28T17:33:44.769095+00:00 select fold2 HGB_leaves127_l21: MAE 7.2494, 21.1s
+2026-10-28T17:34:06.689224+00:00 select fold2 HGB_leaves127_l210: MAE 7.2565, 21.9s
+2026-10-28T17:34:08.000603+00:00 select fold3 OLS: MAE 6.5241, 0.6s
+2026-10-28T17:34:08.105074+00:00 select fold3 Ridge_a1: MAE 6.5224, 0.1s
+2026-10-28T17:34:08.207737+00:00 select fold3 Ridge_a10: MAE 6.5180, 0.1s
+2026-10-28T17:34:08.303672+00:00 select fold3 Ridge_a100: MAE 6.5282, 0.1s
+2026-10-28T17:34:08.400778+00:00 select fold3 Ridge_a1000: MAE 6.6141, 0.1s
+2026-10-28T17:34:09.053762+00:00 select fold3 Tree_d6_l30: MAE 6.9679, 0.6s
+2026-10-28T17:34:09.668467+00:00 select fold3 Tree_d6_l100: MAE 6.9314, 0.6s
+2026-10-28T17:34:10.508047+00:00 select fold3 Tree_d10_l30: MAE 7.2154, 0.8s
+2026-10-28T17:34:11.255960+00:00 select fold3 Tree_d10_l100: MAE 7.1146, 0.7s
+2026-10-28T17:34:20.816321+00:00 select fold3 RF_d12_l30: MAE 6.9198, 9.5s
+2026-10-28T17:34:29.773548+00:00 select fold3 RF_d12_l80: MAE 6.8831, 8.9s
+2026-10-28T17:34:40.314054+00:00 select fold3 RF_d20_l30: MAE 6.9234, 10.5s
+2026-10-28T17:34:49.292880+00:00 select fold3 RF_d20_l80: MAE 6.8943, 9.0s
+2026-10-28T17:34:59.688856+00:00 select fold3 RF_dNone_l30: MAE 6.9261, 10.4s
+2026-10-28T17:35:08.690124+00:00 select fold3 RF_dNone_l80: MAE 6.8916, 9.0s
+2026-10-28T17:35:20.937543+00:00 select fold3 HGB_leaves15_l21: MAE 7.2855, 12.2s
+2026-10-28T17:35:33.746307+00:00 select fold3 HGB_leaves15_l210: MAE 7.2835, 12.8s
+2026-10-28T17:35:48.459834+00:00 select fold3 HGB_leaves31_l21: MAE 7.3083, 14.7s
+2026-10-28T17:36:03.476545+00:00 select fold3 HGB_leaves31_l210: MAE 7.3378, 15.0s
+2026-10-28T17:36:20.835464+00:00 select fold3 HGB_leaves63_l21: MAE 7.3055, 17.3s
+2026-10-28T17:36:38.843524+00:00 select fold3 HGB_leaves63_l210: MAE 7.3112, 18.0s
+2026-10-28T17:37:01.815999+00:00 select fold3 HGB_leaves127_l21: MAE 7.2852, 22.9s
+2026-10-28T17:37:25.182171+00:00 select fold3 HGB_leaves127_l210: MAE 7.2922, 23.3s
+2026-10-28T17:37:26.673123+00:00 select fold4 OLS: MAE 4.0645, 0.7s
+2026-10-28T17:37:26.804678+00:00 select fold4 Ridge_a1: MAE 4.0596, 0.1s
+2026-10-28T17:37:26.914611+00:00 select fold4 Ridge_a10: MAE 4.0473, 0.1s
+2026-10-28T17:37:27.027378+00:00 select fold4 Ridge_a100: MAE 4.0241, 0.1s
+2026-10-28T17:37:27.138701+00:00 select fold4 Ridge_a1000: MAE 4.0348, 0.1s
+2026-10-28T17:37:27.831921+00:00 select fold4 Tree_d6_l30: MAE 4.3583, 0.7s
+2026-10-28T17:37:28.523084+00:00 select fold4 Tree_d6_l100: MAE 4.4571, 0.7s
+2026-10-28T17:37:29.429924+00:00 select fold4 Tree_d10_l30: MAE 4.5797, 0.9s
+2026-10-28T17:37:30.299431+00:00 select fold4 Tree_d10_l100: MAE 4.4948, 0.9s
+2026-10-28T17:37:41.881541+00:00 select fold4 RF_d12_l30: MAE 4.2926, 11.6s
+2026-10-28T17:37:52.726268+00:00 select fold4 RF_d12_l80: MAE 4.2837, 10.8s
+2026-10-28T17:38:05.326304+00:00 select fold4 RF_d20_l30: MAE 4.2985, 12.6s
+2026-10-28T17:38:16.501120+00:00 select fold4 RF_d20_l80: MAE 4.2669, 11.2s
+2026-10-28T17:38:30.010425+00:00 select fold4 RF_dNone_l30: MAE 4.3338, 13.5s
+2026-10-28T17:38:43.353141+00:00 select fold4 RF_dNone_l80: MAE 4.2685, 13.3s
+2026-10-28T17:38:57.569802+00:00 select fold4 HGB_leaves15_l21: MAE 4.0000, 14.2s
+2026-10-28T17:39:11.980779+00:00 select fold4 HGB_leaves15_l210: MAE 4.0187, 14.4s
+2026-10-28T17:39:28.692556+00:00 select fold4 HGB_leaves31_l21: MAE 4.1104, 16.7s
+2026-10-28T17:39:45.562787+00:00 select fold4 HGB_leaves31_l210: MAE 4.1297, 16.8s
+2026-10-28T17:40:05.115360+00:00 select fold4 HGB_leaves63_l21: MAE 4.1929, 19.5s
+2026-10-28T17:40:27.081168+00:00 select fold4 HGB_leaves63_l210: MAE 4.1391, 21.9s
+2026-10-28T17:40:53.957544+00:00 select fold4 HGB_leaves127_l21: MAE 4.3054, 26.8s
+2026-10-28T17:41:21.920760+00:00 select fold4 HGB_leaves127_l210: MAE 4.3162, 27.9s
+2026-10-28T17:41:23.822489+00:00 select fold5 OLS: MAE 4.0133, 0.9s
+2026-10-28T17:41:23.950674+00:00 select fold5 Ridge_a1: MAE 4.0112, 0.1s
+2026-10-28T17:41:24.073534+00:00 select fold5 Ridge_a10: MAE 4.0004, 0.1s
+2026-10-28T17:41:24.194624+00:00 select fold5 Ridge_a100: MAE 3.9528, 0.1s
+2026-10-28T17:41:24.316002+00:00 select fold5 Ridge_a1000: MAE 3.9024, 0.1s
+2026-10-28T17:41:25.186000+00:00 select fold5 Tree_d6_l30: MAE 3.7060, 0.9s
+2026-10-28T17:41:26.083647+00:00 select fold5 Tree_d6_l100: MAE 3.7100, 0.9s
+2026-10-28T17:41:27.218562+00:00 select fold5 Tree_d10_l30: MAE 3.7697, 1.1s
+2026-10-28T17:41:28.305501+00:00 select fold5 Tree_d10_l100: MAE 3.6964, 1.1s
+2026-10-28T17:41:43.871109+00:00 select fold5 RF_d12_l30: MAE 3.5085, 15.5s
+2026-10-28T17:41:58.086577+00:00 select fold5 RF_d12_l80: MAE 3.5306, 14.2s
+2026-10-28T17:42:14.280709+00:00 select fold5 RF_d20_l30: MAE 3.4932, 16.2s
+2026-10-28T17:42:29.003920+00:00 select fold5 RF_d20_l80: MAE 3.5346, 14.7s
+2026-10-28T17:42:46.241510+00:00 select fold5 RF_dNone_l30: MAE 3.4811, 17.2s
+2026-10-28T17:43:01.043981+00:00 select fold5 RF_dNone_l80: MAE 3.5377, 14.8s
+2026-10-28T17:43:17.073893+00:00 select fold5 HGB_leaves15_l21: MAE 2.7190, 16.0s
+2026-10-28T17:43:33.035336+00:00 select fold5 HGB_leaves15_l210: MAE 2.7194, 15.9s
+2026-10-28T17:43:51.119806+00:00 select fold5 HGB_leaves31_l21: MAE 2.7711, 18.1s
+2026-10-28T17:44:09.850152+00:00 select fold5 HGB_leaves31_l210: MAE 2.7484, 18.7s
+2026-10-28T17:44:32.168886+00:00 select fold5 HGB_leaves63_l21: MAE 2.8156, 22.3s
+2026-10-28T17:44:56.368495+00:00 select fold5 HGB_leaves63_l210: MAE 2.8421, 24.1s
+2026-10-28T17:45:24.546653+00:00 select fold5 HGB_leaves127_l21: MAE 2.8560, 28.1s
+2026-10-28T17:45:53.225329+00:00 select fold5 HGB_leaves127_l210: MAE 2.8457, 28.6s
+2026-10-28T17:45:53.288247+00:00 Main CV complete; test remains locked. Next: diagnostics and temporal ensemble.
+2026-10-28T17:47:53.911657+00:00 select: existing completed main CV retained
+2026-10-28T17:48:02.694954+00:00 diagnostic HGB_no_calendar fold1: MAE 5.4679, 8.7s
+2026-10-28T17:48:13.431892+00:00 diagnostic HGB_no_calendar fold2: MAE 7.0279, 10.7s
+2026-10-28T17:48:25.445664+00:00 diagnostic HGB_no_calendar fold3: MAE 7.0575, 12.0s
+2026-10-28T17:48:39.178518+00:00 diagnostic HGB_no_calendar fold4: MAE 3.7591, 13.7s
+2026-10-28T17:48:54.952289+00:00 diagnostic HGB_no_calendar fold5: MAE 3.4336, 15.8s
+2026-10-28T17:49:04.866868+00:00 diagnostic HGB_calendar fold1: MAE 5.6575, 9.9s
+2026-10-28T17:49:18.523077+00:00 diagnostic HGB_calendar fold2: MAE 7.4081, 13.6s
+2026-10-28T17:49:33.525747+00:00 diagnostic HGB_calendar fold3: MAE 7.2855, 15.0s
+2026-10-28T17:49:49.795543+00:00 diagnostic HGB_calendar fold4: MAE 4.0000, 16.3s
+2026-10-28T17:50:07.452246+00:00 diagnostic HGB_calendar fold5: MAE 2.7190, 17.6s
+2026-10-28T17:50:17.318040+00:00 diagnostic HGB_absolute fold1: MAE 5.4612, 9.8s
+2026-10-28T17:50:29.554464+00:00 diagnostic HGB_absolute fold2: MAE 6.3055, 12.2s
+2026-10-28T17:50:42.965874+00:00 diagnostic HGB_absolute fold3: MAE 6.9619, 13.4s
+2026-10-28T17:50:57.553347+00:00 diagnostic HGB_absolute fold4: MAE 5.0631, 14.6s
+2026-10-28T17:51:14.616375+00:00 diagnostic HGB_absolute fold5: MAE 4.6458, 17.1s
+2026-10-28T17:51:43.205955+00:00 diagnostic HGB_risk fold1: MAE 5.5071, 28.6s
+2026-10-28T17:52:17.691325+00:00 diagnostic HGB_risk fold2: MAE 6.5494, 34.5s
+2026-10-28T17:52:59.033171+00:00 diagnostic HGB_risk fold3: MAE 6.8481, 41.3s
+2026-10-28T17:53:48.817517+00:00 diagnostic HGB_risk fold4: MAE 4.5929, 49.8s
+2026-10-28T17:54:46.596322+00:00 diagnostic HGB_risk fold5: MAE 2.8003, 57.8s
+2026-10-28T17:54:52.577681+00:00 diagnostic RF_log_target fold1: MAE 5.5927, 6.0s
+2026-10-28T17:55:01.413433+00:00 diagnostic RF_log_target fold2: MAE 7.3263, 8.8s
+2026-10-28T17:55:12.385705+00:00 diagnostic RF_log_target fold3: MAE 7.3184, 11.0s
+2026-10-28T17:55:24.725925+00:00 diagnostic RF_log_target fold4: MAE 3.7957, 12.3s
+2026-10-28T17:55:39.507390+00:00 diagnostic RF_log_target fold5: MAE 2.9198, 14.8s
+2026-10-28T17:55:50.308427+00:00 diagnostic HGB_gap0 fold1: MAE 5.6055, 10.8s
+2026-10-28T17:56:03.001950+00:00 diagnostic HGB_gap0 fold2: MAE 7.5164, 12.7s
+2026-10-28T17:56:17.612925+00:00 diagnostic HGB_gap0 fold3: MAE 7.2856, 14.6s
+2026-10-28T17:56:34.235703+00:00 diagnostic HGB_gap0 fold4: MAE 3.9771, 16.6s
+2026-10-28T17:56:52.723977+00:00 diagnostic HGB_gap0 fold5: MAE 2.6292, 18.5s
+2026-10-28T17:57:03.830746+00:00 diagnostic HGB_gap26 fold1: MAE 5.6131, 11.1s
+2026-10-28T17:57:16.173328+00:00 diagnostic HGB_gap26 fold2: MAE 7.4312, 12.3s
+2026-10-28T17:57:30.271021+00:00 diagnostic HGB_gap26 fold3: MAE 7.2602, 14.1s
+2026-10-28T17:57:46.529712+00:00 diagnostic HGB_gap26 fold4: MAE 3.9816, 16.3s
+2026-10-28T17:58:04.450839+00:00 diagnostic HGB_gap26 fold5: MAE 2.6966, 17.9s
+2026-10-28T17:58:04.475548+00:00 Feature/gap diagnostics complete; chronological test is still locked.
+2026-10-28T17:58:10.901442+00:00 stack inner fold1/2017-09: 16725 train / 4149 meta rows
+2026-10-28T17:58:19.522491+00:00 stack inner fold1/2017-10: 20831 train / 4475 meta rows
+2026-10-28T17:58:29.914508+00:00 stack inner fold1/2017-11: 25136 train / 3625 meta rows
+2026-10-28T17:58:42.469202+00:00 stack inner fold2/2017-10: 20831 train / 4477 meta rows
+2026-10-28T17:58:52.937017+00:00 stack inner fold2/2017-11: 25136 train / 7275 meta rows
+2026-10-28T17:59:05.661683+00:00 stack inner fold2/2017-12: 29360 train / 4552 meta rows
+2026-10-28T17:59:24.237759+00:00 stack inner fold3/2017-11: 25136 train / 7280 meta rows
+2026-10-28T17:59:37.770864+00:00 stack inner fold3/2017-12: 29360 train / 5502 meta rows
+2026-10-28T17:59:54.296601+00:00 stack inner fold3/2018-01: 34246 train / 4533 meta rows
+2026-10-28T18:00:15.932122+00:00 stack inner fold4/2017-12: 29360 train / 5510 meta rows
+2026-10-28T18:00:31.713164+00:00 stack inner fold4/2018-01: 34246 train / 7047 meta rows
+2026-10-28T18:00:52.378881+00:00 stack inner fold4/2018-02: 42450 train / 4416 meta rows
+2026-10-28T18:01:17.936179+00:00 stack inner fold5/2018-01: 34246 train / 7064 meta rows
+2026-10-28T18:01:38.565581+00:00 stack inner fold5/2018-02: 42450 train / 6523 meta rows
+2026-10-28T18:02:02.000537+00:00 stack inner fold5/2018-03: 47940 train / 5119 meta rows
+2026-10-28T18:02:10.466030+00:00 Stacking CV MAE 5.2971, gain -0.71%; retained=False. Test remains locked.
+2026-10-28T18:02:10.523705+00:00 Final selection and all test comparators frozen before test scoring: HGB_risk
+2026-10-28T18:04:02.812566+00:00 Frozen test complete: HGB_risk, MAE 3.4343, RMSE 5.0925. No further model selection permitted.
+2026-10-28T18:05:09.286334+00:00 Post-freeze error and interpretation tables written; selection unchanged.
+2026-10-28T18:06:29.953272+00:00 Fixed-configuration random reference complete; final selection unchanged.
+2026-10-28T18:06:30.814336+00:00 Nine source-backed figures generated.
+2026-10-28T18:06:31.005343+00:00 Report/presentation/deployment materials and notebook sources prepared.
+2026-10-28T18:07:08.380678+00:00 Report/presentation/deployment materials and notebook sources prepared.
+2026-10-28T18:12:11.341782+00:00 Report/presentation/deployment materials and notebook sources prepared.
+2026-10-28T18:13:39.325231+00:00 Report/presentation/deployment materials and notebook sources prepared.
+2026-10-28T18:19:49.414022+00:00 Report/presentation/deployment materials and notebook sources prepared.
+2026-10-28T18:25:28.711143+00:00 Report/presentation/deployment materials and notebook sources prepared.

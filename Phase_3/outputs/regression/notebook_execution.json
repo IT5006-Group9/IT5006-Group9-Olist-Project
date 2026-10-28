@@ -1,0 +1,14 @@
+[
+  {
+    "notebook": "delivery_regression_chronological.ipynb",
+    "code_cells": 12,
+    "errors": 0,
+    "rendered_images": 9
+  },
+  {
+    "notebook": "stacking_chronological.ipynb",
+    "code_cells": 4,
+    "errors": 0,
+    "rendered_images": 1
+  }
+]

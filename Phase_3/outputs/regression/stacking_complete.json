@@ -1,0 +1,10 @@
+{
+  "cv_mae": 5.297120964089719,
+  "cv_sd": 1.2864904207042451,
+  "best_single_cv_mae": 5.25954748190211,
+  "relative_gain": -0.007143862151049563,
+  "retained": false,
+  "threshold": 0.01,
+  "base_configuration_scope": "Base parameters selected using main five-month CV; not fully nested hyperparameter selection.",
+  "meta_rule": "Three recent inner expanding windows per outer training frame; convex weights, zero intercept."
+}

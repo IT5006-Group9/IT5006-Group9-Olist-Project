@@ -1,0 +1,33 @@
+{
+  "prediction_point": "purchase timestamp",
+  "target": "(receipt-purchase) fractional days",
+  "validation_months": [
+    "2018-01",
+    "2018-02",
+    "2018-03",
+    "2018-04",
+    "2018-05"
+  ],
+  "training_start": "2017-01-01",
+  "selection_labels_before": "2018-06-01",
+  "test_window": [
+    "2018-06-01",
+    "2018-09-01"
+  ],
+  "main_gap_days": 39,
+  "training_rule": "purchase < cutoff-gap AND receipt < cutoff",
+  "selection_rule": "mean monthly validation MAE, sample SD; pooled MAE separately reported",
+  "success_criteria": {
+    "mae_reduction_vs_training_median": 0.05,
+    "beat_delivery_promise": true
+  },
+  "seed": 5006,
+  "primary_target_scale": "original fractional days",
+  "test_previously_exposed": true,
+  "source_hashes": {
+    "config": "e5dc06f7dc5fb910acb813570eff27006390071256af362ff1bc8e15a440fa82",
+    "data": "206af0ecb173b2d0a67e6c06fdffea1adc02d6037a5c9ea8f754bb5325d30445",
+    "splits": "7eac936b84c28310dd8e0e44cb3864ed23b447a891daf21f7fe4fe5d440eef12",
+    "audit": "87c90a27ef06dd157956d180563084cdf1b8cdeacad93be3749943bebe64d1c1"
+  }
+}

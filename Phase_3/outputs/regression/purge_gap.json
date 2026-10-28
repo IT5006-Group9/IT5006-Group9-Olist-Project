@@ -1,0 +1,7 @@
+{
+  "reference": "2017 purchases delivered before 2018-01-01",
+  "reference_n": 40930,
+  "q95_days": 26,
+  "q99_days": 39,
+  "limitation": "Quantiles describe already observed outcomes, not the unobserved pending tail."
+}

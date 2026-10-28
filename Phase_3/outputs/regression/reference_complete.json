@@ -1,0 +1,8 @@
+{
+  "seed": 33,
+  "train_fraction": 0.67,
+  "cohort_n": 96203,
+  "chronological_configuration_reused": true,
+  "used_for_selection": false,
+  "limitation": "Different training sizes, maturity filters and test populations; score difference is not isolated algorithm improvement."
+}

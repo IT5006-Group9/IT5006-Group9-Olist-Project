@@ -1,0 +1,12 @@
+{
+  "best_single": {
+    "candidate": "HGB_risk",
+    "family": "HGB",
+    "pack": "risk",
+    "log_target": false,
+    "cv_mae": 5.25954748190211,
+    "cv_sd": 1.6386459062653604
+  },
+  "design_sha256": "b0f97d8169d1a6ed9d7c9461b386d861a34bfabcf43d77bdb8ed979835c9549e",
+  "candidate_count": 10
+}

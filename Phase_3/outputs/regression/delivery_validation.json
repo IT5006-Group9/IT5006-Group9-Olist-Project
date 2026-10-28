@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "phase2_and_classification_files_byte_identical_to_start": 574,
+  "frozen_learning_sources_unchanged": [
+    "config.py",
+    "audit.py",
+    "models.py",
+    "__init__.py",
+    "extensions.py",
+    "run_pipeline.py",
+    "pipeline.py",
+    "finalise.py",
+    "risk.py",
+    "splits.py",
+    "data.py",
+    "score.py"
+  ],
+  "post_freeze_presentation_or_verification_sources_updated": [
+    "verify.py",
+    "reporting.py"
+  ],
+  "local_markdown_links_checked": 33,
+  "broken_links": [],
+  "frozen_audit_reset_refused": true,
+  "test_lock_unchanged_after_guard_check": true,
+  "raw_zip_independent_rebuild": "frozen_reproduction_check.json",
+  "public_reading_without_private_inputs": "public_reading_check.json",
+  "deployment": "deployment_bundle_check.json",
+  "full_search_repeated": false
+}

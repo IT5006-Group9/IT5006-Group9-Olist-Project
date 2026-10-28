@@ -1,0 +1,44 @@
+feature,group,type,availability,source,target_derived,used_in_main_pack,formula_or_definition,used_in_selected_model
+promised_lead_time_days,promise,numeric,purchase; archived metadata assumption,orders,False,True,(estimated receipt - purchase timestamp) / 86400 seconds,True
+max_distance_km,geography,numeric,purchase; archived metadata assumption,"items, orders, customers, sellers, geolocation",False,True,"Maximum per-item haversine distance, rounded to 0.1 km; screened, deduplicated zip-prefix median coordinates",True
+any_distance_missing,geography,numeric,purchase; archived metadata assumption,same route join,False,True,1 if at least one item lacks a calculable distance,True
+same_state,geography,numeric,purchase; archived metadata assumption,"customers, sellers, items",False,True,1 if every seller state equals the customer state,True
+total_price,order,numeric,purchase; archived metadata assumption,order items,False,True,Sum item price per order,True
+total_freight,order,numeric,purchase; archived metadata assumption,order items,False,True,Sum freight_value per order,True
+freight_ratio,order,numeric,purchase; archived metadata assumption,order items,False,True,total_freight / total_price; nonpositive denominator becomes missing,True
+item_count,order,numeric,purchase; archived metadata assumption,order items,False,True,Number of item rows,True
+seller_count,order,numeric,purchase; archived metadata assumption,order items,False,True,Number of distinct sellers,True
+primary_seller_price_share,order,numeric,purchase; archived metadata assumption,order items,False,True,Price of primary seller / total item price,True
+seller_state_count,order,numeric,purchase; archived metadata assumption,"order items, sellers",False,True,Number of distinct observed seller states,True
+avg_product_weight_g,product,numeric,purchase; archived metadata assumption,"order items, products",False,True,Mean positive item weight only when every item has valid weight; otherwise missing,True
+any_weight_missing,product,numeric,purchase; archived metadata assumption,"order items, products",False,True,1 if any item weight is missing or nonpositive,True
+distinct_product_count,product,numeric,purchase; archived metadata assumption,order items,False,True,Number of distinct products,True
+category_count_observed,product,numeric,purchase; archived metadata assumption,"order items, products",False,True,Number of distinct nonmissing source category names,True
+dominant_category_price_share,product,numeric,purchase; archived metadata assumption,"order items, products",False,True,Highest summed category item price / total item price,True
+max_product_weight_g,product,numeric,purchase; archived metadata assumption,"order items, products",False,True,Maximum valid positive item weight,True
+total_known_weight_g,product,numeric,purchase; archived metadata assumption,"order items, products",False,True,Sum valid positive item weights; missing if none are known,True
+max_product_volume_cm3,product,numeric,purchase; archived metadata assumption,"order items, products",False,True,"Maximum length * height * width, all three positive and observed",True
+total_known_volume_cm3,product,numeric,purchase; archived metadata assumption,"order items, products",False,True,Sum valid item volumes; missing if none are known,True
+mean_unit_price,product,numeric,purchase; archived metadata assumption,order items,False,True,Mean item price,True
+any_volume_missing,product,numeric,purchase; archived metadata assumption,"order items, products",False,True,1 if at least one item lacks a valid positive three-dimensional volume,True
+month_sin,calendar,numeric,purchase; archived metadata assumption,orders,False,True,sin(2*pi*(purchase month - 1)/12),True
+month_cos,calendar,numeric,purchase; archived metadata assumption,orders,False,True,cos(2*pi*(purchase month - 1)/12),True
+weekday_sin,calendar,numeric,purchase; archived metadata assumption,orders,False,True,sin(2*pi*(purchase day of week (Mon=0))/7),True
+weekday_cos,calendar,numeric,purchase; archived metadata assumption,orders,False,True,cos(2*pi*(purchase day of week (Mon=0))/7),True
+hour_sin,calendar,numeric,purchase; archived metadata assumption,orders,False,True,sin(2*pi*(purchase hour)/24),True
+hour_cos,calendar,numeric,purchase; archived metadata assumption,orders,False,True,cos(2*pi*(purchase hour)/24),True
+purchase_elapsed_days,absolute_calendar,numeric,purchase; archived metadata assumption,orders,False,False,Days since fixed 2016-01-01; diagnostic variant only,False
+customer_state,geography,categorical,purchase; archived metadata assumption,customers,False,True,customer_state joined by customer_id,True
+route_group,geography,categorical,purchase; archived metadata assumption,"items, customers, sellers",False,True,Unknown if states missing; otherwise any seller cross-state or all sellers same-state,True
+primary_seller_state,geography,categorical,purchase; archived metadata assumption,"order items, sellers",False,True,State of the primary seller,True
+primary_seller_city,geography,categorical,purchase; archived metadata assumption,"order items, sellers",False,True,City of the primary seller,True
+customer_city,geography,categorical,purchase; archived metadata assumption,customers,False,True,customer_city joined by customer_id,True
+primary_state_route,geography,categorical,purchase; archived metadata assumption,"customers, primary seller",False,True,primary seller state | customer state,True
+primary_city_route,geography,categorical,purchase; archived metadata assumption,"customers, primary seller",False,True,seller state:city | customer state:city,True
+primary_zip_zone_route,geography,categorical,purchase; archived metadata assumption,"customers, primary seller",False,True,"Integer zip prefix // 1000 for seller and customer, concatenated",True
+primary_seller_id,seller,categorical,purchase; archived metadata assumption,order items,False,True,Seller with greatest summed item price; seller_id lexical tie-break,True
+category_group,product,categorical,purchase; archived metadata assumption,"products, category translation, items",False,True,"Missing/incomplete, Multiple categories, or the first single English category",True
+dominant_category,product,categorical,purchase; archived metadata assumption,"products, items",False,True,Source category with highest summed price; lexical tie-break; missing category as explicit level,True
+purchase_year_month,absolute_calendar,categorical,purchase; archived metadata assumption,orders,False,False,YYYY-MM categorical purchase date; diagnostic variant only,False
+risk_p30,risk,numeric,Generated from purchase inputs by a previously fitted classifier,Auxiliary past-only risk model,True,False,P(duration >30 days) from an auxiliary classifier trained only on earlier monthly blocks,True
+risk_unavailable,risk,numeric,Generated from purchase inputs by a previously fitted classifier,Auxiliary past-only risk model,True,False,1 for early cold-start training rows without an earlier classifier; 0 otherwise,True
