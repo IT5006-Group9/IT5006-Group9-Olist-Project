@@ -7,3 +7,4 @@
 - [Deployment interface](deployment_handoff.md)
 - [Complete notebook](../../notebooks/regression/delivery_regression_chronological.ipynb)
 - [Stacking comparison](../../notebooks/regression/stacking_chronological.ipynb)
+- [All 14 Phase 2 combinations rerun chronologically](../../notebooks/regression/phase2_stacking_chronological.ipynb) — [inventory, method and results](phase2_stacking_chronological.md)

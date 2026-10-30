@@ -6,6 +6,7 @@ Phase 3 rebuilds the Phase 2 models around a **chronological evaluation** (TA fe
 
 - [Complete executed regression notebook](notebooks/regression/delivery_regression_chronological.ipynb)
 - [Temporal ensemble comparison](notebooks/regression/stacking_chronological.ipynb)
+- [All 14 Phase 2 combinations, rerun chronologically](notebooks/regression/phase2_stacking_chronological.ipynb): a separate nested development comparison, including the original 12 Ridge and six RF candidates; [protocol and reproduction](src/regression_stacking/README.md).
 - [Regression report and presentation materials](docs/regression/README.md)
 - [Regression runner and reproduction instructions](src/regression/README.md)
 - [Aggregate regression evidence](outputs/regression/)

@@ -1,0 +1,10 @@
+# Phase 2 stacking migration: Python 3.12, separate from the main regression run.
+numpy==2.3.5
+pandas==2.2.3
+scipy==1.16.3
+scikit-learn==1.7.2
+matplotlib==3.10.7
+joblib==1.5.2
+nbformat==5.10.4
+nbclient==0.10.2
+ipykernel==7.1.0

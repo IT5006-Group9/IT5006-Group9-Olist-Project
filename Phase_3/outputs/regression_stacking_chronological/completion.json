@@ -1,0 +1,11 @@
+{
+  "completed_at": "2026-10-30T10:57:56.672373+00:00",
+  "combinations": 14,
+  "outer_folds": 5,
+  "all_combinations_complete": true,
+  "inner_candidate_fits": 345,
+  "test_evaluations": 0,
+  "existing_evidence_unchanged": true,
+  "protocol_sha256": "eade5bc0a0b682b82fff5bb8109bf3e85eab5eaebbe0dafc176b7353f59b7631",
+  "interpretation": "Retrospective chronological development comparison; no new independent test"
+}
