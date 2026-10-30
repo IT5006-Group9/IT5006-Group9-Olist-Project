@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "verified_at": "2026-10-30T11:19:38.168494+00:00",
+  "replayed_selected_ensembles": 2,
+  "test_n": 18603,
+  "strict_training_and_meta_label_boundaries": true,
+  "frozen_weights_and_prediction_replay": true,
+  "original_evidence_unchanged": true,
+  "historical_test_exposure_disclosed": true
+}

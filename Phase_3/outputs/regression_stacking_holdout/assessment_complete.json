@@ -1,0 +1,12 @@
+{
+  "completed_at": "2026-10-30T11:18:16.263666+00:00",
+  "selection_sha256": "90bfc510c249cc709c1df509392ab12ec4cb3d010a9790d680cea2484337f350",
+  "assessment_events": 1,
+  "cv_selected_ensembles": 2,
+  "test_n": 18603,
+  "test_ids_match_original_assessment": true,
+  "test_label_perturbation_invariant_features": true,
+  "original_evidence_unchanged": true,
+  "independent_new_holdout": false,
+  "interpretation": "Historical supplementary test; no test-driven reselection or deployment change"
+}

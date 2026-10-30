@@ -1,0 +1,78 @@
+{
+  "protocol_sha256": "5d41f55c782118b9c03eb5eebe39c1ab8bcd547fbb11f248b6ec07ded39afb48",
+  "selected": {
+    "stack": "stack_two_fixed",
+    "mean": "mean_three_fixed"
+  },
+  "stack_members": [
+    "ridge_fixed",
+    "forest_fixed"
+  ],
+  "stack_weights": [
+    0.6282120445549371,
+    0.37178795544506293
+  ],
+  "mean_members": [
+    "ridge_fixed",
+    "forest_fixed",
+    "hgb"
+  ],
+  "mean_weights": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+  ],
+  "meta_windows": [
+    {
+      "month": "2018-02",
+      "cutoff": "2018-02-01 00:00:00",
+      "gap_days": 39,
+      "train_n": 42450,
+      "score_n": 6551,
+      "train_ids_sha256": "e91e4d5d3dbbfe978a1ec09016c313feea92ba9b9c0a8c6b967859af595b5667",
+      "score_ids_sha256": "ee5333ed24249e8b4c0ea1ea5b91922f807a6131f9242b10503574081d7682cf",
+      "latest_train_purchase": "2017-12-23 23:49:03",
+      "latest_train_label": "2018-01-31 23:45:08",
+      "latest_score_label": "2018-05-30 23:50:44",
+      "meta_label_cutoff": "2018-06-01 00:00:00",
+      "overlap": 0,
+      "future_training_labels": 0
+    },
+    {
+      "month": "2018-03",
+      "cutoff": "2018-03-01 00:00:00",
+      "gap_days": 39,
+      "train_n": 47940,
+      "score_n": 6996,
+      "train_ids_sha256": "7b47e4d9a42f41f88a58504691ebf73259c7d98b242be605d5b616819febd0e9",
+      "score_ids_sha256": "9b36752b0b4c653f8a5ba496a70daea381069f621dabad0ae0bb8fea131d2ddc",
+      "latest_train_purchase": "2018-01-20 23:58:24",
+      "latest_train_label": "2018-02-28 23:48:36",
+      "latest_score_label": "2018-05-27 10:12:33",
+      "meta_label_cutoff": "2018-06-01 00:00:00",
+      "overlap": 0,
+      "future_training_labels": 0
+    },
+    {
+      "month": "2018-04",
+      "cutoff": "2018-04-01 00:00:00",
+      "gap_days": 39,
+      "train_n": 54882,
+      "score_n": 4875,
+      "train_ids_sha256": "6ee3e4090d9883a31383320c318436fca8b3b3955a756609d8874efb18720dd0",
+      "score_ids_sha256": "b0fb3ec3562cf2549b14919dafd711794031c009028b0cf60b6f04cac45f036c",
+      "latest_train_purchase": "2018-02-20 23:46:53",
+      "latest_train_label": "2018-03-31 13:51:44",
+      "latest_score_label": "2018-05-30 21:58:51",
+      "meta_label_cutoff": "2018-06-01 00:00:00",
+      "overlap": 0,
+      "future_training_labels": 0
+    }
+  ],
+  "meta_rows": 18422,
+  "meta_fit_mae": 6.257665193907209,
+  "test_order_ids_sha256": "0a64a488c59ed84f7ef5b242cf39171732d9113b6657c2eb3dc0fc534f05ceff",
+  "frozen_at": "2026-10-30T11:15:04.444838+00:00",
+  "test_predictions_started": false,
+  "selection_sha256": "90bfc510c249cc709c1df509392ab12ec4cb3d010a9790d680cea2484337f350"
+}

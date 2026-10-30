@@ -1,0 +1,12 @@
+{
+  "selection_sha256": "90bfc510c249cc709c1df509392ab12ec4cb3d010a9790d680cea2484337f350",
+  "test_ids_sha256": "0a64a488c59ed84f7ef5b242cf39171732d9113b6657c2eb3dc0fc534f05ceff",
+  "previously_exposed": true,
+  "evaluations": [
+    {
+      "evaluated_at": "2026-10-30T11:18:16.263351+00:00",
+      "selection_sha256": "90bfc510c249cc709c1df509392ab12ec4cb3d010a9790d680cea2484337f350",
+      "results_sha256": "0a3dad9b287365c87a32fa9e3ea9515f2f5a3caf5c09e9908144fdb3cbe99bee"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "built_at": "2026-10-30T11:19:39.345290+00:00",
+  "passed": true,
+  "assessment_verification_passed": true,
+  "reading_notebook_only": true,
+  "new_model_fits": 0,
+  "new_test_predictions": 0,
+  "selected_ensembles": 2,
+  "input_sha256": {
+    "tables/test_comparison.csv": "0a3dad9b287365c87a32fa9e3ea9515f2f5a3caf5c09e9908144fdb3cbe99bee",
+    "tables/test_by_month.csv": "4cf4361416ec860d57333f4b9b2fb39022654128caf3a99d9097aa08eb833345",
+    "tables/frozen_weights.csv": "787b0f6a3996c49b29e881bdca9e2bfc8d93fe628299c6f396915d09bb51a773",
+    "tables/meta_time_audit.csv": "af49f0ce31ade202f0ef7a55f7436034ded7abe93a6f37552d4d698596160c85",
+    "frozen_selection.json": "f3cd0d9a9eeb83ac56819255fe7754d71db163622942b3fe42db22ed15ff6389",
+    "verification.json": "ff5fddb6a689b6480d074f29cf2ab44840c1f5121c934c07ad1e7f297f13faef"
+  },
+  "builder_sha256": "4992f631ba370d89da161386d3c351167732d55d0db2399b8592c135b91fb9cd",
+  "notebook_sha256": "54f29992ec2f94de4abedbdb603ac51592762e5d755ecd994ba4a7b4ce68d2ef",
+  "document_sha256": "e0f25e66655f00e9ba309d138532b6d0bfa02895dbd9c697ce5ccbd35b3803f1"
+}
