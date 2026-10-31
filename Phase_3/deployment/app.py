@@ -199,6 +199,7 @@ def overview(ev):
         st.subheader("What supports the model choice?")
         st.write(f"Delivery test MAE: {ev['regression_summary']['test']['mae']:.2f} days. Low-review test PR-AUC: {ev['classification_summary']['test']['pr_auc']:.3f}.")
         st.caption("These fixed evaluation results use separate test cohorts and do not change with the filters above.")
+        st.caption("Classification evidence has unresolved timing limitations. Review the audit on Model evidence before interpreting its performance.")
         st.button("Review models & stacking →", on_click=navigate, args=("Model evidence",))
 
 
@@ -283,7 +284,7 @@ def prediction():
             b.metric("This order's absolute error", f"{abs(days-actual.actual_days):.1f} days")
             st.caption(f"Historical arrival: {pd.Timestamp(actual.delivered_ts):%d %B %Y}. One order's error is not the overall model MAE.")
         st.download_button("Download this forecast", pd.DataFrame([result]).to_csv(index=False), file_name=f"delivery_forecast_{selected[-6:]}.csv", mime="text/csv")
-        st.caption("Historical proof of concept · Selected model: HGB_risk · Trained before June 2018. No model fitting runs inside the app.")
+        st.caption("Historical proof of concept · Selected model: HGB_risk · Training cutoff: 1 June 2018. No model fitting runs inside the app.")
 
 
 def regression_evidence(ev):
@@ -298,6 +299,19 @@ def regression_evidence(ev):
         ("Test RMSE", f"{summary['test']['rmse']:.2f} days", "Penalises large errors more strongly than MAE."),
     ])
     st.success(f"Preset target met: {summary['success']['mae_reduction_vs_median']:.1%} lower test MAE than the training-median reference (target: at least 5%), and better than the recorded delivery promise.")
+    st.caption(f"{summary['test']['within3']:.1%} of test deliveries are within ±3 days of the forecast. Average MAE does not provide an individual delivery guarantee.")
+    with st.expander("Selection stability and long-delivery errors", expanded=True):
+        sensitivity = ev["regression_selection_sensitivity"]
+        if not sensitivity.empty:
+            rows = sensitivity[sensitivity.candidate.isin([summary["selected_candidate"], "Ridge_a100"])]
+            st.write("The validation lead over Ridge is small, and the ranking changes when May is excluded. May's evaluation contains only outcomes available by the selection cutoff. This sensitivity limits claims that the more complex model is consistently better.")
+            st.dataframe(rows.rename(columns={"candidate": "Model", "five_month_mae": "Jan–May MAE", "jan_apr_mae": "Jan–Apr MAE", "five_month_rank": "Jan–May rank", "jan_apr_rank": "Jan–Apr rank"}), hide_index=True, width="stretch")
+            st.caption("This is a saved diagnostic. It does not select a new model after seeing the test results.")
+        groups = ev["regression_error_groups"]
+        if not groups.empty:
+            durations = groups[groups.group.isin(["0-14 days", "14-30 days", "30-60 days", ">60 days"])]
+            st.dataframe(durations[["group", "n", "mae", "bias", "within3"]].rename(columns={"group": "Actual delivery duration", "n": "Orders", "mae": "MAE (days)", "bias": "Mean forecast minus actual (days)", "within3": "Share within ±3 days"}), hide_index=True, width="stretch")
+            st.caption("Groups use the historical outcome and cannot be assigned at purchase. Long deliveries are systematically underestimated; no individual prediction interval has been calibrated.")
     left, right = st.columns([1.3, 1])
     with left, st.container(border=True):
         st.subheader("Saved model comparison")
@@ -335,6 +349,8 @@ def classification_evidence(ev):
     cv = ev["classification_cv"]
     selected = cv[cv.family.eq("random_forest")].iloc[0]
     st.caption(f"Low-review risk at T = min(delivery, promised delivery) · {test['n']:,} orders with T in June–August 2018 · Target: 1–2 stars")
+    st.warning("Timing audit: some training and validation reviews were answered after the simulated decision cutoff, and some approval/carrier events occur after T. These archived scores require a rerun with strict feature and label availability before supporting prospective performance claims.")
+    st.markdown(f"[Read the timing audit and required corrections]({REPO}/blob/main/Phase_3/docs/quality_audit.md)")
     panel_metrics([
         ("Training PR-AUC", f"{summary['train']['pr_auc']:.3f}", "Final model, in sample."),
         ("CV / validation PR-AUC", f"{selected.cv_pr_auc_mean:.3f}", "Five January–May forward validation months; CV and validation refer to the same windows."),
@@ -458,13 +474,15 @@ def guide(ev):
     with st.expander("Evaluation method & practical limits", expanded=True):
         st.write("January–May 2018 provides five forward validation windows for model development. June–August 2018 is the later test period. Validation and test differ in periods, available history, outcome maturity and averaging.")
         st.write("Regression uses a 39-day gap and only labels observed before each training cutoff. The main model was selected by forward validation. Historical test exposure prevents interpreting these results as a newly untouched holdout.")
-        st.write("Classification uses a 27-day gap based on review-answer lag. Its recorded training windows still include a small proportion of labels answered after the cutoff; the current evidence does not establish zero label-timing leakage.")
+        st.write("Classification uses a 27-day gap based on review-answer lag. A timing audit found labels unavailable at training and model-selection cutoffs, and a small number of approval/carrier events after T. The saved classification assessment needs a new run with explicit availability filters; a gap alone does not ensure valid timing.")
         st.write("The 20% classification rule was evaluated on historical batches, not live daily queues. July recall was below 50%. Low-review risk is not evidence that contacting a customer will improve their review.")
         st.write("The data covers historical Olist orders. This demonstration neither connects to a live order feed nor establishes performance on today's marketplace.")
     st.subheader("Sources & project materials")
     st.link_button("Project brief", BRIEF)
     st.link_button("Phase 3 code, notebooks & evidence", REPO + "/tree/main/Phase_3")
     st.link_button("Supplementary stacking report", REPO + "/blob/main/Phase_3/docs/regression/selected_stacking_holdout.md")
+    st.link_button("Quality audit & remaining report work", REPO + "/blob/main/Phase_3/docs/quality_audit.md")
+    st.link_button("Full feature & model appendix", REPO + "/blob/main/Phase_3/docs/report_appendix_features_models.md")
     if (ASSETS / "manifest.json").exists():
         with st.expander("Delivery demonstration provenance"):
             st.json(json.loads((ASSETS / "manifest.json").read_text()))

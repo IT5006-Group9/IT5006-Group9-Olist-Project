@@ -10,7 +10,7 @@ Use `01_windows.png`, then the compact model-comparison table or `02_model_compa
 
 Use `04_tail_errors.png` and, if room, `05_importance.png`.
 
-“We report monthly and long-duration errors rather than only one average. An average error does not guarantee an individual arrival date. Estimates can support provisional customer communication and route review; unusually slow orders still need human follow-up. May's available labels cover only 65.3% of completed validation orders at selection time, and the historical test was previously exposed. We therefore treat this as a constrained retrospective assessment, not proof of future operational accuracy. The app uses the same frozen prediction bundle.”
+“We report monthly and long-duration errors rather than only one average. An average error does not guarantee an individual arrival date. Estimates can support provisional customer communication and route review; unusually slow orders still need human follow-up. May's available labels cover only 65.3% of completed validation orders at selection time, and the historical test was previously exposed. We therefore treat this as a constrained retrospective assessment, not proof of future operational accuracy. The app uses a verified deployment refit of the same frozen configuration, with outcomes revealed separately after prediction.”
 
 ## Q&A evidence
 

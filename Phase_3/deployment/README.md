@@ -18,6 +18,8 @@ Classification is an archived evaluation page in this app. The interface notes
 below are retained as a future classifier handoff reference; they do not imply
 that a classification model bundle is included in the dashboard.
 
+The [quality audit](../docs/quality_audit.md) identifies unresolved training/selection-label availability and feature-event timing in the archived classification procedure. Correct and separately assess those boundaries before using this interface for a prospective deployment claim.
+
 ## Classification interface reference
 
 The app is built in this folder by the deployment owner. This note covers what the classification pipeline provides.

@@ -63,6 +63,8 @@ ranking the top 20% of the entire test window. The frozen validation threshold
 has a different flag rate and recall. Monthly July and label-timing limitations
 remain visible.
 
+The [31 October quality audit](../Phase_3/docs/quality_audit.md) quantifies unresolved classification label and feature availability and the regression selection sensitivity. The archived classification scores require a separately documented timing-corrected experiment before prospective claims. The [complete feature and model appendix](../Phase_3/docs/report_appendix_features_models.md) is ready for inclusion in the final report.
+
 The supplementary test covers the two validation-selected ensembles and their
 members. Stack MAE 4.3875 and equal-mean MAE 3.9275 do not improve on the main
 model. All 14 combinations appear in the separate chronological development

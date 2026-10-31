@@ -10,6 +10,8 @@ chronological model evidence, including the new stacking results.
 See [dashboard setup and usage](../dashboard/README.md). The existing Streamlit
 Cloud entry remains dashboard/app.py.
 
+The [31 October quality audit](docs/quality_audit.md) identifies remaining classification feature/label timing issues and final-report work. Existing classification scores require a separately documented rerun before supporting prospective claims. The [full feature and model appendix](docs/report_appendix_features_models.md) provides embedded tables for both tasks, ready for integration into the final report.
+
 ## Regression entry
 
 - [Complete executed regression notebook](notebooks/regression/delivery_regression_chronological.ipynb)
@@ -35,10 +37,12 @@ Regression uses purchase time, a 39-day embargo **and** receipt before the train
 | | |
 |---|---|
 | Question | At the survey trigger **T = min(delivered date, estimated delivery date)**, will the order receive a 1–2 star review? |
-| Stakeholder and decision | Olist's customer-experience team contacts the **20% highest-risk orders** reaching T each day (proactive outreach before the customer answers the survey) |
+| Stakeholder and decision | Proposed CX contact capacity: the **20% highest-risk orders per scoring window** reaching T, for outreach before the customer answers the survey |
 | Target | `is_low_review` = 1 if review score is 1 or 2 |
 | Primary metric | PR-AUC (average precision) |
-| Success criteria (set before testing) | Test PR-AUC ≥ 2 × the test positive rate; the top 20% contains ≥ 50% of low reviews |
+| Success criteria (set before testing) | Test PR-AUC ≥ 2 × the test positive rate; the top 20% per scoring window contains ≥ 50% of low reviews |
+
+The published 53.23% recall applies to ranking the entire June–August test window. A daily queue policy has not been evaluated. The classification numbers below remain the saved retrospective results: the current split leaves some training labels unavailable at their fitting cutoff and uses some validation labels unavailable by the nominal June 1 selection cutoff. See the [quality audit](docs/quality_audit.md) for exact counts and remaining work; a chronological row order alone does not establish prospective validity.
 
 ## 2. How the pipeline works
 
@@ -52,7 +56,7 @@ course CSVs ──► prepare ──► select ──► test ──► referenc
 | Stage | Reads | Does | Writes (under `outputs/classification/`) |
 |---|---|---|---|
 | `prepare` | 9 course CSVs | Joins orders, items, payments, reviews, customers, sellers, products and geolocation into one row per order. Builds every outcome-free feature, applies the cohort rules, computes the purge gap and hashes the test-window order ids | `data/classification/orders_features.parquet`, `cohort_flow.csv`, `censoring_by_t_month.csv`, `monthly_volume_and_rate.csv`, `fold_table.csv`, `purge_gap.json`, `test_lock.json` |
-| `select` | feature table | For each model family, scores every candidate on the 5 expanding-window folds (train and validation scores). Adds the baselines, picks the family with the highest mean validation PR-AUC, freezes the operating thresholds, runs the gap sensitivity check and computes permutation importance on May 2018 | `search_spaces.csv`, `cv_candidates.csv`, `cv_fold_detail.csv`, `cv_family_summary.csv`, `gap_sensitivity.csv`, `permutation_importance_*.csv`, `selection.json` |
+| `select` | feature table | For each model family, scores every candidate on the 5 expanding-window folds. Saves mean training PR-AUC and validation summaries for all candidates, and per-fold training/validation detail for each family winner. Adds baselines, selects by mean validation PR-AUC, freezes operating thresholds, checks gap sensitivity and computes May importance | `search_spaces.csv`, `cv_candidates.csv`, `cv_fold_detail.csv`, `cv_family_summary.csv`, `gap_sensitivity.csv`, `permutation_importance_*.csv`, `selection.json` |
 | `test` | `selection.json` | Fits the selected configuration on every order with T before 1 Jun 2018 minus the gap, scores Jun–Aug 2018 **once**, checks the success criteria and records the evaluation in the lock file | `models/classification/final_model.joblib`, `test_results.csv`, `test_operating_points.csv`, `test_by_month.csv`, `success_criteria.csv`, `test_summary.json` |
 | `reference` | `selection.json` | Phase 2 stratified random split (67/33, then 80/20; seed 5006) on the same cohort, using the chronologically chosen hyperparameters | `reference_random_split.csv`, `chronological_vs_random.csv` |
 | `figures` | saved tables | Report figures | `figures/01–05_*.png` |
@@ -70,16 +74,17 @@ Orders are placed on the time axis by **T**, the moment the model is used.
 | 5 | 3 Apr 2018 | May 2018 |
 | Final | 4 May 2018 | **Jun–Aug 2018 (test, scored once)** |
 
-* **Purge gap (k = 27 days).** A training order must have T at least k days before the cut-off. Its review is usually answered within days of T, but a training label answered after the cut-off would not exist when a real model is trained. k is the 99th percentile of (review answered − T) on 2017 orders, rounded up. It removes rows by date, never by outcome, so it does not bias the labels. After the gap, 0.12–0.24% of training labels are answered after the cut-off (`fold_table.csv`).
-* **History features per fold.** Seller and route history (past delivery days, late rate, low-review rate) is computed inside the model pipeline by `HistoryInPipeline` from the fold's training rows, using only outcomes known before the fold's cut-off. The stored feature table contains no outcome-based feature.
-* **Test lock.** `prepare` hashes the test-window ids before any model exists. `test` refuses to run without a frozen `selection.json`, logs every evaluation, and refuses a second evaluation with a different selection.
+* **Purge gap (k = 27 days).** A training order must have T at least k days before the cut-off. k is the 99th percentile of (review answered − T) on 2017 orders, rounded up. The current splitter filters by T and does not also require `review_answer_timestamp < cutoff`; after the gap, 0.12–0.24% of training labels are still answered after the cut-off (`fold_table.csv`). The gap reduces this exposure but does not eliminate it or establish an unbiased label population.
+* **Validation label availability.** Validation membership is defined by T-month without requiring the review to be answered before the June 1 selection cutoff. Some labels therefore would not have been available for the stated selection decision. Published metrics and choices are retained as retrospective evidence; see the [quality audit](docs/quality_audit.md).
+* **History features per fold.** Seller and route history (past delivery days, late rate, low-review rate) is computed inside the model pipeline by `HistoryInPipeline` from the fold's training rows, using only outcomes known before the fold's cut-off. These fitted history columns are not stored in the feature table; observed delivery information at T is a separate input group, subject to the timing-audit limitations.
+* **Test lock.** `prepare` hashes the test-window ids before any model exists. `test` refuses to run without `selection.json`, logs every evaluation, and refuses a different recorded selection ID. The lock does not completely fingerprint thresholds, source code and preprocessing. This guardrail limitation is not evidence that those changed in the saved run; see the [quality audit](docs/quality_audit.md).
 * **2016 is excluded.** Only 303 cohort orders have T in 2016, too few for a training window.
 
 ### 2.2 Models
 
 All families receive the same 51 features from the same history step. Search ranges are listed in `search_spaces.csv`.
 
-| Family | Model | Candidates |
+| Family | Model | Phase 3 candidates |
 |---|---|---|
 | logistic_base | LogisticRegression(C=1, class_weight=balanced) | 1 |
 | logistic_tuned | LogisticRegression, C ∈ {0.001 … 1000} | 7 |
@@ -87,6 +92,8 @@ All families receive the same 51 features from the same history step. Search ran
 | random_forest | RandomForestClassifier(balanced_subsample) | 6 |
 | catboost | CatBoostClassifier(auto_class_weights=Balanced) | 6 |
 | baselines | positive rate (no skill); "not delivered by T" rule | – |
+
+These are the Phase 3 search budgets. The saved full Phase 2 classification notebook used 30 randomized-search candidates each for decision tree, random forest and CatBoost. The teacher's separate 12-Ridge/six-RF question concerns the regression experiment; it is documented in the [regression ensemble migration](docs/regression/phase2_stacking_chronological.md).
 
 ## 3. Folder structure
 
@@ -101,7 +108,7 @@ Phase_3/
 ├── notebooks/              classification_chronological.ipynb (executed)
 ├── tests/                  test_classification.py (protocol and leakage checks)
 ├── docs/                   changes from Phase 2, decision log, report key points
-├── deployment/             notes for the Streamlit app (R5)
+├── deployment/             Streamlit app, real regression assets and interface notes
 ├── data/                   generated feature table (git-ignored)
 ├── models/                 fitted model bundle (git-ignored)
 ├── outputs/classification/ tables/, figures/, selection.json, test_lock.json, run_log.txt
@@ -115,7 +122,7 @@ Phase_3/
    ```bash
    python -m pip install -r requirements.txt
    ```
-2. Data: the nine course CSVs are read from the repository's `data/` folder (already present in this repo). To use another location, set `OLIST_CSV_DIR` to a folder with the CSVs, or `OLIST_ARCHIVE` to the course ZIP.
+2. Training data: the nine original course CSVs are **not included in a fresh clone**; raw and generated data folders are git-ignored. Obtain the course files separately and set `OLIST_CSV_DIR` to their folder, or `OLIST_ARCHIVE` to the course ZIP. The loader also checks a local repository `data/` folder when supplied. The [dashboard](../dashboard/README.md) uses its committed assets and does not require raw CSVs or training at runtime.
 
 ## 5. Running it
 
@@ -150,9 +157,9 @@ python -m unittest discover -s tests -v
 
 `--from-stage select` reruns a stage and every later one. Stages pass results only through files, so each can be rerun on its own. Rerunning `test` with an unchanged selection reproduces the same numbers and is logged as another evaluation. Rerunning it after changing the selection is refused.
 
-## 6. Using the model (deployment interface)
+## 6. Classification interface reference
 
-The app exposes no HTTP API. The Python entry point is:
+The deployed app provides real regression inference; classification is an archived evaluation page. The example below is the classification pipeline's Python interface and requires locally generated classification data and a fitted bundle. That classifier bundle is not included in the dashboard. No HTTP API is exposed.
 
 ```python
 import sys; sys.path.insert(0, "src")
@@ -172,4 +179,13 @@ The random split is kept for comparison, not for model choice. It uses the same 
 
 ## 8. AI tool declaration
 
-The Phase 3 classification code, documentation and report notes were drafted with Claude (Anthropic) under the team's direction. The team reviewed the protocol decisions (decision log) and the results.
+The original Phase 3 classification code, documentation and report notes record assistance from Claude (Anthropic). OpenAI Codex assisted with regression implementation, temporal ensemble experiments, dashboard work, checks and documentation, including the quality-audit revisions. The team remains responsible for reviewing the methods, numerical evidence, interpretation and final submission. The final report must include one declaration reflecting the actual tool use across both tasks and the application.
+
+## 9. Final submission checks
+
+This repository audit does not establish whether teammates have additional offline drafts. Before submission, check the actual final files against the course brief and the [quality audit](docs/quality_audit.md):
+
+- Final report: verify the required 15–20 pages and include the complete feature catalogue, model specifications/search ranges, references and AI declaration within the submitted document and appendices.
+- Correct the former Section 3.3 `Figure 2` reference to `Figure B5a` where those values appear; verify the reference again if the final report is renumbered. Preserve the submitted Phase 2 PDF as the historical record.
+- Final slides: verify the required version is ready for the 4 November 2026 lock and uses the same model identifiers, saved numbers and limitations as the report. [Presentation notes](docs/regression/presentation_notes.md) are supporting material, not a completed deck.
+- Final ZIP: check the 8 November 2026 package contents against the course brief, reconcile the submitted report, slide and code versions, and include the required environment instructions and demonstration assets. Test the documented fresh-clone setup; private raw data and fitting caches are not implicitly included.

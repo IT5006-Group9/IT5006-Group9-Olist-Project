@@ -104,6 +104,9 @@ class DashboardAppTests(unittest.TestCase):
             "Test PR-AUC": "0.375", "Orders flagged": "20.0%", "Low reviews captured": "53.2%",
         }.items():
             self.assertEqual(self.metric_value(app, title), expected)
+        self.assertTrue(any("Timing audit" in warning.value for warning in app.warning))
+        self.assertTrue(any("55.9%" in caption.value and "±3 days" in caption.value for caption in app.caption))
+        self.assertTrue(any("ranking changes" in text.value for text in app.markdown))
         self.widget(app.selectbox, "Operating rule").set_value(
             "Use the frozen validation score threshold"
         ).run(timeout=60)
@@ -152,7 +155,8 @@ class DashboardAppTests(unittest.TestCase):
     def test_optional_evidence_missing_does_not_hide_main_results(self):
         available = evidence_adapter.load_evidence(PHASE)
         optional = ("stacking_comparison", "stacking_weights", "stacking_cv", "regression_months",
-                    "classification_months", "regression_importance", "classification_importance")
+                    "classification_months", "regression_importance", "classification_importance",
+                    "regression_error_groups", "regression_selection_sensitivity")
         for name in optional:
             available[name] = available[name].iloc[:0].copy()
         with patch.object(evidence_adapter, "load_evidence", return_value=available):
