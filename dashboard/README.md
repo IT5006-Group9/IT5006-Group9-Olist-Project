@@ -20,7 +20,9 @@ No raw CSVs, credentials or training are needed at runtime.
 
 Streamlit Cloud keeps the same repository, branch main, entry dashboard/app.py
 and existing URL. The adjacent requirements file pins the runtime, including
-scikit-learn 1.7.2 for the fitted artifact. No secrets are required.
+scikit-learn 1.7.2 for the fitted artifact. The root requirements file also includes
+these same constraints so root-based dependency discovery stays consistent.
+No secrets are required.
 
 ## Pages
 
