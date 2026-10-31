@@ -2,6 +2,14 @@
 
 Phase 3 rebuilds the Phase 2 models around a **chronological evaluation** (TA feedback) and prepares them for deployment. It contains separate **low-review risk classification** and **delivery lead-time regression** branches with shared calendar break points and helpers in `src/common/`. Each branch uses its own prediction point and label-availability rules.
 
+## Integrated dashboard
+
+The updated [Olist Operations Studio](deployment/app.py) combines the original
+five-tab explorer with a real historical-order delivery prediction demo and the
+chronological model evidence, including the new stacking results.
+See [dashboard setup and usage](../dashboard/README.md). The existing Streamlit
+Cloud entry remains dashboard/app.py.
+
 ## Regression entry
 
 - [Complete executed regression notebook](notebooks/regression/delivery_regression_chronological.ipynb)

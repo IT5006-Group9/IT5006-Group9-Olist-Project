@@ -60,9 +60,10 @@ link, not a screenshot.
 - **One row per order.** Item-level attributes are aggregated first; `category`
   is the first non-null category on the order, so a mixed-category order is
   represented by one of its categories.
-- **Delivery and review metrics use the delivered cohort only** (orders with an
-  actual delivery date), even when the sidebar is not restricted to delivered
-  orders. Rates are therefore conditional on the order having completed.
+- **Delivery metrics use orders with an actual delivery date.** Review metrics
+  use selected orders with an observed review, including orders without a recorded
+  delivery. These denominators can differ. The fixed context boxes refer to the
+  full default window, rather than being recalculated for a filtered selection.
 - **The default month window is 2017-01 to 2018-08.** The extract starts and
   ends with months holding a handful of orders; including them makes every time
   series open and close on a misleading spike. Widen the slider to see them.

@@ -1,4 +1,19 @@
-# Deployment notes: classification model (for the Streamlit app, R5)
+# Phase 3 dashboard and deployment
+
+The integrated Streamlit application is in [app.py](app.py), launched through the
+existing root dashboard/app.py. See the [setup and usage guide](../../dashboard/README.md).
+
+The committed [assets](assets/) include a real regression predictor and 120
+historical examples. The [exporter](build_demo_bundle.py) reproduces the frozen
+HGB_risk specification in isolated scratch storage, without tuning or a new
+aggregate test assessment. Purchase-time inputs and outcomes are separate.
+The manifest records configuration, versions, boundaries and source hashes.
+
+Classification is an archived evaluation page in this app. The interface notes
+below are retained as a future classifier handoff reference; they do not imply
+that a classification model bundle is included in the dashboard.
+
+## Classification interface reference
 
 The app is built in this folder by the deployment owner. This note covers what the classification pipeline provides.
 
