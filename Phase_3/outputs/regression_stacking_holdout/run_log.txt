@@ -1,0 +1,8 @@
+[2026-10-30T11:14:53+00:00] Meta window 2018-02: 42450 training / 6551 OOF rows
+[2026-10-30T11:14:58+00:00] Meta window 2018-03: 47940 training / 6996 OOF rows
+[2026-10-30T11:15:04+00:00] Meta window 2018-04: 54882 training / 4875 OOF rows
+[2026-10-30T11:15:04+00:00] Frozen both comparisons and stacking weights [0.6282120445549371, 0.37178795544506293] before test prediction
+[2026-10-30T11:15:04+00:00] Final fitting and frozen test prediction: ridge_fixed
+[2026-10-30T11:15:04+00:00] Final fitting and frozen test prediction: forest_fixed
+[2026-10-30T11:15:12+00:00] Final fitting and frozen test prediction: hgb
+[2026-10-30T11:18:16+00:00] Supplementary historical assessment complete; original evidence unchanged

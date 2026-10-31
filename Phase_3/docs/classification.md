@@ -106,7 +106,7 @@ The stored table (`data/classification/orders_features.parquet`) contains **no o
    - A training order needs T at least 27 days before the cut-off.
    - Its review is normally answered within days of T. Without the gap, some training labels would be answered after the cut-off, so a model "trained on that day" would see the future.
    - 27 days is the 99th percentile of (review answered − T), measured on 2017 orders and rounded up (`purge_gap.json`).
-   - The gap removes rows by date, never by outcome, so it does not bias the labels. After it, 0.12–0.24% of training labels still fall after the cut-off.
+   - The gap filters rows by T only. It reduces exposure to reviews answered after the cut-off but does not remove it: 0.12–0.24% of training labels still fall after the cut-off, and the splitter has no explicit review-answer condition (see §13 and the [quality audit](quality_audit.md)).
 4. **Test window.** Jun–Aug 2018. The final model trains on every order with T before 1 Jun 2018 minus the gap.
 
 | Fold | Training: T from Jan 2017 up to | Training rows | Training positive rate | Validation month | Validation rows | Validation positive rate |
@@ -595,6 +595,13 @@ The calendar group is worthless under a chronological split, so the Phase 2 cale
 
 ## 13. Limitations and disclosures
 
+- **Label and feature availability ([quality audit](quality_audit.md), 31 Oct).** All results here are saved retrospective results, not prospective estimates:
+  - Training: 73–92 labels per fold, and 82 of 70,136 in the final fit, were answered after their cut-off. Dropping them changes validation PR-AUC by −0.0003 (S1b), but S1b was not adopted, so v1 and v2 still include them.
+  - Validation: rows are chosen by T-month only. 422 of 34,395 validation labels (1.23%), including 365 of 7,133 in May (5.12%), were answered after the 1 Jun selection date, so selection and threshold estimation used answers that were not yet available.
+  - Features: 61 orders have an approval event and 18 a carrier event recorded after T while the derived lag or transit feature is populated (79 orders, 34 in the test window).
+  - The test lock compares a recorded selection ID; it does not fingerprint thresholds, source code or preprocessing. No change to these was found.
+  - The audit recommends a separately versioned rerun with explicit label and event cut-offs. This document does not change any saved result.
+- **Daily queue not evaluated.** The 53.2% recall ranks the whole Jun–Aug window. By month it is 52.3%, 49.2% and 57.4%, so July misses the 50% target; the daily-batch figures in §11.3 are a diagnostic only.
 - **Short history.** Training starts in Jan 2017, so seasonality cannot be learned or tested.
 - **Drift.** Validation positive rates span 12–24%, including a disrupted month. Monitor monthly PR-AUC and recall at capacity.
 - **Small margins.** Forest vs logistic regression is about 0.01 PR-AUC, inside the fold SD. The forest was chosen by the pre-set rule, not by a significant difference.

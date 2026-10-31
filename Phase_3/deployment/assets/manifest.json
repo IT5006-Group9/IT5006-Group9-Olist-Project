@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "built_at": "2026-10-31T06:53:27.972029+00:00",
+  "purpose": "Real inference proof of concept from the existing frozen Phase 3 HGB_risk specification",
+  "model_name": "HGB_risk",
+  "model_kind": "HistGradientBoostingRegressor + past-only slow-delivery risk feature",
+  "refit_disclosure": "Deployment reproduction of a frozen configuration, not recovery of the original fitted pickle; no tuning, reselection or new test assessment",
+  "replay_identity": "b55144a67b04e0521f5d6de8510d3e0ebf38ceef2b234e0bff2d892fde52cd18",
+  "selection_sha256": "7fc38caa2590ac666fbb8cd7338dbbc7863015f356306d1d38d7b6773d47e764",
+  "frozen_descriptor": {
+    "candidate": "HGB_risk",
+    "spec": {
+      "family": "HGB",
+      "params": {
+        "loss": "absolute_error",
+        "max_leaf_nodes": 15,
+        "l2_regularization": 1.0,
+        "min_samples_leaf": 30,
+        "max_iter": 300,
+        "learning_rate": 0.05
+      }
+    },
+    "pack": "risk",
+    "log_target": false
+  },
+  "environment": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.7.2",
+    "joblib": "1.5.2",
+    "pyarrow": "22.0.0"
+  },
+  "training": {
+    "orders": 68916,
+    "start_inclusive": "2017-01-01 00:00:00",
+    "cutoff_exclusive": "2018-06-01 00:00:00",
+    "purchase_cutoff_exclusive": "2018-04-23 00:00:00",
+    "rule": "purchase < cutoff - 39 days AND delivered < cutoff",
+    "gap_days": 39,
+    "order_ids_sha256": "c57540b079bd84b2e15ce5d2073f22b707a9b2a31169e73090a6a7b5d24a61f9",
+    "input_values_sha256": "4e9f623081dc660b626085dd695be55c309a7e5a294b6f03f2782c9b072fdf0c"
+  },
+  "historical_examples": {
+    "rows": 120,
+    "purchase_window_start": "2018-06-01 00:00:00",
+    "purchase_window_end_exclusive": "2018-09-01 00:00:00",
+    "selection": "40 orders per purchase month, lowest SHA256(it5006-phase3-demo-v1|order_id); outcomes never used for selection",
+    "original_test_orders": 18603,
+    "original_test_ids_sha256": "0a64a488c59ed84f7ef5b242cf39171732d9113b6657c2eb3dc0fc534f05ceff",
+    "example_order_ids_sha256": "1e0540b50861479825774eb920a8354baf49a3975b2c46d6e6d09da33f04d15d",
+    "historically_exposed_orders": true
+  },
+  "input_contract": {
+    "columns": [
+      "order_id",
+      "purchase_ts",
+      "promised_lead_time_days",
+      "max_distance_km",
+      "any_distance_missing",
+      "same_state",
+      "total_price",
+      "total_freight",
+      "freight_ratio",
+      "item_count",
+      "seller_count",
+      "primary_seller_price_share",
+      "seller_state_count",
+      "avg_product_weight_g",
+      "any_weight_missing",
+      "distinct_product_count",
+      "category_count_observed",
+      "dominant_category_price_share",
+      "max_product_weight_g",
+      "total_known_weight_g",
+      "max_product_volume_cm3",
+      "total_known_volume_cm3",
+      "mean_unit_price",
+      "any_volume_missing",
+      "month_sin",
+      "month_cos",
+      "weekday_sin",
+      "weekday_cos",
+      "hour_sin",
+      "hour_cos",
+      "customer_state",
+      "route_group",
+      "primary_seller_state",
+      "primary_seller_city",
+      "customer_city",
+      "primary_state_route",
+      "primary_city_route",
+      "primary_zip_zone_route",
+      "primary_seller_id",
+      "category_group",
+      "dominant_category"
+    ],
+    "required_purchase_feature_columns": [
+      "promised_lead_time_days",
+      "max_distance_km",
+      "any_distance_missing",
+      "same_state",
+      "total_price",
+      "total_freight",
+      "freight_ratio",
+      "item_count",
+      "seller_count",
+      "primary_seller_price_share",
+      "seller_state_count",
+      "avg_product_weight_g",
+      "any_weight_missing",
+      "distinct_product_count",
+      "category_count_observed",
+      "dominant_category_price_share",
+      "max_product_weight_g",
+      "total_known_weight_g",
+      "max_product_volume_cm3",
+      "total_known_volume_cm3",
+      "mean_unit_price",
+      "any_volume_missing",
+      "month_sin",
+      "month_cos",
+      "weekday_sin",
+      "weekday_cos",
+      "hour_sin",
+      "hour_cos",
+      "customer_state",
+      "route_group",
+      "primary_seller_state",
+      "primary_seller_city",
+      "customer_city",
+      "primary_state_route",
+      "primary_city_route",
+      "primary_zip_zone_route",
+      "primary_seller_id",
+      "category_group",
+      "dominant_category"
+    ],
+    "dtypes": {
+      "order_id": "object",
+      "purchase_ts": "datetime64[ns]",
+      "promised_lead_time_days": "float64",
+      "max_distance_km": "float64",
+      "any_distance_missing": "int64",
+      "same_state": "int64",
+      "total_price": "float64",
+      "total_freight": "float64",
+      "freight_ratio": "float64",
+      "item_count": "int64",
+      "seller_count": "int64",
+      "primary_seller_price_share": "float64",
+      "seller_state_count": "int64",
+      "avg_product_weight_g": "float64",
+      "any_weight_missing": "int64",
+      "distinct_product_count": "int64",
+      "category_count_observed": "int64",
+      "dominant_category_price_share": "float64",
+      "max_product_weight_g": "float64",
+      "total_known_weight_g": "float64",
+      "max_product_volume_cm3": "float64",
+      "total_known_volume_cm3": "float64",
+      "mean_unit_price": "float64",
+      "any_volume_missing": "int64",
+      "month_sin": "float64",
+      "month_cos": "float64",
+      "weekday_sin": "float64",
+      "weekday_cos": "float64",
+      "hour_sin": "float64",
+      "hour_cos": "float64",
+      "customer_state": "object",
+      "route_group": "object",
+      "primary_seller_state": "object",
+      "primary_seller_city": "object",
+      "customer_city": "object",
+      "primary_state_route": "object",
+      "primary_city_route": "object",
+      "primary_zip_zone_route": "object",
+      "primary_seller_id": "object",
+      "category_group": "object",
+      "dominant_category": "object"
+    },
+    "generated_internally": [
+      "risk_p30",
+      "risk_unavailable"
+    ],
+    "excluded_outcome_columns": [
+      "delivered_ts",
+      "lead_time_days",
+      "order_status",
+      "review_score",
+      "review_answer_timestamp",
+      "order_delivered_carrier_date",
+      "order_approved_at",
+      "order_delivered_customer_date"
+    ],
+    "prediction_interface": "regression.score.predict_lead_time(orders, bundle)",
+    "output_columns": [
+      "order_id",
+      "predicted_days",
+      "quoted_days",
+      "predicted_exceeds_quote",
+      "estimated_arrival"
+    ],
+    "outcomes_file": "example_outcomes.parquet",
+    "outcomes_columns": [
+      "order_id",
+      "actual_days",
+      "delivered_ts"
+    ]
+  },
+  "saved_assessment": {
+    "source": "outputs/regression/test_summary.json",
+    "summary": {
+      "selected_candidate": "HGB_risk",
+      "test": {
+        "candidate": "HGB_risk",
+        "split": "test",
+        "n": 18603,
+        "mae": 3.434250952543771,
+        "rmse": 5.0924862666216635,
+        "r2": 0.2346612120156042,
+        "bias": 1.0053335946204955,
+        "within3": 0.5593183895070688
+      },
+      "success": {
+        "mae_reduction_vs_median": 0.32133402499586783,
+        "minimum_reduction": 0.05,
+        "median_criterion_met": true,
+        "promise_criterion_met": true
+      },
+      "selection_sha256": "7fc38caa2590ac666fbb8cd7338dbbc7863015f356306d1d38d7b6773d47e764",
+      "test_n": 18603,
+      "train_n": 68916
+    },
+    "note": "Historical saved assessment of the original frozen model; no newly computed demo accuracy score"
+  },
+  "source_provenance": {
+    "course_frame": "data/regression_stacking_holdout/course_frame.pkl",
+    "course_frame_sha256": "4df6da1529a9e3a71c1ee87c6f4f40e60dd7c03c836de4f7045c39212c1f7847",
+    "course_member_sha256": {
+      "olist_orders_dataset.csv": "8df58ef3d2d7e9944010f7beecd9b75367f5588ec6e3c91cec19ae3345ef9ecf",
+      "olist_order_items_dataset.csv": "0bc4d068c4fe38cbb01bd90e8746e3c613fe7b4baef75fab7b0e329701c3e279",
+      "olist_customers_dataset.csv": "983a422239e1712ded753b3bf9ecf47dc73f144d306029dcfa99e70a226883d2",
+      "olist_sellers_dataset.csv": "1f643d2b950373b85735e7794b20986f528d7a000432e7c6f9bcbb44d0846a0e",
+      "olist_products_dataset.csv": "3e6569628a17fbc75fd206ee357b59e20364b9afa90f5b6cd5b4d624c58aa9cc",
+      "olist_geolocation_dataset.csv": "b514f6fc991b9566aeba02aa5d67e2c3630f034b60a0e05aa0d082a3b66d88d6",
+      "product_category_name_translation.csv": "a81f0d1f27b27e7293f761bc79e3ce8f348ee39c4b3ed3e49bde38f478586278"
+    },
+    "raw_course_member_bytes_checked_in_this_export": true,
+    "assessment_manifest": "outputs/regression_stacking_holdout/assessment_protocol.json",
+    "assessment_manifest_sha256": "5d41f55c782118b9c03eb5eebe39c1ab8bcd547fbb11f248b6ec07ded39afb48",
+    "regression_source_sha256": {
+      "src/regression/config.py": "e5dc06f7dc5fb910acb813570eff27006390071256af362ff1bc8e15a440fa82",
+      "src/regression/audit.py": "87c90a27ef06dd157956d180563084cdf1b8cdeacad93be3749943bebe64d1c1",
+      "src/regression/models.py": "ccc5939936ee496a397006cfe6d2e5147d2fd46b3908c710b774a1c0b19aac28",
+      "src/regression/__init__.py": "a65ee2c9b3fcca07117b361cea7ca2af7db77299f841506ca264070b58b48eb7",
+      "src/regression/extensions.py": "82883c4fb540685f476ba5ba924751135cf6f07afc339d83daed01353e2e56ea",
+      "src/regression/run_pipeline.py": "f22ad72565cc1d4f9f2dd46281e92156de69c1fde8ccae7e7d50c48508a97729",
+      "src/regression/pipeline.py": "10ff99ec53e99f92083d05ba2040142dbac47cb3bb94ea320f9bff05a5314886",
+      "src/regression/finalise.py": "2ded4128d2fc93a0082a5cf71057467b0900f3b2c518f5f131f2157a5174c748",
+      "src/regression/risk.py": "9c15f6dcd1db6e8b7056d4b4e9a593c8c4ad3451c67ee7d5791c6fa6a5528753",
+      "src/regression/splits.py": "7eac936b84c28310dd8e0e44cb3864ed23b447a891daf21f7fe4fe5d440eef12",
+      "src/regression/verify.py": "42026d3b7729d3cbb48deb79768dd264f19abf0ce363e20b890854226b53db02",
+      "src/regression/data.py": "206af0ecb173b2d0a67e6c06fdffea1adc02d6037a5c9ea8f754bb5325d30445",
+      "src/regression/score.py": "e08c7064539b4082f2003fb0fb703798820b2a5b975b772daff3d2e6771e364a",
+      "src/regression/reporting.py": "61a26489078c7590ea87dfcb8756fbdbfbf675423ebf48f6b7c9ec9b26404411",
+      "src/common/__init__.py": "f4eb688d42c5832e419d3f1bf6e84b75d30361f3005e39e6b3dc4de041dcd7dd",
+      "src/common/geography.py": "4f37030c2d0af9d0499c38aaaa585a539651f6d24915fc3b6d8c26690762385f",
+      "src/common/paths.py": "acf0fe2ebd7f3ca482452285df26ae5caa10c0019957c9b3be6d91ab649fd1ca"
+    },
+    "non_inference_auxiliary_source_differences": {
+      "verify.py": {
+        "frozen_sha256": "885185bb0603672b363590b11bfc25c30c3ed26f3b335ebacee4a865340195a2",
+        "current_sha256": "42026d3b7729d3cbb48deb79768dd264f19abf0ce363e20b890854226b53db02",
+        "executed_by_exporter": false
+      },
+      "reporting.py": {
+        "frozen_sha256": "aa1a47d916db41c5737638a291129191d7c7a995e92c8982a7598f75f8405ca9",
+        "current_sha256": "61a26489078c7590ea87dfcb8756fbdbfbf675423ebf48f6b7c9ec9b26404411",
+        "executed_by_exporter": false
+      }
+    },
+    "exporter_sha256": "72b1d8f96436dc21ed7aeb65aa2ccf39036c3724a0e70d7c282b014be9d5836d"
+  },
+  "replay_diagnostics": {
+    "risk_monthly_fits": 13,
+    "risk_cold_start_training_rows": 4949,
+    "zero_future_risk_training_labels": true,
+    "latest_training_purchase": "2018-04-22 23:55:14",
+    "latest_training_delivery_label": "2018-05-30 23:50:44"
+  },
+  "verification": {
+    "example_rows_scored": 120,
+    "finite_nonnegative_predictions": true,
+    "order_alignment_verified": true,
+    "repeated_prediction_identical": true,
+    "empty_missing_column_negative_price_checks": true,
+    "no_new_test_metrics_computed": true,
+    "joblib_and_parquet_roundtrip_identical": true,
+    "all_original_sources_outputs_notebooks_unchanged": true
+  },
+  "artifacts": {
+    "regression_model.joblib": {
+      "sha256": "343ca8adde6791e33cd4b7757e352cb7e99b3f640d7d264ef9c264cbda61c001",
+      "bytes": 1053189
+    },
+    "example_inputs.parquet": {
+      "sha256": "1b0eec1245db242bfa18d72e338e637653f35c20681780bcdcec18063e599fe3",
+      "bytes": 50309
+    },
+    "example_outcomes.parquet": {
+      "sha256": "6de90becfd7796e9b3648365232d9bc73037e97d310b03c7975dbc73c85791e7",
+      "bytes": 8786
+    }
+  }
+}

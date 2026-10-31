@@ -1,0 +1,50 @@
+feature,type,group,definition,source_or_availability,used_by,target_derived
+promised_lead_time_days,numeric,base purchase,(estimated delivery date - purchase timestamp) / 86400 seconds,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+max_distance_km,numeric,base purchase,"Maximum seller-to-customer route distance across order items, in km",purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+total_price,numeric,base purchase,Sum of item prices within the order,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+total_freight,numeric,base purchase,Sum of item freight values within the order,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+freight_ratio,numeric,base purchase,Total freight / total item price; missing when total price is nonpositive,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+item_count,numeric,base purchase,Number of order-item records,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+seller_count,numeric,base purchase,Number of distinct sellers in the order,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+avg_product_weight_g,numeric,base purchase,Mean positive item product weight; missing if any item weight is unavailable,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+any_distance_missing,numeric,base purchase,Indicator that at least one item route has unavailable coordinates/distance,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+any_weight_missing,numeric,base purchase,Indicator that at least one item product weight is unavailable or nonpositive,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+customer_state,categorical,base purchase,Customer state recorded on the order-linked customer record,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+route_group,categorical,base purchase,All sellers same-state / any seller cross-state / unknown,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+category_group,categorical,base purchase,Single translated category / multiple categories / missing or incomplete category,purchase / quote / static product and geography,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+purchase_month,categorical,purchase calendar,"Purchase timestamp calendar month (1-12), fixed-category one-hot encoding",purchase timestamp,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+purchase_weekday,categorical,purchase calendar,"Purchase timestamp weekday (Monday=0), fixed-category one-hot encoding",purchase timestamp,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+purchase_hour,categorical,purchase calendar,"Purchase timestamp hour (0-23), fixed-category one-hot encoding",purchase timestamp,"F0,F1,F1_time,HGB_time_risk,RF_time_risk",False
+dayofyear_sin,numeric,F1 arithmetic,sin(2*pi*(purchase day-of-year - 1)/365.25),"purchase timestamp, promise and distance","F1,F1_time,HGB_time_risk,RF_time_risk",False
+dayofyear_cos,numeric,F1 arithmetic,cos(2*pi*(purchase day-of-year - 1)/365.25),"purchase timestamp, promise and distance","F1,F1_time,HGB_time_risk,RF_time_risk",False
+weekday_sin,numeric,F1 arithmetic,sin(2*pi*purchase weekday/7),"purchase timestamp, promise and distance","F1,F1_time,HGB_time_risk,RF_time_risk",False
+weekday_cos,numeric,F1 arithmetic,cos(2*pi*purchase weekday/7),"purchase timestamp, promise and distance","F1,F1_time,HGB_time_risk,RF_time_risk",False
+hour_sin,numeric,F1 arithmetic,sin(2*pi*purchase hour/24),"purchase timestamp, promise and distance","F1,F1_time,HGB_time_risk,RF_time_risk",False
+hour_cos,numeric,F1 arithmetic,cos(2*pi*purchase hour/24),"purchase timestamp, promise and distance","F1,F1_time,HGB_time_risk,RF_time_risk",False
+promise_log_distance,numeric,F1 arithmetic,Promised lead time * log1p(maximum route distance),"purchase timestamp, promise and distance","F1,F1_time,HGB_time_risk,RF_time_risk",False
+promise_cross_state,numeric,F1 arithmetic,Promised lead time * indicator(any seller cross-state),"purchase timestamp, promise and distance","F1,F1_time,HGB_time_risk,RF_time_risk",False
+log_distance_cross_state,numeric,F1 arithmetic,log1p(maximum route distance) * indicator(any seller cross-state),"purchase timestamp, promise and distance","F1,F1_time,HGB_time_risk,RF_time_risk",False
+state_route,categorical,F1 arithmetic,Customer state concatenated with route group,customer_state + route_group,"F1,F1_time,HGB_time_risk,RF_time_risk",False
+elapsed_purchase_days,numeric,time encoder,Fractional purchase days since 2016-01-01; scaler fitted only on training rows,days since fixed 2016-01-01; training-fitted scaler,"F1_time,HGB_time_risk,RF_time_risk",False
+purchase_year_month,categorical,time encoder,Purchase year-month string; encoder dictionary fitted only on training rows,purchase year-month; training-only category dictionary,"F1_time,HGB_time_risk,RF_time_risk",False
+primary_seller_price_share,numeric,purchase extension,Price of primary seller's items / total order price,purchase basket and archived product/seller fields,HGB_time_risk,False
+seller_state_count,numeric,purchase extension,Number of distinct seller states,purchase basket and archived product/seller fields,HGB_time_risk,False
+distinct_product_count,numeric,purchase extension,Number of distinct product IDs,purchase basket and archived product/seller fields,HGB_time_risk,False
+category_count_observed,numeric,purchase extension,Number of distinct observed original product categories,purchase basket and archived product/seller fields,HGB_time_risk,False
+dominant_category_price_share,numeric,purchase extension,Price of dominant category's items / total order price,purchase basket and archived product/seller fields,HGB_time_risk,False
+max_product_weight_g,numeric,purchase extension,Maximum known positive item product weight,purchase basket and archived product/seller fields,HGB_time_risk,False
+total_known_weight_g,numeric,purchase extension,Sum of known positive item product weights; missing if none observed,purchase basket and archived product/seller fields,HGB_time_risk,False
+max_product_volume_cm3,numeric,purchase extension,Maximum item length*height*width with all three dimensions observed and positive,purchase basket and archived product/seller fields,HGB_time_risk,False
+total_known_volume_cm3,numeric,purchase extension,Sum of known valid item volumes; missing if none observed,purchase basket and archived product/seller fields,HGB_time_risk,False
+mean_unit_price,numeric,purchase extension,Mean item price within the order,purchase basket and archived product/seller fields,HGB_time_risk,False
+any_volume_missing,numeric,purchase extension,Indicator that at least one item has unavailable or nonpositive dimensions,purchase basket and archived product/seller fields,HGB_time_risk,False
+primary_seller_id,categorical,purchase extension,Seller with greatest order-item price total; seller ID resolves ties,purchase basket and archived product/seller fields,HGB_time_risk,False
+primary_seller_state,categorical,purchase extension,State of the primary seller,purchase basket and archived product/seller fields,HGB_time_risk,False
+primary_seller_city,categorical,purchase extension,City of the primary seller,purchase basket and archived product/seller fields,HGB_time_risk,False
+customer_city,categorical,purchase extension,City from the order-linked customer record,purchase basket and archived product/seller fields,HGB_time_risk,False
+primary_state_route,categorical,purchase extension,Primary seller state concatenated with customer state,purchase basket and archived product/seller fields,HGB_time_risk,False
+primary_city_route,categorical,purchase extension,Primary seller state/city concatenated with customer state/city,purchase basket and archived product/seller fields,HGB_time_risk,False
+primary_zip_zone_route,categorical,purchase extension,Primary seller and customer ZIP-prefix zones (prefix // 1000),purchase basket and archived product/seller fields,HGB_time_risk,False
+dominant_category,categorical,purchase extension,Category with greatest item-price total; category string resolves ties,purchase basket and archived product/seller fields,HGB_time_risk,False
+slow_delivery_probability_gt30d,numeric,learned risk,Past-only HGBClassifier probability that lead time exceeds 30 days,past-only classifier trained on labels available at fit cutoff,"HGB_time_risk,RF_time_risk",True
+risk_unavailable,binary,learned risk,"1 for risk cold-start training rows, else 0; accompanies probability-zero cold start",cold-start flag; no target-based fallback,"HGB_time_risk,RF_time_risk",False

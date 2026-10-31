@@ -106,7 +106,7 @@ def takeaway(text: str):
     st.markdown(
         f"<div style='border-left:3px solid #3d5a9b;background:#f4f6fa;"
         f"padding:.7rem .95rem;border-radius:0 4px 4px 0;font-size:.9rem;"
-        f"line-height:1.55;color:#3a424f'><b style='color:#1c2430'>What this shows"
+        f"line-height:1.55;color:#3a424f'><b style='color:#1c2430'>Historical context · full default window"
         f"</b><br>{text}</div>",
         unsafe_allow_html=True,
     )
@@ -313,8 +313,8 @@ with kpi_panel:
     # row mixes denominators, so what a reader needs is stated in the open.
     st.caption(
         "Sales figures are in Brazilian reais (R$) and include freight. "
-        "Delivery and rating figures cover delivered orders only, so they are measured "
-        "on a smaller base than the order count."
+        "Delivery figures cover delivered orders only. Ratings cover selected orders "
+        "with an observed review, including orders without a recorded delivery."
     )
 
 gap(0.6)

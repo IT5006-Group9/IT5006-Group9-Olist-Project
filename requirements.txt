@@ -11,3 +11,6 @@ scipy>=1.14
 # notebooks
 jupyterlab>=4.0
 ipykernel>=6.29
+
+# Keep root-based Cloud dependency discovery in sync with the dashboard entry.
+-r dashboard/requirements.txt

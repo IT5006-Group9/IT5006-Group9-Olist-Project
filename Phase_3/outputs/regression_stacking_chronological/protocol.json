@@ -1,0 +1,528 @@
+{
+  "experiment": "All 14 Phase 2 regression combinations, chronological nested OOF",
+  "outer_months": [
+    "2018-01",
+    "2018-02",
+    "2018-03",
+    "2018-04",
+    "2018-05"
+  ],
+  "inner_months": 3,
+  "gap_days": 39,
+  "training_rule": "purchase < cutoff-gap AND receipt < cutoff",
+  "selection_label_rule": "receipt strictly before 2018-06-01",
+  "tuning_rule": "lowest unweighted mean of three inner monthly MAEs; candidate order breaks exact ties",
+  "combiner": "equal mean or nonnegative MAE optimum, sum weights 1, no intercept",
+  "combinations": {
+    "mean_two_fixed": [
+      "ridge_fixed",
+      "forest_fixed"
+    ],
+    "stack_two_fixed": [
+      "ridge_fixed",
+      "forest_fixed"
+    ],
+    "mean_three_fixed": [
+      "ridge_fixed",
+      "forest_fixed",
+      "hgb"
+    ],
+    "stack_three_fixed": [
+      "ridge_fixed",
+      "forest_fixed",
+      "hgb"
+    ],
+    "mean_two_tuned": [
+      "ridge_tuned",
+      "forest_tuned"
+    ],
+    "stack_two_tuned": [
+      "ridge_tuned",
+      "forest_tuned"
+    ],
+    "mean_three_tuned": [
+      "ridge_tuned",
+      "forest_tuned",
+      "hgb"
+    ],
+    "stack_three_tuned": [
+      "ridge_tuned",
+      "forest_tuned",
+      "hgb"
+    ],
+    "mean_hgb_rf_log": [
+      "hgb",
+      "rf_log"
+    ],
+    "stack_hgb_rf_log": [
+      "hgb",
+      "rf_log"
+    ],
+    "mean_hgb_extra_trees": [
+      "hgb",
+      "extra_trees"
+    ],
+    "stack_hgb_extra_trees": [
+      "hgb",
+      "extra_trees"
+    ],
+    "mean_three_rf_risk": [
+      "ridge_tuned",
+      "rf_time_risk",
+      "hgb"
+    ],
+    "stack_three_rf_risk": [
+      "ridge_tuned",
+      "rf_time_risk",
+      "hgb"
+    ]
+  },
+  "base_candidates": [
+    {
+      "name": "ridge_F0_raw_a100",
+      "kind": "ridge",
+      "feature_pack": "F0",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "alpha": 100
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F0_raw_a1000",
+      "kind": "ridge",
+      "feature_pack": "F0",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "alpha": 1000
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F0_raw_a10000",
+      "kind": "ridge",
+      "feature_pack": "F0",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "alpha": 10000
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F0_log_a100",
+      "kind": "ridge",
+      "feature_pack": "F0",
+      "log_inputs": true,
+      "log_target": false,
+      "params": {
+        "alpha": 100
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F0_log_a1000",
+      "kind": "ridge",
+      "feature_pack": "F0",
+      "log_inputs": true,
+      "log_target": false,
+      "params": {
+        "alpha": 1000
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F0_log_a10000",
+      "kind": "ridge",
+      "feature_pack": "F0",
+      "log_inputs": true,
+      "log_target": false,
+      "params": {
+        "alpha": 10000
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F1_time_raw_a100",
+      "kind": "ridge",
+      "feature_pack": "F1_time",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "alpha": 100
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F1_time_raw_a1000",
+      "kind": "ridge",
+      "feature_pack": "F1_time",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "alpha": 1000
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F1_time_raw_a10000",
+      "kind": "ridge",
+      "feature_pack": "F1_time",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "alpha": 10000
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F1_time_log_a100",
+      "kind": "ridge",
+      "feature_pack": "F1_time",
+      "log_inputs": true,
+      "log_target": false,
+      "params": {
+        "alpha": 100
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F1_time_log_a1000",
+      "kind": "ridge",
+      "feature_pack": "F1_time",
+      "log_inputs": true,
+      "log_target": false,
+      "params": {
+        "alpha": 1000
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "ridge_F1_time_log_a10000",
+      "kind": "ridge",
+      "feature_pack": "F1_time",
+      "log_inputs": true,
+      "log_target": false,
+      "params": {
+        "alpha": 10000
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "forest_F0_0",
+      "kind": "forest",
+      "feature_pack": "F0",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "forest_F0_1",
+      "kind": "forest",
+      "feature_pack": "F0",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "max_features": 0.8
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "forest_F0_2",
+      "kind": "forest",
+      "feature_pack": "F0",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "max_depth": 16,
+        "min_samples_leaf": 20,
+        "max_features": 0.6
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "forest_F1_time_0",
+      "kind": "forest",
+      "feature_pack": "F1_time",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "forest_F1_time_1",
+      "kind": "forest",
+      "feature_pack": "F1_time",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "max_features": 0.8
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "forest_F1_time_2",
+      "kind": "forest",
+      "feature_pack": "F1_time",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "max_depth": 16,
+        "min_samples_leaf": 20,
+        "max_features": 0.6
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "leaves63__time_risk",
+      "kind": "hist_boost",
+      "feature_pack": "F1",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "loss": "absolute_error",
+        "max_iter": 300,
+        "learning_rate": 0.05,
+        "max_leaf_nodes": 63,
+        "min_samples_leaf": 30,
+        "l2_regularization": 10
+      },
+      "time": true,
+      "risk": true,
+      "purchase_extension": true
+    },
+    {
+      "name": "rf_log_F1",
+      "kind": "forest",
+      "feature_pack": "F1",
+      "log_inputs": false,
+      "log_target": true,
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "time": false,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "extra_trees_F1_time_raw",
+      "kind": "extra_trees",
+      "feature_pack": "F1_time",
+      "log_inputs": false,
+      "log_target": false,
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "extra_trees_F1_time_log",
+      "kind": "extra_trees",
+      "feature_pack": "F1_time",
+      "log_inputs": false,
+      "log_target": true,
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "time": true,
+      "risk": false,
+      "purchase_extension": false
+    },
+    {
+      "name": "rf_log_F1_time_risk",
+      "kind": "forest",
+      "feature_pack": "F1",
+      "log_inputs": false,
+      "log_target": true,
+      "params": {
+        "max_depth": 24,
+        "min_samples_leaf": 10,
+        "max_features": 0.8
+      },
+      "time": true,
+      "risk": true,
+      "purchase_extension": false
+    }
+  ],
+  "source_hashes": {
+    "src/regression_stacking/__init__.py": "680702b69329e6fcadb32fc38bc46525f05fd675a7d1537549ecc9404d416df3",
+    "src/regression_stacking/base_models.py": "64c6fda9b035524aace6e4124789a4b7c0df8288a943869db11d30628b9226c8",
+    "src/regression_stacking/protocol.py": "cf2d03f617409f9ee1c573505e2c997a6d2f9991557ba6578f88a10cdcbbef00",
+    "src/regression_stacking/run.py": "f9cb8c813e1ea93731bf967dc23130a72a7fffa9e006fd4f132fa8c190c9c939",
+    "src/common/__init__.py": "f4eb688d42c5832e419d3f1bf6e84b75d30361f3005e39e6b3dc4de041dcd7dd",
+    "src/common/geography.py": "4f37030c2d0af9d0499c38aaaa585a539651f6d24915fc3b6d8c26690762385f",
+    "src/common/paths.py": "acf0fe2ebd7f3ca482452285df26ae5caa10c0019957c9b3be6d91ab649fd1ca",
+    "src/regression/data.py": "206af0ecb173b2d0a67e6c06fdffea1adc02d6037a5c9ea8f754bb5325d30445"
+  },
+  "source_member_hashes": {
+    "olist_orders_dataset.csv": "8df58ef3d2d7e9944010f7beecd9b75367f5588ec6e3c91cec19ae3345ef9ecf",
+    "olist_order_items_dataset.csv": "0bc4d068c4fe38cbb01bd90e8746e3c613fe7b4baef75fab7b0e329701c3e279",
+    "olist_customers_dataset.csv": "983a422239e1712ded753b3bf9ecf47dc73f144d306029dcfa99e70a226883d2",
+    "olist_sellers_dataset.csv": "1f643d2b950373b85735e7794b20986f528d7a000432e7c6f9bcbb44d0846a0e",
+    "olist_products_dataset.csv": "3e6569628a17fbc75fd206ee357b59e20364b9afa90f5b6cd5b4d624c58aa9cc",
+    "olist_geolocation_dataset.csv": "b514f6fc991b9566aeba02aa5d67e2c3630f034b60a0e05aa0d082a3b66d88d6",
+    "product_category_name_translation.csv": "a81f0d1f27b27e7293f761bc79e3ce8f348ee39c4b3ed3e49bde38f478586278"
+  },
+  "development_input_sha256": "1845b01862286f5eaefe3275be6eeeaa0f1e5cc37a1aaa4e5933c0521bc03469",
+  "protected_files": {
+    "outputs/regression/analysis_complete.json": "2061b11312df3aa293d064cd67ea622defa460e39dba8742f13c01220f43ea41",
+    "outputs/regression/audit_pass.json": "d8a8b1f88da93ca37cf0778b0653850486df06f0c8f8ca24f59c8a0d8249129d",
+    "outputs/regression/completion_audit.json": "f584807b9e0087c1380f47aaaf78781f58c8a9c32a80543a2b8d812faa4f2d6e",
+    "outputs/regression/delivery_validation.json": "3c0365737d55cf52c1a7d61a2b67c68bd00a57e89b3d0fe516299b46222acf87",
+    "outputs/regression/deployment_bundle_check.json": "d7cde64c36758e0f2181a8d1db9804e570dec5739ff7bb2fca9b1c9555692528",
+    "outputs/regression/diagnostics_complete.json": "e8bf0cb91e238342903be5a05c8e7cacd44b543e341892f9fc6392bde985eed7",
+    "outputs/regression/diagnostics_design.json": "b0f97d8169d1a6ed9d7c9461b386d861a34bfabcf43d77bdb8ed979835c9549e",
+    "outputs/regression/environment.json": "7b7f49c3e720c15d2bc4c588c76ba47e10585c323058de819e5a4c5934623c63",
+    "outputs/regression/figures/01_windows.png": "7233f4a9c29372b78f45f535979f2a157b6c36d6540b116b005cdbc6bcfa1bbe",
+    "outputs/regression/figures/02_model_comparison.png": "878f569c18be54938894496bec30ddd53611a0f7ea828901fd853a688f3477cb",
+    "outputs/regression/figures/03_test_months.png": "92a6dad8f6c86e89747408dbf015abb4fa598752e11cc9dbda6bc65c74e06ee4",
+    "outputs/regression/figures/04_tail_errors.png": "ee26a54acd225698752a4d786019c0eaed38b3e2396b0330c26ded843ba254ba",
+    "outputs/regression/figures/05_importance.png": "e3e1d6c6a0aea7b4801309f6ba36ade08581faf11016ffe01f5e35d7e95eeb31",
+    "outputs/regression/figures/06_calendar_ablation.png": "402a0331c33be2585e2713586bc68e0473e2b810cd857b7f9067546e34d8f1bf",
+    "outputs/regression/figures/07_random_reference.png": "481aa19a9fb2e268be7901371b89a1ca4ac18aeb0990f4b4296259482033881c",
+    "outputs/regression/figures/08_stack_weights.png": "ced0f219fdadc691785b892479d50c1d5c76a384d0970b28370611352ba3938b",
+    "outputs/regression/figures/09_label_coverage.png": "0c0a20dab406d7454d13f1bd8c23e9bf5ee641f9c43803a3b7e1aa07d1a8d083",
+    "outputs/regression/frozen_reproduction_check.json": "5d443f2d99c2d3ec16a1c2745d598a01b89740268c9dbf11e996d847512efd52",
+    "outputs/regression/frozen_selection.json": "914579a12fbf0bdefdcafd13476533cb5cc3bf0910a58188fd44b021db379a60",
+    "outputs/regression/main_cv_complete.json": "547d8c510b2dc0cac7f4f0da8ad5aadd0020020d0db7b9a91e40688da9caf6cd",
+    "outputs/regression/notebook_execution.json": "a447115407a5d5411a63c60bb6ad7d51eacd9b1ed9ddfdab4c28cbc7e89ac22f",
+    "outputs/regression/preparation.json": "1e118b0f5b20c5fe9957d90da4d2ee049cfa0a56154bb8a7093f301ba1a306f7",
+    "outputs/regression/preprocessing_audit.json": "51714088e29f9442bf61bd2ec60e6538ee0e3e0a9514c285c10185fd057306e0",
+    "outputs/regression/protocol.json": "08c9c05e98629bb0134f593630ed848be91c50a8458148cca18844de5d17a2df",
+    "outputs/regression/public_reading_check.json": "47bd8d6ce9c76c838450aa2a0d28d84eefd0cccb01b770b9db492b32226bd538",
+    "outputs/regression/purge_gap.json": "09ea52e9fd5b731100c2ea6aa2f855b9a681a17af97bb9e6528abe633b50343a",
+    "outputs/regression/reference_complete.json": "de951081878bcba283723a04009f365426a2c6803732522c3d1bcf81d033e850",
+    "outputs/regression/run_log.txt": "2a2fdcf22232f782c48583d9e99ae92c589ba9fc995a33cbe6b72bc35903a418",
+    "outputs/regression/search_design.json": "4d71f0b4612e095c83f07bef37a26de43622f4d04836371f396cd6f9f0f636ba",
+    "outputs/regression/stacking_complete.json": "50b53f96633122a346ba29986d37c599533142d348041fae884f85f46f615199",
+    "outputs/regression/tables/chronological_vs_random.csv": "584c74c231f22f91a27a80dea3a1a317a3059ad33cc950aecf14218bdd607adb",
+    "outputs/regression/tables/cohort_flow.csv": "7b8d547f4c4e7fac6aa9f326c3300a0e87b7bd6b1e3b59e76fbd51ede8057da7",
+    "outputs/regression/tables/cv_all_candidates_folds.csv": "4498b9fc4899ff94767bf5dfcff0a1e67052a53d565cfccba8441faf40b75fbe",
+    "outputs/regression/tables/cv_candidates.csv": "75bf00d2a73e3c4c59e5d9aa67ebc255de9bcfad1e95a28c7745ae7a2020fb2b",
+    "outputs/regression/tables/cv_family_summary.csv": "b5d57f669bfc4d53620c66f02205dd5fa1252536edc341ca22defa97206cc2ac",
+    "outputs/regression/tables/cv_reference_folds.csv": "79588a3d16560bffde77b86004b0dd39fbe03f01cae72d5284507eba7089e651",
+    "outputs/regression/tables/diagnostic_folds.csv": "93c00b2a6a35f210d74d0a5b0491af44c57d6b7b5fded6773d8d081332b4c9d6",
+    "outputs/regression/tables/diagnostic_summary.csv": "15b04625ed1f8af32515310e2bb2a4114ed9e0dac33a0a99907d11f962e4c9bd",
+    "outputs/regression/tables/feature_catalogue.csv": "51f1d00e501470af05a74cc9e1fdf89d248de41d12af3bef644b99981f0142a4",
+    "outputs/regression/tables/fold_table.csv": "2005496dda6c22f25346a6041024d7847356d97a57f8d5006a29ba4143ce09a7",
+    "outputs/regression/tables/model_metrics_by_stage.csv": "d5fa173a384873852474e7388a31ecfb50d03a42de7bb73e6a5f09f24ead14b0",
+    "outputs/regression/tables/outcome_coverage_by_month.csv": "5700ce6c33e361d30a3f687dec9f6b76f4e0b1840cd930c2d8ff9716ea13cf0d",
+    "outputs/regression/tables/permutation_importance_groups.csv": "cd0bf504199cf3804ca12b7ca938abf469e41b25392aa08eaf92cd322c72675a",
+    "outputs/regression/tables/permutation_importance_repeats.csv": "4238ffbc9c843128361482b0cfd715d6375f92cb48d9c487bc0f1ab53abe7338",
+    "outputs/regression/tables/random_reference.csv": "de7ede7369356b231f78ec11a9367a7b954434dde64fc54cf669f753b1a52ef3",
+    "outputs/regression/tables/selection_maturity_sensitivity.csv": "37c403f09a4512ae3a116e5d229423dd9efd6a63fa25b5e066bd3870f0065469",
+    "outputs/regression/tables/source_inventory.csv": "fe9f6a5e704ef8c95e123ec0fa708e977517c860686bb96314472f9a0e96254b",
+    "outputs/regression/tables/stacking_folds.csv": "21fe2878dcb899ca57487c38e3b490bd5565feda8fc910ec295401573a1a04e4",
+    "outputs/regression/tables/stacking_inner_audit.csv": "149b8d4f0ffcf891a7ab6a42c777fdf10c443e3b438d80d5c10a4d1b953c2c99",
+    "outputs/regression/tables/target_distribution_by_stage.csv": "fd392a4f4cecbe5abae302ae21d7cf7a961e5efb99790a010e81730981133bf0",
+    "outputs/regression/tables/test_by_month.csv": "7c3f6d70bcd08f31a7e71ca97e304521149ad87e95f2b12ac1032b2f8dc1b1ce",
+    "outputs/regression/tables/test_by_route.csv": "7cdedf30ec7b92956b7d45423dbb04a2c74e90d871baf19e27802acca2a972da",
+    "outputs/regression/tables/test_error_groups.csv": "dede6d6c34d62f3d40071e8e666dd135f71280e624526afed6b338bdcf7d12ce",
+    "outputs/regression/tables/train_cv_test_comparison.csv": "4192412859ce5d4507d6ee069be3b4f9e41ad11e581041a7b254d52dbe6f39dd",
+    "outputs/regression/tables/train_test_results.csv": "5408ede6c52c9061d3adb3661da5872001bf3dc878336bbc0c58495f54d4cdda",
+    "outputs/regression/tables/training_maturity_exclusions.csv": "bd7934d03c3e11ff907f3c3307733e5c7f6e8de1901e67bf76b0a0da2ad9f257",
+    "outputs/regression/tables/validation_label_coverage_by_duration.csv": "872104cfcfe13d0f5c9ffdfe90a109621bdf8af0bc0020aa0b53962a457cdeda",
+    "outputs/regression/tables/validation_outcome_maturity_diagnostic.csv": "813bc054c21e2b0206e1ea39fb7659cfee19a49cc7a3ccfe60d98d61d64b9433",
+    "outputs/regression/test_lock.json": "3e0db93b8e0b3fdc378e4c75aa5ef3e516bf95087e48015afedc7dee885001a8",
+    "outputs/regression/test_summary.json": "f20c426fde1fcec061d060b3ff36587a35157cf52bdda69b0d93cdabef6cd414",
+    "outputs/regression/verification.json": "81388f383fdb47dc05b875023ad3fd42e429d7a66457a1553471c9b07d74a56b",
+    "outputs/classification/figures/01_windows_and_rates.png": "07f087250e2a54394ccde6bd8dd9251ff6c4dc52382c4163d27f3aea7d02d83f",
+    "outputs/classification/figures/02_cv_by_fold.png": "4e1c13222b3b4a33899b56c48d5d95aaa98894b855055345c3357e434bfb8fd7",
+    "outputs/classification/figures/03_test_pr_and_months.png": "39bac11a4ba6ecc2380c26c961424b921818013e523c19f80c873eb49f3d7f16",
+    "outputs/classification/figures/04_group_importance.png": "942d33bbeaa91096884fadd9dc16645bc9d3ef961bdefa5f40c5ddd80476d790",
+    "outputs/classification/figures/05_chronological_vs_random.png": "5e3b457065d9abf732eb336af04be9fcb0b65485ca88a90225d4e255a7c42a2a",
+    "outputs/classification/purge_gap.json": "f9aa28fb2af1c89b920a6d8d59ae3680079767dd331641cbbb529622d488b550",
+    "outputs/classification/run_log.txt": "21cf7a357ec4cb5367f276a90563e4c1240633a23d1dd1d73bd935dc240198fe",
+    "outputs/classification/selection.json": "b88084b543223bf608432c905d3f81c8298e5a40d8020bc0fb5b658d99a512c8",
+    "outputs/classification/tables/censoring_by_t_month.csv": "c7423badfe216e0bb914197643080200d105019746bdd77e8a0242fbc93ff10a",
+    "outputs/classification/tables/chronological_vs_random.csv": "ae1f0e3eacbf4d374ed00d7a0c4ad92bc9f0c39026c9d3cd014e7286d9bfaa65",
+    "outputs/classification/tables/cohort_flow.csv": "bc7c8f4c4c4cdbdb1e8d8323d26da0b56b3b000f52c631ba651fcb6348e43026",
+    "outputs/classification/tables/cv_candidates.csv": "6b5547d92f7e4267222609cded87597bc20a4c07f8126d383f0c7d65a03d80da",
+    "outputs/classification/tables/cv_family_summary.csv": "6690b79665130382c979fe9f18d748727ebfd55a50cc35a4670153cd75b233a2",
+    "outputs/classification/tables/cv_fold_detail.csv": "21a83f03a91e1563a806ccdcc02e8ec46658d5c585f98d46ea48e4169a0e0150",
+    "outputs/classification/tables/fold_table.csv": "dbd7aa7ae4d0a9d81a570ef9ebfcca6742ea0c4cc353cb80d1f58ea7308a4c38",
+    "outputs/classification/tables/gap_sensitivity.csv": "b85b142fea09a8d3dae4ee0adb2f3cc7228e535693b6cd2c68b7fb9d59da1e86",
+    "outputs/classification/tables/monthly_volume_and_rate.csv": "f93c1168c9ad147dfbfd67797f98fa9b1b10035a47a3245ba4b4fffbdaa03102",
+    "outputs/classification/tables/permutation_importance_features.csv": "adb72c42d648d43c513cfded7b51f8f6ce2e881c34555beaaba1766726521185",
+    "outputs/classification/tables/permutation_importance_groups.csv": "f8fced0aabf7f6c20740289b8c0353480f2d1b2565ba14b03224b1c6c5e6480a",
+    "outputs/classification/tables/reference_random_split.csv": "785451d02f6e160b65add5893cc67a8b5702d04c95686005a21546869e7c76c1",
+    "outputs/classification/tables/search_spaces.csv": "8ac423c95861e2aef8b1e3dad3e97e71202a94115f62cbaa8685f57001925347",
+    "outputs/classification/tables/source_inventory.csv": "e759232ff464a6564296a61024ce46db6f30cd80b8db1de950f5836865e5d127",
+    "outputs/classification/tables/success_criteria.csv": "2947645723e20da7320e7f82970f12fa9593a13cfe9cc145e11bb67b4cb8513a",
+    "outputs/classification/tables/test_by_month.csv": "17fe268eb9679f95d0eb4e76e7498b0f83f1647a527ba9dc94246a1c4db0ad21",
+    "outputs/classification/tables/test_operating_points.csv": "837c0be08603bc64d7005ff9b3eaa300ccafff4b37d733b0a310fb4534a95205",
+    "outputs/classification/tables/test_results.csv": "2284e490a3d6965b6e1cf243c9fdd7f02b88c7f0d4afc44c3348f413cd43087d",
+    "outputs/classification/test_lock.json": "376a3c1472e7cb88bf947b862b21cb87e28b6299110ec15c8e9931680c21cf2e",
+    "outputs/classification/test_summary.json": "bc4dc3ec0dd670e5edf7a99a382f11307958c55e5c59a7a6481951ece8c395c5"
+  },
+  "test_policy": "No June-August predictions, scores, selection or deployment changes",
+  "historical_exposure": "Phase 2 specifications and this dataset were used before; retrospective development only",
+  "risk_adaptation": "past-only cross-fitting; zero plus unavailable indicator for cold-start rows",
+  "environment": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.7.2",
+    "joblib": "1.5.2"
+  },
+  "frozen_at": "2026-10-30T10:27:21.792638+00:00"
+}

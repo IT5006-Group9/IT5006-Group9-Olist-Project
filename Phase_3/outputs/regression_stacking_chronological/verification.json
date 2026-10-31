@@ -1,0 +1,39 @@
+{
+  "checked_at": "2026-10-30T10:58:01.467048+00:00",
+  "verifier_sha256": "5fb1270c9c832ecbd0cff1dfffdbf4d66c3dad89c83db18166399739e3988d6e",
+  "status": "passed",
+  "passed": true,
+  "completed_folds": 5,
+  "expected_folds": 5,
+  "base_prediction_cache_checks": 385,
+  "feature_matrix_identity_checks": 385,
+  "risk_partition_checks": 470,
+  "inner_candidate_evaluations": 345,
+  "combination_fold_checks": 70,
+  "weight_dual_certificates": 35,
+  "unique_risk_models_checked": 21,
+  "unique_risk_feature_matrices_checked": 40,
+  "max_weight_primal_dual_gap_days": 4.1744385725905886e-14,
+  "phase2_fidelity": {
+    "exact_classic_preprocessing_matrices": 4,
+    "exact_extension_preprocessing_matrices": 1,
+    "field_order_verified": true,
+    "hgb_and_risk_parameters_verified": true,
+    "ridge_candidates": 12,
+    "forest_candidates": 6,
+    "sample_rows": 1200
+  },
+  "protected_files_verified": 89,
+  "frozen_sources_verified": 8,
+  "course_members_verified": 7,
+  "development_orders_verified": 77600,
+  "test_evaluations": 0,
+  "validation_row_counts": [
+    7068,
+    6551,
+    6996,
+    6715,
+    4406
+  ],
+  "limitation": "Cached base predictions replayed; base estimators are not retrained by this independent verifier."
+}

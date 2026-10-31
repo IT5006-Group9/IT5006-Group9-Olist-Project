@@ -1,0 +1,507 @@
+{
+  "cohort_n": 97187,
+  "feature_count": 51,
+  "gap_days": 27,
+  "selection_cutoff": "2018-06-01 00:00:00",
+  "folds": [
+    {
+      "fold": "fold1",
+      "cutoff": "2018-01-01 00:00:00",
+      "end_exclusive": "2018-02-01 00:00:00",
+      "train_n": 34984,
+      "score_n": 6373,
+      "train_labels": {
+        "rows": 34984,
+        "known_strictly_before": 34900,
+        "known_at_or_before": 34900,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 84,
+        "on_or_after_cutoff": 84,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 84,
+        "unavailable_share_under_strict_rule": 0.0024010976446375487
+      },
+      "validation_labels_at_selection_cutoff": {
+        "rows": 6373,
+        "known_strictly_before": 6370,
+        "known_at_or_before": 6370,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 3,
+        "on_or_after_cutoff": 3,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 3,
+        "unavailable_share_under_strict_rule": 0.00047073591715047857
+      },
+      "latest_train_label": "2018-10-10 00:13:35",
+      "latest_scored_label": "2018-09-13 06:21:04",
+      "train_feature_availability": {
+        "rows": 34984,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 11,
+        "approval_on_or_after_T": 11,
+        "approval_after_T_with_lag_populated": 11,
+        "approval_after_T_with_handover_populated": 10,
+        "carrier_equal_to_T": 7,
+        "carrier_strictly_after_T": 117,
+        "carrier_on_or_after_T": 124,
+        "carrier_after_T_with_transit_populated": 18,
+        "either_future_event_used_in_a_populated_feature": 29
+      },
+      "score_feature_availability": {
+        "rows": 6373,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 0,
+        "approval_on_or_after_T": 0,
+        "approval_after_T_with_lag_populated": 0,
+        "approval_after_T_with_handover_populated": 0,
+        "carrier_equal_to_T": 0,
+        "carrier_strictly_after_T": 24,
+        "carrier_on_or_after_T": 24,
+        "carrier_after_T_with_transit_populated": 0,
+        "either_future_event_used_in_a_populated_feature": 0
+      }
+    },
+    {
+      "fold": "fold2",
+      "cutoff": "2018-02-01 00:00:00",
+      "end_exclusive": "2018-03-01 00:00:00",
+      "train_n": 42388,
+      "score_n": 5936,
+      "train_labels": {
+        "rows": 42388,
+        "known_strictly_before": 42315,
+        "known_at_or_before": 42315,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 73,
+        "on_or_after_cutoff": 73,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 73,
+        "unavailable_share_under_strict_rule": 0.0017221855242049637
+      },
+      "validation_labels_at_selection_cutoff": {
+        "rows": 5936,
+        "known_strictly_before": 5921,
+        "known_at_or_before": 5921,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 15,
+        "on_or_after_cutoff": 15,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 15,
+        "unavailable_share_under_strict_rule": 0.002526954177897574
+      },
+      "latest_train_label": "2018-10-10 00:13:35",
+      "latest_scored_label": "2018-10-24 18:26:25",
+      "train_feature_availability": {
+        "rows": 42388,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 11,
+        "approval_on_or_after_T": 11,
+        "approval_after_T_with_lag_populated": 11,
+        "approval_after_T_with_handover_populated": 10,
+        "carrier_equal_to_T": 7,
+        "carrier_strictly_after_T": 173,
+        "carrier_on_or_after_T": 180,
+        "carrier_after_T_with_transit_populated": 18,
+        "either_future_event_used_in_a_populated_feature": 29
+      },
+      "score_feature_availability": {
+        "rows": 5936,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 2,
+        "approval_on_or_after_T": 2,
+        "approval_after_T_with_lag_populated": 2,
+        "approval_after_T_with_handover_populated": 2,
+        "carrier_equal_to_T": 0,
+        "carrier_strictly_after_T": 19,
+        "carrier_on_or_after_T": 19,
+        "carrier_after_T_with_transit_populated": 0,
+        "either_future_event_used_in_a_populated_feature": 2
+      }
+    },
+    {
+      "fold": "fold3",
+      "cutoff": "2018-03-01 00:00:00",
+      "end_exclusive": "2018-04-01 00:00:00",
+      "train_n": 48380,
+      "score_n": 7406,
+      "train_labels": {
+        "rows": 48380,
+        "known_strictly_before": 48296,
+        "known_at_or_before": 48296,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 84,
+        "on_or_after_cutoff": 84,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 84,
+        "unavailable_share_under_strict_rule": 0.0017362546506821
+      },
+      "validation_labels_at_selection_cutoff": {
+        "rows": 7406,
+        "known_strictly_before": 7390,
+        "known_at_or_before": 7390,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 16,
+        "on_or_after_cutoff": 16,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 16,
+        "unavailable_share_under_strict_rule": 0.002160410477990818
+      },
+      "latest_train_label": "2018-10-24 18:26:25",
+      "latest_scored_label": "2018-10-22 03:33:14",
+      "train_feature_availability": {
+        "rows": 48380,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 12,
+        "approval_on_or_after_T": 12,
+        "approval_after_T_with_lag_populated": 12,
+        "approval_after_T_with_handover_populated": 11,
+        "carrier_equal_to_T": 7,
+        "carrier_strictly_after_T": 196,
+        "carrier_on_or_after_T": 203,
+        "carrier_after_T_with_transit_populated": 18,
+        "either_future_event_used_in_a_populated_feature": 30
+      },
+      "score_feature_availability": {
+        "rows": 7406,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 0,
+        "approval_on_or_after_T": 0,
+        "approval_after_T_with_lag_populated": 0,
+        "approval_after_T_with_handover_populated": 0,
+        "carrier_equal_to_T": 1,
+        "carrier_strictly_after_T": 27,
+        "carrier_on_or_after_T": 28,
+        "carrier_after_T_with_transit_populated": 0,
+        "either_future_event_used_in_a_populated_feature": 0
+      }
+    },
+    {
+      "fold": "fold4",
+      "cutoff": "2018-04-01 00:00:00",
+      "end_exclusive": "2018-05-01 00:00:00",
+      "train_n": 54684,
+      "score_n": 7547,
+      "train_labels": {
+        "rows": 54684,
+        "known_strictly_before": 54595,
+        "known_at_or_before": 54595,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 89,
+        "on_or_after_cutoff": 89,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 89,
+        "unavailable_share_under_strict_rule": 0.001627532733523517
+      },
+      "validation_labels_at_selection_cutoff": {
+        "rows": 7547,
+        "known_strictly_before": 7524,
+        "known_at_or_before": 7524,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 23,
+        "on_or_after_cutoff": 23,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 23,
+        "unavailable_share_under_strict_rule": 0.0030475685702928317
+      },
+      "latest_train_label": "2018-10-24 18:26:25",
+      "latest_scored_label": "2018-10-08 19:43:08",
+      "train_feature_availability": {
+        "rows": 54684,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 13,
+        "approval_on_or_after_T": 13,
+        "approval_after_T_with_lag_populated": 13,
+        "approval_after_T_with_handover_populated": 12,
+        "carrier_equal_to_T": 7,
+        "carrier_strictly_after_T": 213,
+        "carrier_on_or_after_T": 220,
+        "carrier_after_T_with_transit_populated": 18,
+        "either_future_event_used_in_a_populated_feature": 31
+      },
+      "score_feature_availability": {
+        "rows": 7547,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 14,
+        "approval_on_or_after_T": 14,
+        "approval_after_T_with_lag_populated": 14,
+        "approval_after_T_with_handover_populated": 14,
+        "carrier_equal_to_T": 0,
+        "carrier_strictly_after_T": 17,
+        "carrier_on_or_after_T": 17,
+        "carrier_after_T_with_transit_populated": 0,
+        "either_future_event_used_in_a_populated_feature": 14
+      }
+    },
+    {
+      "fold": "fold5",
+      "cutoff": "2018-05-01 00:00:00",
+      "end_exclusive": "2018-06-01 00:00:00",
+      "train_n": 62205,
+      "score_n": 7133,
+      "train_labels": {
+        "rows": 62205,
+        "known_strictly_before": 62113,
+        "known_at_or_before": 62113,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 92,
+        "on_or_after_cutoff": 92,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 92,
+        "unavailable_share_under_strict_rule": 0.001478980789325617
+      },
+      "validation_labels_at_selection_cutoff": {
+        "rows": 7133,
+        "known_strictly_before": 6768,
+        "known_at_or_before": 6768,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 365,
+        "on_or_after_cutoff": 365,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 365,
+        "unavailable_share_under_strict_rule": 0.05117061544932006
+      },
+      "latest_train_label": "2018-10-24 18:26:25",
+      "latest_scored_label": "2018-10-15 00:05:20",
+      "train_feature_availability": {
+        "rows": 62205,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 13,
+        "approval_on_or_after_T": 13,
+        "approval_after_T_with_lag_populated": 13,
+        "approval_after_T_with_handover_populated": 12,
+        "carrier_equal_to_T": 8,
+        "carrier_strictly_after_T": 243,
+        "carrier_on_or_after_T": 251,
+        "carrier_after_T_with_transit_populated": 18,
+        "either_future_event_used_in_a_populated_feature": 31
+      },
+      "score_feature_availability": {
+        "rows": 7133,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 0,
+        "approval_on_or_after_T": 0,
+        "approval_after_T_with_lag_populated": 0,
+        "approval_after_T_with_handover_populated": 0,
+        "carrier_equal_to_T": 0,
+        "carrier_strictly_after_T": 14,
+        "carrier_on_or_after_T": 14,
+        "carrier_after_T_with_transit_populated": 0,
+        "either_future_event_used_in_a_populated_feature": 0
+      }
+    },
+    {
+      "fold": "final",
+      "cutoff": "2018-06-01 00:00:00",
+      "end_exclusive": "2018-09-01 00:00:00",
+      "train_n": 70136,
+      "score_n": 21058,
+      "train_labels": {
+        "rows": 70136,
+        "known_strictly_before": 70054,
+        "known_at_or_before": 70054,
+        "equal_to_cutoff": 0,
+        "strictly_after_cutoff": 82,
+        "on_or_after_cutoff": 82,
+        "missing_timestamp": 0,
+        "unavailable_under_strict_rule": 82,
+        "unavailable_share_under_strict_rule": 0.0011691570662712444
+      },
+      "validation_labels_at_selection_cutoff": null,
+      "latest_train_label": "2018-10-24 18:26:25",
+      "latest_scored_label": "2018-10-29 12:27:35",
+      "train_feature_availability": {
+        "rows": 70136,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 27,
+        "approval_on_or_after_T": 27,
+        "approval_after_T_with_lag_populated": 27,
+        "approval_after_T_with_handover_populated": 26,
+        "carrier_equal_to_T": 8,
+        "carrier_strictly_after_T": 261,
+        "carrier_on_or_after_T": 269,
+        "carrier_after_T_with_transit_populated": 18,
+        "either_future_event_used_in_a_populated_feature": 45
+      },
+      "score_feature_availability": {
+        "rows": 21058,
+        "approval_equal_to_T": 0,
+        "approval_strictly_after_T": 34,
+        "approval_on_or_after_T": 34,
+        "approval_after_T_with_lag_populated": 34,
+        "approval_after_T_with_handover_populated": 32,
+        "carrier_equal_to_T": 0,
+        "carrier_strictly_after_T": 204,
+        "carrier_on_or_after_T": 204,
+        "carrier_after_T_with_transit_populated": 0,
+        "either_future_event_used_in_a_populated_feature": 34
+      }
+    }
+  ],
+  "validation_labels_at_selection_cutoff": {
+    "rows": 34395,
+    "known_strictly_before": 33973,
+    "known_at_or_before": 33973,
+    "equal_to_cutoff": 0,
+    "strictly_after_cutoff": 422,
+    "on_or_after_cutoff": 422,
+    "missing_timestamp": 0,
+    "unavailable_under_strict_rule": 422,
+    "unavailable_share_under_strict_rule": 0.012269225178078208
+  },
+  "gap_calibration": {
+    "T_start_inclusive": "2017-01-01 00:00:00",
+    "T_end_exclusive": "2018-01-01 00:00:00",
+    "calibration_asof": "2018-01-01 00:00:00",
+    "reference_labels_at_calibration_origin": {
+      "rows": 41734,
+      "known_strictly_before": 41020,
+      "known_at_or_before": 41020,
+      "equal_to_cutoff": 0,
+      "strictly_after_cutoff": 714,
+      "on_or_after_cutoff": 714,
+      "missing_timestamp": 0,
+      "unavailable_under_strict_rule": 714,
+      "unavailable_share_under_strict_rule": 0.017108352901710835
+    },
+    "all_eventual_answers": {
+      "rows": 41734,
+      "q99_days": 26.910224421296192,
+      "ceil_q99_days": 27
+    },
+    "answers_known_strictly_before_origin": {
+      "rows": 41020,
+      "q99_days": 20.92203738425925,
+      "ceil_q99_days": 21
+    },
+    "interpretation": "Known-only answer lags condition on observation before the origin and may be truncated; their quantile is a diagnostic, not an unbiased recommended replacement gap."
+  },
+  "feature_availability_at_T": {
+    "rows": 97187,
+    "approval_equal_to_T": 0,
+    "approval_strictly_after_T": 61,
+    "approval_on_or_after_T": 61,
+    "approval_after_T_with_lag_populated": 61,
+    "approval_after_T_with_handover_populated": 58,
+    "carrier_equal_to_T": 8,
+    "carrier_strictly_after_T": 475,
+    "carrier_on_or_after_T": 483,
+    "carrier_after_T_with_transit_populated": 18,
+    "either_future_event_used_in_a_populated_feature": 79
+  },
+  "chronology": {
+    "T_before_purchase": 0,
+    "delivery_before_purchase": 0,
+    "review_answer_equal_to_T": 0,
+    "review_answer_before_T": 0,
+    "missing_review_answer_timestamp": 0
+  },
+  "generated_at": "2026-10-31T07:24:43.863941+00:00",
+  "scope": "Audit of the existing classification protocol, not a corrected experiment",
+  "timing_fixed": false,
+  "model_fits": 0,
+  "model_searches": 0,
+  "new_predictions": 0,
+  "private_order_records_exported": false,
+  "existing_sources_and_outputs_unchanged": true,
+  "original_fold_table_counts_reproduced": true,
+  "original_test_membership_reproduced": true,
+  "test_ids_sha256": "f87740ebb1f7a2f98fd0eeabd24c195124b52558c9733ab7368dabcffc8caffa",
+  "time_semantics": {
+    "training_label_available": "review_answer_timestamp < fold cutoff; equal is unavailable",
+    "selection_label_available": "review_answer_timestamp < 2018-06-01; equal is unavailable",
+    "gap_calibration_label_available": "review_answer_timestamp < 2018-01-01; equal is unavailable",
+    "prediction_event_available": "event timestamp <= T; equal is available, strictly later is unavailable",
+    "final_test_note": "Test labels naturally follow the fitting origin; final test outcomes are not subject to the development-label-before-June-1 rule."
+  },
+  "reproduce_command": "python Phase_3/scripts/audit_classification_timing.py --csv-dir /path/to/Olist_CSV",
+  "data_member_inventory": [
+    {
+      "table": "orders",
+      "file": "olist_orders_dataset.csv",
+      "rows": 99441,
+      "sha256": "8df58ef3d2d7e9944010f7beecd9b75367f5588ec6e3c91cec19ae3345ef9ecf"
+    },
+    {
+      "table": "items",
+      "file": "olist_order_items_dataset.csv",
+      "rows": 112650,
+      "sha256": "0bc4d068c4fe38cbb01bd90e8746e3c613fe7b4baef75fab7b0e329701c3e279"
+    },
+    {
+      "table": "payments",
+      "file": "olist_order_payments_dataset.csv",
+      "rows": 103886,
+      "sha256": "4f713964f2815dbbaa40b9488268c55aac3627bfce5aa96cf58d1f3616de3cc0"
+    },
+    {
+      "table": "reviews",
+      "file": "olist_order_reviews_dataset.csv",
+      "rows": 99224,
+      "sha256": "012b61c7593e34f51fa614efdf802b9c7056ce6aae5307ddb93236e7cfc797d7"
+    },
+    {
+      "table": "customers",
+      "file": "olist_customers_dataset.csv",
+      "rows": 99441,
+      "sha256": "983a422239e1712ded753b3bf9ecf47dc73f144d306029dcfa99e70a226883d2"
+    },
+    {
+      "table": "sellers",
+      "file": "olist_sellers_dataset.csv",
+      "rows": 3095,
+      "sha256": "1f643d2b950373b85735e7794b20986f528d7a000432e7c6f9bcbb44d0846a0e"
+    },
+    {
+      "table": "products",
+      "file": "olist_products_dataset.csv",
+      "rows": 32951,
+      "sha256": "3e6569628a17fbc75fd206ee357b59e20364b9afa90f5b6cd5b4d624c58aa9cc"
+    },
+    {
+      "table": "geo",
+      "file": "olist_geolocation_dataset.csv",
+      "rows": 1000163,
+      "sha256": "b514f6fc991b9566aeba02aa5d67e2c3630f034b60a0e05aa0d082a3b66d88d6"
+    },
+    {
+      "table": "translation",
+      "file": "product_category_name_translation.csv",
+      "rows": 71,
+      "sha256": "a81f0d1f27b27e7293f761bc79e3ce8f348ee39c4b3ed3e49bde38f478586278"
+    }
+  ],
+  "source_sha256": {
+    "src/classification/__init__.py": "e88f0cb04d81d75acad9a416d85da3e302d2db2e2ff41d55f9eef0ab3fce72fe",
+    "src/classification/config.py": "8445ade50d9f40d23665518561cb5051164c708514869b1db994ed516e655871",
+    "src/classification/data.py": "9f2cddd206f1aec61377877f852e41dcbc8335b480227ed95fe3a0e944664cf3",
+    "src/classification/evaluate.py": "736a31b07efd9ce66efdc906ac8f47823b5b52d4d0ec83c715ecf229bb35320d",
+    "src/classification/features.py": "00be1422f79f59cf53309b2b0fc234beaa8e8dbb3cd6e5393b1d889a865dcb49",
+    "src/classification/figures.py": "03db6c564186384e3d986ca0c0825dcae9c0e016a5795a90ce1823aefab3a11b",
+    "src/classification/models.py": "68662de25d552aa762fabd8eaa5d41842d5f6c2e15ece5b007938b5b5b49ca55",
+    "src/classification/pipeline.py": "35e590d4b799b06dd277ef19fac5599ffc62e98851b09a712dc5bbc7a36158d8",
+    "src/classification/run_pipeline.py": "043f6b9f4f689cbab4dca2e132e9d9161fd852abf4573f84c57fd501966247de",
+    "src/classification/score.py": "19d8f37fac146d5238b2b567271028c871c6d760655df5a8bf034c286c000293",
+    "src/classification/search.py": "25ab1e44d6966a9e84e52aa55f439a926c53244ba83d73126361a7c49c6a602f",
+    "src/classification/splits.py": "c83d95875aa7f18cd9a0cd0fbaae4e26cb941aa79b6d82e82b86e14110cf063d",
+    "src/common/__init__.py": "f4eb688d42c5832e419d3f1bf6e84b75d30361f3005e39e6b3dc4de041dcd7dd",
+    "src/common/geography.py": "4f37030c2d0af9d0499c38aaaa585a539651f6d24915fc3b6d8c26690762385f",
+    "src/common/paths.py": "acf0fe2ebd7f3ca482452285df26ae5caa10c0019957c9b3be6d91ab649fd1ca"
+  },
+  "audit_script_sha256": "abeca3f99b456f70aebcbd8e741fdd6d3e14247c05db1a09adbb5d31d2de3aaf",
+  "original_evidence_sha256": {
+    "outputs/classification/tables/source_inventory.csv": "e759232ff464a6564296a61024ce46db6f30cd80b8db1de950f5836865e5d127",
+    "outputs/classification/tables/fold_table.csv": "dbd7aa7ae4d0a9d81a570ef9ebfcca6742ea0c4cc353cb80d1f58ea7308a4c38",
+    "outputs/classification/purge_gap.json": "f9aa28fb2af1c89b920a6d8d59ae3680079767dd331641cbbb529622d488b550",
+    "outputs/classification/selection.json": "b88084b543223bf608432c905d3f81c8298e5a40d8020bc0fb5b658d99a512c8",
+    "outputs/classification/test_lock.json": "376a3c1472e7cb88bf947b862b21cb87e28b6299110ec15c8e9931680c21cf2e",
+    "outputs/classification/test_summary.json": "bc4dc3ec0dd670e5edf7a99a382f11307958c55e5c59a7a6481951ece8c395c5"
+  },
+  "protected_existing_artifacts": 164,
+  "protected_manifest_sha256": "b46db271a92c395515471e1e3571d9d8cc117d42543c8dafe750d8e8db91fe61",
+  "environment": {
+    "python": "3.12.14",
+    "pandas": "2.2.3",
+    "numpy": "2.3.5"
+  },
+  "elapsed_seconds": 2.553
+}

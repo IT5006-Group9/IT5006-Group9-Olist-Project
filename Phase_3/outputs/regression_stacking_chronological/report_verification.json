@@ -1,0 +1,26 @@
+{
+  "verified_at": "2026-10-30T10:58:58.084192+00:00",
+  "preview": false,
+  "outer_folds": 5,
+  "combinations": 14,
+  "all_14_combination_fold_rows": 70,
+  "feature_catalogue_rows": 49,
+  "model_specification_rows": 26,
+  "zero_future_training_labels": true,
+  "zero_unavailable_meta_labels": true,
+  "convex_weight_sums_verified": true,
+  "train_score_disjoint": true,
+  "test_evaluations": 0,
+  "protected_main_evidence_unchanged": true,
+  "original_training_table_sha256": {
+    "outer_fold_metrics": "c62cd710ecad1a8aa3638174defa5d54b63a7f8ae6c43ae01fad68bbed26e097",
+    "comparison": "3d11b31d542ccd1d2de6c424f343b592e176d18e7e60283db60388fa804a0f2c",
+    "weights": "f21d51b57d9f9353e9f9dd7efccf250b70241f17706006555a61287cc056be4d",
+    "candidate_selection": "8a14afebab09aebbce8bc7ac51f931eb5d01168d54c5ef1a63f159d3d631291c",
+    "time_audit": "27fdd2fc6b0ab3111f72709cec06cf8cbac8ad82c11331de3a6196b68127e43a"
+  },
+  "protocol_sha256": "eade5bc0a0b682b82fff5bb8109bf3e85eab5eaebbe0dafc176b7353f59b7631",
+  "report_builder_sha256": "0616cd336cad35af17bf5cddbc375fcd1574744b80354b470c544ad78757be64",
+  "reading_notebook_only": true,
+  "new_model_fits": 0
+}
