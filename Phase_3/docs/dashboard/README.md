@@ -10,6 +10,23 @@ presentation and deployment section of the report.
 
 ![Olist Operations Studio overview](overview.png)
 
+## Shared filters and mobile layout update
+
+The updated Overview and Marketplace explorer retain the same selection across
+page changes. Both offer Reset all filters, and Overview shows extra conditions
+set in the explorer. At 360 px the sidebar starts collapsed and the four summary
+metrics use a two-column layout.
+
+![Updated mobile overview and shared filters](mobile_overview.jpg)
+
+## Historical example navigation
+
+Previous, Next and Random browse within the current month and destination.
+Changing an order or leaving the prediction page clears its forecast and revealed
+outcome. The screenshot shows a real prediction with the outcome still hidden.
+
+![Updated historical example navigation and forecast](prediction_navigation.jpg)
+
 ## Real prediction and revealed historical outcome
 
 ![Delivery prediction and outcome comparison](prediction.png)
