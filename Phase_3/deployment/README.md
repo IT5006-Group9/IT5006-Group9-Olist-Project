@@ -3,6 +3,11 @@
 The integrated Streamlit application is in [app.py](app.py), launched through the
 existing root dashboard/app.py. See the [setup and usage guide](../../dashboard/README.md).
 
+The original application URL has been verified online with Python 3.12.16,
+including real model prediction and outcome reveal. The
+[verification record](live_verification.json) preserves the runtime versions and
+browser checks; [screenshots](../docs/dashboard/README.md) show the deployed app.
+
 The committed [assets](assets/) include a real regression predictor and 120
 historical examples. The [exporter](build_demo_bundle.py) reproduces the frozen
 HGB_risk specification in isolated scratch storage, without tuning or a new

@@ -24,6 +24,12 @@ scikit-learn 1.7.2 for the fitted artifact. The root requirements file also incl
 these same constraints so root-based dependency discovery stays consistent.
 No secrets are required.
 
+The existing Cloud app is configured with Python 3.12. Online prediction,
+outcome reveal, all five pages and classification operating-rule switching were
+verified after rebuilding the environment. See the
+[online verification record](../Phase_3/deployment/live_verification.json) and
+[deployed screenshots](../Phase_3/docs/dashboard/README.md).
+
 ## Pages
 
 | Page | Use |

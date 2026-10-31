@@ -1,0 +1,81 @@
+{
+  "passed": true,
+  "verified_at_utc": "2026-10-31T07:14:14.407395+00:00",
+  "url": "https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/",
+  "source_branch": "main",
+  "application_code_commit_at_browser_test": "7b0c7ebbe1177ced15734b83aa945e2b9e9c4dca",
+  "verification_method": "Browser interaction with the deployed Cloud app; Cloud build logs for runtime versions",
+  "runtime": {
+    "python": "3.12.16",
+    "streamlit": "1.50.0",
+    "scikit-learn": "1.7.2",
+    "pandas": "2.2.3",
+    "numpy": "2.3.5",
+    "scipy": "1.16.3",
+    "joblib": "1.5.2",
+    "pyarrow": "22.0.0",
+    "plotly": "6.3.1"
+  },
+  "model_artifact_sha256": "343ca8adde6791e33cd4b7757e352cb7e99b3f640d7d264ef9c264cbda61c001",
+  "checks": {
+    "overview": {
+      "loaded": true,
+      "default_order_count_displayed": 98353
+    },
+    "delivery_prediction": {
+      "executed_on_cloud": true,
+      "example_order_suffix": "6c018a",
+      "predicted_days_displayed": 18.7,
+      "quoted_days_displayed": 45.1,
+      "outcome_hidden_before_reveal": true,
+      "actual_days_after_reveal_displayed": 26.8,
+      "absolute_error_displayed": 8.1
+    },
+    "regression_evidence": {
+      "loaded": true,
+      "train_mae_displayed": 4.72,
+      "cv_mae_displayed": 5.26,
+      "test_mae_displayed": 3.43,
+      "test_rmse_displayed": 5.09
+    },
+    "classification_evidence": {
+      "loaded": true,
+      "test_pr_auc_displayed": 0.375,
+      "test_roc_auc_displayed": 0.739,
+      "pooled_top20_recall_displayed": "53.2%",
+      "frozen_threshold_flag_rate_displayed": "14.9%",
+      "frozen_threshold_recall_displayed": "46.8%",
+      "rule_switch_verified": true
+    },
+    "stacking_evidence": {
+      "loaded": true,
+      "main_test_mae_displayed": 3.43,
+      "mean_test_mae_displayed": 3.93,
+      "stack_test_mae_displayed": 4.39,
+      "no_test_driven_reselection_claim": true
+    },
+    "marketplace_explorer": {
+      "loaded": true,
+      "retained_tabs": [
+        "Orders",
+        "Delivery",
+        "Reviews",
+        "Categories",
+        "Geography"
+      ],
+      "geography_chart_opened": true
+    },
+    "guide": {
+      "loaded": true
+    }
+  },
+  "automated_dashboard_tests": {
+    "passed": 10,
+    "scope": "Local evidence unit tests and Streamlit AppTest checks; separate from the online browser checks"
+  },
+  "screenshots": {
+    "overview.png": "8d8ac20d3e732f89e69e368a345d099c9d8bfb07e1b07b03ee6ab4da146989a6",
+    "prediction.png": "bfcda407b2f823a6d8abea768d2c78ae87c8f8e1d26b3abad3f3ec5623db5403"
+  },
+  "note": "UI metrics are recorded at displayed precision; full saved evaluation is in outputs. Cloud inference uses the committed frozen-configuration deployment artifact and does not retrain."
+}
