@@ -86,7 +86,9 @@ button[data-baseweb="tab"] {font-size:.87rem;padding-left:0;padding-right:0}
 
 
 @st.cache_data(show_spinner=False)
-def evidence():
+def evidence(schema_version):
+    # Bump the caller's schema token when adding evidence keys: Cloud can retain
+    # cache entries across source updates while browser sessions stay open.
     return load_evidence(PHASE)
 
 
@@ -301,13 +303,13 @@ def regression_evidence(ev):
     st.success(f"Preset target met: {summary['success']['mae_reduction_vs_median']:.1%} lower test MAE than the training-median reference (target: at least 5%), and better than the recorded delivery promise.")
     st.caption(f"{summary['test']['within3']:.1%} of test deliveries are within ±3 days of the forecast. Average MAE does not provide an individual delivery guarantee.")
     with st.expander("Selection stability and long-delivery errors", expanded=True):
-        sensitivity = ev["regression_selection_sensitivity"]
+        sensitivity = ev.get("regression_selection_sensitivity", pd.DataFrame())
         if not sensitivity.empty:
             rows = sensitivity[sensitivity.candidate.isin([summary["selected_candidate"], "Ridge_a100"])]
             st.write("The validation lead over Ridge is small, and the ranking changes when May is excluded. May's evaluation contains only outcomes available by the selection cutoff. This sensitivity limits claims that the more complex model is consistently better.")
             st.dataframe(rows.rename(columns={"candidate": "Model", "five_month_mae": "Jan–May MAE", "jan_apr_mae": "Jan–Apr MAE", "five_month_rank": "Jan–May rank", "jan_apr_rank": "Jan–Apr rank"}), hide_index=True, width="stretch")
             st.caption("This is a saved diagnostic. It does not select a new model after seeing the test results.")
-        groups = ev["regression_error_groups"]
+        groups = ev.get("regression_error_groups", pd.DataFrame())
         if not groups.empty:
             durations = groups[groups.group.isin(["0-14 days", "14-30 days", "30-60 days", ">60 days"])]
             st.dataframe(durations[["group", "n", "mae", "bias", "within3"]].rename(columns={"group": "Actual delivery duration", "n": "Orders", "mae": "MAE (days)", "bias": "Mean forecast minus actual (days)", "within3": "Share within ±3 days"}), hide_index=True, width="stretch")
@@ -501,7 +503,7 @@ if page == "Marketplace explorer":
     runpy.run_path(str(ROOT / "Phase 1" / "dashboard" / "app.py"), run_name="__main__")
 else:
     try:
-        ev = evidence()
+        ev = evidence("2026-10-31-timing-audit-v1")
     except EvidenceError as error:
         st.error(f"Published evaluation evidence could not be loaded: {error}")
         st.stop()

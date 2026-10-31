@@ -159,6 +159,10 @@ class DashboardAppTests(unittest.TestCase):
                     "regression_error_groups", "regression_selection_sensitivity")
         for name in optional:
             available[name] = available[name].iloc[:0].copy()
+        # A server or adapter retained from the previous release can omit new
+        # optional keys entirely, rather than returning empty DataFrames.
+        available.pop("regression_error_groups")
+        available.pop("regression_selection_sensitivity")
         with patch.object(evidence_adapter, "load_evidence", return_value=available):
             app = self.launch("Model evidence")
             self.assertEqual(self.metric_value(app, "Test MAE"), "3.43 days")

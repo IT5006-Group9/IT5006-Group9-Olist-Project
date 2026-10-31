@@ -1,5 +1,5 @@
 {
-  "verified_at_utc": "2026-10-31T07:27:01.044336+00:00",
+  "verified_at_utc": "2026-10-31T07:29:12.677674+00:00",
   "baseline_commit": "972e03240f5a0f1a6c6b4c7e3159387b05fa21e0",
   "scope": "Local verification of quality-audit changes; online verification is recorded separately in deployment/live_verification.json",
   "original_sources_outputs_notebooks": {
@@ -187,7 +187,7 @@
     "regression_model.joblib": "343ca8adde6791e33cd4b7757e352cb7e99b3f640d7d264ef9c264cbda61c001"
   },
   "audit_application_source_sha256": {
-    "Phase_3/deployment/app.py": "03b104a11e13e57bb02fd4166de09956e75e2e5f7d2ea117a63d34c39aae82e0",
+    "Phase_3/deployment/app.py": "0705ff6152f7b6ff8aef82fc1b60d05e1e7ab60dc48fb8f895c4952cda7c5a3e",
     "Phase_3/deployment/evidence.py": "c175402978ab74e9df61a06da6bbdd8ed84dcf3aca875442ba0e186b95b6673e",
     "Phase_3/scripts/audit_classification_timing.py": "abeca3f99b456f70aebcbd8e741fdd6d3e14247c05db1a09adbb5d31d2de3aaf"
   },
@@ -196,7 +196,8 @@
     "skipped": 0,
     "dashboard": 10,
     "classification_timing_synthetic": 3,
-    "model_fits": 0
+    "model_fits": 0,
+    "legacy_evidence_keys_missing_case": true
   },
   "classification_timing_corrected": false,
   "historical_model_metrics_replaced": false,
