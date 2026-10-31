@@ -18,7 +18,13 @@ Classification is an archived evaluation page in this app. The interface notes
 below are retained as a future classifier handoff reference; they do not imply
 that a classification model bundle is included in the dashboard.
 
-The [quality audit](../docs/quality_audit.md) identifies unresolved training/selection-label availability and feature-event timing in the archived classification procedure. Correct and separately assess those boundaries before using this interface for a prospective deployment claim.
+The latest [classification update](../docs/classification.md) supplies a strict-cutoff
+rerun addressing the original [quality audit](../docs/quality_audit.md), alongside
+Part B experiments. The dashboard keeps v1 as the headline, offers a separate
+strict assessment, and displays family comparisons, calibration, daily capacity
+and the unretained classification stack. These are saved retrospective results;
+no classifier is fitted or served by the dashboard. The classification interface
+below remains a future handoff reference.
 
 ## Classification interface reference
 

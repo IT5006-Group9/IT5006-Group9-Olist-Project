@@ -104,7 +104,8 @@ class DashboardAppTests(unittest.TestCase):
             "Test PR-AUC": "0.375", "Orders flagged": "20.0%", "Low reviews captured": "53.2%",
         }.items():
             self.assertEqual(self.metric_value(app, title), expected)
-        self.assertTrue(any("Timing audit" in warning.value for warning in app.warning))
+        self.assertTrue(any("v1 timing limitations" in warning.value for warning in app.warning))
+        self.assertTrue(any("strict-cutoff rerun" in info.value for info in app.info))
         self.assertTrue(any("55.9%" in caption.value and "±3 days" in caption.value for caption in app.caption))
         self.assertTrue(any("ranking changes" in text.value for text in app.markdown))
         self.widget(app.selectbox, "Operating rule").set_value(
@@ -113,8 +114,40 @@ class DashboardAppTests(unittest.TestCase):
         self.assert_healthy(app)
         self.assertEqual(self.metric_value(app, "Orders flagged"), "14.9%")
         self.assertEqual(self.metric_value(app, "Low reviews captured"), "46.8%")
-        self.assertTrue(any("below" in warning.value and "50%" in warning.value for warning in app.warning))
+        self.assertTrue(any("46.8%" in warning.value and "50%" in warning.value for warning in app.warning))
         self.assertEqual(self.metric_value(app, "Test MAE"), "3.43 days")
+
+    def test_classification_assessment_switches_all_scores_and_operating_rules_together(self):
+        app = self.launch("Model evidence")
+        self.widget(app.selectbox, "Classification assessment").set_value(
+            "Strict cutoff · Availability rerun"
+        ).run(timeout=60)
+        self.assert_healthy(app)
+        for title, value in {
+            "Training PR-AUC": "0.599", "CV / validation PR-AUC": "0.546",
+            "Test PR-AUC": "0.374", "Test ROC-AUC": "0.740",
+            "Orders flagged": "20.0%", "Low reviews captured": "53.5%",
+            "Test MAE": "3.43 days",
+        }.items():
+            self.assertEqual(self.metric_value(app, title), value)
+        self.assertFalse(any("v1 timing limitations" in warning.value for warning in app.warning))
+        self.widget(app.selectbox, "Operating rule").set_value(
+            "Use the frozen validation score threshold"
+        ).run(timeout=60)
+        self.assert_healthy(app)
+        self.assertEqual(self.metric_value(app, "Orders flagged"), "14.8%")
+        self.assertEqual(self.metric_value(app, "Low reviews captured"), "46.5%")
+        self.assertTrue(any("0.5415" in warning.value for warning in app.warning))
+        self.widget(app.selectbox, "Classification assessment").set_value(
+            "v1 · Frozen headline"
+        ).run(timeout=60)
+        self.assert_healthy(app)
+        self.assertEqual(self.metric_value(app, "Test PR-AUC"), "0.375")
+        self.assertEqual(self.metric_value(app, "Orders flagged"), "14.9%")
+        self.assertEqual(self.metric_value(app, "Low reviews captured"), "46.8%")
+        self.assertTrue(any("0.5475" in warning.value for warning in app.warning))
+        self.assertTrue(any("0.5474" in frame.value.to_string() and "0.3784" in frame.value.to_string()
+                            for frame in app.table), "The supplementary classification stack should retain its own CV/test scores.")
 
     @unittest.skipUnless(all((ASSETS / name).is_file() for name in (
         "regression_model.joblib", "example_inputs.parquet", "example_outcomes.parquet", "manifest.json"
@@ -163,6 +196,7 @@ class DashboardAppTests(unittest.TestCase):
         # optional keys entirely, rather than returning empty DataFrames.
         available.pop("regression_error_groups")
         available.pop("regression_selection_sensitivity")
+        available.pop("classification_update")
         with patch.object(evidence_adapter, "load_evidence", return_value=available):
             app = self.launch("Model evidence")
             self.assertEqual(self.metric_value(app, "Test MAE"), "3.43 days")
@@ -170,6 +204,8 @@ class DashboardAppTests(unittest.TestCase):
             self.assertTrue(any("Supplementary stacking results are not included" in info.value for info in app.info))
             self.assertTrue(any("Monthly regression evidence is not available" in info.value for info in app.info))
             self.assertTrue(any("Monthly classification evidence is not available" in info.value for info in app.info))
+            self.assertNotIn("Classification assessment", [widget.label for widget in app.selectbox])
+            self.assertTrue(any("Supplementary classification experiments are not available" in info.value for info in app.info))
 
     def test_example_navigation_clears_forecast_and_never_restores_revealed_outcomes(self):
         app = self.launch("Delivery prediction")

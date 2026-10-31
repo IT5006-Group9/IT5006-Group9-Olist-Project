@@ -38,7 +38,7 @@ After changing the evidence adapter or table schema, reboot the Cloud app and ve
 |---|---|
 | Overview | Filter by purchase period and customer states; switch the order/sales trend and continue into the explorer with the same selection. |
 | Delivery prediction | Browse historical examples with Previous, Next or Random; calculate a real forecast, then optionally reveal the actual delivery and download the prediction. |
-| Model evidence | View separate training, forward validation and test scores, classification operating rules and stacking results. |
+| Model evidence | View training, validation and test scores; switch classification between v1 and the strict-cutoff supplement; inspect the new experiments, daily capacity, calibration and classification stacking. Delivery stacking has its own tab. |
 | Marketplace explorer | Original Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview. |
 | Guide & methodology | Instructions, prediction-time definitions, evaluation limitations and sources. |
 
@@ -72,14 +72,37 @@ selected by an order-ID hash without using outcomes. Actual delivery and labels
 are in a separate file and never enter prediction. The quote comparison is
 between point estimates, not a lateness probability or prediction interval.
 
-Classification is an archived evaluation view, not a second live predictor. Its
+Classification is a saved evaluation view, not a second live predictor. Its
 prediction point is T = min(delivered, promised delivery); its 21,058 test orders
 differ from regression's 18,603 purchase-window orders. Recall 53.23% applies to
 ranking the top 20% of the entire test window. The frozen validation threshold
-has a different flag rate and recall. Monthly July and label-timing limitations
-remain visible.
+has a different flag rate and recall. **v1 remains the headline**, as specified
+by the latest classification methods and selection artifacts.
 
-The [31 October quality audit](../Phase_3/docs/quality_audit.md) quantifies unresolved classification label and feature availability and the regression selection sensitivity. The archived classification scores require a separately documented timing-corrected experiment before prospective claims. The [complete feature and model appendix](../Phase_3/docs/report_appendix_features_models.md) is ready for inclusion in the final report.
+The new **Classification assessment** selector adds the strict-cutoff rerun:
+test PR-AUC 0.3738, recall 53.5% at top 20%, and 70,054 training orders. That run
+filters training and selection labels by their availability, masks post-T event
+features and freezes a manifest before testing. Its selected forest parameters
+and validation cohort differ from v1. Both versions use the same 21,058 test
+orders; the strict result is retrospective rather than a new unseen holdout.
+The paired PR-AUC difference versus v1 has a 95% interval that includes zero.
+
+The supplementary sections read `outputs/classification/experiments/` and
+`outputs/classification/strict_cutoff/` directly. They show matched-input family
+results, separate monthly-mean and pooled-OOF scores, the unretained v2 candidate,
+classification stacking, calibration, and the daily capacity diagnostic. The
+stack's validation gain (+0.0007; 3/5 months) misses the keep rule, so its later
+test score does not replace the headline. Daily v1 test recall is 51.8%; this
+ranks historical T-days and does not validate a live actionable contact queue.
+Calibration is saved evidence and is not applied to an online classifier.
+
+The [classification methods and updated results](../Phase_3/docs/classification.md)
+document the upload. The [earlier quality audit](../Phase_3/docs/quality_audit.md)
+provides the original findings; its request for a strict rerun is now addressed
+by the supplement. July still misses the monthly recall target, and historical
+test exposure remains visible. The [feature and model appendix](../Phase_3/docs/report_appendix_features_models.md)
+retains the original catalogue; current strict model parameters are shown directly
+in the dashboard and the classification methods.
 
 The supplementary test covers the two validation-selected ensembles and their
 members. Stack MAE 4.3875 and equal-mean MAE 3.9275 do not improve on the main

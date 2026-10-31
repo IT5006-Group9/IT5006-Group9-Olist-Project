@@ -246,7 +246,11 @@ def overview(ev):
         st.subheader("What supports the model choice?")
         st.write(f"Delivery test MAE: {ev['regression_summary']['test']['mae']:.2f} days. Low-review test PR-AUC: {ev['classification_summary']['test']['pr_auc']:.3f}.")
         st.caption("These fixed evaluation results use separate test cohorts and do not change with the filters above.")
-        st.caption("Classification evidence has unresolved timing limitations. Review the audit on Model evidence before interpreting its performance.")
+        strict = ev.get("classification_update", {}).get("strict", {})
+        if strict.get("available"):
+            st.caption(f"v1 remains the classification headline. The new strict-cutoff check reports test PR-AUC {strict['summary']['test']['pr_auc']:.3f}; compare both assessments on Model evidence.")
+        else:
+            st.caption("Classification evidence has timing limitations. Review the audit on Model evidence before interpreting its performance.")
         st.button("Review models & stacking →", on_click=navigate, args=("Model evidence",))
 
 
@@ -415,12 +419,27 @@ def regression_evidence(ev):
 
 
 def classification_evidence(ev):
-    summary, test = ev["classification_summary"], ev["classification_summary"]["test"]
-    cv = ev["classification_cv"]
-    selected = cv[cv.family.eq("random_forest")].iloc[0]
+    update = ev.get("classification_update", {})
+    strict = update.get("strict", {})
+    use_strict = False
+    if strict.get("available"):
+        st.info("Latest classification update: v1 Random Forest remains the project headline. Compare it with the strict-cutoff rerun below; the supplementary experiments follow the assessment.")
+        assessment = st.selectbox("Classification assessment", ["v1 · Frozen headline", "Strict cutoff · Availability rerun"], key="classification_assessment")
+        use_strict = assessment.startswith("Strict")
+    source = strict if use_strict else {
+        "summary": ev["classification_summary"], "selection": ev["classification_selection"],
+        "cv": ev["classification_cv"], "operating": ev["classification_operating"],
+        "months": ev["classification_months"], "criteria": ev["classification_criteria"],
+    }
+    summary, test, cv = source["summary"], source["summary"]["test"], source["cv"]
+    selected = cv[cv.family.eq(source["selection"]["selected_family"])].iloc[0]
     st.caption(f"Low-review risk at T = min(delivery, promised delivery) · {test['n']:,} orders with T in June–August 2018 · Target: 1–2 stars")
-    st.warning("Timing audit: some training and validation reviews were answered after the simulated decision cutoff, and some approval/carrier events occur after T. These archived scores require a rerun with strict feature and label availability before supporting prospective performance claims.")
-    st.markdown(f"[Read the timing audit and required corrections]({REPO}/blob/main/Phase_3/docs/quality_audit.md)")
+    if use_strict:
+        st.info("Strict cutoff: training labels precede each fold cutoff; validation labels are known by 1 June 2018; features from approval or carrier events after T are masked. The Random Forest family is selected again, with different hyperparameters.")
+        st.caption("Strict validation uses only labels available by the selection date. Its CV cohort differs from v1. The June–August test window is shared and had already been examined.")
+    else:
+        st.warning("v1 timing limitations: its original label and event availability rules are retained in these headline scores. The strict-cutoff supplement addresses the audit findings; it does not replace v1 or create a new unseen test window." if strict.get("available") else "Timing audit: the original assessment has label and event availability limitations. Strict-cutoff evidence is not available in this checkout.")
+    st.markdown(f"[Classification methods, new experiments and strict-cutoff results]({REPO}/blob/main/Phase_3/docs/classification.md)")
     panel_metrics([
         ("Training PR-AUC", f"{summary['train']['pr_auc']:.3f}", "Final model, in sample."),
         ("CV / validation PR-AUC", f"{selected.cv_pr_auc_mean:.3f}", "Five January–May forward validation months; CV and validation refer to the same windows."),
@@ -431,24 +450,26 @@ def classification_evidence(ev):
         left, right = st.columns([1.3, 1])
     with left, st.container(border=True):
         st.subheader("What does a 20% contact budget achieve?")
-        rules = ev["classification_operating"]
+        rules = source["operating"]
         operating = st.selectbox("Operating rule", ["Rank the top 20% of the test window", "Use the frozen validation score threshold"], key="capacity_rule")
-        r = rules.iloc[0 if operating.startswith("Rank") else 1]
+        rule_name = "top 20% of the test window (capacity rule)" if operating.startswith("Rank") else "frozen capacity threshold from validation"
+        r = rules[rules.rule.eq(rule_name)].iloc[0]
         panel_metrics([
             ("Orders flagged", f"{r.flag_rate:.1%}", "Observed share of the historical test cohort under this rule."),
             ("Low reviews captured", f"{r.recall:.1%}", "Recall among actual low-review orders."),
             ("Precision", f"{r.precision:.1%}", "Actual low-review share among flagged orders."),
         ], key="classification_operating")
         if operating.startswith("Rank"):
-            st.success("The pooled test-window rule exceeds the preset 50% recall target at 20% capacity.")
-            st.caption(f"Lift over random selection: {test['lift_at_capacity']:.2f}×. Ranking is within the entire test window; this does not establish daily operating performance.")
+            (st.success if r.recall >= .5 else st.warning)("The pooled test-window rule " + ("meets" if r.recall >= .5 else "misses") + " the preset 50% recall target at 20% capacity.")
+            daily_available = not update.get("experiments", {}).get("daily", pd.DataFrame()).empty
+            st.caption(f"Lift over random selection: {test['lift_at_capacity']:.2f}×. This ranking uses the entire test window. " + ("The separate daily diagnostic is shown below." if daily_available else "It does not verify daily operating performance."))
         else:
-            st.warning("The frozen threshold flags fewer than 20% of test orders and falls below the 50% recall target.")
+            st.warning(f"The frozen threshold ({r.threshold:.4f}) flags {r.flag_rate:.1%} of test orders and captures {r.recall:.1%} of low reviews; the recall target is 50%.")
             st.caption("A fixed score threshold does not guarantee a fixed contact budget when the order mix changes.")
         st.dataframe(rules.rename(columns={"flag_rate": "Flag rate", "recall": "Recall", "precision": "Precision"}), hide_index=True, width="stretch")
     with right, st.container(border=True):
         st.subheader("Performance over time")
-        months = ev["classification_months"]
+        months = source["months"]
         if months.empty:
             st.info("Monthly classification evidence is not available.")
         else:
@@ -457,13 +478,83 @@ def classification_evidence(ev):
             fig.add_hline(y=.5, line_dash="dot", line_color=AMBER, annotation_text="50% target")
             fig.update_yaxes(tickformat=".0%")
             chart(fig, 290)
-            st.caption("Monthly rankings use each month's batch. July falls below the target even though the pooled window exceeds it.")
+            below = months.loc[months.recall_at_capacity.lt(.5), "t_month"].tolist()
+            st.caption("Monthly rankings use each month's batch. " + ("Below the 50% target: " + ", ".join(below) + "." if below else "Every displayed month meets the 50% target."))
     with st.expander("Model families, success criteria & interpretation"):
         st.dataframe(cv[["family", "train_pr_auc_mean", "cv_pr_auc_mean", "cv_pr_auc_sd", "cv_recall_at_capacity_mean"]], hide_index=True, width="stretch")
-        st.dataframe(ev["classification_criteria"], hide_index=True, width="stretch")
+        st.dataframe(source["criteria"], hide_index=True, width="stretch")
         st.write("Delivery status is available at this task's trigger time. This classifier is evaluated later in the order lifecycle than the purchase-time regression model.")
         st.caption("Classification results are archived evidence; the interactive prediction page runs the delivery regression model.")
-    st.download_button("Download classification results", rules.to_csv(index=False), "classification_operating_points.csv", "text/csv")
+    suffix = "strict" if use_strict else "v1"
+    st.download_button("Download classification results", rules.to_csv(index=False), f"classification_{suffix}_operating_points.csv", "text/csv")
+    classification_followup(ev, update)
+
+
+def classification_followup(ev, update):
+    strict, experiments = update.get("strict", {}), update.get("experiments", {})
+    if strict.get("available"):
+        with st.expander("Strict-cutoff audit and uncertainty"):
+            st.write("The supplement enforces label availability at training and selection, masks features whose events occur after T, and freezes its manifest before scoring. It retains the 27-day gap and the original candidate budgets.")
+            paired = strict.get("paired", pd.DataFrame())
+            if not paired.empty:
+                st.dataframe(paired.rename(columns={"comparison": "Paired comparison", "d_pr_auc": "Test PR-AUC difference", "d_pr_auc_ci": "95% CI for PR-AUC difference", "d_recall": "Recall difference", "d_recall_ci": "95% CI for recall difference"}), hide_index=True, width="stretch")
+            st.caption("The strict-selection PR-AUC difference versus v1 has a confidence interval that includes zero. These are paired retrospective comparisons on the same test orders.")
+            st.write("The roughly −0.002 validation change in the methods document concerns fixed v1 hyperparameters under matched availability rules. It is a different comparison from the full strict reselection available in the assessment selector.")
+            st.json({"selected_family": strict["selection"]["selected_family"], "parameters": strict["selection"]["params"], "rules": strict["rules"]["rules"]}, expanded=False)
+    if not experiments.get("available"):
+        st.info("Supplementary classification experiments are not available in this checkout. The main assessment remains available.")
+        return
+    st.subheader("Latest classification experiments")
+    st.write("The project retains v1 as its headline. The v2 candidate changes the lateness convention and class weighting; its validation gain did not meet the replacement rule. Part B retains v1 timing eligibility; the separate strict assessment applies the full availability corrections. Later test comparisons are secondary assessments.")
+    results, ledger = experiments["test_results"], experiments["ledger"]
+    with st.expander("Model families: training, validation and test", expanded=True):
+        rows = []
+        headline = ev["classification_summary"]
+        selected_cv = ev["classification_cv"].set_index("family").loc[ev["classification_selection"]["selected_family"]]
+        rows.append({"Model": "Random Forest v1 · headline", "Training PR-AUC": headline["train"]["pr_auc"], "Mean monthly CV PR-AUC": selected_cv.cv_pr_auc_mean, "Pooled OOF PR-AUC": None, "Test PR-AUC": headline["test"]["pr_auc"], "Test recall at 20%": headline["test"]["recall_at_capacity"], "Test Brier": headline["test"]["brier"]})
+        for family, title in (("random_forest", "Random Forest v2 · supplement"), ("hist_gb", "Histogram gradient boosting"), ("catboost", "CatBoost"), ("logistic", "Logistic regression"), ("decision_tree", "Decision Tree")):
+            matches = results[results.model.eq(family)]
+            validation = ledger[ledger.step.eq("S5") & ledger.experiment.eq("best " + family)]
+            if matches.empty or validation.empty:
+                continue
+            row, validation = matches.iloc[0], validation.iloc[0]
+            rows.append({"Model": title, "Training PR-AUC": row.train_pr_auc, "Mean monthly CV PR-AUC": validation.mean_val_pr_auc, "Pooled OOF PR-AUC": row.pooled_oof_pr_auc, "Test PR-AUC": row.test_pr_auc, "Test recall at 20%": row.test_recall_at_capacity, "Test Brier": row.test_brier})
+        if strict.get("available"):
+            s = strict["summary"]
+            c = strict["cv"].set_index("family").loc[strict["selection"]["selected_family"]]
+            rows.append({"Model": "Random Forest · strict cutoff", "Training PR-AUC": s["train"]["pr_auc"], "Mean monthly CV PR-AUC": c.cv_pr_auc_mean, "Pooled OOF PR-AUC": None, "Test PR-AUC": s["test"]["pr_auc"], "Test recall at 20%": s["test"]["recall_at_capacity"], "Test Brier": s["test"]["brier"]})
+        table = pd.DataFrame(rows)
+        st.dataframe(table.round(4), hide_index=True, width="stretch")
+        st.caption("Training is the final fit's in-sample score. Monthly CV averages five months; pooled OOF scores those months together and is a different quantity. Part B families share feature inputs and time folds, with family-specific preprocessing and class weights. Strict CV uses a different label-availability cohort; blank OOF values are not supplied here.")
+        st.download_button("Download classification family comparison", table.to_csv(index=False), "classification_family_comparison.csv", "text/csv")
+    stack = experiments.get("stacking", {})
+    if stack:
+        with st.expander("Classification stacking · supplementary comparison"):
+            decision = "Not retained" if not stack["retained"] else "Retained in the saved experiment"
+            st.write(f"**{decision}.** Validation PR-AUC improves by {stack['d_pr_auc']:+.4f} over the v2 Random Forest, with improvement in {stack['months_better']}/5 months. The keep rule requires +0.010 and at least 4/5 months, with recall no more than 0.010 lower.")
+            st.table(pd.DataFrame([
+                {"Model": "Random Forest v2", "Mean CV PR-AUC": stack["best_single_mean_val_pr_auc"], "Test PR-AUC": stack["best_single_test_pr_auc"], "Test recall at 20%": stack["best_single_test_recall_at_capacity"]},
+                {"Model": "Logistic + RF + HGB convex stack", "Mean CV PR-AUC": stack["mean_val_pr_auc"], "Test PR-AUC": stack["test_pr_auc"], "Test recall at 20%": stack["test_recall_at_capacity"]},
+            ]).round(4))
+            st.caption("The test improvement is a secondary evaluation and does not reopen the validation decision. Base configurations were tuned on the same outer validation months, so the selection is not fully nested.")
+            st.write("Final convex weights: " + ", ".join(f"{name}: {weight:.1%}" for name, weight in stack["final_weights"].items()))
+    daily = experiments.get("daily", pd.DataFrame())
+    if not daily.empty:
+        with st.expander("Daily contact capacity · historical diagnostic"):
+            st.dataframe(daily.rename(columns={"model": "Version", "window": "Period", "pooled_daily_recall": "Recall with daily top 20%", "window_recall": "Recall with whole-window top 20%", "days": "Days", "orders": "Orders"}).round(4), hide_index=True, width="stretch")
+            st.caption("Each T-day is ranked separately, its contact count rounded to 20% of that day's orders, and captured low reviews are pooled. This diagnostic belongs to v1/v2, not the strict model. It does not filter for unanswered reviews at the time of contact or verify a live actionable queue.")
+    calibration = experiments.get("calibration", pd.DataFrame())
+    if not calibration.empty:
+        with st.expander("Probability quality and calibration"):
+            st.write("The v1 sigmoid supplement lowers Brier score while preserving ranking. Extra calibration was not retained for v2. A lower Brier score describes the saved historical evaluation and does not establish performance on future orders.")
+            st.markdown("**Forward validation · February–May 2018**")
+            st.dataframe(calibration.round(4), hide_index=True, width="stretch")
+            test_calibration = experiments.get("calibration_test", pd.DataFrame())
+            if not test_calibration.empty:
+                st.markdown("**Historical test · June–August 2018**")
+                st.dataframe(test_calibration.round(4), hide_index=True, width="stretch")
+            st.caption("These are saved classification diagnostics. The interactive delivery page runs the existing regression predictor.")
+    st.link_button("Read the complete classification update ↗", REPO + "/blob/main/Phase_3/docs/classification.md")
 
 
 def stacking_evidence(ev):
@@ -516,7 +607,7 @@ def stacking_evidence(ev):
 
 def model_evidence(ev):
     header("The evidence behind the forecast.", "Training, forward validation and later test results are shown separately. Published test outcomes have not been used to retune the dashboard model.")
-    tabs = st.tabs(["Delivery regression", "Low-review classification", "Stacking follow-up"])
+    tabs = st.tabs(["Delivery regression", "Low-review classification", "Delivery stacking"])
     with tabs[0]:
         regression_evidence(ev)
     with tabs[1]:
@@ -549,12 +640,17 @@ def guide(ev):
     with st.expander("Evaluation method & practical limits", expanded=True):
         st.write("January–May 2018 provides five forward validation windows for model development. June–August 2018 is the later test period. Validation and test differ in periods, available history, outcome maturity and averaging.")
         st.write("Regression uses a 39-day gap and only labels observed before each training cutoff. The main model was selected by forward validation. Historical test exposure prevents interpreting these results as a newly untouched holdout.")
-        st.write("Classification uses a 27-day gap based on review-answer lag. A timing audit found labels unavailable at training and model-selection cutoffs, and a small number of approval/carrier events after T. The saved classification assessment needs a new run with explicit availability filters; a gap alone does not ensure valid timing.")
-        st.write("The 20% classification rule was evaluated on historical batches, not live daily queues. July recall was below 50%. Low-review risk is not evidence that contacting a customer will improve their review.")
+        if ev.get("classification_update", {}).get("strict", {}).get("available"):
+            st.write("The new strict-cutoff classification supplement explicitly restricts training and selection labels to those available by their cutoffs and masks features from events after T. It retains the 27-day gap. v1 remains the project headline; compare the two versions on Model evidence. Their shared June–August test window had already been examined.")
+            st.write("The new daily-capacity diagnostic ranks orders separately by T-day. It is a retrospective v1/v2 analysis and does not verify a live queue of customers who can still be contacted before answering a review. July recall remains below 50% in both v1 and strict monthly assessments.")
+        else:
+            st.write("The original classification assessment has label and event availability limitations; a purge gap alone does not enforce those cutoffs. Strict-cutoff evidence is not available in this checkout.")
+        st.write("Low-review risk is not evidence that contacting a customer will improve their review. Classification experiments, calibration and stacking remain saved assessments; the interactive prediction page uses the delivery regression model.")
         st.write("The data covers historical Olist orders. This demonstration neither connects to a live order feed nor establishes performance on today's marketplace.")
     st.subheader("Sources & project materials")
     st.link_button("Project brief", BRIEF)
     st.link_button("Phase 3 code, notebooks & evidence", REPO + "/tree/main/Phase_3")
+    st.link_button("Classification update: experiments & strict cutoff", REPO + "/blob/main/Phase_3/docs/classification.md")
     st.link_button("Supplementary stacking report", REPO + "/blob/main/Phase_3/docs/regression/selected_stacking_holdout.md")
     st.link_button("Quality audit & remaining report work", REPO + "/blob/main/Phase_3/docs/quality_audit.md")
     st.link_button("Full feature & model appendix", REPO + "/blob/main/Phase_3/docs/report_appendix_features_models.md")
@@ -576,7 +672,7 @@ if page == "Marketplace explorer":
     runpy.run_path(str(ROOT / "Phase 1" / "dashboard" / "app.py"), run_name="__main__", init_globals={"OLIST_EMBEDDED": True})
 else:
     try:
-        ev = evidence("2026-10-31-timing-audit-v1")
+        ev = evidence("2026-10-31-classification-followup-v2")
     except EvidenceError as error:
         st.error(f"Published evaluation evidence could not be loaded: {error}")
         st.stop()
