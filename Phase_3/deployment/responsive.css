@@ -135,35 +135,6 @@
     overflow-wrap: anywhere;
   }
 
-  /* Keep Previous / Next / Random together inside the stacked demo panel. */
-  [data-testid="stMain"] .st-key-olist_demo_navigation
-  [data-testid="stHorizontalBlock"] {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: .5rem;
-  }
-
-  [data-testid="stMain"] .st-key-olist_demo_navigation
-  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
-    width: 100%;
-    min-width: 0;
-  }
-
-  [data-testid="stMain"] .st-key-olist_demo_navigation .stButton,
-  [data-testid="stMain"] .st-key-olist_demo_navigation .stButton > button {
-    width: 100%;
-  }
-
-  [data-testid="stMain"] .st-key-olist_demo_navigation .stButton > button {
-    min-height: 2.5rem;
-    padding: .45rem .35rem;
-    font-size: .78rem;
-  }
-
-  [data-testid="stMain"] .st-key-olist_demo_navigation .stButton > button p {
-    font-size: inherit;
-  }
-
   /* Keep wide grids scrollable locally. Glide retains its own scroll area;
      the outer overflow is a fallback for a resized or fixed-width grid. */
   [data-testid="stMain"] [data-testid="stDataFrame"] {
@@ -193,4 +164,37 @@
   [data-testid="stMain"] .empty {
     padding: 1.25rem 1rem;
   }
+}
+
+/* The demo control panel can be narrow on desktop too. Keep its navigation
+   compact at every viewport width, after the general mobile button rules. */
+[data-testid="stMain"] .st-key-olist_demo_navigation
+[data-testid="stHorizontalBlock"] {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .5rem;
+}
+
+[data-testid="stMain"] .st-key-olist_demo_navigation
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+  width: 100%;
+  min-width: 0;
+}
+
+[data-testid="stMain"] .st-key-olist_demo_navigation .stButton,
+[data-testid="stMain"] .st-key-olist_demo_navigation .stButton > button {
+  width: 100%;
+}
+
+[data-testid="stMain"] .st-key-olist_demo_navigation .stButton > button {
+  min-height: 2.5rem;
+  padding: .45rem .35rem;
+  font-size: .78rem;
+  white-space: nowrap;
+}
+
+[data-testid="stMain"] .st-key-olist_demo_navigation .stButton > button p {
+  font-size: inherit;
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
