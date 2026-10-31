@@ -3,6 +3,7 @@
 These tests read the committed evidence and demonstration assets. No model is
 trained, and missing optional evidence is simulated in memory only.
 """
+import builtins
 from pathlib import Path
 import sys
 import unittest
@@ -161,6 +162,39 @@ class DashboardAppTests(unittest.TestCase):
             self.assertTrue(any("Supplementary stacking results are not included" in info.value for info in app.info))
             self.assertTrue(any("Monthly regression evidence is not available" in info.value for info in app.info))
             self.assertTrue(any("Monthly classification evidence is not available" in info.value for info in app.info))
+
+    @unittest.skipUnless(all((ASSETS / name).is_file() for name in (
+        "regression_model.joblib", "example_inputs.parquet", "example_outcomes.parquet", "manifest.json"
+    )), "Export the verified frozen deployment assets to exercise runtime failure handling.")
+    def test_missing_prediction_runtime_preserves_evidence_and_clears_stale_forecast(self):
+        app = self.launch("Delivery prediction")
+        self.widget(app.button, "Calculate delivery forecast").click().run(timeout=60)
+        self.assert_healthy(app)
+        self.assertIn("Predicted lead time", [metric.label for metric in app.metric])
+        original_import = builtins.__import__
+
+        def missing_model_runtime(name, globals=None, locals=None, fromlist=(), level=0):
+            # Intercept the explicit button-time import even if another test has
+            # already populated sys.modules with the available local runtime.
+            if name == "regression.score":
+                raise ImportError("Simulated missing deployment model dependency")
+            return original_import(name, globals, locals, fromlist, level)
+
+        with patch("builtins.__import__", side_effect=missing_model_runtime):
+            self.navigate(app, "Overview")
+            self.assertGreater(int(self.metric_value(app, "Orders").replace(",", "")), 0)
+            self.navigate(app, "Model evidence")
+            self.assertEqual(self.metric_value(app, "Test MAE"), "3.43 days")
+            self.assertEqual(self.metric_value(app, "Test PR-AUC"), "0.375")
+            self.navigate(app, "Delivery prediction")
+            self.widget(app.button, "Calculate delivery forecast").click().run(timeout=60)
+            self.assertEqual([error.message for error in app.exception], [])
+            self.assertEqual(len(app.error), 1)
+            self.assertIn("delivery model environment is not ready", app.error[0].value)
+            self.assertNotIn("delivery_forecast", app.session_state)
+            self.assertNotIn("Predicted lead time", [metric.label for metric in app.metric])
+            self.assertNotIn("Actual lead time", [metric.label for metric in app.metric])
+            self.assertFalse(app.checkbox, "An unavailable forecast must not offer outcome revelation.")
 
 
 if __name__ == "__main__":

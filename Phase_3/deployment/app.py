@@ -7,7 +7,6 @@ from pathlib import Path
 import runpy
 import sys
 
-import joblib
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -22,7 +21,6 @@ for directory in (PHASE, PHASE / "src"):
         sys.path.insert(0, str(directory))
 
 from deployment.evidence import EvidenceError, MODEL_LABELS, load_evidence
-from regression.score import predict_lead_time
 
 ASSETS = HERE / "assets"
 REPO = "https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project"
@@ -101,6 +99,7 @@ def marketplace():
 
 @st.cache_resource(show_spinner="Loading the frozen delivery model…")
 def demo_bundle():
+    import joblib
     return joblib.load(ASSETS / "regression_model.joblib")
 
 
@@ -237,11 +236,16 @@ def prediction():
         st.write(f"Recorded delivery promise: **{record.promised_lead_time_days:.1f} days**")
         if st.button("Calculate delivery forecast", type="primary", width="stretch"):
             try:
+                from regression.score import predict_lead_time
                 result = predict_lead_time(row, demo_bundle()).iloc[0].to_dict()
                 if not np.isfinite(result["predicted_days"]):
                     raise ValueError("The model did not produce a finite forecast.")
                 st.session_state["delivery_forecast"] = result
+            except ImportError:
+                st.session_state.pop("delivery_forecast", None)
+                st.error("The delivery model environment is not ready. The deployment needs its pinned model dependencies. Marketplace exploration and saved model evidence remain available.")
             except (ValueError, KeyError, RuntimeError) as error:
+                st.session_state.pop("delivery_forecast", None)
                 st.error(f"Unable to score this order: {error}")
         st.caption(f"{len(inputs)} examples selected deterministically from the historical test window, without using their outcomes.")
         with st.expander("See the purchase-time inputs"):
