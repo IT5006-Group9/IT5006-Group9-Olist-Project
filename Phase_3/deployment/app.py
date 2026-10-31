@@ -4,6 +4,7 @@ from __future__ import annotations
 import html
 import json
 from pathlib import Path
+import random
 import runpy
 import sys
 
@@ -21,6 +22,7 @@ for directory in (PHASE, PHASE / "src"):
         sys.path.insert(0, str(directory))
 
 from deployment.evidence import EvidenceError, MODEL_LABELS, load_evidence
+from deployment import explorer_filters as shared_filters
 
 ASSETS = HERE / "assets"
 REPO = "https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project"
@@ -47,7 +49,7 @@ DISPLAY_LABELS = {
 
 st.set_page_config(
     page_title="Olist Operations Studio · Group 09", page_icon="📦",
-    layout="wide", initial_sidebar_state="expanded",
+    layout="wide", initial_sidebar_state="auto",
 )
 st.markdown("""
 <style>
@@ -80,9 +82,11 @@ min-height:290px;display:flex;flex-direction:column;justify-content:center}
 .stButton>button, .stDownloadButton>button {border-radius:9px}
 div[data-baseweb="tab-list"] {gap:1.3rem}
 button[data-baseweb="tab"] {font-size:.87rem;padding-left:0;padding-right:0}
-@media(max-width:800px) {.block-container {padding-top:1.3rem} h1 {font-size:1.85rem!important}}
 </style>
 """, unsafe_allow_html=True)
+responsive_styles = HERE / "responsive.css"
+if responsive_styles.is_file():
+    st.markdown("<style>" + responsive_styles.read_text(encoding="utf-8") + "</style>", unsafe_allow_html=True)
 
 
 @st.cache_data(show_spinner=False)
@@ -95,7 +99,8 @@ def evidence(schema_version):
 @st.cache_data(show_spinner=False)
 def marketplace():
     frame = pd.read_parquet(ROOT / "Phase 1" / "dashboard" / "orders.parquet")
-    frame["month"] = frame["month"].astype(str)
+    for column in ("order_status", "customer_state", "seller_state", "category", "payment_type", "month"):
+        frame[column] = frame[column].astype(str)
     return frame
 
 
@@ -120,7 +125,30 @@ def header(title, description):
 
 
 def navigate(page):
+    clear_forecast()
     st.session_state["workspace"] = page
+
+
+def clear_forecast():
+    """Keep every new selection behind an explicit predict and reveal action."""
+    st.session_state.pop("delivery_forecast", None)
+    st.session_state["demo_reveal"] = False
+
+
+def change_example(order_ids, direction):
+    current = st.session_state.get("demo_order")
+    index = order_ids.index(current) if current in order_ids else 0
+    if direction == "random":
+        alternatives = [value for value in order_ids if value != current]
+        target = random.choice(alternatives) if alternatives else current
+    else:
+        target = order_ids[max(0, min(len(order_ids) - 1, index + direction))]
+    clear_forecast()
+    st.session_state["demo_order"] = target
+
+
+def sync_overview_filter(field, widget_key):
+    shared_filters.write_filters(st.session_state, **{field: st.session_state[widget_key]})
 
 
 def label(candidate):
@@ -140,8 +168,8 @@ def chart(fig, height=340):
     st.plotly_chart(fig, use_container_width=True, config={"displaylogo": False})
 
 
-def panel_metrics(items):
-    with st.container(border=True):
+def panel_metrics(items, key):
+    with st.container(border=True, key="olist_kpis_" + key):
         for col, (title, value, tip) in zip(st.columns(len(items)), items):
             col.metric(title, value, help=tip)
 
@@ -149,15 +177,30 @@ def panel_metrics(items):
 def overview(ev):
     header("A clearer view of every delivery.", "Explore the marketplace, forecast a historical order, and see the evidence behind the models.")
     raw = marketplace()
-    months = sorted(raw.month.unique())
-    left, right = st.columns([3, 1])
+    filters = shared_filters.init_filters(st.session_state, raw)
+    choices = shared_filters.filter_options(raw)
+    st.session_state.pop("overview_filter_month_range", None)
+    st.session_state["overview_filter_states"] = list(filters["states"])
+    with st.container(key="olist_split_overview_filters"):
+        left, right = st.columns([3, 1])
     with left:
-        window = st.select_slider("Purchase window", options=months, value=("2017-01", "2018-08"))
+        st.select_slider("Purchase window", options=choices["months"], value=filters["month_range"], key="overview_filter_month_range",
+                         on_change=sync_overview_filter, args=("month_range", "overview_filter_month_range"))
     with right:
-        state = st.selectbox("Customer state", ["All states", *sorted(raw.customer_state.dropna().astype(str).unique())])
-    selected = raw[raw.month.between(*window)]
-    if state != "All states":
-        selected = selected[selected.customer_state.astype(str).eq(state)]
+        st.multiselect("Customer state", choices["states"], placeholder="All states", key="overview_filter_states",
+                       on_change=sync_overview_filter, args=("states", "overview_filter_states"))
+    filters = shared_filters.read_filters(st.session_state)
+    st.caption("Current filters · " + shared_filters.summary(filters))
+    with st.container(key="olist_split_filter_actions"):
+        reset, explore = st.columns([1, 2])
+    reset.button("Reset all filters", key="overview_reset_filters",
+                 on_click=shared_filters.reset_filters, args=(st.session_state,))
+    explore.button("Explore this selection →", on_click=navigate, args=("Marketplace explorer",))
+    if filters["categories"] or filters["payments"] or filters["route"] != "All" or filters["delivered_only"]:
+        st.info("Additional filters from Marketplace explorer also apply to this overview.")
+        st.button("Clear extra filters", on_click=shared_filters.reset_filters,
+                  args=(st.session_state,), kwargs={"extra_only": True})
+    selected = shared_filters.apply_filters(raw, filters)
     if selected.empty:
         st.info("No orders in this selection. Widen the purchase window or choose another state.")
         return
@@ -168,9 +211,10 @@ def overview(ev):
         ("Sales incl. freight", f"R$ {selected.gmv.sum()/1e6:,.2f}M", "Item price plus freight; this is not marketplace commission revenue."),
         ("Delivered on time", f"{1-delivered.is_late.mean():.1%}" if len(delivered) else "—", "Delivered orders only, compared with the recorded promised date."),
         ("Low review share", f"{rated.review_score.le(2).mean():.1%}" if len(rated) else "—", "1–2 star reviews among orders with an observed review."),
-    ])
+    ], key="overview")
     st.caption(f"Selected marketplace cohort · {len(selected):,} orders · {len(delivered):,} with delivery dates · {len(rated):,} with reviews")
-    c1, c2 = st.columns([1.65, 1])
+    with st.container(key="olist_split_overview_charts"):
+        c1, c2 = st.columns([1.65, 1])
     with c1, st.container(border=True):
         st.subheader("The marketplace over time")
         metric = st.radio("Trend measure", ["Orders", "Sales incl. freight"], horizontal=True, label_visibility="collapsed")
@@ -190,7 +234,8 @@ def overview(ev):
         chart(fig, 332)
         st.caption("Eight states with the most delivered orders in your selection.")
     st.subheader("Move from patterns to decisions")
-    a, b = st.columns(2)
+    with st.container(key="olist_split_overview_actions"):
+        a, b = st.columns(2)
     with a, st.container(border=True):
         st.markdown('<span class="pill">PURCHASE-TIME FORECAST</span>', unsafe_allow_html=True)
         st.subheader("How long might this delivery take?")
@@ -207,29 +252,47 @@ def overview(ev):
 
 def prediction():
     header("A delivery forecast, before fulfilment.", "Run the frozen regression model on a held-out historical purchase. Actual delivery information is kept separate from the prediction inputs.")
+    st.caption("1. Choose an order → 2. Calculate its forecast → 3. Optionally reveal the historical outcome")
     required = ["regression_model.joblib", "example_inputs.parquet", "example_outcomes.parquet", "manifest.json"]
     if any(not (ASSETS / name).exists() for name in required):
         st.warning("The delivery demonstration package is not available in this checkout. See the dashboard README for the export command.")
         return
     inputs, outcomes, manifest = demo_examples()
-    controls, output = st.columns([1, 1.65], gap="large")
+    with st.container(key="olist_split_prediction"):
+        controls, output = st.columns([1, 1.65], gap="large")
     with controls, st.container(border=True):
-        st.subheader("Choose a historical order")
-        month = st.selectbox("Purchase month", ["All months", "2018-06", "2018-07", "2018-08"], key="demo_month")
+        st.subheader("1 · Choose a historical order")
+        month = st.selectbox("Purchase month", ["All months", "2018-06", "2018-07", "2018-08"], key="demo_month", on_change=clear_forecast)
         candidates = inputs.copy()
         if month != "All months":
             candidates = candidates[pd.to_datetime(candidates.purchase_ts).dt.strftime("%Y-%m").eq(month)]
-        state = st.selectbox("Destination", ["All states", *sorted(candidates.customer_state.dropna().unique())], key="demo_state")
+        state = st.selectbox("Destination", ["All states", *sorted(candidates.customer_state.dropna().unique())], key="demo_state", on_change=clear_forecast)
         if state != "All states":
             candidates = candidates[candidates.customer_state.eq(state)]
         if candidates.empty:
+            clear_forecast()
             st.info("No demonstration order matches this selection.")
             return
         indexed = candidates.set_index("order_id", drop=False)
         def order_label(order_id):
             row = indexed.loc[order_id]
             return f"{pd.Timestamp(row.purchase_ts):%d %b} · {row.primary_seller_state} → {row.customer_state} · …{order_id[-6:]}"
-        selected = st.selectbox("Historical order", candidates.order_id.tolist(), format_func=order_label, key="demo_order")
+        order_ids = candidates.order_id.tolist()
+        if st.session_state.get("demo_order") not in order_ids:
+            st.session_state["demo_order"] = order_ids[0]
+            clear_forecast()
+        selected = st.selectbox("Historical order", order_ids, format_func=order_label, key="demo_order", on_change=clear_forecast)
+        signature = (month, state, selected)
+        if st.session_state.get("demo_selection_signature") != signature:
+            clear_forecast()
+            st.session_state["demo_selection_signature"] = signature
+        position = order_ids.index(selected)
+        st.caption(f"Order {position + 1} of {len(order_ids)} in the current selection")
+        with st.container(key="olist_demo_navigation"):
+            previous, following, shuffle = st.columns(3)
+        previous.button("← Previous", on_click=change_example, args=(order_ids, -1), disabled=position == 0, width="stretch")
+        following.button("Next →", on_click=change_example, args=(order_ids, 1), disabled=position == len(order_ids) - 1, width="stretch")
+        shuffle.button("Random", on_click=change_example, args=(order_ids, "random"), disabled=len(order_ids) < 2, width="stretch")
         row = indexed.loc[[selected]].reset_index(drop=True)
         record = row.iloc[0]
         st.markdown("**Order at purchase**")
@@ -238,6 +301,7 @@ def prediction():
         st.write(f"Item value R\\$ {record.total_price:,.2f} · Freight R\\$ {record.total_freight:,.2f}")
         st.write(f"Recorded delivery promise: **{record.promised_lead_time_days:.1f} days**")
         if st.button("Calculate delivery forecast", type="primary", width="stretch"):
+            clear_forecast()
             try:
                 from regression.score import predict_lead_time
                 result = predict_lead_time(row, demo_bundle()).iloc[0].to_dict()
@@ -251,6 +315,7 @@ def prediction():
                 st.session_state.pop("delivery_forecast", None)
                 st.error(f"Unable to score this order: {error}")
         st.caption(f"{len(inputs)} examples selected deterministically from the historical test window, without using their outcomes.")
+        st.caption("Changing the selection or leaving this page clears the forecast and revealed outcome. Navigation never runs a prediction automatically.")
         with st.expander("See the purchase-time inputs"):
             st.dataframe(row.T.rename(columns={0: "Value"}).astype(str), width="stretch")
     result = st.session_state.get("delivery_forecast")
@@ -259,18 +324,20 @@ def prediction():
             st.markdown('<div class="empty"><div class="eyebrow">YOUR FORECAST</div><h2>Start with an order.</h2><p>Choose a historical purchase and calculate its expected delivery lead time.</p><p class="quiet">The model uses purchase-time information. The historical delivery outcome stays hidden until you reveal it.</p></div>', unsafe_allow_html=True)
             return
         st.markdown('<span class="pill">FORECAST CALCULATED</span>', unsafe_allow_html=True)
+        st.subheader("2 · Delivery forecast")
         days, quoted = result["predicted_days"], result["quoted_days"]
         panel_metrics([
             ("Predicted lead time", f"{days:.1f} days", "A point estimate of purchase-to-delivery duration."),
             ("Quoted lead time", f"{quoted:.1f} days", "The archived delivery promise known at purchase."),
-        ])
+        ], key="forecast")
         st.subheader(f"Expected arrival · {pd.Timestamp(result['estimated_arrival']):%d %B %Y}")
         if days > quoted:
             st.warning(f"The forecast exceeds the recorded promise by {days-quoted:.1f} days. This order may warrant a delivery-quote review.")
         else:
             st.info(f"The forecast is {quoted-days:.1f} days within the recorded promise. It is a point estimate, not a probability of on-time delivery.")
         values = pd.DataFrame({"Estimate": ["Model forecast", "Recorded promise"], "Days": [days, quoted]})
-        reveal = st.checkbox("Reveal the historical delivery outcome", key=f"reveal_{selected}")
+        st.markdown("**3 · Optional outcome check**")
+        reveal = st.checkbox("Reveal the historical delivery outcome", key="demo_reveal")
         if reveal:
             actual = outcomes.set_index("order_id").loc[selected]
             values.loc[len(values)] = ["Historical delivery", actual.actual_days]
@@ -299,7 +366,7 @@ def regression_evidence(ev):
         ("CV / validation MAE", f"{selected.cv_mae:.2f} days", "Unweighted mean of five January–May forward validation months."),
         ("Test MAE", f"{summary['test']['mae']:.2f} days", "Pooled absolute error across the June–August test orders."),
         ("Test RMSE", f"{summary['test']['rmse']:.2f} days", "Penalises large errors more strongly than MAE."),
-    ])
+    ], key="regression")
     st.success(f"Preset target met: {summary['success']['mae_reduction_vs_median']:.1%} lower test MAE than the training-median reference (target: at least 5%), and better than the recorded delivery promise.")
     st.caption(f"{summary['test']['within3']:.1%} of test deliveries are within ±3 days of the forecast. Average MAE does not provide an individual delivery guarantee.")
     with st.expander("Selection stability and long-delivery errors", expanded=True):
@@ -314,7 +381,8 @@ def regression_evidence(ev):
             durations = groups[groups.group.isin(["0-14 days", "14-30 days", "30-60 days", ">60 days"])]
             st.dataframe(durations[["group", "n", "mae", "bias", "within3"]].rename(columns={"group": "Actual delivery duration", "n": "Orders", "mae": "MAE (days)", "bias": "Mean forecast minus actual (days)", "within3": "Share within ±3 days"}), hide_index=True, width="stretch")
             st.caption("Groups use the historical outcome and cannot be assigned at purchase. Long deliveries are systematically underestimated; no individual prediction interval has been calibrated.")
-    left, right = st.columns([1.3, 1])
+    with st.container(key="olist_split_regression"):
+        left, right = st.columns([1.3, 1])
     with left, st.container(border=True):
         st.subheader("Saved model comparison")
         part = comparison[comparison.test_mae.notna()].copy()
@@ -358,8 +426,9 @@ def classification_evidence(ev):
         ("CV / validation PR-AUC", f"{selected.cv_pr_auc_mean:.3f}", "Five January–May forward validation months; CV and validation refer to the same windows."),
         ("Test PR-AUC", f"{test['pr_auc']:.3f}", "Average precision; test no-skill reference is the low-review prevalence."),
         ("Test ROC-AUC", f"{test['roc_auc']:.3f}", "Ranking performance across all thresholds."),
-    ])
-    left, right = st.columns([1.3, 1])
+    ], key="classification_scores")
+    with st.container(key="olist_split_classification"):
+        left, right = st.columns([1.3, 1])
     with left, st.container(border=True):
         st.subheader("What does a 20% contact budget achieve?")
         rules = ev["classification_operating"]
@@ -369,7 +438,7 @@ def classification_evidence(ev):
             ("Orders flagged", f"{r.flag_rate:.1%}", "Observed share of the historical test cohort under this rule."),
             ("Low reviews captured", f"{r.recall:.1%}", "Recall among actual low-review orders."),
             ("Precision", f"{r.precision:.1%}", "Actual low-review share among flagged orders."),
-        ])
+        ], key="classification_operating")
         if operating.startswith("Rank"):
             st.success("The pooled test-window rule exceeds the preset 50% recall target at 20% capacity.")
             st.caption(f"Lift over random selection: {test['lift_at_capacity']:.2f}×. Ranking is within the entire test window; this does not establish daily operating performance.")
@@ -409,9 +478,10 @@ def stacking_evidence(ev):
         ("Main HGB_risk · test MAE", f"{short.iloc[0].mae:.2f} days", "Saved original Phase 3 assessment."),
         ("Three-model mean · test MAE", f"{short.iloc[1].mae:.2f} days", "Ridge, Random Forest and Phase 2 HGB with one-third weights."),
         ("Ridge + RF stack · test MAE", f"{short.iloc[2].mae:.2f} days", "Nonnegative MAE-optimised weights, frozen before this assessment."),
-    ])
+    ], key="stacking")
     st.info("Neither selected ensemble improves on the main model's test MAE. The existing model decision remains in place.")
-    c1, c2 = st.columns([1.4, 1])
+    with st.container(key="olist_split_stacking"):
+        c1, c2 = st.columns([1.4, 1])
     with c1, st.container(border=True):
         st.subheader("Validation and test answer different questions")
         short["Model"] = short.candidate.map(label)
@@ -458,15 +528,18 @@ def model_evidence(ev):
 
 def guide(ev):
     header("A small guide to using the studio.", "Two analytics tasks support different decisions at different points in an order's lifecycle.")
-    left, right = st.columns(2)
+    with st.container(key="olist_split_guide"):
+        left, right = st.columns(2)
     with left, st.container(border=True):
         st.subheader("Try the delivery demonstration")
-        st.markdown("1. Open **Delivery prediction** and select a historical order.\n2. Click **Calculate delivery forecast** to run the fitted model.\n3. Reveal the historical outcome to compare, then download the forecast.")
+        st.markdown("1. Open **Delivery prediction** and select a historical order. Use Previous, Next or Random to browse within the current month and destination.\n2. Click **Calculate delivery forecast** to run the fitted model.\n3. Reveal the historical outcome to compare, then download the forecast.")
         st.caption("The recorded promise is an input, not the observed delivery outcome. The model estimates a duration; it does not return a calibrated probability of lateness.")
+        st.caption("Changing the selection or leaving the page clears the forecast and revealed outcome. Each new calculation starts with the outcome hidden.")
     with right, st.container(border=True):
         st.subheader("Explore the original marketplace dashboard")
         st.write("The original five tabs remain available: Orders, Delivery, Reviews, Categories and Geography.")
-        st.write("Its date, state, category, payment and route controls apply within Marketplace explorer. Model evaluation uses fixed historical cohorts.")
+        st.write("Overview and Marketplace explorer share purchase dates, customer states, categories, payments, route and delivered-only filters. Both pages show the current selection and offer Reset all filters.")
+        st.caption("Delivery demonstration filters are separate. Model evaluation uses fixed historical cohorts and is unaffected by exploration filters.")
         st.button("Open marketplace explorer →", on_click=navigate, args=("Marketplace explorer",))
     st.subheader("Read the two tasks correctly")
     st.table(pd.DataFrame([
@@ -492,15 +565,15 @@ def guide(ev):
 
 with st.sidebar:
     st.markdown('<div class="brand"><div class="brand-mark">o.</div><div><div class="brand-name">olist</div><div class="brand-sub">OPERATIONS STUDIO · 09</div></div></div>', unsafe_allow_html=True)
-    page = st.radio("Workspace", PAGES, key="workspace", label_visibility="collapsed")
+    page = st.radio("Workspace", PAGES, key="workspace", label_visibility="collapsed", on_change=clear_forecast)
     st.divider()
     st.markdown('<span class="pill">HISTORICAL DATA</span>', unsafe_allow_html=True)
     st.caption("Brazilian e-commerce · 2016–2018\n\nIT5006 · Group 9 · Phase 3")
     st.link_button("View the project ↗", REPO)
 
 if page == "Marketplace explorer":
-    # The original application owns its filters, five tabs and historical assets.
-    runpy.run_path(str(ROOT / "Phase 1" / "dashboard" / "app.py"), run_name="__main__")
+    # Retain the five original tabs while sharing durable EDA filter state.
+    runpy.run_path(str(ROOT / "Phase 1" / "dashboard" / "app.py"), run_name="__main__", init_globals={"OLIST_EMBEDDED": True})
 else:
     try:
         ev = evidence("2026-10-31-timing-audit-v1")

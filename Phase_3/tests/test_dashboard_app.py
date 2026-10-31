@@ -82,7 +82,7 @@ class DashboardAppTests(unittest.TestCase):
     def test_overview_filters_change_marketplace_cohort(self):
         app = self.launch()
         full_count = int(self.metric_value(app, "Orders").replace(",", ""))
-        self.widget(app.selectbox, "Customer state").set_value("SP").run(timeout=60)
+        self.widget(app.multiselect, "Customer state").set_value(["SP"]).run(timeout=60)
         self.assert_healthy(app)
         state_count = int(self.metric_value(app, "Orders").replace(",", ""))
         self.assertGreater(state_count, 0)
@@ -170,6 +170,70 @@ class DashboardAppTests(unittest.TestCase):
             self.assertTrue(any("Supplementary stacking results are not included" in info.value for info in app.info))
             self.assertTrue(any("Monthly regression evidence is not available" in info.value for info in app.info))
             self.assertTrue(any("Monthly classification evidence is not available" in info.value for info in app.info))
+
+    def test_example_navigation_clears_forecast_and_never_restores_revealed_outcomes(self):
+        app = self.launch("Delivery prediction")
+        original = self.widget(app.selectbox, "Historical order").value
+        with patch("regression.score.predict_lead_time", wraps=predict_lead_time) as scored:
+            self.widget(app.button, "Calculate delivery forecast").click().run(timeout=60)
+            self.widget(app.checkbox, "Reveal the historical delivery outcome").check().run(timeout=60)
+            self.widget(app.button, "Next →").click().run(timeout=60)
+            self.assert_healthy(app)
+            self.assertNotEqual(self.widget(app.selectbox, "Historical order").value, original)
+            self.assertNotIn("delivery_forecast", app.session_state)
+            self.assertNotIn("Actual lead time", [metric.label for metric in app.metric])
+            self.assertFalse(app.get("download_button"))
+            self.widget(app.button, "← Previous").click().run(timeout=60)
+            self.assertEqual(self.widget(app.selectbox, "Historical order").value, original)
+            self.assertNotIn("delivery_forecast", app.session_state)
+            self.widget(app.button, "Calculate delivery forecast").click().run(timeout=60)
+            self.assertFalse(self.widget(app.checkbox, "Reveal the historical delivery outcome").value)
+            self.assertNotIn("Actual lead time", [metric.label for metric in app.metric])
+            self.assertEqual(scored.call_count, 2)
+            self.navigate(app, "Guide & methodology")
+            self.navigate(app, "Delivery prediction")
+            self.assertNotIn("delivery_forecast", app.session_state)
+            self.assertFalse(app.checkbox)
+            self.assertEqual(scored.call_count, 2)
+
+    def test_demo_filters_clear_forecast_even_when_selected_order_still_matches(self):
+        app = self.launch("Delivery prediction")
+        selected = self.widget(app.selectbox, "Historical order").value
+        inputs = pd.read_parquet(ASSETS / "example_inputs.parquet")
+        row = inputs.set_index("order_id").loc[selected]
+        month = pd.Timestamp(row.purchase_ts).strftime("%Y-%m")
+        with patch("regression.score.predict_lead_time", wraps=predict_lead_time) as scored:
+            self.widget(app.button, "Calculate delivery forecast").click().run(timeout=60)
+            self.widget(app.checkbox, "Reveal the historical delivery outcome").check().run(timeout=60)
+            self.widget(app.selectbox, "Purchase month").set_value(month).run(timeout=60)
+            self.assert_healthy(app)
+            self.assertEqual(self.widget(app.selectbox, "Historical order").value, selected)
+            self.assertNotIn("delivery_forecast", app.session_state)
+            self.assertFalse(app.checkbox)
+            self.widget(app.selectbox, "Destination").set_value(row.customer_state).run(timeout=60)
+            candidates = inputs.loc[
+                pd.to_datetime(inputs.purchase_ts).dt.strftime("%Y-%m").eq(month)
+                & inputs.customer_state.eq(row.customer_state), "order_id"
+            ].tolist()
+            if len(candidates) > 1:
+                self.widget(app.button, "Random").click().run(timeout=60)
+                chosen = self.widget(app.selectbox, "Historical order").value
+                self.assertIn(chosen, candidates)
+                self.assertNotEqual(chosen, selected)
+            self.assertEqual(scored.call_count, 1)
+
+    def test_one_matching_example_disables_navigation(self):
+        inputs = pd.read_parquet(ASSETS / "example_inputs.parquet")
+        inputs["month"] = pd.to_datetime(inputs.purchase_ts).dt.strftime("%Y-%m")
+        sizes = inputs.groupby(["month", "customer_state"]).size()
+        month, state = sizes[sizes.eq(1)].index[0]
+        app = self.launch("Delivery prediction")
+        self.widget(app.selectbox, "Purchase month").set_value(month).run(timeout=60)
+        self.widget(app.selectbox, "Destination").set_value(state).run(timeout=60)
+        self.assert_healthy(app)
+        for label in ("← Previous", "Next →", "Random"):
+            self.assertTrue(self.widget(app.button, label).disabled)
+        self.assertNotIn("delivery_forecast", app.session_state)
 
     @unittest.skipUnless(all((ASSETS / name).is_file() for name in (
         "regression_model.joblib", "example_inputs.parquet", "example_outcomes.parquet", "manifest.json"

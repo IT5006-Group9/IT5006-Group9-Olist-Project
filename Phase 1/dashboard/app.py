@@ -20,6 +20,18 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+try:
+    import deployment.explorer_filters as shared_filters
+except ModuleNotFoundError as error:
+    if error.name not in {"deployment", "deployment.explorer_filters"}:
+        raise
+    # The standalone Phase 1 entry point needs the same helper as Phase 3.
+    import sys
+    phase3_directory = Path(__file__).resolve().parents[2] / "Phase_3"
+    sys.path.insert(0, str(phase3_directory))
+    import deployment.explorer_filters as shared_filters
+
+EMBEDDED = bool(globals().get("OLIST_EMBEDDED", False))
 DATA = Path(__file__).resolve().parent / "orders.parquet"
 GEOJSON = Path(__file__).resolve().parent / "br_states.geojson"
 
@@ -64,8 +76,9 @@ QUAL = ["#3d5a9b", "#c8763a", "#7d99c6", "#b3453c", "#8b93a1", "#d9b382"]
 STATE_QUAL = ["#3d5a9b", "#c8763a", "#2f7a6f", "#b3453c",
               "#6b4c8a", "#7d99c6", "#b07039", "#4a7355"]
 
-st.set_page_config(page_title="Olist Dashboard · IT5006 Group 9",
-                   page_icon="📦", layout="wide")
+if not EMBEDDED:
+    st.set_page_config(page_title="Olist Dashboard · IT5006 Group 9",
+                       page_icon="📦", layout="wide")
 
 # Charts were cramped at the old heights, and zero margins let neighbouring blocks
 # collide. One scale here keeps every tab breathing at the same rhythm.
@@ -161,6 +174,30 @@ if not DATA.exists():
     st.stop()
 
 df = load()
+filters = shared_filters.init_filters(st.session_state, df)
+filter_choices = shared_filters.filter_options(df)
+
+
+def sync_explorer_filter(field, widget_key):
+    shared_filters.write_filters(st.session_state, **{field: st.session_state[widget_key]})
+
+
+def reset_explorer_filters():
+    shared_filters.reset_filters(st.session_state)
+
+
+# Widget keys are temporary: Streamlit removes them when another page is shown.
+# Rehydrate them from durable, non-widget state before constructing the controls.
+for filter_field, filter_value in filters.items():
+    widget_key = f"explorer_filter_{filter_field}"
+    if filter_field == "month_range":
+        # select_slider determines range mode from its explicit value argument.
+        # Its callback has already saved any change before this rerun starts.
+        st.session_state.pop(widget_key, None)
+    else:
+        st.session_state[widget_key] = (
+            list(filter_value) if filter_field in ("states", "categories", "payments") else filter_value
+        )
 
 # The extract's first and last months hold a handful of orders each. That is
 # handled once, by the month slider's default range — charts draw exactly the
@@ -197,15 +234,17 @@ st.sidebar.markdown(
     "<div style='font-size:1.15rem;font-weight:700;margin:.2rem 0 .15rem'>Filters</div>",
     unsafe_allow_html=True,
 )
-st.sidebar.caption("Every chart on every tab reflects these.")
+st.sidebar.caption("Shared with Overview. Every explorer chart reflects these choices."
+                   if EMBEDDED else "Every chart on every tab reflects these.")
+st.sidebar.button("Reset all filters", key="explorer_reset_filters", on_click=reset_explorer_filters)
 
 side_group("Period")
-months = sorted(df.month.unique())
-default_start = months.index("2017-01") if "2017-01" in months else 0
-default_end = months.index("2018-08") if "2018-08" in months else len(months) - 1
+months = filter_choices["months"]
 m_from, m_to = st.sidebar.select_slider(
     "Purchase month", options=months, label_visibility="collapsed",
-    value=(months[default_start], months[default_end]),
+    value=filters["month_range"],
+    key="explorer_filter_month_range", on_change=sync_explorer_filter,
+    args=("month_range", "explorer_filter_month_range"),
 )
 st.sidebar.markdown(
     "<div style='font-size:.72rem;color:#8b93a1;line-height:1.45;margin:-.3rem 0 .2rem'>"
@@ -217,41 +256,41 @@ st.sidebar.markdown(
 )
 
 side_group("Who and what")
-states = sorted(df.customer_state.unique())
-pick_states = st.sidebar.multiselect("Customer state", states, default=[],
-                                     placeholder="All states")
+states = filter_choices["states"]
+pick_states = st.sidebar.multiselect(
+    "Customer state", states, placeholder="All states", key="explorer_filter_states",
+    on_change=sync_explorer_filter, args=("states", "explorer_filter_states"),
+)
 
-top_cats = df.category.value_counts().head(30).index.tolist()
-pick_cats = st.sidebar.multiselect("Product category", sorted(top_cats), default=[],
-                                   placeholder="All categories",
-                                   help="The 30 most common categories.")
+pick_cats = st.sidebar.multiselect(
+    "Product category", filter_choices["categories"], placeholder="All categories",
+    help="All categories in the marketplace extract.", key="explorer_filter_categories",
+    on_change=sync_explorer_filter, args=("categories", "explorer_filter_categories"),
+)
 
-pick_pay = st.sidebar.multiselect("Payment type",
-                                  sorted(df.payment_type.dropna().unique()),
-                                  default=[], placeholder="All payment types")
+pick_pay = st.sidebar.multiselect(
+    "Payment type", filter_choices["payments"], placeholder="All payment types",
+    key="explorer_filter_payments", on_change=sync_explorer_filter,
+    args=("payments", "explorer_filter_payments"),
+)
 
 side_group("Fulfilment")
-route = st.sidebar.radio("Route", ["All", "Same state", "Cross state"],
-                         horizontal=True, label_visibility="collapsed")
-delivered_only = st.sidebar.checkbox("Delivered orders only", value=False,
-                                     help="Delivery and review metrics always use delivered "
-                                          "orders; this also restricts volume and GMV.")
+route = st.sidebar.radio(
+    "Route", filter_choices["routes"], horizontal=True, label_visibility="collapsed",
+    key="explorer_filter_route", index=None, on_change=sync_explorer_filter,
+    args=("route", "explorer_filter_route"),
+)
+delivered_only = st.sidebar.checkbox(
+    "Delivered orders only", key="explorer_filter_delivered_only", value=None,
+    help="Also restricts volume and sales to delivered order status. Delivery metrics "
+         "use recorded deliveries; ratings use observed reviews in the selected cohort.",
+    on_change=sync_explorer_filter,
+    args=("delivered_only", "explorer_filter_delivered_only"),
+)
 
-mask = df.month.between(m_from, m_to)
-if pick_states:
-    mask &= df.customer_state.isin(pick_states)
-if pick_cats:
-    mask &= df.category.isin(pick_cats)
-if pick_pay:
-    mask &= df.payment_type.isin(pick_pay)
-if route == "Same state":
-    mask &= df.same_state
-elif route == "Cross state":
-    mask &= ~df.same_state
-if delivered_only:
-    mask &= df.order_status == "delivered"
-
-d = df[mask]
+filters = shared_filters.read_filters(st.session_state)
+st.sidebar.caption(shared_filters.summary(filters))
+d = shared_filters.apply_filters(df, filters)
 dd = d[d.delivered_ts.notna()]          # delivered cohort, for delivery/review metrics
 
 if d.empty:
