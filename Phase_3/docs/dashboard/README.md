@@ -37,5 +37,18 @@ Captured after the audit update and Cloud reboot. The archived scores remain vis
 
 ![Classification timing audit notice](classification_timing.jpg)
 
+## Updated classification evidence
+
+The latest upload keeps v1 as the headline and adds the strict-cutoff rerun,
+Part B family comparisons, classification stacking, daily capacity and calibration
+diagnostics. The assessment selector changes the score cards, operating thresholds,
+monthly curve, criteria and download together. These supplements reuse the
+historically examined test window.
+
+![Strict-cutoff classification assessment](classification_update.jpg)
+
+The earlier timing-audit screenshot above is retained as a historical record.
+The current interface acknowledges that the strict rerun has been completed.
+
 See the [dashboard guide](../../../dashboard/README.md) for setup, prediction
 semantics, evaluation sources and limitations.

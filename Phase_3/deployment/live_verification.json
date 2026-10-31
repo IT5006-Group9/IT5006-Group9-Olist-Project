@@ -200,5 +200,99 @@
       "email": "yexueying70@gmail.com",
       "github_author_verified": true
     }
+  },
+  "classification_upload_followup": {
+    "passed": true,
+    "verified_at_utc": "2026-10-31T14:10:31.451524+00:00",
+    "upstream_upload_commit": "561bbadb6cdd45c6ab4c190282c5ee4ab037c124",
+    "application_code_commit_at_browser_test": "47557dc218fa1cc5062ff6a1b90545a2b878329f",
+    "scope": "Dashboard integration of the uploaded classification supplement; no training or changes to upstream models, outputs, notebooks or classification methods.",
+    "cloud_reboot_after_adapter_and_cache_update": true,
+    "fresh_browser_session_verified": true,
+    "checks": {
+      "overview_acknowledges_completed_strict_rerun": true,
+      "v1_remains_default_headline": {
+        "train_pr_auc": "0.610",
+        "cv_pr_auc": "0.546",
+        "test_pr_auc": "0.375",
+        "test_roc_auc": "0.739",
+        "top20_recall": "53.2%"
+      },
+      "strict_assessment_switch": {
+        "train_pr_auc": "0.599",
+        "cv_pr_auc": "0.546",
+        "test_pr_auc": "0.374",
+        "test_roc_auc": "0.740",
+        "top20_recall": "53.5%"
+      },
+      "strict_frozen_threshold_switch": {
+        "orders_flagged": "14.8%",
+        "low_reviews_captured": "46.5%",
+        "precision": "35.4%"
+      },
+      "classification_stack_expanded": {
+        "decision": "Not retained",
+        "mean_cv_pr_auc": "0.5474",
+        "test_pr_auc": "0.3784",
+        "test_recall": "0.5386"
+      },
+      "daily_diagnostic_expanded": true,
+      "daily_v1_v2_scope_and_actionability_limitation_visible": true,
+      "calibration_forward_and_test_sections_expanded": true,
+      "family_comparison_and_download_available": true,
+      "historical_test_exposure_disclosed": true,
+      "narrow_viewport_checked": {
+        "viewport_px": 319,
+        "main_scroll_width_px": 319,
+        "strict_selection_text_readable": true
+      },
+      "desktop_fresh_session_checked": {
+        "viewport_px": 1280,
+        "main_scroll_width_px": 1279
+      },
+      "temporary_browser_viewport_override_reset": true
+    },
+    "automated_tests": {
+      "passed": 36,
+      "command": "python -m unittest discover -s Phase_3/tests -p 'test_dashboard*.py'",
+      "scope": "Evidence integrity, optional/legacy data handling, assessment and operating-rule switching, existing dashboard and real frozen regression inference flows."
+    },
+    "upstream_immutable_files": {
+      "checked": 250,
+      "changed": [],
+      "baseline_commit": "561bbadb6cdd45c6ab4c190282c5ee4ab037c124",
+      "baseline_sha256_map_digest": "a16905a144d7843fb915d9567e81dd601d932b05f77dd3c45631855849645c02"
+    },
+    "classification_source_sha256": {
+      "Phase_3/outputs/classification/strict_cutoff/test_summary_strict.json": "8c52637befec35387bf8a7e212acc8dac7ea2caf7292e62b9b3ccfd1f35fa96c",
+      "Phase_3/outputs/classification/strict_cutoff/selection_strict.json": "006fe375ca11d5aa572b9dac3287f937176cd83c02c39596a5514e14f6f8ba46",
+      "Phase_3/outputs/classification/strict_cutoff/strict_rules.json": "c60afec28982b07bcf90a181ae1c18826463080d954d6888b4c0705c2a7eada2",
+      "Phase_3/outputs/classification/strict_cutoff/test_lock_strict.json": "62311d0f8a1f361c648899a92884757c3f62be5194e02a8c8f3626b0c31df19b",
+      "Phase_3/outputs/classification/strict_cutoff/tables/cv_family_summary.csv": "ba1e2f9d5928d989e882f2083984a20db52172070e1485684094b3a5333414e5",
+      "Phase_3/outputs/classification/strict_cutoff/tables/test_operating_points.csv": "d97b9ba975c19083c71f74b6de491e49c449c6c62dd24ec777060973d137bab8",
+      "Phase_3/outputs/classification/strict_cutoff/tables/test_by_month.csv": "f65ad9e370331f608b8d614904424e0f205126330baf2b160e9b6bf8007d26ae",
+      "Phase_3/outputs/classification/strict_cutoff/tables/success_criteria.csv": "4d4415b3478e09eaa5f1f3c017ccbecf72ccfce1d394a3fa61f1598a28286d5d",
+      "Phase_3/outputs/classification/strict_cutoff/tables/paired_bootstrap.csv": "b07d03d341237091e9d30a07b3a459ab3d995531832c0e64dbe8f0d19fafb5bd",
+      "Phase_3/outputs/classification/strict_cutoff/tables/test_results.csv": "50c1a26ff9b932f5701d8a8fe0debe7041dee12dfae583b095e6e3414c3eb9d6",
+      "Phase_3/outputs/classification/strict_cutoff/tables/strict_fold_table.csv": "4ef70a86e3608991dc9dc2d4ee396eeda865575fdbdff53941d9b351fc0cd9a3",
+      "Phase_3/outputs/classification/strict_cutoff/tables/diagnostic_rules.csv": "0a4f19e8bf064696d6d10ca7697548dbae87ad562e23e8b82c5302a9959938db",
+      "Phase_3/outputs/classification/strict_cutoff/tables/importance_groups.csv": "168b4d677dd3d665723c02325c43164d36b0ed289913e906b74a499053af6baf",
+      "Phase_3/outputs/classification/experiments/selection_v2.json": "a61d618f89a51c536b66c7aa6e1043c4069e61eea995408a1fc74e60a3dd4327",
+      "Phase_3/outputs/classification/experiments/stacking.json": "3239baa36015b526be9cd74d5643e551ffb45c03c8a900ffbe80f059b67618ed",
+      "Phase_3/outputs/classification/experiments/test_lock_v2.json": "453132cc32044b8256924da948a10c7101d85b9e3a1433070da3c8c10d340546",
+      "Phase_3/outputs/classification/experiments/tables/ledger.csv": "18a3bb0607d325a5aa6f9b0cdc50b49b51e380e2b3b015d022921970de02d48f",
+      "Phase_3/outputs/classification/experiments/tables/test_results_v2.csv": "07c9d20e0ad591e19472aefe1c2259671989494c610e489e68bf7c00193bd591",
+      "Phase_3/outputs/classification/experiments/tables/daily_batch_recall.csv": "5e0158702e29a830e467a5c9a007f271728b382e45d0977101030924b2a8b76a",
+      "Phase_3/outputs/classification/experiments/tables/calibration_decisions.csv": "49a0eeda73054d1994ec3b5278b94d586ac445ea58d3c814f8e6c72000e2c583",
+      "Phase_3/outputs/classification/experiments/tables/calibration_test_addendum.csv": "e04ff8c62fdac25c05f0fe4bcea3c12cdd47eefb87ea65db03970bdc9c32614b",
+      "Phase_3/outputs/classification/test_lock.json": "376a3c1472e7cb88bf947b862b21cb87e28b6299110ec15c8e9931680c21cf2e"
+    },
+    "screenshot": {
+      "path": "docs/dashboard/classification_update.jpg",
+      "sha256": "7196efd22697ce8cdac0ac3b15760db00aef21be31755371bfbebc4844d91cf5",
+      "width": 1280,
+      "height": 720
+    },
+    "github_author_verified": "yexueying70-cell"
   }
 }
