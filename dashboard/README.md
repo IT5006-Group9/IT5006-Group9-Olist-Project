@@ -30,6 +30,8 @@ verified after rebuilding the environment. See the
 [online verification record](../Phase_3/deployment/live_verification.json) and
 [deployed screenshots](../Phase_3/docs/dashboard/README.md).
 
+After changing the evidence adapter or table schema, reboot the Cloud app and verify Model evidence. Open sessions can retain imported modules and cached evidence across a source update; a browser refresh alone may not load the new adapter. The app versions its evidence cache and tolerates absent optional keys during this transition.
+
 ## Pages
 
 | Page | Use |

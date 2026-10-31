@@ -77,5 +77,60 @@
     "overview.png": "8d8ac20d3e732f89e69e368a345d099c9d8bfb07e1b07b03ee6ab4da146989a6",
     "prediction.png": "bfcda407b2f823a6d8abea768d2c78ae87c8f8e1d26b3abad3f3ec5623db5403"
   },
-  "note": "UI metrics are recorded at displayed precision; full saved evaluation is in outputs. Cloud inference uses the committed frozen-configuration deployment artifact and does not retrain."
+  "note": "UI metrics are recorded at displayed precision; full saved evaluation is in outputs. Cloud inference uses the committed frozen-configuration deployment artifact and does not retrain.",
+  "quality_audit_followup": {
+    "passed": true,
+    "verified_at_utc": "2026-10-31T07:33:30.430756+00:00",
+    "application_code_commit_at_browser_test": "50ba409b64602801467484816679deb5f5792586",
+    "scope": "Online follow-up for the quality-audit update. The earlier top-level record remains the original five-workspace and real-inference verification.",
+    "cloud_reboot_after_source_update": true,
+    "runtime_rechecked_from_build_logs": {
+      "python": "3.12.16",
+      "streamlit": "1.50.0",
+      "scikit-learn": "1.7.2",
+      "pandas": "2.2.3",
+      "numpy": "2.3.5",
+      "scipy": "1.16.3",
+      "joblib": "1.5.2",
+      "pyarrow": "22.0.0",
+      "plotly": "6.3.1"
+    },
+    "checks": {
+      "overview_classification_timing_notice_visible": true,
+      "regression_evidence_loaded_without_exception": true,
+      "test_mae_displayed": 3.43,
+      "within_three_days_displayed": "55.9%",
+      "selection_sensitivity_rows_visible": [
+        "HGB_risk",
+        "Ridge_a100"
+      ],
+      "duration_error_rows_visible": [
+        "0-14 days",
+        "14-30 days",
+        "30-60 days",
+        ">60 days"
+      ],
+      "classification_timing_notice_and_audit_link_visible": true,
+      "classification_test_pr_auc_displayed": 0.375,
+      "classification_test_roc_auc_displayed": 0.739,
+      "classification_pooled_top20_recall_displayed": "53.2%",
+      "retrospective_assessment_qualification_visible": true,
+      "new_evidence_tables_loaded_after_reboot": true
+    },
+    "automated_tests": {
+      "passed": 13,
+      "dashboard": 10,
+      "synthetic_timing": 3,
+      "legacy_evidence_missing_key_case": true
+    },
+    "screenshot": {
+      "path": "docs/dashboard/classification_timing.jpg",
+      "sha256": "ff6bdbbaee951d7d21f14d8072bde4043abff62e3f8b70e585140f4b59f77502",
+      "width": 319,
+      "height": 769
+    },
+    "model_and_demo_assets_unchanged": true,
+    "classification_timing_corrected": false,
+    "note": "The initial hot update retained the previous evidence schema. A versioned cache key, optional-key compatibility handling and a Cloud reboot resolved the display issue. Classification timing findings are disclosed but no classifier has been refitted."
+  }
 }

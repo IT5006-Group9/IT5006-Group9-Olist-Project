@@ -112,6 +112,7 @@ The live regression demonstration and usage instructions are available. No final
 - Added a self-contained feature and model appendix for final-report integration.
 - Corrected capacity, leakage, preprocessing, temporal stability, raw-data setup and deployment-artifact descriptions.
 - Added regression maturity sensitivity, duration-tail diagnostics and a classification timing notice to the dashboard.
+- Fixed compatibility with retained evidence caches during the Cloud update, and included the legacy missing-key case in the dashboard checks.
 - Preserved existing model specifications, selected thresholds, fitted deployment assets, experimental outputs and notebooks. No new model selection or training was performed.
 
 Documentation and audit-code assistance: OpenAI Codex. This entry describes this audit only; it does not replace the team's declarations for earlier work.

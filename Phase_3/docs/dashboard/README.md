@@ -14,5 +14,11 @@ presentation and deployment section of the report.
 
 ![Delivery prediction and outcome comparison](prediction.png)
 
+## Classification timing audit notice
+
+Captured after the audit update and Cloud reboot. The archived scores remain visible with a notice that strict feature and label availability require a new assessment. The regression evidence page also displays the saved selection-maturity and duration-tail diagnostics.
+
+![Classification timing audit notice](classification_timing.jpg)
+
 See the [dashboard guide](../../../dashboard/README.md) for setup, prediction
 semantics, evaluation sources and limitations.
