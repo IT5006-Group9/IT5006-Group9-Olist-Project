@@ -79,14 +79,6 @@ def prepare() -> None:
 
 
 # --------------------------------------------------------------------------- select
-def _candidates_budget():
-    return config.N_CANDIDATES_QUICK if config.QUICK else config.N_CANDIDATES
-
-
-def _with_quick(name: str, params: dict) -> dict:
-    return {**params, **config.QUICK_OVERRIDES.get(name, {})} if config.QUICK else params
-
-
 def _baseline_rows(df, folds) -> pd.DataFrame:
     rows = []
     for f in folds:
@@ -105,8 +97,14 @@ def grouped_importance(model, X, y, n_repeats=3, seed=config.RANDOM_STATE) -> tu
     feature and per feature group. Columns of a group are permuted together."""
     from sklearn.metrics import average_precision_score
     rng = np.random.default_rng(seed)
-    H = model[:1].transform(X)
-    head = model[1:]
+    H = model.named_steps["history"].transform(X)
+    pre, clf = model.named_steps["pre"], model.named_steps["model"]
+
+    class _Head:  # the fitted steps after the history step (slicing the pipeline re-checks fit status)
+        def predict_proba(self, Z):
+            return clf.predict_proba(pre.transform(Z))
+
+    head = _Head()
     base = average_precision_score(y, search.proba(head, H))
 
     def drop(cols):
@@ -130,13 +128,13 @@ def select() -> None:
     gap = splits.load_gap_days()
     folds = splits.chronological_folds(df, gap)
     fams = models.families()
-    budget = _candidates_budget()
-    _log(f"select: {len(folds)} folds, gap {gap} days, QUICK={config.QUICK}")
+    budget = config.N_CANDIDATES
+    _log(f"select: {len(folds)} folds, gap {gap} days")
 
     space_rows, all_cands, best_folds, oofs, best_params = [], [], [], [], {}
     for name, (pipe, space) in fams.items():
         n = budget.get(name)
-        cands = [_with_quick(name, p) for p in search.candidates(space, n)]
+        cands = search.candidates(space, n)
         space_rows.append({"family": name, "search_space": models.describe_space(space),
                            "candidates_scored": len(cands), "selection": "highest mean validation PR-AUC over 5 folds"})
         _log(f"select: {name} - {len(cands)} candidate(s)")
@@ -201,7 +199,7 @@ def select() -> None:
                  "family_best_params": best_params,
                  "cv": model_rows.iloc[0][["cv_pr_auc_mean", "cv_pr_auc_sd", "cv_recall_at_capacity_mean",
                                            "train_pr_auc_mean"]].to_dict(),
-                 "quick": config.QUICK, "frozen_at": datetime.now(timezone.utc).isoformat()}
+                 "frozen_at": datetime.now(timezone.utc).isoformat()}
     selection["selection_sha256"] = hashlib.sha256(json.dumps(
         {k: selection[k] for k in ("selected_family", "params", "gap_days", "features")}, sort_keys=True,
         default=str).encode()).hexdigest()
@@ -218,7 +216,7 @@ def test() -> None:
     previous = {e["selection_sha256"] for e in lock["evaluations"]}
     if previous and sel["selection_sha256"] not in previous:
         raise RuntimeError("The test window was already scored with a different selection. Changing the model after "
-                           "seeing test results is not allowed; record any exception in docs/decision_log.md "
+                           "seeing test results is not allowed; record any exception in docs/classification.md "
                            "before deleting outputs/.../test_lock.json.")
     df = load_table()
     final = splits.final_split(df, sel["gap_days"])
@@ -263,7 +261,7 @@ def test() -> None:
     config.PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
     frame.to_parquet(config.PREDICTIONS_DIR / "test_scores.parquet", index=False)
     _save(evaluate.by_month(frame).round(4), "test_by_month")
-    ci = evaluate.bootstrap_ci(ys, s_test, n_boot=200 if config.QUICK else 1000)
+    ci = evaluate.bootstrap_ci(ys, s_test, n_boot=1000)
     success = evaluate.success_check(test_m)
     _save(success, "success_criteria")
 

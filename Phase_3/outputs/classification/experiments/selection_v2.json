@@ -1,0 +1,165 @@
+{
+  "v2_family": "random_forest",
+  "v2_variant": {
+    "family": "random_forest",
+    "groups": [],
+    "late_rule": "calendar",
+    "cw": "none",
+    "window": null,
+    "label_filter": false,
+    "params": [
+      [
+        "max_depth",
+        14
+      ],
+      [
+        "max_features",
+        0.6290712064135155
+      ],
+      [
+        "min_samples_leaf",
+        80
+      ],
+      [
+        "n_estimators",
+        302
+      ]
+    ]
+  },
+  "recommended": false,
+  "family_best": {
+    "random_forest": {
+      "family": "random_forest",
+      "groups": [],
+      "late_rule": "calendar",
+      "cw": "none",
+      "window": null,
+      "label_filter": false,
+      "params": [
+        [
+          "max_depth",
+          14
+        ],
+        [
+          "max_features",
+          0.6290712064135155
+        ],
+        [
+          "min_samples_leaf",
+          80
+        ],
+        [
+          "n_estimators",
+          302
+        ]
+      ]
+    },
+    "hist_gb": {
+      "family": "hist_gb",
+      "groups": [],
+      "late_rule": "calendar",
+      "cw": "balanced",
+      "window": null,
+      "label_filter": false,
+      "params": [
+        [
+          "l2_regularization",
+          0.009920950864900802
+        ],
+        [
+          "learning_rate",
+          0.020504613802307833
+        ],
+        [
+          "max_features",
+          0.6766419386785785
+        ],
+        [
+          "max_iter",
+          672
+        ],
+        [
+          "max_leaf_nodes",
+          21
+        ],
+        [
+          "min_samples_leaf",
+          139
+        ]
+      ]
+    },
+    "logistic": {
+      "family": "logistic",
+      "groups": [],
+      "late_rule": "calendar",
+      "cw": "none",
+      "window": null,
+      "label_filter": false,
+      "params": [
+        [
+          "C",
+          0.01
+        ]
+      ]
+    },
+    "decision_tree": {
+      "family": "decision_tree",
+      "groups": [],
+      "late_rule": "calendar",
+      "cw": "balanced",
+      "window": null,
+      "label_filter": false,
+      "params": [
+        [
+          "max_depth",
+          8
+        ],
+        [
+          "min_samples_leaf",
+          159
+        ]
+      ]
+    },
+    "catboost": {
+      "family": "catboost",
+      "groups": [],
+      "late_rule": "calendar",
+      "cw": "balanced",
+      "window": null,
+      "label_filter": false,
+      "params": [
+        [
+          "depth",
+          4
+        ],
+        [
+          "iterations",
+          1000
+        ],
+        [
+          "l2_leaf_reg",
+          8.056457031623271
+        ],
+        [
+          "learning_rate",
+          0.03175627015060992
+        ],
+        [
+          "one_hot_max_size",
+          2
+        ],
+        [
+          "random_strength",
+          0.6849971323085097
+        ],
+        [
+          "subsample",
+          0.7713606405249578
+        ]
+      ]
+    }
+  },
+  "gap_days": 27,
+  "frozen_at": "2026-10-30T05:55:17.685724+00:00",
+  "selection_sha256": "426eb96dbd9d36c9dafa912f04469cb373180a92c92483fd6bd24db346390886"
+}

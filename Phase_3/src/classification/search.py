@@ -39,6 +39,8 @@ def fit(pipe, params: dict, df: pd.DataFrame, train_idx, event_cutoff):
     X, y = xy(df, train_idx)
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UserWarning)
+        # scikit-learn 1.9 deprecates TargetEncoder(random_state); kept for older versions
+        warnings.filterwarnings("ignore", category=FutureWarning, message=".*TargetEncoder.*")
         model.fit(X, y)
     return model
 

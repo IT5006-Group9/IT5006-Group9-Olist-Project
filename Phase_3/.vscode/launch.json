@@ -10,20 +10,37 @@
       "console": "integratedTerminal"
     },
     {
-      "name": "Classification: quick smoke test",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "${workspaceFolder}/src/classification/run_pipeline.py",
-      "args": ["--quick"],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal"
-    },
-    {
       "name": "Classification: one stage",
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/src/classification/run_pipeline.py",
       "args": ["--stage", "${input:stage}"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Classification: experiments (Part B)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/classification/run_experiments.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Classification: stacking only",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/classification/run_experiments.py",
+      "args": ["--stacking"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Classification: experiment figures",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/classification/run_experiments.py",
+      "args": ["--figures"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     }

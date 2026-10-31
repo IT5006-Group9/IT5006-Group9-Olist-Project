@@ -12,73 +12,21 @@ Phase 3 rebuilds the Phase 2 models around a **chronological evaluation** (TA fe
 
 Regression uses purchase time, a 39-day embargo **and** receipt before the training cutoff. Its selected HGB with a past-only slow-order risk feature has test MAE 3.4343 days on 18,603 June–August orders; the labels available for May selection cover only 65.3% of eventual completed May orders. The guide explains this limitation, prior test exposure and the small validation margin over Ridge. Use the separate pinned `requirements-regression.lock.txt` for its verified environment. The classification instructions below retain their original task-specific settings.
 
+## Classification entry
+
+**Everything about the classification branch is in one document: [`docs/classification.md`](docs/classification.md).** It covers the problem, data, features, the train / validation / test split, preprocessing, leakage controls, models and hyperparameter tuning, class-imbalance strategies, every experiment and its effect, train / validation / test results for all models, the decision, and how to run the code.
+
 | Start here | What it is |
 |---|---|
-| [`notebooks/classification_chronological.ipynb`](notebooks/classification_chronological.ipynb) | Executed reading path: every stage's evidence, from cohort to final test |
-| [`src/classification/run_pipeline.py`](src/classification/run_pipeline.py) | One command that runs the whole pipeline |
-| [`docs/classification_changes.md`](docs/classification_changes.md) | Every change from Phase 2 and the feedback it answers |
-| [`docs/decision_log.md`](docs/decision_log.md) | Split and protocol decisions with their evidence |
-| [`docs/report_key_points_classification.md`](docs/report_key_points_classification.md) | Key points and numbers for the Phase 3 report, by report section |
+| [`docs/classification.md`](docs/classification.md) | The full explanation and all results |
+| [`notebooks/classification_chronological.ipynb`](notebooks/classification_chronological.ipynb) | Executed v1 results (Part A) |
+| [`notebooks/classification_experiments.ipynb`](notebooks/classification_experiments.ipynb) | Executed experiment results (Part B) |
+| [`src/classification/run_pipeline.py`](src/classification/run_pipeline.py) | Part A runner: prepare → select → test → reference → figures |
+| [`src/classification/run_experiments.py`](src/classification/run_experiments.py) | Part B runner: experiments S0–S10 and the class-balancing study (cached, resumable) |
 
-## 1. The problem
+The headline is the v1 random forest: test PR-AUC 0.375 against a no-skill rate of 0.113, with 53.2% of low reviews in the riskiest 20% of orders, on Jun–Aug 2018. **All results are already saved in `outputs/classification/`, so nothing has to be rerun to read them.**
 
-| | |
-|---|---|
-| Question | At the survey trigger **T = min(delivered date, estimated delivery date)**, will the order receive a 1–2 star review? |
-| Stakeholder and decision | Olist's customer-experience team contacts the **20% highest-risk orders** reaching T each day (proactive outreach before the customer answers the survey) |
-| Target | `is_low_review` = 1 if review score is 1 or 2 |
-| Primary metric | PR-AUC (average precision) |
-| Success criteria (set before testing) | Test PR-AUC ≥ 2 × the test positive rate; the top 20% contains ≥ 50% of low reviews |
-
-## 2. How the pipeline works
-
-```
-course CSVs ──► prepare ──► select ──► test ──► reference ──► figures
-               cohort,      5-fold     final fit,  random split   report
-               features,    expanding  Jun–Aug     comparison     figures
-               gap, lock    window     scored once
-```
-
-| Stage | Reads | Does | Writes (under `outputs/classification/`) |
-|---|---|---|---|
-| `prepare` | 9 course CSVs | Joins orders, items, payments, reviews, customers, sellers, products and geolocation into one row per order. Builds every outcome-free feature, applies the cohort rules, computes the purge gap and hashes the test-window order ids | `data/classification/orders_features.parquet`, `cohort_flow.csv`, `censoring_by_t_month.csv`, `monthly_volume_and_rate.csv`, `fold_table.csv`, `purge_gap.json`, `test_lock.json` |
-| `select` | feature table | For each model family, scores every candidate on the 5 expanding-window folds (train and validation scores). Adds the baselines, picks the family with the highest mean validation PR-AUC, freezes the operating thresholds, runs the gap sensitivity check and computes permutation importance on May 2018 | `search_spaces.csv`, `cv_candidates.csv`, `cv_fold_detail.csv`, `cv_family_summary.csv`, `gap_sensitivity.csv`, `permutation_importance_*.csv`, `selection.json` |
-| `test` | `selection.json` | Fits the selected configuration on every order with T before 1 Jun 2018 minus the gap, scores Jun–Aug 2018 **once**, checks the success criteria and records the evaluation in the lock file | `models/classification/final_model.joblib`, `test_results.csv`, `test_operating_points.csv`, `test_by_month.csv`, `success_criteria.csv`, `test_summary.json` |
-| `reference` | `selection.json` | Phase 2 stratified random split (67/33, then 80/20; seed 5006) on the same cohort, using the chronologically chosen hyperparameters | `reference_random_split.csv`, `chronological_vs_random.csv` |
-| `figures` | saved tables | Report figures | `figures/01–05_*.png` |
-
-### 2.1 Chronological protocol
-
-Orders are placed on the time axis by **T**, the moment the model is used.
-
-| Fold | Training: T from Jan 2017 up to | Validation (T) |
-|---|---|---|
-| 1 | 4 Dec 2017 | Jan 2018 |
-| 2 | 4 Jan 2018 | Feb 2018 |
-| 3 | 1 Feb 2018 | Mar 2018 |
-| 4 | 4 Mar 2018 | Apr 2018 |
-| 5 | 3 Apr 2018 | May 2018 |
-| Final | 4 May 2018 | **Jun–Aug 2018 (test, scored once)** |
-
-* **Purge gap (k = 27 days).** A training order must have T at least k days before the cut-off. Its review is usually answered within days of T, but a training label answered after the cut-off would not exist when a real model is trained. k is the 99th percentile of (review answered − T) on 2017 orders, rounded up. It removes rows by date, never by outcome, so it does not bias the labels. After the gap, 0.12–0.24% of training labels are answered after the cut-off (`fold_table.csv`).
-* **History features per fold.** Seller and route history (past delivery days, late rate, low-review rate) is computed inside the model pipeline by `HistoryInPipeline` from the fold's training rows, using only outcomes known before the fold's cut-off. The stored feature table contains no outcome-based feature.
-* **Test lock.** `prepare` hashes the test-window ids before any model exists. `test` refuses to run without a frozen `selection.json`, logs every evaluation, and refuses a second evaluation with a different selection.
-* **2016 is excluded.** Only 303 cohort orders have T in 2016, too few for a training window.
-
-### 2.2 Models
-
-All families receive the same 51 features from the same history step. Search ranges are listed in `search_spaces.csv`.
-
-| Family | Model | Candidates |
-|---|---|---|
-| logistic_base | LogisticRegression(C=1, class_weight=balanced) | 1 |
-| logistic_tuned | LogisticRegression, C ∈ {0.001 … 1000} | 7 |
-| decision_tree | DecisionTreeClassifier(balanced), depth, min leaf | 20 |
-| random_forest | RandomForestClassifier(balanced_subsample) | 6 |
-| catboost | CatBoostClassifier(auto_class_weights=Balanced) | 6 |
-| baselines | positive rate (no skill); "not delivered by T" rule | – |
-
-## 3. Folder structure
+## Folder structure
 
 ```
 Phase_3/
@@ -86,20 +34,19 @@ Phase_3/
 ├── requirements.txt
 ├── src/
 │   ├── common/             paths.py (data location), geography.py (zip coordinates, route distance)
-│   └── classification/     config, data, features, splits, models, search, evaluate,
-│                           pipeline (stages), figures, score (deployment interface), run_pipeline (CLI)
-├── notebooks/              classification_chronological.ipynb (executed)
-├── tests/                  test_classification.py (protocol and leakage checks)
-├── docs/                   changes from Phase 2, decision log, report key points
+│   ├── classification/     see docs/classification.md §16 for every module
+│   └── regression/
+├── notebooks/              executed classification and regression notebooks
+├── tests/                  protocol and leakage tests
+├── docs/                   classification.md (classification), regression/ (regression)
 ├── deployment/             notes for the Streamlit app (R5)
-├── data/                   generated feature table (git-ignored)
-├── models/                 fitted model bundle (git-ignored)
-├── outputs/classification/ tables/, figures/, selection.json, test_lock.json, run_log.txt
-│                           (predictions/ is git-ignored)
+├── data/                   generated feature tables (git-ignored)
+├── models/                 fitted model bundles (git-ignored)
+├── outputs/                classification/ (v1 + experiments/), regression/
 └── .vscode/                launch and task configurations
 ```
 
-## 4. Setup
+## Setup
 
 1. Python 3.11 or newer (verified on 3.14.7). From `Phase_3/`:
    ```bash
@@ -115,7 +62,6 @@ Phase_3/
 2. **Python: Select Interpreter**, then choose the environment with the requirements installed.
 3. **Run and Debug** (Ctrl+Shift+D), then pick one of:
    * **Classification: full pipeline**: all five stages, about 2–2.5 hours on 8 cores (the forest and CatBoost searches take most of it).
-   * **Classification: quick smoke test**: about 5 minutes; writes to `outputs/classification_quick/`, never to the reported results.
    * **Classification: one stage**: prompts for the stage name.
 4. Unit tests: **Terminal → Run Task… → Classification: unit tests**.
 5. Open `notebooks/classification_chronological.ipynb` and **Run All** to read the results. It reads saved outputs unless `RUN_PIPELINE = True`.
@@ -124,10 +70,6 @@ Phase_3/
 
 ```bash
 python src/classification/run_pipeline.py
-```
-
-```bash
-python src/classification/run_pipeline.py --quick
 ```
 
 ```bash
@@ -140,26 +82,24 @@ python -m unittest discover -s tests -v
 
 `--from-stage select` reruns a stage and every later one. Stages pass results only through files, so each can be rerun on its own. Rerunning `test` with an unchanged selection reproduces the same numbers and is logged as another evaluation. Rerunning it after changing the selection is refused.
 
-## 6. Using the model (deployment interface)
+## Running the classification code
 
-The app exposes no HTTP API. The Python entry point is:
+Running is only needed to reproduce the saved results. From `Phase_3/`:
 
-```python
-import sys; sys.path.insert(0, "src")
-from classification.pipeline import load_table
-from classification.score import load_bundle, score_orders
-
-orders = load_table()
-test_orders = orders[orders.survey_trigger_time >= "2018-06-01"].sample(5, random_state=5006)   # held-out orders
-score_orders(test_orders, load_bundle())   # order_id, risk_score, risk_rank, flagged (top 20% of the batch)
+```bash
+python src/classification/run_pipeline.py
 ```
 
-`score_orders` raises a clear error for missing input columns, an empty batch or a capacity share outside (0, 1]. See `deployment/README.md`.
+```bash
+python src/classification/run_experiments.py
+```
 
-## 7. Reference: the Phase 2 random split
+```bash
+python -m unittest discover -s tests -v
+```
 
-The random split is kept for comparison, not for model choice. It uses the same cohort, features and chosen hyperparameters with the Phase 2 protocol (stratified 67/33, then 80/20; seed 5006). `chronological_vs_random.csv` puts both procedures side by side. The submitted Phase 2 notebooks are unchanged in `Phase 2/Final Notebooks/Classification`.
+Every run uses the full data and the full search budgets. In VS Code, use **Run and Debug** and pick a "Classification:" configuration. Run times and caching are explained in `docs/classification.md` §0.
 
-## 8. AI tool declaration
+## AI tool declaration
 
 The Phase 3 classification code, documentation and report notes were drafted with Claude (Anthropic) under the team's direction. The team reviewed the protocol decisions (decision log) and the results.

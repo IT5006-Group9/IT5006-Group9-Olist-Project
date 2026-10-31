@@ -1,0 +1,47 @@
+{
+  "bases": [
+    "logistic",
+    "random_forest",
+    "hist_gb"
+  ],
+  "best_single": "random_forest",
+  "rule": "feature rule vs best single: +0.010 mean PR-AUC, better in >= 4/5 months, recall in the top 20% not down by more than 0.010",
+  "meta_rule": "last 3 T-months inside each outer training frame; convex weights (>= 0, sum 1, no intercept) minimising log loss",
+  "base_configuration_scope": "base hyperparameters were tuned on the same five validation months, so this is not fully nested selection",
+  "mean_val_pr_auc": 0.547405265935837,
+  "sd_val_pr_auc": 0.07763261067365329,
+  "best_single_mean_val_pr_auc": 0.546754080358641,
+  "pooled_oof_pr_auc": 0.5675123073807329,
+  "pooled_oof_recall_at_capacity": 0.6289082521783701,
+  "d_pr_auc": 0.000651185577196034,
+  "months_better": 3,
+  "d_recall": 0.00366178927697709,
+  "d_brier": -0.00019327347876027247,
+  "per_fold_d_pr": "+0.0080;+0.0061;-0.0113;-0.0030;+0.0035",
+  "retained": false,
+  "test_bootstrap_vs_best_single": {
+    "d_pr_auc": 0.003469520472336729,
+    "d_pr_auc_ci": [
+      0.0009726262735307814,
+      0.006045917359487489
+    ],
+    "d_recall": 0.005061155630535663,
+    "d_recall_ci": [
+      0.0008381878952187144,
+      0.010378723017849733
+    ]
+  },
+  "final_weights": {
+    "logistic": 0.2166758128586982,
+    "random_forest": 0.7669724849230656,
+    "hist_gb": 0.01635170221823622
+  },
+  "test_pr_auc": 0.3784210462491867,
+  "test_roc_auc": 0.741683057463066,
+  "test_brier": 0.08810274122159244,
+  "test_recall_at_capacity": 0.5385913116828343,
+  "test_pr_auc_delivered_by_T": 0.1999515345943908,
+  "best_single_test_pr_auc": 0.37495152577685,
+  "best_single_test_recall_at_capacity": 0.5335301560522986,
+  "test_note": "secondary evaluation, scored after the validation decision was saved"
+}

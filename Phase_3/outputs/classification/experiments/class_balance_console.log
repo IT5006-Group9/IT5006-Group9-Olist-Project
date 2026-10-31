@@ -1,0 +1,112 @@
+[10:11:37] CB: random_forest none                   val PR-AUC 0.5468  Brier 0.1005  test PR-AUC 0.3750
+[10:13:20] CB: random_forest balanced weights       val PR-AUC 0.5461  Brier 0.1574  test PR-AUC 0.3757
+[10:14:42] CB: random_forest 2:1 weights            val PR-AUC 0.5458  Brier 0.1054  test PR-AUC 0.3762
+[10:14:48]     fold1: val PR-AUC 0.4922 (6s)  random_forest, late=calendar, cw=none, sampling=under
+[10:14:56]     fold2: val PR-AUC 0.5325 (8s)  random_forest, late=calendar, cw=none, sampling=under
+[10:15:06]     fold3: val PR-AUC 0.6156 (10s)  random_forest, late=calendar, cw=none, sampling=under
+[10:15:18]     fold4: val PR-AUC 0.5895 (13s)  random_forest, late=calendar, cw=none, sampling=under
+[10:15:34]     fold5: val PR-AUC 0.4354 (16s)  random_forest, late=calendar, cw=none, sampling=under
+[10:15:51] CB: random_forest random undersampling   val PR-AUC 0.5330  Brier 0.1779  test PR-AUC 0.3659
+[10:16:41]     fold1: val PR-AUC 0.4898 (50s)  random_forest, late=calendar, cw=none, sampling=over
+[10:17:50]     fold2: val PR-AUC 0.5372 (69s)  random_forest, late=calendar, cw=none, sampling=over
+[10:19:12]     fold3: val PR-AUC 0.6325 (82s)  random_forest, late=calendar, cw=none, sampling=over
+[10:20:49]     fold4: val PR-AUC 0.5993 (97s)  random_forest, late=calendar, cw=none, sampling=over
+[10:23:07]     fold5: val PR-AUC 0.4485 (138s)  random_forest, late=calendar, cw=none, sampling=over
+[10:25:29] CB: random_forest random oversampling    val PR-AUC 0.5415  Brier 0.1589  test PR-AUC 0.3712
+[10:26:37]     fold1: val PR-AUC 0.4774 (68s)  random_forest, late=calendar, cw=none, sampling=smote
+[10:27:50]     fold2: val PR-AUC 0.5241 (73s)  random_forest, late=calendar, cw=none, sampling=smote
+[10:29:33]     fold3: val PR-AUC 0.6351 (103s)  random_forest, late=calendar, cw=none, sampling=smote
+[10:31:20]     fold4: val PR-AUC 0.5942 (107s)  random_forest, late=calendar, cw=none, sampling=smote
+[10:33:19]     fold5: val PR-AUC 0.4397 (120s)  random_forest, late=calendar, cw=none, sampling=smote
+[10:35:43] CB: random_forest SMOTE                  val PR-AUC 0.5341  Brier 0.1061  test PR-AUC 0.3594
+[10:35:48]     fold1: val PR-AUC 0.4946 (6s)  hist_gb, late=calendar, cw=none
+[10:35:53]     fold2: val PR-AUC 0.5358 (4s)  hist_gb, late=calendar, cw=none
+[10:35:57]     fold3: val PR-AUC 0.6483 (4s)  hist_gb, late=calendar, cw=none
+[10:36:02]     fold4: val PR-AUC 0.6035 (5s)  hist_gb, late=calendar, cw=none
+[10:36:08]     fold5: val PR-AUC 0.4447 (6s)  hist_gb, late=calendar, cw=none
+[10:36:16] CB: hist_gb       none                   val PR-AUC 0.5454  Brier 0.1008  test PR-AUC 0.3712
+[10:36:27] CB: hist_gb       balanced weights       val PR-AUC 0.5458  Brier 0.1717  test PR-AUC 0.3717
+[10:36:35]     fold1: val PR-AUC 0.4997 (8s)  hist_gb, late=calendar, cw=2:1
+[10:36:45]     fold2: val PR-AUC 0.5324 (10s)  hist_gb, late=calendar, cw=2:1
+[10:36:55]     fold3: val PR-AUC 0.6442 (10s)  hist_gb, late=calendar, cw=2:1
+[10:37:05]     fold4: val PR-AUC 0.6006 (10s)  hist_gb, late=calendar, cw=2:1
+[10:37:17]     fold5: val PR-AUC 0.4431 (12s)  hist_gb, late=calendar, cw=2:1
+[10:37:28] CB: hist_gb       2:1 weights            val PR-AUC 0.5440  Brier 0.1058  test PR-AUC 0.3733
+[10:37:30]     fold1: val PR-AUC 0.4956 (2s)  hist_gb, late=calendar, cw=none, sampling=under
+[10:37:32]     fold2: val PR-AUC 0.5344 (2s)  hist_gb, late=calendar, cw=none, sampling=under
+[10:37:35]     fold3: val PR-AUC 0.6355 (3s)  hist_gb, late=calendar, cw=none, sampling=under
+[10:37:38]     fold4: val PR-AUC 0.5883 (3s)  hist_gb, late=calendar, cw=none, sampling=under
+[10:37:41]     fold5: val PR-AUC 0.4340 (3s)  hist_gb, late=calendar, cw=none, sampling=under
+[10:37:45] CB: hist_gb       random undersampling   val PR-AUC 0.5376  Brier 0.1799  test PR-AUC 0.3573
+[10:37:54]     fold1: val PR-AUC 0.4916 (9s)  hist_gb, late=calendar, cw=none, sampling=over
+[10:38:05]     fold2: val PR-AUC 0.5330 (11s)  hist_gb, late=calendar, cw=none, sampling=over
+[10:38:17]     fold3: val PR-AUC 0.6468 (11s)  hist_gb, late=calendar, cw=none, sampling=over
+[10:38:30]     fold4: val PR-AUC 0.5997 (13s)  hist_gb, late=calendar, cw=none, sampling=over
+[10:38:42]     fold5: val PR-AUC 0.4435 (12s)  hist_gb, late=calendar, cw=none, sampling=over
+[10:38:58] CB: hist_gb       random oversampling    val PR-AUC 0.5429  Brier 0.1601  test PR-AUC 0.3692
+[10:39:15]     fold1: val PR-AUC 0.4770 (16s)  hist_gb, late=calendar, cw=none, sampling=smote
+[10:39:32]     fold2: val PR-AUC 0.5239 (17s)  hist_gb, late=calendar, cw=none, sampling=smote
+[10:39:58]     fold3: val PR-AUC 0.6471 (26s)  hist_gb, late=calendar, cw=none, sampling=smote
+[10:40:21]     fold4: val PR-AUC 0.5955 (23s)  hist_gb, late=calendar, cw=none, sampling=smote
+[10:40:49]     fold5: val PR-AUC 0.4438 (27s)  hist_gb, late=calendar, cw=none, sampling=smote
+[10:41:16] CB: hist_gb       SMOTE                  val PR-AUC 0.5374  Brier 0.1016  test PR-AUC 0.3610
+[10:41:20] CB: logistic      none                   val PR-AUC 0.5352  Brier 0.1014  test PR-AUC 0.3689
+[10:41:23] CB: logistic      balanced weights       val PR-AUC 0.5299  Brier 0.1785  test PR-AUC 0.3668
+[10:41:27] CB: logistic      2:1 weights            val PR-AUC 0.5332  Brier 0.1062  test PR-AUC 0.3687
+[10:41:28]     fold1: val PR-AUC 0.4990 (1s)  logistic, late=calendar, cw=none, sampling=under
+[10:41:30]     fold2: val PR-AUC 0.5294 (2s)  logistic, late=calendar, cw=none, sampling=under
+[10:41:32]     fold3: val PR-AUC 0.6090 (2s)  logistic, late=calendar, cw=none, sampling=under
+[10:41:34]     fold4: val PR-AUC 0.5705 (2s)  logistic, late=calendar, cw=none, sampling=under
+[10:41:37]     fold5: val PR-AUC 0.4281 (2s)  logistic, late=calendar, cw=none, sampling=under
+[10:41:42] CB: logistic      random undersampling   val PR-AUC 0.5272  Brier 0.1808  test PR-AUC 0.3631
+[10:41:44]     fold1: val PR-AUC 0.4996 (3s)  logistic, late=calendar, cw=none, sampling=over
+[10:41:48]     fold2: val PR-AUC 0.5328 (3s)  logistic, late=calendar, cw=none, sampling=over
+[10:41:51]     fold3: val PR-AUC 0.6187 (3s)  logistic, late=calendar, cw=none, sampling=over
+[10:41:55]     fold4: val PR-AUC 0.5781 (4s)  logistic, late=calendar, cw=none, sampling=over
+[10:42:00]     fold5: val PR-AUC 0.4249 (4s)  logistic, late=calendar, cw=none, sampling=over
+[10:42:05] CB: logistic      random oversampling    val PR-AUC 0.5308  Brier 0.1769  test PR-AUC 0.3675
+[10:42:08]     fold1: val PR-AUC 0.4964 (3s)  logistic, late=calendar, cw=none, sampling=smote
+[10:42:11]     fold2: val PR-AUC 0.5298 (4s)  logistic, late=calendar, cw=none, sampling=smote
+[10:42:15]     fold3: val PR-AUC 0.6145 (4s)  logistic, late=calendar, cw=none, sampling=smote
+[10:42:19]     fold4: val PR-AUC 0.5766 (4s)  logistic, late=calendar, cw=none, sampling=smote
+[10:42:23]     fold5: val PR-AUC 0.4199 (4s)  logistic, late=calendar, cw=none, sampling=smote
+[10:42:28] CB: logistic      SMOTE                  val PR-AUC 0.5274  Brier 0.1770  test PR-AUC 0.3670
+[10:42:30]     fold1: val PR-AUC 0.4681 (2s)  decision_tree, late=calendar, cw=none
+[10:42:33]     fold2: val PR-AUC 0.5101 (3s)  decision_tree, late=calendar, cw=none
+[10:42:36]     fold3: val PR-AUC 0.6106 (3s)  decision_tree, late=calendar, cw=none
+[10:42:39]     fold4: val PR-AUC 0.5709 (3s)  decision_tree, late=calendar, cw=none
+[10:42:43]     fold5: val PR-AUC 0.4100 (4s)  decision_tree, late=calendar, cw=none
+[10:42:48] CB: decision_tree none                   val PR-AUC 0.5139  Brier 0.1031  test PR-AUC 0.3459
+[10:42:52] CB: decision_tree balanced weights       val PR-AUC 0.5190  Brier 0.1781  test PR-AUC 0.3466
+[10:42:54]     fold1: val PR-AUC 0.4684 (2s)  decision_tree, late=calendar, cw=2:1
+[10:42:57]     fold2: val PR-AUC 0.5156 (2s)  decision_tree, late=calendar, cw=2:1
+[10:42:59]     fold3: val PR-AUC 0.6067 (3s)  decision_tree, late=calendar, cw=2:1
+[10:43:03]     fold4: val PR-AUC 0.5803 (3s)  decision_tree, late=calendar, cw=2:1
+[10:43:07]     fold5: val PR-AUC 0.4180 (4s)  decision_tree, late=calendar, cw=2:1
+[10:43:12] CB: decision_tree 2:1 weights            val PR-AUC 0.5178  Brier 0.1082  test PR-AUC 0.3448
+[10:43:13]     fold1: val PR-AUC 0.4669 (2s)  decision_tree, late=calendar, cw=none, sampling=under
+[10:43:15]     fold2: val PR-AUC 0.4989 (2s)  decision_tree, late=calendar, cw=none, sampling=under
+[10:43:17]     fold3: val PR-AUC 0.5762 (2s)  decision_tree, late=calendar, cw=none, sampling=under
+[10:43:21]     fold4: val PR-AUC 0.5449 (3s)  decision_tree, late=calendar, cw=none, sampling=under
+[10:43:23]     fold5: val PR-AUC 0.3990 (3s)  decision_tree, late=calendar, cw=none, sampling=under
+[10:43:26] CB: decision_tree random undersampling   val PR-AUC 0.4972  Brier 0.1812  test PR-AUC 0.3248
+[10:43:29]     fold1: val PR-AUC 0.4546 (3s)  decision_tree, late=calendar, cw=none, sampling=over
+[10:43:33]     fold2: val PR-AUC 0.5013 (4s)  decision_tree, late=calendar, cw=none, sampling=over
+[10:43:37]     fold3: val PR-AUC 0.5979 (4s)  decision_tree, late=calendar, cw=none, sampling=over
+[10:43:42]     fold4: val PR-AUC 0.5583 (5s)  decision_tree, late=calendar, cw=none, sampling=over
+[10:43:48]     fold5: val PR-AUC 0.4106 (7s)  decision_tree, late=calendar, cw=none, sampling=over
+[10:43:56] CB: decision_tree random oversampling    val PR-AUC 0.5045  Brier 0.1778  test PR-AUC 0.3354
+[10:44:01]     fold1: val PR-AUC 0.4411 (5s)  decision_tree, late=calendar, cw=none, sampling=smote
+[10:44:04]     fold2: val PR-AUC 0.4851 (4s)  decision_tree, late=calendar, cw=none, sampling=smote
+[10:44:09]     fold3: val PR-AUC 0.6041 (4s)  decision_tree, late=calendar, cw=none, sampling=smote
+[10:44:14]     fold4: val PR-AUC 0.5578 (5s)  decision_tree, late=calendar, cw=none, sampling=smote
+[10:44:20]     fold5: val PR-AUC 0.4112 (6s)  decision_tree, late=calendar, cw=none, sampling=smote
+[10:44:27] CB: decision_tree SMOTE                  val PR-AUC 0.4999  Brier 0.1098  test PR-AUC 0.3307
+[10:46:44]     fold1: val PR-AUC 0.4879 (137s)  catboost, late=calendar, cw=none
+[10:49:06]     fold2: val PR-AUC 0.5358 (142s)  catboost, late=calendar, cw=none
+[10:51:35]     fold3: val PR-AUC 0.6325 (149s)  catboost, late=calendar, cw=none
+[10:54:08]     fold4: val PR-AUC 0.5898 (153s)  catboost, late=calendar, cw=none
+[10:56:47]     fold5: val PR-AUC 0.4397 (159s)  catboost, late=calendar, cw=none
+[10:59:24] CB: catboost      none                   val PR-AUC 0.5371  Brier 0.1012  test PR-AUC 0.3728
+[11:02:08] CB: catboost      balanced weights       val PR-AUC 0.5331  Brier 0.1713  test PR-AUC 0.3738
+--- finished in 3164s

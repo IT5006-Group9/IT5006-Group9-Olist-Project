@@ -1,0 +1,62 @@
+[13:49:47]     fold1_inner2017-10: val PR-AUC 0.4031 (1s)  logistic, late=calendar, cw=none
+[13:50:05]     fold1_inner2017-10: val PR-AUC 0.4070 (18s)  random_forest, late=calendar, cw=none
+[13:50:12]     fold1_inner2017-10: val PR-AUC 0.3990 (7s)  hist_gb, late=calendar, cw=balanced
+[13:50:13]     fold1_inner2017-11: val PR-AUC 0.4229 (1s)  logistic, late=calendar, cw=none
+[13:50:36]     fold1_inner2017-11: val PR-AUC 0.4190 (23s)  random_forest, late=calendar, cw=none
+[13:50:44]     fold1_inner2017-11: val PR-AUC 0.4144 (8s)  hist_gb, late=calendar, cw=balanced
+[13:50:46]     fold1_inner2017-12: val PR-AUC 0.5055 (2s)  logistic, late=calendar, cw=none
+[13:51:16]     fold1_inner2017-12: val PR-AUC 0.4992 (30s)  random_forest, late=calendar, cw=none
+[13:51:23]     fold1_inner2017-12: val PR-AUC 0.4899 (7s)  hist_gb, late=calendar, cw=balanced
+[13:51:23] ST: fold1 weights logistic 0.50, random_forest 0.49, hist_gb 0.00 -> val PR-AUC 0.4993
+[13:51:24]     fold2_inner2017-11: val PR-AUC 0.4220 (1s)  logistic, late=calendar, cw=none
+[13:51:47]     fold2_inner2017-11: val PR-AUC 0.4179 (23s)  random_forest, late=calendar, cw=none
+[13:51:54]     fold2_inner2017-11: val PR-AUC 0.4133 (7s)  hist_gb, late=calendar, cw=balanced
+[13:51:56]     fold2_inner2017-12: val PR-AUC 0.5765 (2s)  logistic, late=calendar, cw=none
+[13:52:24]     fold2_inner2017-12: val PR-AUC 0.5698 (29s)  random_forest, late=calendar, cw=none
+[13:52:32]     fold2_inner2017-12: val PR-AUC 0.5762 (8s)  hist_gb, late=calendar, cw=balanced
+[13:52:34]     fold2_inner2018-01: val PR-AUC 0.5564 (2s)  logistic, late=calendar, cw=none
+[13:53:08]     fold2_inner2018-01: val PR-AUC 0.5878 (35s)  random_forest, late=calendar, cw=none
+[13:53:17]     fold2_inner2018-01: val PR-AUC 0.5801 (9s)  hist_gb, late=calendar, cw=balanced
+[13:53:17] ST: fold2 weights logistic 0.49, random_forest 0.48, hist_gb 0.03 -> val PR-AUC 0.5460
+[13:53:18]     fold3_inner2017-12: val PR-AUC 0.5762 (1s)  logistic, late=calendar, cw=none
+[13:53:52]     fold3_inner2017-12: val PR-AUC 0.5696 (34s)  random_forest, late=calendar, cw=none
+[13:53:59]     fold3_inner2017-12: val PR-AUC 0.5754 (7s)  hist_gb, late=calendar, cw=balanced
+[13:54:01]     fold3_inner2018-01: val PR-AUC 0.5036 (2s)  logistic, late=calendar, cw=none
+[13:54:38]     fold3_inner2018-01: val PR-AUC 0.4949 (37s)  random_forest, late=calendar, cw=none
+[13:54:48]     fold3_inner2018-01: val PR-AUC 0.4999 (10s)  hist_gb, late=calendar, cw=balanced
+[13:54:50]     fold3_inner2018-02: val PR-AUC 0.6690 (2s)  logistic, late=calendar, cw=none
+[13:55:33]     fold3_inner2018-02: val PR-AUC 0.6491 (42s)  random_forest, late=calendar, cw=none
+[13:55:43]     fold3_inner2018-02: val PR-AUC 0.6577 (10s)  hist_gb, late=calendar, cw=balanced
+[13:55:43] ST: fold3 weights logistic 0.49, random_forest 0.48, hist_gb 0.03 -> val PR-AUC 0.6390
+[13:55:45]     fold4_inner2018-01: val PR-AUC 0.5015 (2s)  logistic, late=calendar, cw=none
+[13:56:21]     fold4_inner2018-01: val PR-AUC 0.4930 (37s)  random_forest, late=calendar, cw=none
+[13:56:29]     fold4_inner2018-01: val PR-AUC 0.4980 (8s)  hist_gb, late=calendar, cw=balanced
+[13:56:31]     fold4_inner2018-02: val PR-AUC 0.5376 (2s)  logistic, late=calendar, cw=none
+[13:57:16]     fold4_inner2018-02: val PR-AUC 0.5427 (45s)  random_forest, late=calendar, cw=none
+[13:57:25]     fold4_inner2018-02: val PR-AUC 0.5383 (9s)  hist_gb, late=calendar, cw=balanced
+[13:57:27]     fold4_inner2018-03: val PR-AUC 0.5830 (2s)  logistic, late=calendar, cw=none
+[13:58:20]     fold4_inner2018-03: val PR-AUC 0.5971 (54s)  random_forest, late=calendar, cw=none
+[13:58:30]     fold4_inner2018-03: val PR-AUC 0.6140 (10s)  hist_gb, late=calendar, cw=balanced
+[13:58:30] ST: fold4 weights logistic 0.49, random_forest 0.49, hist_gb 0.03 -> val PR-AUC 0.6055
+[13:58:32]     fold5_inner2018-02: val PR-AUC 0.5371 (2s)  logistic, late=calendar, cw=none
+[13:59:14]     fold5_inner2018-02: val PR-AUC 0.5419 (42s)  random_forest, late=calendar, cw=none
+[13:59:23]     fold5_inner2018-02: val PR-AUC 0.5376 (9s)  hist_gb, late=calendar, cw=balanced
+[13:59:25]     fold5_inner2018-03: val PR-AUC 0.6245 (2s)  logistic, late=calendar, cw=none
+[14:00:21]     fold5_inner2018-03: val PR-AUC 0.6530 (55s)  random_forest, late=calendar, cw=none
+[14:00:30]     fold5_inner2018-03: val PR-AUC 0.6514 (10s)  hist_gb, late=calendar, cw=balanced
+[14:00:33]     fold5_inner2018-04: val PR-AUC 0.5991 (3s)  logistic, late=calendar, cw=none
+[14:01:38]     fold5_inner2018-04: val PR-AUC 0.6515 (66s)  random_forest, late=calendar, cw=none
+[14:01:48]     fold5_inner2018-04: val PR-AUC 0.6424 (10s)  hist_gb, late=calendar, cw=balanced
+[14:01:49] ST: fold5 weights logistic 0.19, random_forest 0.79, hist_gb 0.02 -> val PR-AUC 0.4472
+[14:01:49] ST: stack mean val PR-AUC 0.5474 vs random_forest 0.5468 (Δ +0.0007, 3/5 months) -> retained=False
+[14:01:51]     final_inner2018-03: val PR-AUC 0.6235 (2s)  logistic, late=calendar, cw=none
+[14:02:54]     final_inner2018-03: val PR-AUC 0.6520 (63s)  random_forest, late=calendar, cw=none
+[14:03:06]     final_inner2018-03: val PR-AUC 0.6505 (12s)  hist_gb, late=calendar, cw=balanced
+[14:03:08]     final_inner2018-04: val PR-AUC 0.5856 (3s)  logistic, late=calendar, cw=none
+[14:04:17]     final_inner2018-04: val PR-AUC 0.6117 (69s)  random_forest, late=calendar, cw=none
+[14:04:27]     final_inner2018-04: val PR-AUC 0.6025 (10s)  hist_gb, late=calendar, cw=balanced
+[14:04:30]     final_inner2018-05: val PR-AUC 0.4295 (3s)  logistic, late=calendar, cw=none
+[14:05:42]     final_inner2018-05: val PR-AUC 0.4240 (72s)  random_forest, late=calendar, cw=none
+[14:05:53]     final_inner2018-05: val PR-AUC 0.4414 (11s)  hist_gb, late=calendar, cw=balanced
+[14:05:53] ST: stack test PR-AUC 0.3784 (best single 0.3750), secondary
+--- finished in 975s

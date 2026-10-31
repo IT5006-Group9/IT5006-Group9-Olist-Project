@@ -16,22 +16,16 @@ chosen by the chronological procedure.
 """
 from __future__ import annotations
 
-import os
 
 import pandas as pd
 
 from common import paths
 
-# QUICK=1 is a smoke test (2 candidates per family, small forests); it writes to separate
-# *_quick folders so that it can never overwrite the reported results.
-QUICK = os.environ.get("CLF_QUICK") == "1"
-_SUFFIX = "_quick" if QUICK else ""
-
 # --------------------------------------------------------------------------- locations
 PROCESSED_DIR = paths.DATA_DIR / "classification"
 FEATURE_TABLE = PROCESSED_DIR / "orders_features.parquet"
-MODELS_DIR = paths.MODELS_DIR / ("classification" + _SUFFIX)
-OUT_DIR = paths.OUTPUTS_DIR / ("classification" + _SUFFIX)
+MODELS_DIR = paths.MODELS_DIR / "classification"
+OUT_DIR = paths.OUTPUTS_DIR / "classification"
 TABLES_DIR = OUT_DIR / "tables"
 FIGURES_DIR = OUT_DIR / "figures"
 PREDICTIONS_DIR = OUT_DIR / "predictions"          # per-order scores (git-ignored)
@@ -136,9 +130,7 @@ SKEWED = ["total_price", "total_freight", "total_weight_g", "max_weight_g", "tot
 
 # --------------------------------------------------------------------------- search budget
 # Candidates sampled per family (ParameterSampler, seed 5006); every candidate is scored on
-# all five folds. QUICK mode is a smoke test and its numbers are not for the report.
+# all five folds.
 # Forest and CatBoost budgets are limited by run time (each candidate = 5 fits of 35k-62k rows;
 # about 8-15 minutes per candidate on 8 cores). Phase 2 also scored 6 random-forest candidates.
 N_CANDIDATES = {"logistic_tuned": None, "decision_tree": 20, "random_forest": 6, "catboost": 6}
-N_CANDIDATES_QUICK = {"logistic_tuned": 2, "decision_tree": 2, "random_forest": 2, "catboost": 2}
-QUICK_OVERRIDES = {"random_forest": {"model__n_estimators": 60}, "catboost": {"model__iterations": 150}}

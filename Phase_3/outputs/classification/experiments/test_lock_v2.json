@@ -1,0 +1,13 @@
+{
+  "note": "Secondary evaluation of the enhancement selection on a window already seen by v1 (one evaluation).",
+  "test_ids_sha256": "f87740ebb1f7a2f98fd0eeabd24c195124b52558c9733ab7368dabcffc8caffa",
+  "evaluations": [
+    {
+      "selection_sha256": "426eb96dbd9d36c9dafa912f04469cb373180a92c92483fd6bd24db346390886",
+      "evaluated_at": "2026-10-30T06:00:08.044761+00:00",
+      "v2_family": "random_forest",
+      "pr_auc": 0.37495152577685,
+      "recall_at_capacity": 0.5335301560522986
+    }
+  ]
+}

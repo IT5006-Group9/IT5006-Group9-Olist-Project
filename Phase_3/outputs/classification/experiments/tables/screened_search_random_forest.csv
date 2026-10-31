@@ -1,0 +1,22 @@
+candidate,params,key,screen_pr_auc,seconds,full_pr_auc,family
+8,"{""max_depth"": 30, ""max_features"": 0.1652047713392534, ""max_samples"": 0.5654059269782333, ""min_samples_leaf"": 78, ""n_estimators"": 274}",b42d31227d6fb048,0.5691820734070424,42.5,0.5479463129066255,random_forest
+3,"{""max_depth"": 22, ""max_features"": 0.5486570693415702, ""max_samples"": 0.9188723600689195, ""min_samples_leaf"": 147, ""n_estimators"": 241}",8e69542f7b359437,0.5686854520312788,133.39999999999998,0.5479863703886833,random_forest
+20,"{""max_depth"": 27, ""max_features"": 0.2406080559441889, ""max_samples"": 0.7693516831163107, ""min_samples_leaf"": 130, ""n_estimators"": 466}",e3ec38e9bf5acd47,0.5686510956288703,96.6,0.5476129465668984,random_forest
+2,"{""max_depth"": 20, ""max_features"": 0.3560730631510337, ""max_samples"": 0.9652150440544696, ""min_samples_leaf"": 89, ""n_estimators"": 591}",05311c20506d02f2,0.5684657208966616,215.60000000000002,,random_forest
+7,"{""max_depth"": 8, ""max_features"": 0.2918368563085775, ""max_samples"": 0.8111384799117332, ""min_samples_leaf"": 38, ""n_estimators"": 259}",bfd50f773d44a1d4,0.5684297777433698,56.8,,random_forest
+12,"{""max_depth"": 24, ""max_features"": 0.6466544763013522, ""max_samples"": 0.9504920025061956, ""min_samples_leaf"": 140, ""n_estimators"": 348}",1fee09acf17030dd,0.5681905929107286,205.8,,random_forest
+14,"{""max_depth"": 10, ""max_features"": 0.6096024734753729, ""max_samples"": 0.7404517611781919, ""min_samples_leaf"": 58, ""n_estimators"": 567}",718377c3858cd86c,0.5679403805548987,253.2,,random_forest
+6,"{""max_depth"": 19, ""max_features"": 0.2049815210642887, ""max_samples"": 0.9103992428393923, ""min_samples_leaf"": 141, ""n_estimators"": 242}",7f9526a461529489,0.5678174637965505,59.2,,random_forest
+10,"{""max_depth"": 16, ""max_features"": 0.42009033734143686, ""max_samples"": 0.6431001898779494, ""min_samples_leaf"": 143, ""n_estimators"": 291}",f7cb38a38112691b,0.5675990810492854,88.8,,random_forest
+1,"{""max_depth"": 26, ""max_features"": 0.5698754232059154, ""max_samples"": 0.9464860207473451, ""min_samples_leaf"": 86, ""n_estimators"": 338}",687c6b7bf600531c,0.5675678479209139,192.8,,random_forest
+0,"{""max_depth"": 14, ""max_features"": 0.6290712064135155, ""min_samples_leaf"": 80, ""n_estimators"": 302}",d434e4ae308930e1,0.5674941121088634,190.5,,random_forest
+4,"{""max_depth"": 15, ""max_features"": 0.5488137569712698, ""max_samples"": 0.9317993466304716, ""min_samples_leaf"": 71, ""n_estimators"": 429}",9fcdfee354bfe0b9,0.5674501632343769,230.9,,random_forest
+9,"{""max_depth"": 9, ""max_features"": 0.5301966102008716, ""max_samples"": 0.7096201327451173, ""min_samples_leaf"": 32, ""n_estimators"": 594}",3a910a790e3a77f2,0.5673308428044043,198.2,,random_forest
+5,"{""max_depth"": 24, ""max_features"": 0.15838767007713692, ""max_samples"": 0.5254729919561658, ""min_samples_leaf"": 86, ""n_estimators"": 221}",55bb88236267b3e0,0.567026400161725,29.299999999999997,,random_forest
+19,"{""max_depth"": 13, ""max_features"": 0.6037323712288915, ""max_samples"": 0.8317423651493945, ""min_samples_leaf"": 42, ""n_estimators"": 226}",8abab5318d7ba66d,0.5666966659022538,122.6,,random_forest
+16,"{""max_depth"": 24, ""max_features"": 0.19731886316655697, ""max_samples"": 0.7786228518973279, ""min_samples_leaf"": 19, ""n_estimators"": 478}",7a2be8e2cb7ac526,0.5658789130543522,110.6,,random_forest
+15,"{""max_depth"": 9, ""max_features"": 0.5629260659430131, ""max_samples"": 0.9648314258630679, ""min_samples_leaf"": 22, ""n_estimators"": 378}",1204daa5dcbca212,0.5653420723471548,164.3,,random_forest
+18,"{""max_depth"": 23, ""max_features"": 0.6031208621044761, ""max_samples"": 0.9741870433041784, ""min_samples_leaf"": 41, ""n_estimators"": 398}",2cc17f9bd9eba2e7,0.5651547333294727,277.2,,random_forest
+13,"{""max_depth"": 17, ""max_features"": 0.34142933995474944, ""max_samples"": 0.6892433951059399, ""min_samples_leaf"": 20, ""n_estimators"": 541}",af4d430cdc6c8294,0.5650341241964733,162.6,,random_forest
+11,"{""max_depth"": 11, ""max_features"": 0.4792422914062824, ""max_samples"": 0.5188225685904884, ""min_samples_leaf"": 7, ""n_estimators"": 431}",5cc3b70393db23ad,0.5611806137724163,127.3,,random_forest
+17,"{""max_depth"": 24, ""max_features"": 0.6493592170814488, ""max_samples"": 0.8849066086268168, ""min_samples_leaf"": 8, ""n_estimators"": 467}",a6e812367a2efec9,0.5530933357670325,380.4,,random_forest

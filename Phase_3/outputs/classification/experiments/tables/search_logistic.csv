@@ -1,0 +1,8 @@
+candidate,params,key,full_pr_auc,family
+0,"{""C"": 0.001}",7cda537156270ff9,0.5331406521274049,logistic
+1,"{""C"": 0.01}",ac0f4e32ae4507f3,0.5352116240241338,logistic
+2,"{""C"": 0.1}",fba7d4e124bc24bc,0.5349558846984996,logistic
+3,"{""C"": 1}",271fcabb5b37eaf7,0.5333125598117665,logistic
+4,"{""C"": 10}",9bc1970f01e6d1d1,0.5328503211384212,logistic
+5,"{""C"": 100}",e8fd5a6a4f42950d,0.53282745442504,logistic
+6,"{""C"": 1000}",6faa9eadca769f6f,0.5328880816185527,logistic
