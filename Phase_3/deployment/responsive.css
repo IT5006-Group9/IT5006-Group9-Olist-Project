@@ -1,0 +1,200 @@
+/* Load after app.py's base CSS. Selectors follow Streamlit 1.50's DOM.
+   Opt-in layout keys: olist_split_<unique_name>, olist_kpis_<unique_name>.
+   Keep chart internals, sidebar layout, data and evidence unchanged. */
+@media (max-width: 800px) {
+  /* The base mobile rule removes space beneath Streamlit's fixed header. */
+  [data-testid="stMainBlockContainer"] {
+    padding-top: calc(4.25rem + env(safe-area-inset-top, 0px));
+    padding-right: 1.25rem;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+    padding-left: 1.25rem;
+    min-width: 0;
+  }
+
+  [data-testid="stMain"] h1 {
+    /* The existing heading size is also !important. */
+    font-size: clamp(1.65rem, 5vw, 1.95rem) !important;
+    line-height: 1.15;
+    overflow-wrap: break-word;
+  }
+
+  [data-testid="stMain"] .eyebrow {
+    font-size: .63rem;
+    line-height: 1.6;
+    letter-spacing: .1em;
+  }
+
+  [data-testid="stMain"] .lede {
+    font-size: .93rem;
+    margin-bottom: 1.1rem;
+  }
+
+  [data-testid="stMain"] .empty {
+    min-height: 220px;
+    padding: 1.5rem 1.25rem;
+  }
+
+  /* Only marked layout rows stack; no global column-width override. */
+  [data-testid="stMain"] [class*="st-key-olist_split_"]
+  [data-testid="stHorizontalBlock"] {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  [data-testid="stMain"] [class*="st-key-olist_split_"]
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Unique KPI container keys preserve a compact 2 by 2 summary. */
+  [data-testid="stMain"] [class*="st-key-olist_kpis_"]
+  [data-testid="stHorizontalBlock"] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem .75rem;
+  }
+
+  [data-testid="stMain"] [class*="st-key-olist_kpis_"]
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+    width: 100%;
+    min-width: 0;
+  }
+
+  [data-testid="stMain"] [class*="st-key-olist_kpis_"]
+  [data-testid="stMetricValue"] {
+    font-size: 1.65rem;
+    line-height: 1.25;
+    letter-spacing: -.035em;
+  }
+
+  [data-testid="stMain"] [data-testid="stMetricLabel"] p,
+  [data-testid="stMain"] [data-testid="stMetricValue"] > div {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* Keep all tab names reachable instead of wrapping or truncating them. */
+  [data-testid="stMain"] [data-testid="stTabs"] {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  [data-testid="stMain"] [data-baseweb="tab-list"] {
+    flex-wrap: nowrap;
+    gap: .9rem;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: .25rem;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [data-testid="stMain"] button[data-baseweb="tab"] {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+    font-size: .82rem;
+    white-space: nowrap;
+  }
+
+  /* Streamlit's BaseWeb select has a fixed-height ControlContainer.
+     Allow its selected SingleValue to wrap while keeping the input usable. */
+  [data-testid="stMain"] [data-testid="stSelectbox"]
+  [data-baseweb="select"] > div:first-child {
+    height: auto;
+    min-height: 2.75rem;
+  }
+
+  [data-testid="stMain"] [data-testid="stSelectbox"]
+  [data-baseweb="select"] > div:first-child > div:first-child {
+    min-width: 0;
+  }
+
+  [data-testid="stMain"] [data-testid="stSelectbox"]
+  [data-baseweb="select"] > div:first-child > div:first-child > div:first-child {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+  }
+
+  [data-testid="stMain"] .stButton > button,
+  [data-testid="stMain"] .stDownloadButton > button {
+    height: auto;
+    min-height: 2.75rem;
+    max-width: 100%;
+    padding: .55rem .85rem;
+    white-space: normal;
+  }
+
+  [data-testid="stMain"] .stButton > button p,
+  [data-testid="stMain"] .stDownloadButton > button p,
+  [data-testid="stMain"] [data-testid="stMarkdownContainer"] a {
+    overflow-wrap: anywhere;
+  }
+
+  /* Keep wide grids scrollable locally. Glide retains its own scroll area;
+     the outer overflow is a fallback for a resized or fixed-width grid. */
+  [data-testid="stMain"] [data-testid="stDataFrame"] {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  [data-testid="stMainBlockContainer"] {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  [data-testid="stMain"] [class*="st-key-olist_kpis_"]
+  [data-testid="stMetricValue"] {
+    font-size: 1.5rem;
+  }
+
+  [data-testid="stMain"] [data-testid="stMetricLabel"] {
+    font-size: .8rem;
+  }
+
+  [data-testid="stMain"] .empty {
+    padding: 1.25rem 1rem;
+  }
+}
+
+/* The demo control panel can be narrow on desktop too. Keep its navigation
+   compact at every viewport width, after the general mobile button rules. */
+[data-testid="stMain"] .st-key-olist_demo_navigation
+[data-testid="stHorizontalBlock"] {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .5rem;
+}
+
+[data-testid="stMain"] .st-key-olist_demo_navigation
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+  width: 100%;
+  min-width: 0;
+}
+
+[data-testid="stMain"] .st-key-olist_demo_navigation .stButton,
+[data-testid="stMain"] .st-key-olist_demo_navigation .stButton > button {
+  width: 100%;
+}
+
+[data-testid="stMain"] .st-key-olist_demo_navigation .stButton > button {
+  min-height: 2.5rem;
+  padding: .45rem .35rem;
+  font-size: .78rem;
+  white-space: nowrap;
+}
+
+[data-testid="stMain"] .st-key-olist_demo_navigation .stButton > button p {
+  font-size: inherit;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}

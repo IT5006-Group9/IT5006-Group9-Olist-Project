@@ -132,5 +132,73 @@
     "model_and_demo_assets_unchanged": true,
     "classification_timing_corrected": false,
     "note": "The initial hot update retained the previous evidence schema. A versioned cache key, optional-key compatibility handling and a Cloud reboot resolved the display issue. Classification timing findings are disclosed but no classifier has been refitted."
+  },
+  "dashboard_usability_followup": {
+    "passed": true,
+    "verified_at_utc": "2026-10-31T11:47:10.981426+00:00",
+    "application_code_commit_at_layout_browser_test": "022e3bd05639b4b456fabde87625c5b8fb1e86f1",
+    "application_code_commit_at_behavior_browser_test": "37504632dcf615b0c48acc368de1e6ccb7acfc8c",
+    "scope": "Dashboard interactions and responsive layout; existing model specifications, evidence and demonstration assets unchanged.",
+    "cloud_reboot_for_shared_filter_module": true,
+    "final_css_hot_update_verified": true,
+    "checks": {
+      "overview_to_explorer_shared_state": "SP; 2017-01 through 2018-08; 41,264 orders on both pages",
+      "explorer_to_overview_extra_route": "SP + Cross state; 10,014 orders; full filter summary visible",
+      "clear_extra_filters_keeps_months_and_states": "SP cohort restored to 41,264 orders",
+      "reset_all_filters": "Default cohort restored to 98,353 orders",
+      "real_prediction": "Order suffix 6c018a; forecast 18.7 days; promise 45.1 days",
+      "outcome_hidden_until_reveal": true,
+      "revealed_actual_days": 26.8,
+      "next_order_clears_forecast_outcome_and_download": true,
+      "previous_order_does_not_restore_old_result": true,
+      "random_changes_example_without_auto_prediction": true,
+      "mobile_360px": {
+        "main_scroll_width": 360,
+        "kpis": "2 columns by 2 rows",
+        "navigation": "3 equal columns; single-line labels",
+        "title_clear_of_header": true
+      },
+      "tablet_768px": {
+        "kpis": "2 columns by 2 rows",
+        "main_scroll_width": 512,
+        "sidebar_width": 256
+      },
+      "desktop_1280px": {
+        "kpis": "4 columns",
+        "prediction_navigation": "3 single-line buttons within controls panel"
+      },
+      "browser_viewport_restored_after_checks": true
+    },
+    "automated_dashboard_tests": {
+      "passed": 23,
+      "command": "python -m unittest discover -s Phase_3/tests -p 'test_dashboard*.py'",
+      "scope": "Shared filter logic, cross-page AppTest flows, real frozen inference, reveal/reset/navigation, missing-runtime and optional-evidence handling"
+    },
+    "unchanged_frozen_sources_outputs_notebooks_count": 171,
+    "deployment_asset_sha256": {
+      "example_inputs.parquet": "1b0eec1245db242bfa18d72e338e637653f35c20681780bcdcec18063e599fe3",
+      "example_outcomes.parquet": "6de90becfd7796e9b3648365232d9bc73037e97d310b03c7975dbc73c85791e7",
+      "manifest.json": "fe87eab5f06cba9cd668c41c3cede8d230490b588e727c079a766d3ecffef380",
+      "regression_model.joblib": "343ca8adde6791e33cd4b7757e352cb7e99b3f640d7d264ef9c264cbda61c001"
+    },
+    "screenshots": {
+      "mobile_overview.jpg": {
+        "path": "docs/dashboard/mobile_overview.jpg",
+        "sha256": "30623e35d4eda62ca0ca664f28a2e73d48674d45d0c1465145f838339140f0fb",
+        "width": 360,
+        "height": 800
+      },
+      "prediction_navigation.jpg": {
+        "path": "docs/dashboard/prediction_navigation.jpg",
+        "sha256": "8dd212aa06dc82494a80dc69bf96240d1fb2cf747fa4ee868ef9606bb60c100b",
+        "width": 1280,
+        "height": 900
+      }
+    },
+    "commit_identity": {
+      "name": "yexueying70-cell",
+      "email": "yexueying70@gmail.com",
+      "github_author_verified": true
+    }
   }
 }

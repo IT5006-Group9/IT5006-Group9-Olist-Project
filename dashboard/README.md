@@ -36,14 +36,28 @@ After changing the evidence adapter or table schema, reboot the Cloud app and ve
 
 | Page | Use |
 |---|---|
-| Overview | Filter by purchase period and customer state; switch the order/sales trend. |
-| Delivery prediction | Choose a historical order, calculate a real forecast, then optionally reveal the actual delivery and download the prediction. |
+| Overview | Filter by purchase period and customer states; switch the order/sales trend and continue into the explorer with the same selection. |
+| Delivery prediction | Browse historical examples with Previous, Next or Random; calculate a real forecast, then optionally reveal the actual delivery and download the prediction. |
 | Model evidence | View separate training, forward validation and test scores, classification operating rules and stacking results. |
-| Marketplace explorer | Original Orders, Delivery, Reviews, Categories and Geography tabs with their own shared filters. |
+| Marketplace explorer | Original Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview. |
 | Guide & methodology | Instructions, prediction-time definitions, evaluation limitations and sources. |
 
-Overview and explorer filters apply to their own EDA views. Model metrics use
-fixed assessment cohorts and do not change with EDA filters.
+Overview and Marketplace explorer share purchase dates, customer states,
+categories, payments, route and delivered-only filters. The current-filter summary
+shows all active conditions, including conditions set on the other page. **Reset
+all filters** restores the default January 2017–August 2018 window and clears
+the other conditions. Overview's **Clear extra filters** preserves dates and states.
+An empty intersection keeps the controls available so it can be adjusted or reset.
+
+Delivery demonstration filters are separate. Its navigation stays within the
+selected month and destination and never calculates a prediction automatically.
+Changing a selection or leaving the page clears the previous forecast, download
+and revealed outcome; each new calculation starts with the outcome hidden.
+Model metrics use fixed assessment cohorts and do not change with EDA filters.
+
+Below 800 px, the main panels stack, KPI cards use two columns, wide tables and
+tabs scroll within their own area, and the sidebar starts collapsed on narrow
+screens. Desktop layouts retain their existing columns.
 
 ## Model and evaluation
 
