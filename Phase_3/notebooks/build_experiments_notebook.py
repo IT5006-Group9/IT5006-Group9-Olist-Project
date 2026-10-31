@@ -45,21 +45,31 @@ cells = [
        "feature rule. The test row is a secondary evaluation scored after the decision was saved."),
     code("display(pd.Series(json.loads((EXP_DIR / 'stacking.json').read_text())))\n"
          "display(t('stacking_folds')); display(t('stacking_inner_audit')); fig('E12_stacking')"),
-    md("## 6. Hyperparameter tuning\n\nRandom forest and HGB: two-stage screened search (stage 1 on folds 3–5, stage 2 "
+    md("## 6. Strict cut-off rerun\n\nThe v1 selection rerun with explicit availability rules from the quality audit: "
+       "training labels answered before each cut-off (R1), validation labels answered before the 1 Jun selection date "
+       "(R2), and features from approval / carrier events after T set to missing (R3). Same features, families, "
+       "candidates and gap as v1. Written by `src/classification/run_strict_cutoff.py` to "
+       "`outputs/classification/strict_cutoff/`. The test rows are retrospective: v1 had already used that window."),
+    code("SC = V1_DIR / 'strict_cutoff'\nsc = lambda n: pd.read_csv(SC / 'tables' / f'{n}.csv')\n"
+         "display(sc('strict_fold_table')); display(sc('diagnostic_rules'))\n"
+         "display(sc('cv_family_summary')); display(sc('gap_sensitivity').groupby('setting').val_pr_auc.mean())\n"
+         "display(sc('test_results')); display(sc('paired_bootstrap'))\n"
+         "display(Image(filename=str(SC / 'figures' / 'SC1_strict_cutoff.png')))"),
+    md("## 7. Hyperparameter tuning\n\nRandom forest and HGB: two-stage screened search (stage 1 on folds 3–5, stage 2 "
        "the best three on all folds). Logistic: C grid. Decision tree: 20 random candidates. CatBoost: v1 parameters."),
     code("display(t('screened_search_random_forest').head(8)); display(t('screened_search_hist_gb').head(8))\n"
          "display(t('search_logistic')); fig('E07_screened_search')"),
-    md("## 7. Train, each validation month, pooled validation and test, every family"),
+    md("## 8. Train, each validation month, pooled validation and test, every family"),
     code("pf = t('per_fold'); best = led[led.experiment.str.startswith('best ') | (led.step=='S0')]\n"
          "pf[pf.key.isin(best.key)].pivot_table(index='experiment', columns='fold', values='val_pr_auc').round(4)"),
     code("fig('E05_validation_by_month'); t('test_results_v2')"),
     code("fig('E06_train_validation_test'); t('paired_bootstrap_v2_vs_v1')"),
-    md("## 8. Orders delivered by T"),
+    md("## 9. Orders delivered by T"),
     code("fig('E10_subgroups')"),
-    md("## 9. Calibration and daily capacity"),
+    md("## 10. Calibration and daily capacity"),
     code("display(t('calibration_forward')); display(t('calibration_decisions')); display(t('calibration_test_addendum'))\nfig('E08_reliability')"),
     code("t('daily_batch_recall')"),
-    md("## 10. What the model relies on"),
+    md("## 11. What the model relies on"),
     code("fig('E09_importance_v2'); t('importance_groups_v2')"),
     code("sel = json.loads((EXP_DIR / 'selection_v2.json').read_text())\n"
          "Markdown(f\"**v2 family:** {sel['v2_family']}  \\n**Recommended over v1 by the agreed rule:** {sel['recommended']}\")"),

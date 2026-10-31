@@ -1,0 +1,79 @@
+{
+  "selection_sha256": "3ae1c5dfa86ddbc40cb739f3635f56e41cfe0d193d2008d8707aea3cdb972fb2",
+  "family": "random_forest",
+  "test": {
+    "pr_auc": 0.37375531368628,
+    "roc_auc": 0.7396598952347735,
+    "brier": 0.15261041656651744,
+    "positive_rate": 0.1125937885839111,
+    "recall_at_capacity": 0.5352172079291438,
+    "precision_at_capacity": 0.30128205128205127,
+    "lift_at_capacity": 2.676086039645719,
+    "n": 21058
+  },
+  "train": {
+    "pr_auc": 0.599267801831868,
+    "roc_auc": 0.873087826641739,
+    "brier": 0.13871416596224262,
+    "positive_rate": 0.1513689439575185,
+    "recall_at_capacity": 0.6391927574500189,
+    "precision_at_capacity": 0.4837627578331311,
+    "lift_at_capacity": 3.1959637872500943,
+    "n": 70054
+  },
+  "bootstrap": {
+    "pr_auc_95ci": [
+      0.3546287727756706,
+      0.39557559203555764
+    ],
+    "recall_at_capacity_95ci": [
+      0.5163931740348693,
+      0.5536504470448014
+    ],
+    "n_boot": 1000
+  },
+  "success": [
+    {
+      "criterion": "PR-AUC >= 2 x no-skill",
+      "target": 0.2252,
+      "achieved": 0.3738,
+      "met": true
+    },
+    {
+      "criterion": "recall in top 20% >= 50%",
+      "target": 0.5,
+      "achieved": 0.5352,
+      "met": true
+    }
+  ],
+  "paired_vs_v1": [
+    {
+      "comparison": "strict selection (random_forest) - v1",
+      "d_pr_auc": -0.0011685934058393577,
+      "d_pr_auc_ci": [
+        -0.00434997308247953,
+        0.0018233012310131984
+      ],
+      "d_recall": 0.002952340784479146,
+      "d_recall_ci": [
+        -0.002570036372097936,
+        0.009040184893060244
+      ]
+    },
+    {
+      "comparison": "v1 forest under strict rules - v1",
+      "d_pr_auc": -0.00034477102244678814,
+      "d_pr_auc_ci": [
+        -0.0018842769508764109,
+        0.0012673548576228265
+      ],
+      "d_recall": -0.001687051876845258,
+      "d_recall_ci": [
+        -0.005410242828504469,
+        0.0038395904436859833
+      ]
+    }
+  ],
+  "train_rows": 70054,
+  "test_note": "retrospective: the window was already seen by v1"
+}

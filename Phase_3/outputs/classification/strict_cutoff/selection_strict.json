@@ -1,0 +1,121 @@
+{
+  "procedure": "strict cut-off rerun of the v1 selection",
+  "rules": {
+    "R1": "training review answered strictly before the fold cut-off (plus the 27-day gap)",
+    "R2": "validation review answered strictly before 2018-06-01 (selection date)",
+    "R3": "approval / carrier event after T: derived features set to missing",
+    "R4": "freeze manifest with data and source hashes before the test window is scored",
+    "test": "every Jun-Aug 2018 order (test labels are not subject to R2)"
+  },
+  "selected_family": "random_forest",
+  "params": {
+    "model__max_depth": 22,
+    "model__max_features": 0.21006520409256432,
+    "model__min_samples_leaf": 98,
+    "model__n_estimators": 381
+  },
+  "gap_days": 27,
+  "features": [
+    "n_items",
+    "n_distinct_products",
+    "n_sellers",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "total_order_value",
+    "total_weight_g",
+    "max_weight_g",
+    "total_volume_cm3",
+    "max_dimension_cm",
+    "main_category",
+    "n_categories",
+    "max_distance_km",
+    "any_distance_missing",
+    "same_state",
+    "same_city",
+    "customer_state",
+    "seller_state",
+    "customer_region",
+    "seller_region",
+    "customer_zip2",
+    "purchase_month_num",
+    "purchase_dow",
+    "purchase_hour",
+    "is_weekend",
+    "promised_days",
+    "days_to_shipping_limit",
+    "approval_lag_hours",
+    "main_payment_type",
+    "payment_max_installments",
+    "n_payment_methods",
+    "payment_total",
+    "seller_prior_orders",
+    "seller_tenure_days",
+    "seller_prior_mean_delivery_days",
+    "seller_prior_late_rate",
+    "seller_prior_low_review_rate",
+    "seller_id_enc",
+    "route_prior_orders",
+    "route_prior_mean_delivery_days",
+    "route_prior_late_rate",
+    "is_delivered",
+    "actual_delivery_time",
+    "delivery_time_delta",
+    "carrier_shipped",
+    "carrier_handover_days",
+    "carrier_transit_days",
+    "delivery_vs_seller_prior",
+    "wd_actual_delivery_time",
+    "wd_delivery_time_delta"
+  ],
+  "thresholds": {
+    "capacity_threshold": 0.5415134093587367,
+    "f1_threshold": 0.6227086088826111,
+    "source": "pooled out-of-fold scores of the chosen model, validation labels known by 1 Jun 2018"
+  },
+  "family_best_params": {
+    "logistic_base": {},
+    "logistic_tuned": {
+      "model__C": 0.01
+    },
+    "decision_tree": {
+      "model__max_depth": 12,
+      "model__min_samples_leaf": 179
+    },
+    "random_forest": {
+      "model__max_depth": 22,
+      "model__max_features": 0.21006520409256432,
+      "model__min_samples_leaf": 98,
+      "model__n_estimators": 381
+    },
+    "catboost": {
+      "model__depth": 4,
+      "model__iterations": 1000,
+      "model__l2_leaf_reg": 8.056457031623271,
+      "model__learning_rate": 0.03175627015060992,
+      "model__one_hot_max_size": 2,
+      "model__random_strength": 0.6849971323085097,
+      "model__subsample": 0.7713606405249578
+    }
+  },
+  "cv": {
+    "cv_pr_auc_mean": 0.5460263493337429,
+    "cv_pr_auc_sd": 0.08634674804524123,
+    "cv_recall_at_capacity_mean": 0.5945154801074712,
+    "train_pr_auc_mean": 0.5524685246304002
+  },
+  "data_sha256": "f21ccd44e123e4214e029968ae8cd0239042e74b4140538932c6bcf8900e129b",
+  "source_sha256": {
+    "classification/config.py": "96296325307e7187071050ad80533a429adb1f098c45046878d9625f60275b91",
+    "classification/features.py": "00be1422f79f59cf53309b2b0fc234beaa8e8dbb3cd6e5393b1d889a865dcb49",
+    "classification/models.py": "f538af21aa06bc95efa0318bcc210b7a209b9c34dabebdfaf9d067597dc6fa7d",
+    "classification/search.py": "399b8028d7d45d36329bafe29ec4762f69ff9c810c652eb36b47c68df1dca860",
+    "classification/evaluate.py": "736a31b07efd9ce66efdc906ac8f47823b5b52d4d0ec83c715ecf229bb35320d",
+    "classification/splits.py": "c83d95875aa7f18cd9a0cd0fbaae4e26cb941aa79b6d82e82b86e14110cf063d",
+    "classification/strict.py": "7817a48dbfd6dc9b72db22566e43f4d7f73876721d621b2e3db147eb961f8810",
+    "common/paths.py": "acf0fe2ebd7f3ca482452285df26ae5caa10c0019957c9b3be6d91ab649fd1ca",
+    "common/geography.py": "4f37030c2d0af9d0499c38aaaa585a539651f6d24915fc3b6d8c26690762385f"
+  },
+  "selection_sha256": "3ae1c5dfa86ddbc40cb739f3635f56e41cfe0d193d2008d8707aea3cdb972fb2",
+  "frozen_at": "2026-10-31T11:51:14.311157+00:00"
+}

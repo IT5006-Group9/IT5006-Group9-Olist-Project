@@ -1,0 +1,63 @@
+[17:45:20] SC1: R1 removes [84, 73, 84, 89, 92, 82] training rows (folds 1-5, final); R2 removes 422 of 34395 validation rows; R3 masks 79 orders
+[17:45:32] strict cut-off run: start
+[17:45:33] SC1: R1 removes [84, 73, 84, 89, 92, 82] training rows (folds 1-5, final); R2 removes 422 of 34395 validation rows; R3 masks 79 orders
+[17:49:48] SC2: v1 rules: mean val PR-AUC on R2 rows 0.5466
+[17:54:37] SC2: R1 training labels only: mean val PR-AUC on R2 rows 0.5452
+[17:59:13] SC2: R3 event masking only: mean val PR-AUC on R2 rows 0.5457
+[18:04:13] SC2: strict (R1 + R3): mean val PR-AUC on R2 rows 0.5448
+[18:04:13] SC2: v1 rules reproduce the frozen forest (max |Δ| 5.6e-17)
+[18:04:14] SC3: logistic_base - 1 candidate(s)
+[18:04:30]   logistic_base candidate 1/1: CV PR-AUC 0.5266
+[18:04:30] SC3: logistic_tuned - 7 candidate(s)
+[18:04:40]   logistic_tuned candidate 1/7: CV PR-AUC 0.5262
+[18:04:51]   logistic_tuned candidate 2/7: CV PR-AUC 0.5283
+[18:05:05]   logistic_tuned candidate 3/7: CV PR-AUC 0.5281
+[18:05:21]   logistic_tuned candidate 4/7: CV PR-AUC 0.5266
+[18:05:39]   logistic_tuned candidate 5/7: CV PR-AUC 0.5262
+[18:05:58]   logistic_tuned candidate 6/7: CV PR-AUC 0.5261
+[18:06:16]   logistic_tuned candidate 7/7: CV PR-AUC 0.5261
+[18:06:16] SC3: decision_tree - 20 candidate(s)
+[18:06:29]   decision_tree candidate 1/20: CV PR-AUC 0.5040
+[18:06:41]   decision_tree candidate 2/20: CV PR-AUC 0.4962
+[18:06:52]   decision_tree candidate 3/20: CV PR-AUC 0.4974
+[18:07:09]   decision_tree candidate 4/20: CV PR-AUC 0.5189
+[18:07:26]   decision_tree candidate 5/20: CV PR-AUC 0.5184
+[18:07:43]   decision_tree candidate 6/20: CV PR-AUC 0.5180
+[18:07:59]   decision_tree candidate 7/20: CV PR-AUC 0.5044
+[18:08:15]   decision_tree candidate 8/20: CV PR-AUC 0.5185
+[18:08:32]   decision_tree candidate 9/20: CV PR-AUC 0.4839
+[18:08:49]   decision_tree candidate 10/20: CV PR-AUC 0.5127
+[18:09:01]   decision_tree candidate 11/20: CV PR-AUC 0.4750
+[18:09:12]   decision_tree candidate 12/20: CV PR-AUC 0.4752
+[18:09:25]   decision_tree candidate 13/20: CV PR-AUC 0.5090
+[18:09:37]   decision_tree candidate 14/20: CV PR-AUC 0.4752
+[18:09:54]   decision_tree candidate 15/20: CV PR-AUC 0.5040
+[18:10:10]   decision_tree candidate 16/20: CV PR-AUC 0.5135
+[18:10:23]   decision_tree candidate 17/20: CV PR-AUC 0.5040
+[18:10:40]   decision_tree candidate 18/20: CV PR-AUC 0.4939
+[18:10:52]   decision_tree candidate 19/20: CV PR-AUC 0.4749
+[18:11:06]   decision_tree candidate 20/20: CV PR-AUC 0.5069
+[18:11:06] SC3: random_forest - 6 candidate(s)
+[18:16:58]   random_forest candidate 1/6: CV PR-AUC 0.5460
+[18:21:21]   random_forest candidate 2/6: CV PR-AUC 0.5435
+[18:21:21]   random_forest candidate 3/6: CV PR-AUC 0.5448
+[18:31:43]   random_forest candidate 4/6: CV PR-AUC 0.5353
+[18:37:34]   random_forest candidate 5/6: CV PR-AUC 0.5455
+[18:39:29]   random_forest candidate 6/6: CV PR-AUC 0.5460
+[18:39:29] SC3: catboost - 6 candidate(s)
+[18:50:05]   catboost candidate 1/6: CV PR-AUC 0.5219
+[19:01:56]   catboost candidate 2/6: CV PR-AUC 0.5236
+[19:19:50]   catboost candidate 3/6: CV PR-AUC 0.5108
+[19:27:10]   catboost candidate 4/6: CV PR-AUC 0.5254
+[19:39:38]   catboost candidate 5/6: CV PR-AUC 0.5310
+[19:45:54]   catboost candidate 6/6: CV PR-AUC 0.5179
+[19:45:55] SC3: chosen family random_forest (mean CV PR-AUC 0.5460)
+[19:48:07] SC3: gap sensitivity no gap (k=0), R1 only: mean CV PR-AUC 0.5507
+[19:50:08] SC3: gap sensitivity known-answer q99 (k=21): mean CV PR-AUC 0.5466
+[19:50:08] SC3: gap sensitivity v1 gap (k=27) - main: mean CV PR-AUC 0.5460
+[19:51:14] SC3: manifest frozen (3ae1c5dfa86d)
+[19:51:14] SC4: fitting random_forest under the strict rules on the final training frame
+[19:51:59] SC4: strict selection test PR-AUC 0.3738 (95% CI 0.355-0.396), recall in top 20% 0.535
+[19:54:59] SC4: strict selection (random_forest) - v1: Δ PR-AUC -0.0012 (95% CI -0.0043 to +0.0018)
+[19:54:59] SC4: v1 forest under strict rules - v1: Δ PR-AUC -0.0003 (95% CI -0.0019 to +0.0013)
+[19:55:00] strict cut-off run: complete

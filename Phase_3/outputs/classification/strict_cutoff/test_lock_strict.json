@@ -1,0 +1,22 @@
+{
+  "note": "Strict cut-off rerun; the Jun-Aug 2018 window was already seen by v1, so this is retrospective.",
+  "test_ids_sha256": "f87740ebb1f7a2f98fd0eeabd24c195124b52558c9733ab7368dabcffc8caffa",
+  "evaluations": [
+    {
+      "selection_sha256": "3ae1c5dfa86ddbc40cb739f3635f56e41cfe0d193d2008d8707aea3cdb972fb2",
+      "evaluated_at": "2026-10-31T11:51:59.387237+00:00",
+      "family": "random_forest",
+      "pr_auc": 0.37375531368628,
+      "recall_at_capacity": 0.5352172079291438,
+      "pr_auc_95ci": [
+        0.3546287727756706,
+        0.39557559203555764
+      ],
+      "recall_at_capacity_95ci": [
+        0.5163931740348693,
+        0.5536504470448014
+      ],
+      "n_boot": 1000
+    }
+  ]
+}

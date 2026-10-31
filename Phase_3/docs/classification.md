@@ -22,6 +22,7 @@ This is the only document for the classification branch. It explains what the co
   - Removing class weights kept the ranking and turned the scores into calibrated probabilities (Brier 0.157 → 0.100).
 - **Class balancing** (§8). No correction is best for four of five families. Random undersampling, random oversampling and SMOTE all lower PR-AUC, by 0.002–0.022.
 - **Stacking** (§9.6). One convex stack of logistic regression, the forest and HGB, built like the regression team's stack. Validation +0.0007 PR-AUC (3/5 months), so it is not retained. On test it is +0.0035 better (secondary evaluation, too small to change the decision).
+- **Strict cut-off rerun** (§9.7). The v1 selection rerun so that every training label, validation label and feature was available at its cut-off (the [quality audit](quality_audit.md) findings). The forest is still chosen; validation PR-AUC moves by about −0.002 and test PR-AUC is 0.374 (Δ −0.001 against v1, CI includes zero). v1 stays the headline.
 
 **Do you need to run the code? No.** Every result is already saved:
 
@@ -29,11 +30,12 @@ This is the only document for the classification branch. It explains what the co
 |---|---|
 | v1 tables, figures, selection, test lock | `outputs/classification/` (tables/, figures/, selection.json, test_lock.json) |
 | Experiment tables, figures, run log | `outputs/classification/experiments/` (tables/, figures/, run_log.txt) |
+| Strict cut-off rerun (§9.7) | `outputs/classification/strict_cutoff/` (tables/, figures/, selection_strict.json, test_lock_strict.json, run_log.txt) |
 | Executed notebooks (read saved outputs, train nothing) | `notebooks/classification_chronological.ipynb` (v1), `notebooks/classification_experiments.ipynb` (experiments) |
 
 Open the notebooks, or read this document. Run the code only to reproduce the results, or after changing it.
 
-**How a run works.** There are two command-line runners. Both are deterministic (seed 5006) and both pass results only through files.
+**How a run works.** There are three command-line runners. Both are deterministic (seed 5006) and both pass results only through files.
 
 | Command (from `Phase_3/`) | What it does | Time on 8 cores |
 |---|---|---|
@@ -42,7 +44,8 @@ Open the notebooks, or read this document. Run the code only to reproduce the re
 | `... run_experiments.py --class-balance` | Only the class-balancing study | about 1 h |
 | `... run_experiments.py --stacking` | Only the stacking comparison | 16 min (22 s from the cache) |
 | `... run_experiments.py --figures` | Redraws figures E01–E12 from the saved tables | 5 s |
-| `python -m unittest discover -s tests -v` | 17 protocol and leakage tests | under 1 min |
+| `python src/classification/run_strict_cutoff.py` | **Strict cut-off rerun** (§9.7). Steps `data`, `diagnostic`, `select`, `test`, `figure` (`--step` runs one). Reads the v1 outputs, writes only to `strict_cutoff/` | about 2.2 h (minutes from the cache) |
+| `python -m unittest discover -s tests -v` | 21 classification protocol and leakage tests (plus the other teams' tests) | about 2 min |
 
 Every run uses the full data and the full search budgets. There is no reduced or smoke-test mode, so every saved number comes from a full run.
 
@@ -445,6 +448,66 @@ The gain is detectable but small: a third of the agreed minimum, or about 12 mor
 - **HGB is almost ignored, but that is not because it ranks badly.** The tuned HGB uses balanced class weights, so its scores are inflated (mean 0.43 against a 0.16 positive rate), and a convex combination with no intercept is penalised by log loss for that inflation. HGB's ranking is 0.92-correlated with the forest's, so little information is lost.
 - **Weights move in May.** May's combiner window is Feb–Apr 2018. Those are the months where the forest beat logistic regression most clearly (Mar 0.650 vs 0.622, Apr 0.609 vs 0.583), so the forest's weight rises to 0.79. The final model's window (Mar–May) gives similar weights (0.22 / 0.77 / 0.02).
 
+### 9.7 Strict cut-off rerun (SC)
+
+The [quality audit](quality_audit.md) found that v1's T-based split lets a few labels and features through that were not yet known at their cut-off (§13). This experiment reruns the whole v1 selection under explicit availability rules. It is versioned separately (`src/classification/strict.py`, `run_strict_cutoff.py`, outputs in `outputs/classification/strict_cutoff/`) and does not change any v1 or Part B result.
+
+**The stricter rules**
+
+| Rule | What it requires | Rows affected |
+|---|---|---|
+| R1 | A training label counts only if its review was answered before the fold's cut-off (on top of the 27-day gap) | 84 / 73 / 84 / 89 / 92 per fold; 82 of 70,136 in the final fit |
+| R2 | Selection and thresholds use only validation labels answered before the 1 Jun 2018 selection date | 422 of 34,395 (May: 365 of 7,133) |
+| R3 | If the approval or carrier event is recorded after T, `approval_lag_hours`, `carrier_handover_days` and `carrier_transit_days` are set to missing, in every split | 79 orders (34 in test) |
+| R4 | A manifest (selection, thresholds, rules, data hash, source hashes) is frozen before test; the strict lock refuses a different manifest | — |
+
+Everything else is v1's: the features, the families, the same candidates (seed 5006), the 27-day gap and the selection rule. Test labels are not filtered by R2, because the test evaluation is retrospective anyway. The validation labels dropped by R2 are not random: May labels answered after 1 Jun have a 21.6% low-review rate, against 11.6% for the rest of May.
+
+**SC2 — effect of each rule with the v1 forest held fixed** (validation labels known by 1 Jun; `diagnostic_rules.csv`)
+
+| Setting | Mean val PR-AUC | Δ vs v1 rules | Months better | Per-month Δ (Jan…May) |
+|---|---|---|---|---|
+| v1 rules | 0.5466 | — | — | — |
+| R1 training labels only | 0.5452 | −0.0014 | 2/5 | +0.0017, −0.0029, −0.0047, +0.0019, −0.0030 |
+| R3 event masking only | 0.5457 | −0.0009 | 1/5 | −0.0006, −0.0000, −0.0016, +0.0005, −0.0026 |
+| **strict (R1 + R3)** | **0.5448** | **−0.0018** | 1/5 | +0.0013, −0.0015, −0.0045, −0.0002, −0.0039 |
+
+Scoring all validation orders instead of only R2 rows changes these by less than 0.0004. The v1-rules row on all orders reproduces v1's saved fold results exactly (checked by the code). The leaked rows gave v1 a little help, about 0.002 PR-AUC, which is smaller than the fold SD (0.086) and a fifth of the agreed +0.010 threshold.
+
+**SC3 — full reselection under the strict rules** (`cv_family_summary.csv`)
+
+| Family | Strict CV PR-AUC | v1 CV PR-AUC | Same hyperparameters as v1 |
+|---|---|---|---|
+| **random forest** | **0.5460** | 0.5463 | no |
+| CatBoost | 0.5310 | 0.5317 | yes |
+| logistic (tuned, C = 0.01) | 0.5283 | 0.5294 | yes |
+| logistic (base) | 0.5266 | 0.5278 | yes |
+| decision tree | 0.5189 | 0.5186 | no |
+| not delivered by T (baseline) | 0.3822 | 0.3832 | — |
+
+- **The random forest is still chosen.** The family ranking is the same as v1.
+- **The forest's hyperparameters changed:** depth 22, `max_features` 0.21, leaf 98, 381 trees, against v1's depth 14, 0.63, leaf 80, 302 trees. Six forest candidates fall within 0.011 of each other (0.5353–0.5460), so the change reflects a flat optimum, not a different model.
+- **Gap sensitivity under R1** (`gap_sensitivity.csv`): mean CV PR-AUC 0.5507 with no gap, 0.5466 with the 21-day known-answer q99, 0.5460 with 27 days. Measured on answers known at 1 Jan 2017 only, the q99 review lag is 21 days, not 27; the 27-day gap is kept, so it is now slightly conservative.
+- **What the model relies on** is unchanged: delivery at T (permutation drop 0.283) and order size (0.068) lead, as in v1.
+
+**SC4 — test window (retrospective; v1 had already used it)** (`test_results.csv`, `paired_bootstrap.csv`)
+
+| Model | Test PR-AUC | 95% CI | Recall in top 20% | Test ROC-AUC |
+|---|---|---|---|---|
+| **strict selection (random forest)** | **0.3738** | 0.355–0.396 | **0.535** | 0.7397 |
+| v1 forest, v1 rules (reproduced) | 0.3749 | — | 0.532 | 0.7392 |
+| v1 forest, strict rules | 0.3746 | — | 0.531 | 0.7393 |
+
+Paired bootstrap against v1 (1,000 resamples of the same test orders):
+- Strict selection − v1: PR-AUC Δ −0.0012 [−0.0043, +0.0018]; recall Δ +0.0030 [−0.0026, +0.0090].
+- v1 forest under strict rules − v1: PR-AUC Δ −0.0003 [−0.0019, +0.0013]; recall Δ −0.0017 [−0.0054, +0.0038].
+
+Both success criteria are met (PR-AUC 0.374 ≥ 0.225; recall 53.5% ≥ 50%). By month the strict model's recall is 51.8%, 48.5% and 56.9%, so July still misses the target, as with v1.
+
+![strict cut-off](../outputs/classification/strict_cutoff/figures/SC1_strict_cutoff.png)
+
+**Conclusion.** The availability leaks the audit found are real but immaterial. Removing them lowers validation PR-AUC by about 0.002, leaves the family choice unchanged, and changes test PR-AUC by −0.001 to −0.0003 with confidence intervals that include zero. v1 stays the headline. The strict rerun is the version whose numbers satisfy every availability rule, and it gives the same conclusions.
+
 ## 10. Results: train, validation by month, pooled validation and test, every model
 
 Definitions:
@@ -480,12 +543,14 @@ Definitions:
 | Ensemble (boosting) | HGB | 0.570 | 0.5458 | 0.5675 | 0.3717 | 0.7408 | 0.1606 | 0.5335 |
 | Ensemble (boosting) | CatBoost | 0.572 | 0.5331 | 0.5537 | 0.3738 | 0.7398 | 0.1558 | 0.5373 |
 | Linear | logistic regression | 0.526 | 0.5352 | 0.5539 | 0.3689 | 0.7377 | 0.0880 | 0.5361 |
+| Ensemble (bagging) | random forest, strict cut-off rules (§9.7) | 0.599 | 0.5460 ² | – | 0.3738 | 0.7397 | 0.1526 | 0.5352 |
 | Ensemble (stacking) | convex stack (not retained) | – ¹ | 0.5474 | 0.5675 | 0.3784 | 0.7417 | 0.0881 | 0.5386 |
 | Single tree | decision tree | 0.548 | 0.5190 | 0.5471 | 0.3466 | 0.7282 | 0.1628 | 0.5335 |
 | Baseline | not delivered by T | – | 0.3832 | – | 0.2099 | 0.6284 | – | 0.4057 |
 | Baseline | no skill | – | 0.1684 | – | 0.1126 | – | – | 0.2000 |
 
 ¹ The stack has no single training fit. Its combiner's own training rows (the inner months) score PR-AUC 0.42–0.62.
+² Scored on the validation labels answered by 1 Jun 2018 (R2), so not strictly comparable with the other rows; on the same rows the v1 forest scores 0.5466.
 
 **v2 vs v1 on test.** Paired bootstrap, 1,000 resamples of the same test orders:
 - PR-AUC Δ +0.0000 [−0.0016, +0.0017].
@@ -600,7 +665,7 @@ The calendar group is worthless under a chronological split, so the Phase 2 cale
   - Validation: rows are chosen by T-month only. 422 of 34,395 validation labels (1.23%), including 365 of 7,133 in May (5.12%), were answered after the 1 Jun selection date, so selection and threshold estimation used answers that were not yet available.
   - Features: 61 orders have an approval event and 18 a carrier event recorded after T while the derived lag or transit feature is populated (79 orders, 34 in the test window).
   - The test lock compares a recorded selection ID; it does not fingerprint thresholds, source code or preprocessing. No change to these was found.
-  - The audit recommends a separately versioned rerun with explicit label and event cut-offs. This document does not change any saved result.
+  - The audit recommended a separately versioned rerun with explicit label and event cut-offs. **Addressed in §9.7:** under those rules the forest is still chosen, validation PR-AUC is about 0.002 lower and test PR-AUC changes by −0.001 (CI includes zero). The strict lock (R4) fingerprints the selection, thresholds, data and source code. The v1 and Part B results are left as saved.
 - **Daily queue not evaluated.** The 53.2% recall ranks the whole Jun–Aug window. By month it is 52.3%, 49.2% and 57.4%, so July misses the 50% target; the daily-batch figures in §11.3 are a diagnostic only.
 - **Short history.** Training starts in Jan 2017, so seasonality cannot be learned or tested.
 - **Drift.** Validation positive rates span 12–24%, including a disrupted month. Monitor monthly PR-AUC and recall at capacity.
@@ -638,7 +703,7 @@ The calendar group is worthless under a chronological split, so the Phase 2 cale
 | D1 | The chronological split is the main evaluation; the random split is a reference | TA requirement |
 | D2 | Time axis = T = min(delivered, estimated delivery) | The model is used at T |
 | D3 | 5 expanding folds (Jan–May 2018); test Jun–Aug 2018 | Mean and SD over months; the latest three months held out |
-| D4 | Purge gap 27 days (q99 of review lag after T, 2017 data) | Prevents labels from the future without biasing labels |
+| D4 | Purge gap 27 days (q99 of review lag after T, 2017 data) | Removes most labels from the future; it does not remove all of them (0.12–0.24% per fold), and it drops slow-answered reviews, which are more often low (§9.7) |
 | D5 | 2016 excluded | 303 orders |
 | D6 | History features refitted per fold, frozen at the cut-off | A model trained at the cut-off cannot know later outcomes |
 | D7 | `black_friday_week` dropped | Constant in every validation and test month |
@@ -653,6 +718,7 @@ The calendar group is worthless under a chronological split, so the Phase 2 cale
 | D16 | Convex logistic/forest/HGB stack, combiner trained on 3 inner months per fold; not retained | Mirrors the regression stack; +0.0007 validation PR-AUC, 3/5 months |
 | D17 | No reduced (quick) run mode | Every reported number must come from the full data and full search budgets |
 | D18 | Every ledger experiment is also scored on test, after the freeze, as a reference only | A second, independent check on the validation decisions; it never re-selects |
+| D19 | Strict cut-off rerun (R1–R4) kept as a separate version; v1 stays the headline | Quality-audit findings; the strict rules change validation PR-AUC by −0.002 and test PR-AUC by −0.001 (CI includes zero), so the conclusions do not change |
 
 ## 16. Code and file map
 
@@ -670,7 +736,8 @@ The calendar group is worthless under a chronological split, so the Phase 2 cale
 | `experiment_features.py` | candidate feature groups, calendar-day lateness, `HistoryV2` |
 | `experiments.py`, `run_experiments.py` | Part B: `Variant`, cached fold and final fits, keep rules, screened search, calibration, test window, class-balancing study, stacking (`inner_folds`, `convex_weights`, `run_stacking`) |
 | `experiment_figures.py` | figures E01–E12 |
-| `tests/test_classification.py`, `tests/test_experiments.py` | protocol and leakage tests |
+| `strict.py`, `run_strict_cutoff.py` | strict cut-off rerun (§9.7): rules R1–R3, cached fits, rule diagnostic, reselection, frozen manifest and strict test lock (R4), figure SC1 |
+| `tests/test_classification.py`, `tests/test_experiments.py`, `tests/test_strict_cutoff.py` | protocol, leakage and strict-rule tests |
 | `notebooks/classification_chronological.ipynb` | executed v1 results |
 | `notebooks/classification_experiments.ipynb` (built by `build_experiments_notebook.py`) | executed Part B results |
 
@@ -680,5 +747,6 @@ The calendar group is worthless under a chronological split, so the Phase 2 cale
 | `outputs/classification/experiments/tables/` | Part B: `ledger.csv` (validation and test for every experiment), `per_fold.csv`, searches, `class_balance.csv`, `stacking_folds.csv`, `stacking_inner_audit.csv`, `test_results_v2.csv`, calibration, bootstrap, daily recall, importance |
 | `outputs/classification/experiments/runs/` | cached fold and final results (lets a rerun skip finished work) |
 | `outputs/classification/experiments/stacking.json` | stack decision, weights, test scores and bootstrap |
+| `outputs/classification/strict_cutoff/` | strict rerun: `strict_rules.json`, `selection_strict.json` (manifest), `test_lock_strict.json`, `test_summary_strict.json`; tables (fold table, rule diagnostic, candidates, gap sensitivity, test results, bootstrap); `runs/` cache; `predictions/`; figure SC1 |
 
 *AI tool declaration:* code and documentation were drafted with Claude (Anthropic) under the team's direction; the team reviewed the protocol, the rules and the results.

@@ -36,6 +36,14 @@
       "console": "integratedTerminal"
     },
     {
+      "name": "Classification: strict cut-off rerun",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/classification/run_strict_cutoff.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
       "name": "Classification: experiment figures",
       "type": "debugpy",
       "request": "launch",

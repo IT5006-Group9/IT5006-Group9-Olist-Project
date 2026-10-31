@@ -1,0 +1,31 @@
+{
+  "rules": {
+    "R1": "training review answered strictly before the fold cut-off (plus the 27-day gap)",
+    "R2": "validation review answered strictly before 2018-06-01 (selection date)",
+    "R3": "approval / carrier event after T: derived features set to missing",
+    "R4": "freeze manifest with data and source hashes before the test window is scored",
+    "test": "every Jun-Aug 2018 order (test labels are not subject to R2)"
+  },
+  "gap_days": 27,
+  "masking": {
+    "order_approved_at": {
+      "event_after_T": 61,
+      "approval_lag_hours_masked": 61,
+      "carrier_handover_days_masked": 58
+    },
+    "order_delivered_carrier_date": {
+      "event_after_T": 475,
+      "carrier_handover_days_masked": 0,
+      "carrier_transit_days_masked": 18
+    },
+    "orders_with_a_masked_feature": 79,
+    "of_which_in_test_window": 34
+  },
+  "known_answer_gap": {
+    "reference_orders": 41734,
+    "answers_known_before_origin": 41020,
+    "answers_unknown_at_origin": 714,
+    "q99_days": 20.92203738425925,
+    "gap_days": 21
+  }
+}
