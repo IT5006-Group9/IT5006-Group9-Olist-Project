@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checked_base_commit": "8e66a6de0edee51f9680c19c15a4865301f9201f",
+  "formal_report_words_including_tables": 1902,
+  "main_result_rows_verified": 9,
+  "supplementary_result_rows_verified": 6,
+  "relative_links_verified": 86,
+  "success_and_tail_arithmetic_verified": true,
+  "leakage_review_script_and_source_hashes_match": true,
+  "stacking_boundary_tests_passed": 11,
+  "original_model_notebook_deployment_and_classification_files_unchanged": true,
+  "model_refitted": false,
+  "google_document_edited": false,
+  "formal_report_sha256": "168b8cdc90d44862a2cb0e4f6e2c99f224b3dc3bdbfbbcec95f23217e9c32d99",
+  "audit_note_sha256": "e4beee44b9e7301b92525ccdcf23ec750dcbf0ee2d56562d4f13aab695576108"
+}

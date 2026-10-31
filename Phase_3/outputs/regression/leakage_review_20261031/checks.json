@@ -1,0 +1,101 @@
+{
+  "scope": "read-only leakage check; no model fitting or project-file changes",
+  "checked_commit": "8e66a6de0edee51f9680c19c15a4865301f9201f",
+  "original_audit_source_and_data_match": true,
+  "sources_changed_since_freeze": [
+    "verify.py",
+    "reporting.py"
+  ],
+  "raw_target_and_dates_recomputed": 96203,
+  "independent_partitions": [
+    {
+      "fold": "fold1",
+      "train_n": 34246,
+      "score_n": 7068,
+      "unavailable_training_labels": 0,
+      "unavailable_selection_labels": 0,
+      "pending_removed": 43
+    },
+    {
+      "fold": "fold2",
+      "train_n": 42450,
+      "score_n": 6551,
+      "unavailable_training_labels": 0,
+      "unavailable_selection_labels": 0,
+      "pending_removed": 62
+    },
+    {
+      "fold": "fold3",
+      "train_n": 47940,
+      "score_n": 6996,
+      "unavailable_training_labels": 0,
+      "unavailable_selection_labels": 0,
+      "pending_removed": 81
+    },
+    {
+      "fold": "fold4",
+      "train_n": 54882,
+      "score_n": 6715,
+      "unavailable_training_labels": 0,
+      "unavailable_selection_labels": 0,
+      "pending_removed": 103
+    },
+    {
+      "fold": "fold5",
+      "train_n": 62130,
+      "score_n": 4406,
+      "unavailable_training_labels": 0,
+      "unavailable_selection_labels": 0,
+      "pending_removed": 133
+    },
+    {
+      "fold": "final",
+      "train_n": 68916,
+      "score_n": 18603,
+      "unavailable_training_labels": 0,
+      "unavailable_selection_labels": null,
+      "pending_removed": 52
+    }
+  ],
+  "actual_fold_preprocessors_checked": 5,
+  "raw_outcome_perturbation_rows": 98666,
+  "prediction_outcome_perturbation_sample_n": 160,
+  "risk_partitions_reconstructed": 6,
+  "risk_inner_windows_reconstructed": 63,
+  "new_14_suite_outer_inner_windows_reconstructed": 20,
+  "supplementary_stack_inner_windows_reconstructed": 3,
+  "passed": true,
+  "review_script_sha256": "b2bbc46218b36ea464825de28358109a6644e15cb0dd4f2eaa6f573d185785f8",
+  "source_sha256": {
+    "src/regression/__init__.py": "a65ee2c9b3fcca07117b361cea7ca2af7db77299f841506ca264070b58b48eb7",
+    "src/regression/audit.py": "87c90a27ef06dd157956d180563084cdf1b8cdeacad93be3749943bebe64d1c1",
+    "src/regression/config.py": "e5dc06f7dc5fb910acb813570eff27006390071256af362ff1bc8e15a440fa82",
+    "src/regression/data.py": "206af0ecb173b2d0a67e6c06fdffea1adc02d6037a5c9ea8f754bb5325d30445",
+    "src/regression/delivery.py": "75ef5fdb20a6b27f97b76e7d851bd8a5eeeac19f645ab5103591ececacbbe6d1",
+    "src/regression/extensions.py": "82883c4fb540685f476ba5ba924751135cf6f07afc339d83daed01353e2e56ea",
+    "src/regression/finalise.py": "2ded4128d2fc93a0082a5cf71057467b0900f3b2c518f5f131f2157a5174c748",
+    "src/regression/models.py": "ccc5939936ee496a397006cfe6d2e5147d2fd46b3908c710b774a1c0b19aac28",
+    "src/regression/notebooks.py": "0da8c26d14fc7d05cbe40d5c1c3c9b3402bebfea343b3190d770698d272f1a8d",
+    "src/regression/pipeline.py": "10ff99ec53e99f92083d05ba2040142dbac47cb3bb94ea320f9bff05a5314886",
+    "src/regression/reporting.py": "61a26489078c7590ea87dfcb8756fbdbfbf675423ebf48f6b7c9ec9b26404411",
+    "src/regression/reproduce_frozen.py": "46c72967160d55df88065bb5f32be7564f34482af45e6c2d402b3eea7d95fd96",
+    "src/regression/risk.py": "9c15f6dcd1db6e8b7056d4b4e9a593c8c4ad3451c67ee7d5791c6fa6a5528753",
+    "src/regression/run_pipeline.py": "f22ad72565cc1d4f9f2dd46281e92156de69c1fde8ccae7e7d50c48508a97729",
+    "src/regression/score.py": "e08c7064539b4082f2003fb0fb703798820b2a5b975b772daff3d2e6771e364a",
+    "src/regression/splits.py": "7eac936b84c28310dd8e0e44cb3864ed23b447a891daf21f7fe4fe5d440eef12",
+    "src/regression/verify.py": "42026d3b7729d3cbb48deb79768dd264f19abf0ce363e20b890854226b53db02",
+    "src/regression_stacking/__init__.py": "680702b69329e6fcadb32fc38bc46525f05fd675a7d1537549ecc9404d416df3",
+    "src/regression_stacking/base_models.py": "64c6fda9b035524aace6e4124789a4b7c0df8288a943869db11d30628b9226c8",
+    "src/regression_stacking/protocol.py": "cf2d03f617409f9ee1c573505e2c997a6d2f9991557ba6578f88a10cdcbbef00",
+    "src/regression_stacking/run.py": "f9cb8c813e1ea93731bf967dc23130a72a7fffa9e006fd4f132fa8c190c9c939",
+    "src/common/__init__.py": "f4eb688d42c5832e419d3f1bf6e84b75d30361f3005e39e6b3dc4de041dcd7dd",
+    "src/common/geography.py": "4f37030c2d0af9d0499c38aaaa585a539651f6d24915fc3b6d8c26690762385f",
+    "src/common/paths.py": "acf0fe2ebd7f3ca482452285df26ae5caa10c0019957c9b3be6d91ab649fd1ca"
+  },
+  "limitations": [
+    "No hyperparameter search or model retraining repeated.",
+    "New all-14 stacking membership checked against raw-aligned orders and stored ID hashes; its private fitted matrices are not replayed by this review.",
+    "Raw purchase-feature invariance checked across 98,666 orders; final inference perturbation is a 160-order sample.",
+    "Historical snapshot availability, completed-delivery selection and prior test exposure remain limitations."
+  ]
+}

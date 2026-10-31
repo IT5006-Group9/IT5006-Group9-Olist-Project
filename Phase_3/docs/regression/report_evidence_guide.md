@@ -1,5 +1,7 @@
 # Regression report evidence guide — Phase 3
 
+**31 October integration update:** [Formal report prose](final_report_regression.md) now incorporates the latest [14-combination chronological rerun](phase2_stacking_chronological.md), [supplementary stacking test](selected_stacking_holdout.md) and [leakage review](data_leakage_review.md). The original convex stack described below is a different experiment; its blank Train/Test entries do not mean the later selected ensembles lack test results. Use the formal prose for the current narrative and this guide for the original main-model evidence.
+
 ## Scope and main result
 
 The task remains purchase-time estimation of fractional purchase-to-receipt days for observed completed deliveries. The fixed course archive and screened-median geography are retained. No new dataset or modelling family was introduced. The chronological procedure selected **HGB_risk**. Its test MAE was **3.4343 days**, RMSE **5.0925 days**, R² **0.2347**, and ±3-day coverage **55.93%** on **18,603** June–August orders. These are retrospective historical results; this dataset was exposed during prior development.
@@ -66,3 +68,22 @@ Historical test exposure; only one substantial earlier seasonal cycle; changing 
 ## References and AI declaration
 
 Use the existing Phase 1/2 references for geography, temporal effects and long-tail motivation. Zaghloul et al. supports comparability of the old random design, not future-period validity. This implementation uses scikit-learn estimators and SciPy convex optimisation. Codex assisted with implementation, protocol checks, figures and documentation. The team remains responsible for the submitted work; do not imply the AI performed an independent external validation.
+
+## Source map for the formal report (31 October)
+
+The copy-ready [formal text](final_report_regression.md) contains no editing prompts. Sections 6–8 and identifiers R1/R2/Figure R1 are local labels for report integration, not assertions about the final combined document's numbering.
+
+| Formal section / object | Controlling saved evidence |
+|---|---|
+| §6 population, time rules and counts | [Preparation](../../outputs/regression/preparation.json), [protocol](../../outputs/regression/protocol.json), [fold counts](../../outputs/regression/tables/fold_table.csv) |
+| §6.3 leakage review | [Read-only review result](../../outputs/regression/leakage_review_20261031/checks.json), [scope and limitations](data_leakage_review.md) |
+| §7.1 search and preprocessing | [Search design](../../outputs/regression/search_design.json), [fold scores](../../outputs/regression/tables/cv_all_candidates_folds.csv), [full report appendix](../report_appendix_features_models.md) |
+| §7.2 feature variants and frozen model | [Variant summary](../../outputs/regression/tables/diagnostic_summary.csv), [frozen descriptor](../../outputs/regression/frozen_selection.json), [auxiliary settings](../../outputs/regression/diagnostics_design.json) |
+| §7.3 initial and expanded stack procedures | [Initial stack](../../outputs/regression/stacking_complete.json), [all-14 results](../../outputs/regression_stacking_chronological/tables/all_14_combinations.csv), [expanded protocol](phase2_stacking_chronological.md) |
+| Table R1 | [Train/CV/Test comparison](../../outputs/regression/tables/train_cv_test_comparison.csv), [complete train/test metrics](../../outputs/regression/tables/train_test_results.csv) |
+| §8.1 success and selection limitations | [Test summary](../../outputs/regression/test_summary.json), [ranking sensitivity](../../outputs/regression/tables/selection_maturity_sensitivity.csv), [May maturity diagnostic](../../outputs/regression/tables/validation_outcome_maturity_diagnostic.csv) |
+| §8.2 and Table R2 | [Supplementary test table](../../outputs/regression_stacking_holdout/tables/test_comparison.csv), [frozen weights](../../outputs/regression_stacking_holdout/tables/frozen_weights.csv), [separate freeze](../../outputs/regression_stacking_holdout/frozen_selection.json) |
+| §8.3 and Figure R1 | [Month scores](../../outputs/regression/tables/test_by_month.csv), [duration errors](../../outputs/regression/tables/test_error_groups.csv), [figure](../../outputs/regression/figures/04_tail_errors.png), [importance](../../outputs/regression/tables/permutation_importance_groups.csv), [duration mix](../../outputs/regression/tables/target_distribution_by_stage.csv), [fixed random reference](../../outputs/regression/tables/random_reference.csv) |
+| §8.4 deployment | [Deployment handoff](deployment_handoff.md), [actual package manifest](../../deployment/assets/manifest.json) |
+
+All fifteen table rows in the formal text were checked against these saved CSVs. The [publication validation record](../../outputs/regression/leakage_review_20261031/report_validation.json) identifies the formal text and audit-note hashes. No new model result or literature reference was created for this writing step.
