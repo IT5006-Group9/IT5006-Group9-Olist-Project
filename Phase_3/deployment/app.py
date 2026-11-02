@@ -23,6 +23,7 @@ for directory in (PHASE, PHASE / "src"):
 
 from deployment.evidence import EvidenceError, MODEL_LABELS, load_evidence
 from deployment import explorer_filters as shared_filters
+from deployment.input_help import INPUT_MEANINGS
 
 ASSETS = HERE / "assets"
 REPO = "https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project"
@@ -80,6 +81,13 @@ padding:.3rem .65rem;border-radius:20px;font-size:.72rem;font-weight:600;margin-
 min-height:290px;display:flex;flex-direction:column;justify-content:center}
 .empty h2 {color:#4263eb}
 .stButton>button, .stDownloadButton>button {border-radius:9px}
+.olist-input-table {width:100%;table-layout:fixed;border-collapse:collapse;font-size:.84rem}
+.olist-input-table th, .olist-input-table td {padding:.7rem .75rem;border-bottom:1px solid #e0e6f0;
+text-align:left;vertical-align:top;white-space:normal;overflow-wrap:anywhere}
+.olist-input-table th {background:#edf1f8;color:#182b49;font-weight:600}
+.olist-input-table th:nth-child(1) {width:24%}
+.olist-input-table th:nth-child(2) {width:22%}
+.olist-input-table th:nth-child(3) {width:54%}
 div[data-baseweb="tab-list"] {gap:1.3rem}
 button[data-baseweb="tab"] {font-size:.87rem;padding-left:0;padding-right:0}
 </style>
@@ -320,8 +328,13 @@ def prediction():
                 st.error(f"Unable to score this order: {error}")
         st.caption(f"{len(inputs)} examples selected deterministically from the historical test window, without using their outcomes.")
         st.caption("Changing the selection or leaving this page clears the forecast and revealed outcome. Navigation never runs a prediction automatically.")
-        with st.expander("See the purchase-time inputs"):
-            st.dataframe(row.T.rename(columns={0: "Value"}).astype(str), width="stretch")
+    with st.expander("See the purchase-time inputs"):
+        st.caption("Each row shows the recorded value and its meaning or units. Order ID and purchase timestamp identify the example; the other rows describe purchase-time features.")
+        details = row.T.rename(columns={0: "Value"}).astype(str).rename_axis("Input").reset_index()
+        details["Meaning / units"] = details.Input.map(INPUT_MEANINGS).fillna("Description not yet available for this field.")
+        with st.container(height=560, border=False, key="olist_input_details"):
+            # Escape every cell: order metadata is displayed as text, never HTML.
+            st.markdown(details.to_html(index=False, escape=True, border=0, classes="olist-input-table"), unsafe_allow_html=True)
     result = st.session_state.get("delivery_forecast")
     with output:
         if not result or result["order_id"] != selected:

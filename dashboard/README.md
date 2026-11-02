@@ -51,6 +51,10 @@ An empty intersection keeps the controls available so it can be adjusted or rese
 
 Delivery demonstration filters are separate. Its navigation stays within the
 selected month and destination and never calculates a prediction automatically.
+The full-width **See the purchase-time inputs** table includes Input, Value and
+Meaning / units for all 39 supplied features plus the order ID and purchase
+timestamp. Descriptions cover units, binary flags, route codes, category rules
+and cyclical date encodings using the existing regression feature definitions.
 Changing a selection or leaving the page clears the previous forecast, download
 and revealed outcome; each new calculation starts with the outcome hidden.
 Model metrics use fixed assessment cohorts and do not change with EDA filters.
