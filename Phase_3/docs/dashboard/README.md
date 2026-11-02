@@ -31,6 +31,14 @@ outcome. The screenshot shows a real prediction with the outcome still hidden.
 
 ![Delivery prediction and outcome comparison](prediction.png)
 
+## Regression input explanations
+
+The full-width purchase-time input table now shows each field, its recorded value,
+and a plain-language definition with units. All 41 displayed fields are covered;
+long definitions wrap instead of being truncated.
+
+![Purchase-time input values and explanations](regression_input_help.jpg)
+
 ## Classification timing audit notice
 
 Captured after the audit update and Cloud reboot. The archived scores remain visible with a notice that strict feature and label availability require a new assessment. The regression evidence page also displays the saved selection-maturity and duration-tail diagnostics.

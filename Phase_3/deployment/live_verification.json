@@ -294,5 +294,49 @@
       "height": 720
     },
     "github_author_verified": "yexueying70-cell"
+  },
+  "regression_input_help_followup": {
+    "passed": true,
+    "verified_at_utc": "2026-11-02T09:34:23.610755+00:00",
+    "application_code_commit_at_browser_test": "3c2d53983bdbb1510cb4a9308a485feece144a6c",
+    "scope": "Display-only input explanations requested by the team; no changes to model inputs, fitted models or results.",
+    "cloud_reboot_after_update": true,
+    "checks": {
+      "page": "Delivery prediction",
+      "expander": "See the purchase-time inputs",
+      "table_headers": [
+        "Input",
+        "Value",
+        "Meaning / units"
+      ],
+      "displayed_fields": 41,
+      "supplied_predictors": 39,
+      "metadata_fields": [
+        "order_id",
+        "purchase_ts"
+      ],
+      "empty_descriptions": 0,
+      "full_width": true,
+      "long_text_wraps": true,
+      "values_preserved_as_recorded": true
+    },
+    "definition_sources": [
+      "src/regression/data.py",
+      "outputs/regression/tables/feature_catalogue.csv"
+    ],
+    "automated_dashboard_tests_passed": 36,
+    "model_and_demo_asset_sha256_unchanged": {
+      "Phase_3/deployment/assets/example_inputs.parquet": "1b0eec1245db242bfa18d72e338e637653f35c20681780bcdcec18063e599fe3",
+      "Phase_3/deployment/assets/regression_model.joblib": "343ca8adde6791e33cd4b7757e352cb7e99b3f640d7d264ef9c264cbda61c001",
+      "Phase_3/deployment/assets/manifest.json": "fe87eab5f06cba9cd668c41c3cede8d230490b588e727c079a766d3ecffef380",
+      "Phase_3/deployment/assets/example_outcomes.parquet": "6de90becfd7796e9b3648365232d9bc73037e97d310b03c7975dbc73c85791e7"
+    },
+    "screenshot": {
+      "path": "docs/dashboard/regression_input_help.jpg",
+      "sha256": "81b31f9cb0dd02188a84187e506592619472300f037099fb92262cf7aab0c250",
+      "width": 1280,
+      "height": 720
+    },
+    "github_author_verified": "yexueying70-cell"
   }
 }
