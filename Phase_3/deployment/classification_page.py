@@ -28,6 +28,10 @@ OUTCOME_COLUMNS = {"review_score", "review_answer_timestamp", "is_low_review", "
 def clear_prediction():
     st.session_state.pop("clf_forecast", None)
     st.session_state["clf_reveal"] = False
+    for name in ("clf_explanation", "clf_explanation_values", "clf_explanation_error",
+                 "new_classification_v1_result", "new_classification_v1_identity",
+                 "new_classification_strict_result", "new_classification_strict_identity"):
+        st.session_state.pop(name, None)
 
 
 def change_order(order_ids, direction):
@@ -100,15 +104,14 @@ def score_example(matrix, ordinal, spec, files):
 
 
 def render(header, panel_metrics, chart):
-    header("Which orders may need a closer look?", "Run the frozen low-review classifier on a historical order at its survey trigger time. A low review means 1–2 stars.")
-    st.caption("1. Choose an order → 2. Run its risk prediction → 3. Optionally reveal the historical review")
+    header("Which orders may need a closer look?", "Score a historical example or your own order features at the survey trigger time, then inspect what moved its risk score. A low review means 1–2 stars.")
+    st.caption("Choose an input source → Run the fitted classifier → Inspect the score and its contributing factors")
     try:
         manifest_text = (ASSETS / "manifest.json").read_text()
         manifest = json.loads(manifest_text)
         version = st.selectbox("Prediction model", list(VERSIONS), format_func=VERSIONS.get,
                                key="clf_version", on_change=clear_prediction)
         spec = manifest["versions"][version]
-        inputs, matrix = load_inputs(str(ASSETS), manifest_text, version)
     except (OSError, ValueError, KeyError, ImportError) as error:
         clear_prediction()
         st.warning(f"The classification demonstration package is unavailable: {error}")
@@ -118,6 +121,18 @@ def render(header, panel_metrics, chart):
     else:
         st.warning("v1 retrospective comparison · This original model has label/event availability limitations. Its inputs and threshold differ from the strict-cutoff version. See Model evidence for the timing audit.")
     st.caption("Prediction point T = the earlier of delivery and the promised delivery date (promise if undelivered). This is later in the order lifecycle than the purchase-time delivery forecast.")
+    source = st.radio("Order source", ["Historical examples", "New order / CSV"],
+                      key="clf_source", horizontal=True, on_change=clear_prediction)
+    if source == "New order / CSV":
+        from deployment.classification_custom_page import render as render_custom
+        render_custom(version=version, spec=spec, panel_metrics=panel_metrics)
+        return
+    try:
+        inputs, matrix = load_inputs(str(ASSETS), manifest_text, version)
+    except (OSError, ValueError, KeyError, ImportError) as error:
+        clear_prediction()
+        st.warning(f"The classification demonstration package is unavailable: {error}")
+        return
     with st.container(key="olist_split_classification_prediction"):
         controls, output = st.columns([1, 1.65], gap="large")
     with controls, st.container(border=True):
@@ -180,6 +195,15 @@ def render(header, panel_metrics, chart):
                     "validation_threshold": threshold, "above_threshold": score >= threshold,
                     "selection_sha256": spec["selection_sha256"], "model_sha256": spec["model_sha256"],
                 }
+                try:
+                    from deployment.classification_custom_page import explain_historical
+                    explanation, values = explain_historical(version, matrix[[ordinal]], selected)
+                    if not np.isclose(explanation["scores"][0], score, atol=1e-12, rtol=0):
+                        raise ValueError("The explanation does not reconstruct this order's risk score.")
+                    st.session_state["clf_explanation"] = explanation
+                    st.session_state["clf_explanation_values"] = values
+                except (OSError, ValueError, KeyError, ImportError, RuntimeError) as error:
+                    st.session_state["clf_explanation_error"] = str(error)
             except (OSError, ValueError, KeyError, ImportError, RuntimeError) as error:
                 clear_prediction()
                 st.error(f"Unable to score this order: {error}")
@@ -233,8 +257,15 @@ def render(header, panel_metrics, chart):
                     st.warning(f"The historical review is unavailable: {error}")
             st.download_button("Download this risk prediction", pd.DataFrame([result]).to_csv(index=False),
                                file_name=f"low_review_{version}_{selected[-6:]}.csv", mime="text/csv")
+            if "clf_explanation" in st.session_state:
+                from deployment.classification_explanation_ui import render_explanation
+                render_explanation(st.session_state["clf_explanation"], key="historical_" + version,
+                                   input_values=st.session_state.get("clf_explanation_values"))
+            elif "clf_explanation_error" in st.session_state:
+                st.info("The prediction is available, but its factor explanation could not be loaded: "
+                        + st.session_state["clf_explanation_error"])
     with st.expander("How this demonstration runs"):
-        st.write("The original fitted history transformer and preprocessor were applied once at export to these fixed examples. Clicking Run evaluates the uploaded model’s fitted forest on the selected prepared row. No training or model selection runs in the app.")
+        st.write("Historical examples use the original preprocessing prepared at export. New order / CSV runs the exported fitted history transformer, imputer and encoders on the supplied features. Clicking Run evaluates the uploaded model’s fitted forest. No training or model selection runs in the app.")
         st.write("Frozen seller and route history comes only from events stored by the fitted pipeline, with each lookup strictly before the order’s purchase. It is not refreshed with later test reviews. Current-order review fields never enter prediction.")
         st.write("The portable forest preserves every tree, split, missing-value route and leaf score. This keeps the existing regression runtime compatible with the teammates’ newer classification training environment.")
         verification = spec["verification"]

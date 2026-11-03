@@ -45,8 +45,8 @@ After changing the evidence adapter or table schema, reboot the Cloud app and ve
 | Page | Use |
 |---|---|
 | Overview | Filter by purchase period and customer states; switch the order/sales trend and continue into the explorer with the same selection. |
-| Delivery prediction | Browse historical examples with Previous, Next or Random; calculate a real forecast, then optionally reveal the actual delivery and download the prediction. |
-| Low-review prediction | Select a historical order and run either uploaded classification forest; compare the raw risk score with its frozen validation threshold, then optionally reveal the review or download the prediction. |
+| Delivery prediction | Browse historical examples or edit/upload new purchase-time feature rows; run the fitted predictor and download forecasts. Only historical examples offer outcome reveal. |
+| Low-review prediction | Score historical examples or edit/upload feature rows with either fitted forest; inspect signed factor contributions, compare the raw score with its frozen threshold, and download predictions. |
 | Model evidence | View training, validation and test scores; switch classification between v1 and the strict-cutoff supplement; inspect the new experiments, daily capacity, calibration and classification stacking. Delivery stacking has its own tab. |
 | Marketplace explorer | Original Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview. |
 | Guide & methodology | Instructions, prediction-time definitions, evaluation limitations and sources. |
@@ -103,7 +103,7 @@ are in a separate file and never enter prediction. The quote comparison is
 between point estimates, not a lateness probability or prediction interval.
 
 The **Low-review prediction** page evaluates the uploaded, already fitted random
-forests on 120 fixed historical examples. The strict-cutoff model is the demo
+forests on 120 fixed historical examples or supplied feature rows. The strict-cutoff model is the demo
 default, and v1 is a separately labelled retrospective comparison. This does not
 change the project’s evaluation headline or model-selection decisions.
 Its prediction point is T = min(delivered, promised delivery); its 21,058 test orders
@@ -123,10 +123,10 @@ time. The prediction result explicitly names its selected model. Input-table
 missing values can come from absent source data as well as event availability
 or version-specific masking.
 
-The fitted history transformer and preprocessing are applied once during export;
-the prediction button evaluates the fitted forest on the selected prepared row.
-The interface therefore supports read-only historical examples, not arbitrary new
-inputs. Every tree split, missing-value route and leaf score is preserved in a
+Historical examples use preprocessing prepared during export. **New order / CSV**
+runs the exported fitted history lookup, imputer and categorical encoders on
+validated supplied rows before evaluating the same forest. Every tree split,
+missing-value route and leaf score is preserved in a
 NumPy-only runtime. All 120 examples match the original fitted pipeline and saved
 scores to within 1e-10 for both versions. Strict input rows also apply the original
 post-T event masking. Current-order review labels and fit-only outcome context
@@ -136,6 +136,23 @@ Single-order flags use the corresponding frozen validation threshold: v1
 0.5474615225207792, strict 0.5415134093587367. They never rank a one-row batch
 as the top 20%. These raw forest scores are not calibrated probabilities. Changing
 the model, filter, order or page clears the score, download and revealed review.
+
+Both tasks accept a feature-ready CSV (maximum 100 orders / 2 MiB) or an editable
+reference row with a new order ID. Download templates and field definitions in
+the input panel. An order ID alone is insufficient. Explicit recalculation updates
+derived fields, while seller counts/tenure and product/basket aggregates remain
+caller supplied. Classification requires source-event timestamps where dependent
+values are populated and masks post-T information. Its history remains frozen;
+uploaded rows and later reviews never refresh it. Automatic working-day derivation
+uses the original 2016–2018 calendar; other years require explicit inputs.
+
+**Why this risk score?** explains each classification prediction with signed
+decision-path contributions by business group or original feature, including
+recorded values. Root baseline plus every contribution equals the raw score.
+This is not SHAP or a causal explanation, and the baseline is not prevalence or
+the threshold. Supplied rows never reveal historical outcomes. See the
+[deployment guide](../Phase_3/deployment/README.md#new-order-input-and-individual-risk-explanations)
+for fitted-pipeline export and input-contract details.
 
 The new **Classification assessment** selector adds the strict-cutoff rerun:
 test PR-AUC 0.3738, recall 53.5% at top 20%, and 70,054 training orders. That run

@@ -146,6 +146,11 @@ def clear_forecast():
     st.session_state["demo_reveal"] = False
     st.session_state.pop("clf_forecast", None)
     st.session_state["clf_reveal"] = False
+    for name in ("clf_explanation", "clf_explanation_values", "clf_explanation_error",
+                 "new_delivery_result", "new_delivery_identity",
+                 "new_classification_v1_result", "new_classification_v1_identity",
+                 "new_classification_strict_result", "new_classification_strict_identity"):
+        st.session_state.pop(name, None)
 
 
 def change_example(order_ids, direction):
@@ -188,7 +193,7 @@ def panel_metrics(items, key):
 
 
 def overview(ev):
-    header("A clearer view of every delivery.", "Explore the marketplace, forecast a historical order, and see the evidence behind the models.")
+    header("A clearer view of every delivery.", "Explore the marketplace, predict delivery and review risk for supplied order features, and inspect the evidence behind the models.")
     raw = marketplace()
     filters = shared_filters.init_filters(st.session_state, raw)
     choices = shared_filters.filter_options(raw)
@@ -254,12 +259,12 @@ def overview(ev):
     with a, st.container(border=True):
         st.markdown('<span class="pill">PURCHASE-TIME FORECAST</span>', unsafe_allow_html=True)
         st.subheader("How long might this delivery take?")
-        st.write("Choose a held-out 2018 order and run the frozen delivery model. Reveal the historical outcome after the prediction.")
+        st.write("Choose a historical example or supply purchase-time features in the editor or CSV, then run the frozen delivery model.")
         st.button("Try a delivery prediction →", on_click=navigate, args=("Delivery prediction",), type="primary")
     with b, st.container(border=True):
         st.markdown('<span class="pill">REVIEW RISK AT T</span>', unsafe_allow_html=True)
         st.subheader("Which orders may need attention?")
-        st.write("Select a historical order, run the frozen low-review classifier, then optionally reveal its actual review.")
+        st.write("Score a historical example or supplied order features, then see which factors raised or lowered its risk score.")
         st.caption("Strict-cutoff demonstration with a fixed validation threshold; v1 is also available for comparison.")
         st.button("Try a low-review prediction →", on_click=navigate, args=("Low-review prediction",))
     with c, st.container(border=True):
@@ -276,8 +281,8 @@ def overview(ev):
 
 
 def prediction():
-    header("A delivery forecast, before fulfilment.", "Run the frozen regression model on a held-out historical purchase. Actual delivery information is kept separate from the prediction inputs.")
-    st.caption("1. Choose an order → 2. Calculate its forecast → 3. Optionally reveal the historical outcome")
+    header("A delivery forecast, before fulfilment.", "Run the frozen regression model on a historical example or your own purchase-time order features.")
+    st.caption("Choose an input source, validate the order features, then explicitly run a forecast. Historical outcomes are separate and optional.")
     required = ["regression_model.joblib", "example_inputs.parquet", "manifest.json"]
     if any(not (ASSETS / name).exists() for name in required):
         clear_forecast()
@@ -291,6 +296,13 @@ def prediction():
     except (OSError, ValueError, KeyError, ImportError) as error:
         clear_forecast()
         st.warning(f"The delivery demonstration package is unavailable: {error}")
+        return
+    source = st.radio("Order source", ["Historical examples", "New order / CSV"],
+                      key="delivery_source", horizontal=True, on_change=clear_forecast)
+    if source == "New order / CSV":
+        from deployment.regression_custom_page import render
+        render(examples=inputs, manifest=manifest, deployment_id=deployment_id,
+               load_bundle=lambda: demo_bundle(manifest_text), panel_metrics=panel_metrics)
         return
     with st.container(key="olist_split_prediction"):
         controls, output = st.columns([1, 1.65], gap="large")
@@ -541,7 +553,7 @@ def classification_evidence(ev):
         st.dataframe(cv[["family", "train_pr_auc_mean", "cv_pr_auc_mean", "cv_pr_auc_sd", "cv_recall_at_capacity_mean"]], hide_index=True, width="stretch")
         st.dataframe(source["criteria"], hide_index=True, width="stretch")
         st.write("Delivery status is available at this task's trigger time. This classifier is evaluated later in the order lifecycle than the purchase-time regression model.")
-        st.caption("Aggregate classification metrics are saved assessments. Low-review prediction evaluates the fitted classification forest on fixed historical examples using raw, uncalibrated scores.")
+        st.caption("Aggregate classification metrics are saved assessments. Low-review prediction evaluates the fitted classification forest on historical examples or supplied features using raw, uncalibrated scores.")
     suffix = "strict" if use_strict else "v1"
     st.download_button("Download all classification operating rules", rules.to_csv(index=False), f"classification_{suffix}_operating_points.csv", "text/csv")
     classification_followup(ev, update)
@@ -681,6 +693,7 @@ def guide(ev):
     with left, st.container(border=True):
         st.subheader("Try the delivery demonstration")
         st.markdown("1. Open **Delivery prediction** and select a historical order. Use Previous, Next or Random to browse within the current month and destination.\n2. Click **Calculate delivery forecast** to run the fitted model.\n3. Reveal the historical outcome to compare, then download the forecast.")
+        st.write("For your own orders, choose **New order / CSV**. Edit the feature values or download and upload a completed template. Use **Recalculate derived fields** after editing dates, prices or routes, correct any validation errors, then click **Run delivery predictions**. CSV batches support up to 100 orders and 2 MiB.")
         st.caption("The recorded promise is an input, not the observed delivery outcome. The model estimates a duration; it does not return a calibrated probability of lateness.")
         st.caption("Changing the selection or leaving the page clears the forecast and revealed outcome. Each new calculation starts with the outcome hidden.")
     with right, st.container(border=True):
@@ -692,7 +705,9 @@ def guide(ev):
     with st.container(border=True):
         st.subheader("Try the low-review demonstration")
         st.markdown("1. Open **Low-review prediction** and select a model and historical order by trigger month and destination.\n2. Click **Run low-review prediction** to evaluate the fitted forest.\n3. Compare its raw risk score with the model’s frozen validation threshold, then optionally reveal the actual review or download the prediction.")
-        st.caption("The strict-cutoff version is the demo default; v1 remains the project’s evaluation headline. The examples are read-only: fitted history and preprocessing are prepared offline, and the forest runs when you click. Scores are not calibrated probabilities. A single-order threshold check is not a top-20% ranking.")
+        st.write("For a supplied order, choose **New order / CSV**, complete the editor or CSV template, and click **Run new-order risk predictions**. Supply features at T, including source-event timestamps and purchase-time seller counts and tenure. The fitted encoders and frozen history run on these inputs; an order ID alone is insufficient.")
+        st.write("After either risk prediction, **Why this risk score?** shows factors that raised or lowered it. Switch between business groups and original features; the full table includes recorded values and signed contributions. Root baseline plus all contributions equals the raw risk score. This decision-path explanation is not SHAP or a causal effect.")
+        st.caption("The strict-cutoff version is the demo default; v1 remains the project’s evaluation headline. Scores are not calibrated probabilities. A single-order threshold check is not a top-20% ranking. Automatic working-day recalculation uses the original 2016–2018 holiday calendar; for other years supply the working-day fields explicitly.")
         st.caption("Changing the model, filters or order, or leaving the page, clears the previous score and review. Current review labels stay separate from prediction inputs.")
         st.button("Open low-review prediction →", on_click=navigate, args=("Low-review prediction",))
     st.subheader("Read the two tasks correctly")
@@ -708,7 +723,7 @@ def guide(ev):
             st.write("The new daily-capacity diagnostic ranks orders separately by T-day. It is a retrospective v1/v2 analysis and does not verify a live queue of customers who can still be contacted before answering a review. July recall remains below 50% in both v1 and strict monthly assessments.")
         else:
             st.write("The original classification assessment has label and event availability limitations; a purge gap alone does not enforce those cutoffs. Strict-cutoff evidence is not available in this checkout.")
-        st.write("Low-review risk is not evidence that contacting a customer will improve their review. Interactive pages evaluate the frozen delivery model and the uploaded classification forests on fixed examples. Classification experiments, calibration and stacking remain saved assessments; calibration is not applied to the interactive raw risk scores.")
+        st.write("Low-review risk is not evidence that contacting a customer will improve their review. Interactive pages evaluate the frozen delivery model and the uploaded classification forests on historical examples or supplied feature rows. Frozen classification history is not refreshed with uploaded orders or later reviews. Classification experiments, calibration and stacking remain saved assessments; calibration is not applied to the interactive raw risk scores.")
         st.write("The data covers historical Olist orders. This demonstration neither connects to a live order feed nor establishes performance on today's marketplace.")
         st.write("Evaluation populations are restricted: regression uses completed deliveries, while classification uses orders with items and an observed review answered at or after T. Orders without a qualifying review are outside the classification assessment.")
     st.subheader("Sources & project materials")

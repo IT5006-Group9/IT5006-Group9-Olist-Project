@@ -1,0 +1,471 @@
+{
+  "format_version": 1,
+  "created_at": "2026-11-03T03:05:02.244905+00:00",
+  "direct_features": [
+    "n_items",
+    "n_distinct_products",
+    "n_sellers",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "total_order_value",
+    "total_weight_g",
+    "max_weight_g",
+    "total_volume_cm3",
+    "max_dimension_cm",
+    "main_category",
+    "n_categories",
+    "max_distance_km",
+    "any_distance_missing",
+    "same_state",
+    "same_city",
+    "customer_state",
+    "seller_state",
+    "customer_region",
+    "seller_region",
+    "customer_zip2",
+    "purchase_month_num",
+    "purchase_dow",
+    "purchase_hour",
+    "is_weekend",
+    "promised_days",
+    "days_to_shipping_limit",
+    "approval_lag_hours",
+    "main_payment_type",
+    "payment_max_installments",
+    "n_payment_methods",
+    "payment_total",
+    "seller_prior_orders",
+    "seller_tenure_days",
+    "is_delivered",
+    "actual_delivery_time",
+    "delivery_time_delta",
+    "carrier_shipped",
+    "carrier_handover_days",
+    "carrier_transit_days",
+    "wd_actual_delivery_time",
+    "wd_delivery_time_delta"
+  ],
+  "metadata_columns": [
+    "order_id",
+    "seller_id",
+    "order_purchase_timestamp",
+    "order_estimated_delivery_date",
+    "survey_trigger_time",
+    "t_month"
+  ],
+  "source_event_columns": [
+    "order_approved_at",
+    "order_delivered_carrier_date"
+  ],
+  "input_columns": [
+    "n_items",
+    "n_distinct_products",
+    "n_sellers",
+    "total_price",
+    "total_freight",
+    "freight_ratio",
+    "total_order_value",
+    "total_weight_g",
+    "max_weight_g",
+    "total_volume_cm3",
+    "max_dimension_cm",
+    "main_category",
+    "n_categories",
+    "max_distance_km",
+    "any_distance_missing",
+    "same_state",
+    "same_city",
+    "customer_state",
+    "seller_state",
+    "customer_region",
+    "seller_region",
+    "customer_zip2",
+    "purchase_month_num",
+    "purchase_dow",
+    "purchase_hour",
+    "is_weekend",
+    "promised_days",
+    "days_to_shipping_limit",
+    "approval_lag_hours",
+    "main_payment_type",
+    "payment_max_installments",
+    "n_payment_methods",
+    "payment_total",
+    "seller_prior_orders",
+    "seller_tenure_days",
+    "is_delivered",
+    "actual_delivery_time",
+    "delivery_time_delta",
+    "carrier_shipped",
+    "carrier_handover_days",
+    "carrier_transit_days",
+    "wd_actual_delivery_time",
+    "wd_delivery_time_delta",
+    "order_id",
+    "seller_id",
+    "order_purchase_timestamp",
+    "order_estimated_delivery_date",
+    "survey_trigger_time",
+    "t_month",
+    "order_approved_at",
+    "order_delivered_carrier_date"
+  ],
+  "text_columns": [
+    "order_id",
+    "seller_id",
+    "t_month",
+    "main_category",
+    "customer_state",
+    "seller_state",
+    "customer_region",
+    "seller_region",
+    "customer_zip2",
+    "main_payment_type"
+  ],
+  "region_by_state": {
+    "AC": "North",
+    "AM": "North",
+    "AP": "North",
+    "PA": "North",
+    "RO": "North",
+    "RR": "North",
+    "TO": "North",
+    "AL": "Northeast",
+    "BA": "Northeast",
+    "CE": "Northeast",
+    "MA": "Northeast",
+    "PB": "Northeast",
+    "PE": "Northeast",
+    "PI": "Northeast",
+    "RN": "Northeast",
+    "SE": "Northeast",
+    "DF": "Centre-West",
+    "GO": "Centre-West",
+    "MS": "Centre-West",
+    "MT": "Centre-West",
+    "ES": "Southeast",
+    "MG": "Southeast",
+    "RJ": "Southeast",
+    "SP": "Southeast",
+    "PR": "South",
+    "RS": "South",
+    "SC": "South"
+  },
+  "br_holidays": [
+    "2016-01-01",
+    "2016-02-08",
+    "2016-02-09",
+    "2016-03-25",
+    "2016-04-21",
+    "2016-05-01",
+    "2016-05-26",
+    "2016-09-07",
+    "2016-10-12",
+    "2016-11-02",
+    "2016-11-15",
+    "2016-12-25",
+    "2017-01-01",
+    "2017-02-27",
+    "2017-02-28",
+    "2017-04-14",
+    "2017-04-21",
+    "2017-05-01",
+    "2017-06-15",
+    "2017-09-07",
+    "2017-10-12",
+    "2017-11-02",
+    "2017-11-15",
+    "2017-12-25",
+    "2018-01-01",
+    "2018-02-12",
+    "2018-02-13",
+    "2018-03-30",
+    "2018-04-21",
+    "2018-05-01",
+    "2018-05-31",
+    "2018-09-07",
+    "2018-10-12",
+    "2018-11-02",
+    "2018-11-15",
+    "2018-12-25"
+  ],
+  "versions": {
+    "v1": {
+      "parameters": "v1_parameters.json",
+      "history": "v1_history.npz",
+      "example_inputs": "v1_example_inputs.parquet",
+      "forest": "../classification/v1_forest.npz",
+      "forest_sha256": "ce2eb137d0521cb640ac927263270a2ed1d4c6f047a205c70cb335cab43a8e08",
+      "source_model_sha256": "4ec7d0fe0eae3c308feb8bd31368bc6a4658b92ff7924c755e9d5a91b28102d9",
+      "selection_sha256": "44802a8d32918a6cbb701d6f5240c5a20d6892d9eb9f72b2aefe4d79d214f675",
+      "capacity_threshold": 0.5474615225207792,
+      "f1_threshold": 0.6722317587401676,
+      "classes": [
+        0,
+        1
+      ],
+      "n_features": 115,
+      "history_counts": {
+        "sd": {
+          "keys": 2215,
+          "events": 68585,
+          "latest_known_time": "2018-05-30 23:50:44"
+        },
+        "sr": {
+          "keys": 2320,
+          "events": 70054,
+          "latest_known_time": "2018-05-29 22:11:00"
+        },
+        "rd": {
+          "keys": 379,
+          "events": 68585,
+          "latest_known_time": "2018-05-30 23:50:44"
+        }
+      },
+      "event_cutoff": "2018-06-01 00:00:00",
+      "public_example_rows": 113
+    },
+    "strict": {
+      "parameters": "strict_parameters.json",
+      "history": "strict_history.npz",
+      "example_inputs": "strict_example_inputs.parquet",
+      "forest": "../classification/strict_forest.npz",
+      "forest_sha256": "9602bb785de20dd54fa54914014a1a2289e4f499ac994a269d1ea3ee550f7d39",
+      "source_model_sha256": "7d0d517355be65a895b5956c8d31ea368e2375dc83729b00f9d0bb1009414054",
+      "selection_sha256": "3ae1c5dfa86ddbc40cb739f3635f56e41cfe0d193d2008d8707aea3cdb972fb2",
+      "capacity_threshold": 0.5415134093587367,
+      "f1_threshold": 0.6227086088826111,
+      "classes": [
+        0,
+        1
+      ],
+      "n_features": 115,
+      "history_counts": {
+        "sd": {
+          "keys": 2215,
+          "events": 68504,
+          "latest_known_time": "2018-05-30 23:50:44"
+        },
+        "sr": {
+          "keys": 2320,
+          "events": 70054,
+          "latest_known_time": "2018-05-29 22:11:00"
+        },
+        "rd": {
+          "keys": 379,
+          "events": 68504,
+          "latest_known_time": "2018-05-30 23:50:44"
+        }
+      },
+      "event_cutoff": "2018-06-01 00:00:00",
+      "public_example_rows": 113
+    }
+  },
+  "files": {
+    "v1_parameters.json": "5720351053a86be141bdf9aa8e372cbea1cf67d142a2964b7f265c4e23d1b256",
+    "v1_history.npz": "0f08f31603b1044ae54f3634bcfb950bf12d36295ab46191d544b5f578a20ae9",
+    "v1_example_inputs.parquet": "d6f6a003d8860f537d32c477ca84eb957558d99e9af9b4b1a11fabba79daed7c",
+    "strict_parameters.json": "0e052d12f7ed44bbbf6178392cd81df552cd517636b4fc333786dd83c3292426",
+    "strict_history.npz": "b4383483fe4b5c6bd8f698b92cf7312c42523e29fe7eb0c4a6c0d30e8b15abb7",
+    "strict_example_inputs.parquet": "5dbab05e790b4649198e37a739f99b57a96e4c1a97b57db2d2a50cc7ef261f37",
+    "new_input_template.csv": "7828e00545a20d59ac3f9fb1bb770605991efce96bd77707b5b427a062094ea7"
+  },
+  "template_inputs": "new_input_template.csv",
+  "history_scope": "Only outcomes stored inside the original fitted pipeline; strict purchase-asof lookup and original fitted priors. No outcomes from new inputs update this frozen history.",
+  "seller_count_contract": "seller_prior_orders and seller_tenure_days must be supplied explicitly from operational purchase-time data. The exporter does not fabricate a complete post-training orders ledger.",
+  "source_event_contract": "Public rows require approval/carrier source timestamps whenever dependent derived fields are populated; strict R3 masks derived values for source events after T. Current review labels and post-T delivered timestamps are rejected.",
+  "editor_recalculation": "Only an explicit action recalculates calendar/price/state/source-event/delivery-at-T derived fields. Shipping-limit duration, city match, product aggregates, distance, seller counts and tenure remain caller supplied.",
+  "working_day_calendar": "Original fitted 2016\u20132018 holiday list; automatic working-day recalculation outside those years is refused.",
+  "old_demo_manifest_sha256": "897784bfeba3c137f8158b794e76aee5102147f2a21e517615307eae79879a30",
+  "export_environment": {
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "joblib": "1.6.0"
+  },
+  "provenance": {
+    "strict_feature_data_sha256": "f21ccd44e123e4214e029968ae8cd0239042e74b4140538932c6bcf8900e129b",
+    "course_sources": [
+      {
+        "table": "orders",
+        "file": "olist_orders_dataset.csv",
+        "rows": 99441,
+        "columns": 8,
+        "sha256": "8df58ef3d2d7e9944010f7beecd9b75367f5588ec6e3c91cec19ae3345ef9ecf"
+      },
+      {
+        "table": "items",
+        "file": "olist_order_items_dataset.csv",
+        "rows": 112650,
+        "columns": 7,
+        "sha256": "0bc4d068c4fe38cbb01bd90e8746e3c613fe7b4baef75fab7b0e329701c3e279"
+      },
+      {
+        "table": "payments",
+        "file": "olist_order_payments_dataset.csv",
+        "rows": 103886,
+        "columns": 5,
+        "sha256": "4f713964f2815dbbaa40b9488268c55aac3627bfce5aa96cf58d1f3616de3cc0"
+      },
+      {
+        "table": "reviews",
+        "file": "olist_order_reviews_dataset.csv",
+        "rows": 99224,
+        "columns": 7,
+        "sha256": "012b61c7593e34f51fa614efdf802b9c7056ce6aae5307ddb93236e7cfc797d7"
+      },
+      {
+        "table": "customers",
+        "file": "olist_customers_dataset.csv",
+        "rows": 99441,
+        "columns": 5,
+        "sha256": "983a422239e1712ded753b3bf9ecf47dc73f144d306029dcfa99e70a226883d2"
+      },
+      {
+        "table": "sellers",
+        "file": "olist_sellers_dataset.csv",
+        "rows": 3095,
+        "columns": 4,
+        "sha256": "1f643d2b950373b85735e7794b20986f528d7a000432e7c6f9bcbb44d0846a0e"
+      },
+      {
+        "table": "products",
+        "file": "olist_products_dataset.csv",
+        "rows": 32951,
+        "columns": 9,
+        "sha256": "3e6569628a17fbc75fd206ee357b59e20364b9afa90f5b6cd5b4d624c58aa9cc"
+      },
+      {
+        "table": "geo",
+        "file": "olist_geolocation_dataset.csv",
+        "rows": 1000163,
+        "columns": 5,
+        "sha256": "b514f6fc991b9566aeba02aa5d67e2c3630f034b60a0e05aa0d082a3b66d88d6"
+      },
+      {
+        "table": "translation",
+        "file": "product_category_name_translation.csv",
+        "rows": 71,
+        "columns": 2,
+        "sha256": "a81f0d1f27b27e7293f761bc79e3ce8f348ee39c4b3ed3e49bde38f478586278"
+      }
+    ],
+    "source_sha256": {
+      "src/classification/config.py": "96296325307e7187071050ad80533a429adb1f098c45046878d9625f60275b91",
+      "src/classification/features.py": "00be1422f79f59cf53309b2b0fc234beaa8e8dbb3cd6e5393b1d889a865dcb49",
+      "src/classification/models.py": "032212bdf2bba416c4ace8e46fed06bc8e64133c0c07792af6a14342ff06904d",
+      "src/classification/search.py": "399b8028d7d45d36329bafe29ec4762f69ff9c810c652eb36b47c68df1dca860",
+      "src/classification/evaluate.py": "736a31b07efd9ce66efdc906ac8f47823b5b52d4d0ec83c715ecf229bb35320d",
+      "src/classification/splits.py": "c83d95875aa7f18cd9a0cd0fbaae4e26cb941aa79b6d82e82b86e14110cf063d",
+      "src/classification/strict.py": "7817a48dbfd6dc9b72db22566e43f4d7f73876721d621b2e3db147eb961f8810",
+      "src/common/paths.py": "acf0fe2ebd7f3ca482452285df26ae5caa10c0019957c9b3be6d91ab649fd1ca",
+      "src/common/geography.py": "4f37030c2d0af9d0499c38aaaa585a539651f6d24915fc3b6d8c26690762385f",
+      "src/classification/data.py": "9f2cddd206f1aec61377877f852e41dcbc8335b480227ed95fe3a0e944664cf3"
+    },
+    "input_source": "All nine source CSV byte fingerprints verified and features reconstructed by the original source functions; no fitting",
+    "exporter_sha256": "2ead6ec596cc89dba52e2843a4c6bb872545353c37fc0e7c14911a652030bf23",
+    "portable_pipeline_runtime_sha256": "9455cfd8d35608492eeb120ca971b80ed6a106d993b9ad5e68e1756fa76f746b"
+  },
+  "verification": {
+    "no_fitting": true,
+    "protected_original_bytes_unchanged": true,
+    "historical_matrix_exact": true,
+    "versions": {
+      "v1": {
+        "historical_120": {
+          "rows": 120,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 9.992007221626409e-16
+        },
+        "new_order": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 1.1102230246251565e-16
+        },
+        "unknown_categories_missing_numeric": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 5.551115123125783e-16
+        },
+        "learned_missing_category": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        },
+        "two_new_orders": {
+          "rows": 2,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        }
+      },
+      "strict": {
+        "historical_120": {
+          "rows": 120,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 5.551115123125783e-16
+        },
+        "historical_public_contract": {
+          "rows": 113,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 5.551115123125783e-16
+        },
+        "historical_public_rejections": {
+          "rows": 7,
+          "orders": [
+            {
+              "order_id": "154029fef0e3e2f72ef09775cc9d1af1",
+              "reason": "Row 1 (order_id='154029fef0e3e2f72ef09775cc9d1af1'), order_delivered_carrier_date: a known approval/carrier event cannot precede purchase"
+            },
+            {
+              "order_id": "076f1fe978468db6b826f40f714da65f",
+              "reason": "Row 1 (order_id='076f1fe978468db6b826f40f714da65f'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "ab6d00347b9055691972ac20f00df77b",
+              "reason": "Row 1 (order_id='ab6d00347b9055691972ac20f00df77b'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "12f0d35d150a1645900980264e766cc6",
+              "reason": "Row 1 (order_id='12f0d35d150a1645900980264e766cc6'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "6b66feb014823833433d386dad897fcd",
+              "reason": "Row 1 (order_id='6b66feb014823833433d386dad897fcd'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "af79819a5f90540c8d9a0eb9a4ed589c",
+              "reason": "Row 1 (order_id='af79819a5f90540c8d9a0eb9a4ed589c'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "083fa2fb9d3de18eabbb3427045a1a1f",
+              "reason": "Row 1 (order_id='083fa2fb9d3de18eabbb3427045a1a1f'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            }
+          ],
+          "scope": "Source-event sequence anomalies excluded only from new-order editor references; all 120 preserved for exact internal historical replay"
+        },
+        "new_order": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 3.3306690738754696e-16
+        },
+        "unknown_categories_missing_numeric": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        },
+        "learned_missing_category": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        },
+        "two_new_orders": {
+          "rows": 2,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        }
+      }
+    }
+  }
+}

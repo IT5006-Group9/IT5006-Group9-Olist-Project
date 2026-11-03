@@ -56,9 +56,57 @@ maximum absolute differences are below 1e-10. No training or selection was neede
 ## Behaviour
 
 * Original fitted history/preprocessing runs offline, with frozen training events looked up strictly before each order’s purchase. No test reviews refresh that history. Current-order fit-only outcome fields are neutralized; transformation/score invariance is verified before export.
-* The button runs the fitted forest. Examples are read-only; changing raw inputs would require the original compatible full preprocessing environment.
+* Historical examples retain their original prepared inputs. **New order / CSV** runs the full exported fitted preprocessing and history lookup on supplied feature rows using the same forest, with no fitting.
 * Single-order scores use each model’s own validation capacity threshold (strict 0.5415134093587367; v1 0.5474615225207792). The original scoring helper’s batch `flagged` field is not used: a one-order batch would always rank first. Fixed thresholding does not guarantee a 20% flag rate or 50% recall.
 * The raw score is not calibrated. The saved sigmoid calibration experiment is not applied to this score or threshold.
 * Changes of model, filter, order or page clear prior predictions, downloads and revealed reviews. Navigation never runs inference automatically.
 * Missing/corrupt demo assets produce a page-level message; marketplace exploration and aggregate evidence remain available.
 * No credentials or external services are used. There is no HTTP API.
+
+## New order input and individual risk explanations
+
+Both prediction pages offer **Historical examples** and **New order / CSV**.
+The new-order editor starts from a recorded feature row under a new order ID;
+users must change it to describe their order. CSV templates contain all required
+headers, and batches are bounded to 100 rows and 2 MiB. Values are validated at
+the relevant prediction time; labels, outcome columns, duplicate IDs and
+inconsistent derived values are rejected. Calendar, price and route fields can
+be recalculated with an explicit button. Validation and navigation never score
+automatically. Editing input, replacing a CSV, changing a model/source or leaving
+the page clears the previous predictions and download.
+
+Regression uses the existing verified deployment bundle and its purchase-time
+feature contract. Classification uses
+[classification_pipeline_runtime.py](classification_pipeline_runtime.py),
+[fitted parameters and history](assets/classification_pipeline/manifest.json)
+and the existing portable forests. The inference-only
+[exporter](build_classification_pipeline.py) reads the original fitted bundles,
+exports imputation values, one-hot/target encodings and cumulative frozen history,
+and verifies exact float32 transformed matrices and scores against those bundles.
+It does not train or select a model. The dashboard does not import the newer
+training environment or load classification pickles.
+
+The classification template has 43 direct fields, six metadata fields and two
+source-event timestamps. Seller prior-order count and tenure are caller supplied;
+the frozen history is not a complete operational order ledger. Historical outcome
+statistics are looked up strictly before purchase from fitted events only. New
+rows never update this history. Either forest's new-order adapter masks events
+after T. Automatic working-day recalculation is limited to the original
+2016–2018 holiday calendar; other years require explicit working-day inputs.
+Neither minimal raw order entry nor order-ID lookup alone supplies all features.
+The new-order editor offers 113 source-consistent reference rows. Seven of the
+120 historical records contain known carrier/approval timestamps in reverse
+order; they remain available for faithful historical reproduction but are
+excluded from editable new-order references. Their IDs and validation reasons
+are recorded in the new pipeline manifest.
+
+Every risk prediction can display **Why this risk score?** in business groups or
+original features, with recorded values and signed contributions. The exact
+decision-path decomposition averages root scores and child-minus-parent changes
+over the fitted forest. All contributions plus the root baseline reconstruct the
+raw score; smaller bars are retained in Other. This is the Saabas/decision-path
+method, not SHAP. It depends on split order and correlated features and does not
+identify causal effects or guarantee the effect of editing an input. The baseline
+is neither prevalence nor the operating threshold. New-order rows never reveal
+historical labels, even if their IDs match an example. Downloads contain scores
+and model/package provenance only.
