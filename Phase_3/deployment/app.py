@@ -29,7 +29,7 @@ ASSETS = HERE / "assets"
 REPO = "https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project"
 BRIEF = "https://prakashsukhwal.github.io/IT5006/IT5006_Project_Description_2026Aug_V2.html"
 BLUE, TEAL, AMBER, INK, MUTED = "#4263eb", "#13877c", "#b97728", "#182b49", "#6c7c93"
-PAGES = ["Overview", "Delivery prediction", "Model evidence", "Marketplace explorer", "Guide & methodology"]
+PAGES = ["Overview", "Delivery prediction", "Low-review prediction", "Model evidence", "Marketplace explorer", "Guide & methodology"]
 DISPLAY_LABELS = {
     "HGB_risk": "HGB + risk (selected)",
     "HGB_risk_current_main": "Main HGB + risk",
@@ -141,6 +141,8 @@ def clear_forecast():
     """Keep every new selection behind an explicit predict and reveal action."""
     st.session_state.pop("delivery_forecast", None)
     st.session_state["demo_reveal"] = False
+    st.session_state.pop("clf_forecast", None)
+    st.session_state["clf_reveal"] = False
 
 
 def change_example(order_ids, direction):
@@ -243,13 +245,19 @@ def overview(ev):
         st.caption("Eight states with the most delivered orders in your selection.")
     st.subheader("Move from patterns to decisions")
     with st.container(key="olist_split_overview_actions"):
-        a, b = st.columns(2)
+        a, b, c = st.columns(3)
     with a, st.container(border=True):
         st.markdown('<span class="pill">PURCHASE-TIME FORECAST</span>', unsafe_allow_html=True)
         st.subheader("How long might this delivery take?")
         st.write("Choose a held-out 2018 order and run the frozen delivery model. Reveal the historical outcome after the prediction.")
         st.button("Try a delivery prediction →", on_click=navigate, args=("Delivery prediction",), type="primary")
     with b, st.container(border=True):
+        st.markdown('<span class="pill">REVIEW RISK AT T</span>', unsafe_allow_html=True)
+        st.subheader("Which orders may need attention?")
+        st.write("Select a historical order, run the frozen low-review classifier, then optionally reveal its actual review.")
+        st.caption("Strict-cutoff demonstration with a fixed validation threshold; v1 is also available for comparison.")
+        st.button("Try a low-review prediction →", on_click=navigate, args=("Low-review prediction",))
+    with c, st.container(border=True):
         st.markdown('<span class="pill">MODEL EVIDENCE</span>', unsafe_allow_html=True)
         st.subheader("What supports the model choice?")
         st.write(f"Delivery test MAE: {ev['regression_summary']['test']['mae']:.2f} days. Low-review test PR-AUC: {ev['classification_summary']['test']['pr_auc']:.3f}.")
@@ -643,8 +651,14 @@ def guide(ev):
         st.subheader("Explore the original marketplace dashboard")
         st.write("The original five tabs remain available: Orders, Delivery, Reviews, Categories and Geography.")
         st.write("Overview and Marketplace explorer share purchase dates, customer states, categories, payments, route and delivered-only filters. Both pages show the current selection and offer Reset all filters.")
-        st.caption("Delivery demonstration filters are separate. Model evaluation uses fixed historical cohorts and is unaffected by exploration filters.")
+        st.caption("Prediction demonstration filters are separate. Model evaluation uses fixed historical cohorts and is unaffected by exploration filters.")
         st.button("Open marketplace explorer →", on_click=navigate, args=("Marketplace explorer",))
+    with st.container(border=True):
+        st.subheader("Try the low-review demonstration")
+        st.markdown("1. Open **Low-review prediction** and select a model and historical order by trigger month and destination.\n2. Click **Run low-review prediction** to evaluate the fitted forest.\n3. Compare its raw risk score with the model’s frozen validation threshold, then optionally reveal the actual review or download the prediction.")
+        st.caption("The strict-cutoff version is the demo default; v1 remains the project’s evaluation headline. The examples are read-only: fitted history and preprocessing are prepared offline, and the forest runs when you click. Scores are not calibrated probabilities. A single-order threshold check is not a top-20% ranking.")
+        st.caption("Changing the model, filters or order, or leaving the page, clears the previous score and review. Current review labels stay separate from prediction inputs.")
+        st.button("Open low-review prediction →", on_click=navigate, args=("Low-review prediction",))
     st.subheader("Read the two tasks correctly")
     st.table(pd.DataFrame([
         {"Task": "Delivery regression", "Prediction point": "Purchase", "Target": "Days until customer delivery", "Test orders": ev["metadata"]["regression_test_n"]},
@@ -658,7 +672,7 @@ def guide(ev):
             st.write("The new daily-capacity diagnostic ranks orders separately by T-day. It is a retrospective v1/v2 analysis and does not verify a live queue of customers who can still be contacted before answering a review. July recall remains below 50% in both v1 and strict monthly assessments.")
         else:
             st.write("The original classification assessment has label and event availability limitations; a purge gap alone does not enforce those cutoffs. Strict-cutoff evidence is not available in this checkout.")
-        st.write("Low-review risk is not evidence that contacting a customer will improve their review. Classification experiments, calibration and stacking remain saved assessments; the interactive prediction page uses the delivery regression model.")
+        st.write("Low-review risk is not evidence that contacting a customer will improve their review. Interactive pages evaluate the frozen delivery model and the uploaded classification forests on fixed examples. Classification experiments, calibration and stacking remain saved assessments; calibration is not applied to the interactive raw risk scores.")
         st.write("The data covers historical Olist orders. This demonstration neither connects to a live order feed nor establishes performance on today's marketplace.")
     st.subheader("Sources & project materials")
     st.link_button("Project brief", BRIEF)
@@ -693,6 +707,9 @@ else:
         overview(ev)
     elif page == "Delivery prediction":
         prediction()
+    elif page == "Low-review prediction":
+        from deployment.classification_page import render
+        render(header, panel_metrics, chart)
     elif page == "Model evidence":
         model_evidence(ev)
     else:

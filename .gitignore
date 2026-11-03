@@ -11,6 +11,7 @@ data/
 __pycache__/
 *.pyc
 .venv/
+.venv-classification-export/
 
 # Local editor/tooling
 .claude/

@@ -14,18 +14,21 @@ Use Python **3.11 or 3.12**, from the repository root:
     python -m pip install -r dashboard/requirements.txt
     python -m streamlit run dashboard/app.py
 
-The app includes a fitted regression model, 120 purchase-time examples, separate
-historical outcomes and a provenance manifest in Phase_3/deployment/assets/.
+The app includes a fitted regression model, the two uploaded fitted classification
+forests, 120 examples per task, separate historical outcomes and provenance
+manifests in Phase_3/deployment/assets/.
 No raw CSVs, credentials or training are needed at runtime.
 
 Streamlit Cloud keeps the same repository, branch main, entry dashboard/app.py
 and existing URL. The adjacent requirements file pins the runtime, including
-scikit-learn 1.7.2 for the fitted artifact. The root requirements file also includes
+scikit-learn 1.7.2 for the regression artifact. Classification uses exported
+numeric forest arrays, keeping the teammates’ newer training dependencies out
+of this runtime. The root requirements file also includes
 these same constraints so root-based dependency discovery stays consistent.
 No secrets are required.
 
 The existing Cloud app is configured with Python 3.12. Online prediction,
-outcome reveal, all five pages and classification operating-rule switching were
+outcome reveal, the original five pages and classification operating-rule switching were
 verified after rebuilding the environment. See the
 [online verification record](../Phase_3/deployment/live_verification.json) and
 [deployed screenshots](../Phase_3/docs/dashboard/README.md).
@@ -38,6 +41,7 @@ After changing the evidence adapter or table schema, reboot the Cloud app and ve
 |---|---|
 | Overview | Filter by purchase period and customer states; switch the order/sales trend and continue into the explorer with the same selection. |
 | Delivery prediction | Browse historical examples with Previous, Next or Random; calculate a real forecast, then optionally reveal the actual delivery and download the prediction. |
+| Low-review prediction | Select a historical order and run either uploaded classification forest; compare the raw risk score with its frozen validation threshold, then optionally reveal the review or download the prediction. |
 | Model evidence | View training, validation and test scores; switch classification between v1 and the strict-cutoff supplement; inspect the new experiments, daily capacity, calibration and classification stacking. Delivery stacking has its own tab. |
 | Marketplace explorer | Original Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview. |
 | Guide & methodology | Instructions, prediction-time definitions, evaluation limitations and sources. |
@@ -49,7 +53,7 @@ all filters** restores the default January 2017–August 2018 window and clears
 the other conditions. Overview's **Clear extra filters** preserves dates and states.
 An empty intersection keeps the controls available so it can be adjusted or reset.
 
-Delivery demonstration filters are separate. Its navigation stays within the
+Prediction demonstration filters are separate. Navigation stays within the
 selected month and destination and never calculates a prediction automatically.
 The full-width **See the purchase-time inputs** table includes Input, Value and
 Meaning / units for all 39 supplied features plus the order ID and purchase
@@ -76,12 +80,29 @@ selected by an order-ID hash without using outcomes. Actual delivery and labels
 are in a separate file and never enter prediction. The quote comparison is
 between point estimates, not a lateness probability or prediction interval.
 
-Classification is a saved evaluation view, not a second live predictor. Its
-prediction point is T = min(delivered, promised delivery); its 21,058 test orders
+The **Low-review prediction** page evaluates the uploaded, already fitted random
+forests on 120 fixed historical examples. The strict-cutoff model is the demo
+default, and v1 is a separately labelled retrospective comparison. This does not
+change the project’s evaluation headline or model-selection decisions.
+Its prediction point is T = min(delivered, promised delivery); its 21,058 test orders
 differ from regression's 18,603 purchase-window orders. Recall 53.23% applies to
 ranking the top 20% of the entire test window. The frozen validation threshold
 has a different flag rate and recall. **v1 remains the headline**, as specified
 by the latest classification methods and selection artifacts.
+
+The fitted history transformer and preprocessing are applied once during export;
+the prediction button evaluates the fitted forest on the selected prepared row.
+The interface therefore supports read-only historical examples, not arbitrary new
+inputs. Every tree split, missing-value route and leaf score is preserved in a
+NumPy-only runtime. All 120 examples match the original fitted pipeline and saved
+scores to within 1e-10 for both versions. Strict input rows also apply the original
+post-T event masking. Current-order review labels and fit-only outcome context
+are excluded; the review file is read only after an explicit reveal.
+
+Single-order flags use the corresponding frozen validation threshold: v1
+0.5474615225207792, strict 0.5415134093587367. They never rank a one-row batch
+as the top 20%. These raw forest scores are not calibrated probabilities. Changing
+the model, filter, order or page clears the score, download and revealed review.
 
 The new **Classification assessment** selector adds the strict-cutoff rerun:
 test PR-AUC 0.3738, recall 53.5% at top 20%, and 70,054 training orders. That run
@@ -128,6 +149,18 @@ It performs no tuning or new aggregate test assessment.
 Run the dashboard checks:
 
     python -m unittest discover -s Phase_3/tests -p 'test_dashboard*.py'
+
+To re-export the **already fitted** uploaded classification bundles, use a separate
+environment matching their NumPy/pandas/scikit-learn versions (recorded in the
+classification asset manifest), then run:
+
+    python Phase_3/deployment/build_classification_demo.py --csv-dir /path/to/Olist_CSV
+
+This classification exporter performs no fitting, search or model selection. It
+verifies course CSV hashes, the full strict feature-table hash, frozen test IDs,
+version-specific thresholds and every example’s score against the uploaded
+pipeline and saved results. It records source differences that are not executed
+for transformation. Do not upgrade the dashboard environment to run this exporter.
 
 The original application can also run independently:
 
