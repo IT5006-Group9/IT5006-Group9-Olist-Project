@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "verified_at_utc": "2026-11-03T02:34:21.413448+00:00",
+  "url": "https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/",
+  "application_code_commit_at_browser_test": "6e0c7e6c09249cfd875b82e0fcd604edb9687214",
+  "scope": "Dashboard self-audit: explanatory corrections and optional-outcome resilience; no model fitting or evaluation changes.",
+  "fixes": [
+    "Remove obsolete regression-only interactive prediction wording",
+    "State selected classification version and uncalibrated score meaning beside its result",
+    "Explain source missingness separately from event masking",
+    "Disclose classification assessment cohort and deployment regression refit",
+    "Read optional delivery outcomes only after reveal; keep forecast/download available on outcome read failure",
+    "Clear old forecasts and display controlled messages on input/model loading failures"
+  ],
+  "automated_checks": {
+    "command": ".venv/bin/python -m unittest discover -s Phase_3/tests -p 'test_dashboard*.py'",
+    "total": 59,
+    "passed": 58,
+    "skipped": 1,
+    "skip_reason": "Original classifier-pickle test requires matching export environment; previously passed there and models are unchanged.",
+    "new_failure_injection_tests": {
+      "total": 4,
+      "passed": 4,
+      "location": "../tests/test_dashboard_regression_resilience.py",
+      "cases": [
+        "Unreadable optional outcomes do not affect inference or download; reveal shows warning",
+        "Missing outcome file does not block inference",
+        "Input loading failure clears old forecast and revealed state",
+        "Model loading OSError is controlled and clears the result"
+      ]
+    }
+  },
+  "local_browser_check": {
+    "viewport": {
+      "width": 360,
+      "height": 800
+    },
+    "document_width": 360,
+    "main_client_width": 360,
+    "main_scroll_width": 360,
+    "classification_navigation_buttons_fit": true,
+    "score_and_threshold_fit": true,
+    "temporary_viewport_override_reset": true
+  },
+  "online_browser_checks": {
+    "regression_predicted_days_displayed": "18.7",
+    "regression_example_suffix": "6c018a",
+    "regression_reveal_actual_days_displayed": "26.8",
+    "regression_absolute_error_displayed": "8.1",
+    "regression_deployment_refit_notice_visible": true,
+    "classification_default_version": "strict",
+    "classification_example_suffix": "9e4b6e",
+    "classification_score_displayed": "0.890",
+    "classification_threshold_displayed": "0.5415",
+    "classification_model_identity_and_uncalibrated_notice_visible": true,
+    "classification_review_hidden": true,
+    "classification_assessment_cohort_notice_visible": true,
+    "corrected_evidence_explanation_visible": true
+  },
+  "screenshot": "../docs/dashboard/classification_self_audit.jpg",
+  "protected_original_files": {
+    "count": 251,
+    "all_unchanged": true
+  }
+}

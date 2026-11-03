@@ -74,5 +74,14 @@ and the existing regression forecast were checked on the original Cloud URL.
 The [classification deployment record](../../deployment/classification_live_verification.json)
 separates these browser checks from local tests and numerical export verification.
 
+The subsequent dashboard self-audit corrected obsolete interaction wording,
+clarified the classification cohort and missing values, and made optional delivery
+outcome reads independent of prediction. Model identity and score interpretation
+now sit beside the classification result. The
+[follow-up verification](../../deployment/self_audit_verification.json) includes
+four fault-injection tests and a 360 px layout check.
+
+![Classification result with model identity and score meaning](classification_self_audit.jpg)
+
 See the [dashboard guide](../../../dashboard/README.md) for setup, prediction
 semantics, evaluation sources and limitations.
