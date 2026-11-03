@@ -115,3 +115,21 @@ The [new-order verification record](new_orders_verification.json) documents the
 local, compatible-export and online checks, including actual Cloud CSV downloads
 matching local fitted inference. The [screenshots](../docs/dashboard/README.md#new-order-inputs-and-individual-risk-factors)
 show both supplied-order predictions and individual score contributions.
+
+## Task-focused exploratory analysis
+
+[task_eda.py](task_eda.py) calculates filter-specific descriptive aggregates from
+the existing committed order extract; [task_eda_ui.py](task_eda_ui.py) renders them
+inside the explorer's Delivery and Reviews tabs. The data file is not rebuilt.
+Delivery retains the complete tail and compares observed median/P90 across fixed
+order-attribute groups. Reviews uses valid observed 1–5 star scores, keeps missing
+delivery and invalid timing separate, and shows observed low-review shares with
+pointwise 95% Wilson intervals. Groups with fewer than 30 eligible outcomes retain
+counts but have blank estimates. Missing outcomes are never filled with zero.
+
+The calculations do not train models, rank model importance or select features.
+New delivery summaries use fractional elapsed timestamp days; legacy summary
+charts still use the extract's floored days. The marketplace review population
+has no review-answer timestamps and differs from the T-eligible classification
+assessment. The Guide's essential references are collapsed; internal work links
+and raw manifest JSON are kept out of the product interface.

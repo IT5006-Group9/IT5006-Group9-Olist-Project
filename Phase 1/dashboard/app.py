@@ -31,6 +31,12 @@ except ModuleNotFoundError as error:
     sys.path.insert(0, str(phase3_directory))
     import deployment.explorer_filters as shared_filters
 
+from deployment.task_eda_ui import (
+    render_delivery_features,
+    render_duration,
+    render_review_risk,
+)
+
 EMBEDDED = bool(globals().get("OLIST_EMBEDDED", False))
 DATA = Path(__file__).resolve().parent / "orders.parquet"
 GEOJSON = Path(__file__).resolve().parent / "br_states.geojson"
@@ -112,14 +118,14 @@ def note(text: str):
     )
 
 
-def takeaway(text: str):
+def takeaway(text: str, label: str = "Historical context · full default window"):
     """The one thing a tab is trying to say, always in the same place at its foot,
     so a reader never wonders why some charts carry prose and others do not."""
     gap(1.2)
     st.markdown(
         f"<div style='border-left:3px solid #3d5a9b;background:#f4f6fa;"
         f"padding:.7rem .95rem;border-radius:0 4px 4px 0;font-size:.9rem;"
-        f"line-height:1.55;color:#3a424f'><b style='color:#1c2430'>Historical context · full default window"
+        f"line-height:1.55;color:#3a424f'><b style='color:#1c2430'>{label}"
         f"</b><br>{text}</div>",
         unsafe_allow_html=True,
     )
@@ -320,7 +326,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.caption(
-    f"IT5006 Group 9 · Milestone 1 · {m_from} to {m_to} · "
+    f"IT5006 Group 9 · {'Marketplace explorer' if EMBEDDED else 'Milestone 1'} · {m_from} to {m_to} · "
     f"{len(d):,} of {len(df):,} orders selected"
 )
 
@@ -562,38 +568,10 @@ with tab_delivery:
 
 
         gap()
-        c3, c4 = st.columns(2)
+        render_duration(d)
 
-        with c3:
-            section("Delivery time by shipping distance")
-            sub = dd.dropna(subset=["distance_km", "delivery_days"])
-            if len(sub) > 50:
-                bins = [0, 50, 100, 200, 400, 700, 1000, 1500, 2000, 3000, 9000]
-                sub = sub.assign(bin=pd.cut(sub.distance_km, bins))
-                g2 = (sub.groupby("bin", observed=True)
-                      .agg(days=("delivery_days", "median"), n=("delivery_days", "size"))
-                      .reset_index())
-                g2 = g2[g2.n >= 20]
-                g2["mid"] = [b.mid for b in g2["bin"]]
-                fig = px.line(g2, x="mid", y="days", markers=True,
-                              color_discrete_sequence=[tone], hover_data={"n": True})
-                fig.update_layout(height=H_SHORT, margin=PAD,
-                                  xaxis_title="Customer–seller distance (km)",
-                                  yaxis_title="Delivery days (median)")
-                render(fig)
-            else:
-                st.info("Not enough orders with coordinates in this selection.")
-
-        with c4:
-            section("How long deliveries take")
-            fig = px.histogram(dd.delivery_days.clip(upper=60), nbins=60,
-                               color_discrete_sequence=[tone])
-            fig.add_vline(x=dd.delivery_days.median(), line_dash="dash", line_color=ACCENT_2,
-                          annotation_text=f"median {dd.delivery_days.median():.0f} d")
-            fig.update_layout(height=H_SHORT, margin=PAD, showlegend=False,
-                              xaxis_title="Days from purchase (clipped at 60)",
-                          yaxis_title="Orders")
-            render(fig)
+        gap()
+        render_delivery_features(d)
 
         gap()
         section("Late rate by customer state")
@@ -609,15 +587,13 @@ with tab_delivery:
         note("States with at least 50 delivered orders in the current selection.")
 
         takeaway(
-            "The promise is a safety buffer, not an estimate: Olist quotes a median of 23 days "
-            "and delivers in 10. That 13-day cushion, not fast delivery, is what holds the "
-            "on-time rate at 92% — and when operations slipped in March 2018 the cushion "
-            "thinned to 8 days and one order in five arrived late.<br><br>"
-            "Two consequences for Phase 2. Olist's own promise is already a predictor, so "
-            "\"predict the promise\" is the baseline a lead-time model has to beat — beating the "
-            "mean is not enough. And the late rate swings fifteen-fold between months (1.4% to "
-            "21.4%), so the train/test split has to be time-ordered; a random split would leak "
-            "the calm months into the test set."
+            "Read upper percentiles alongside the median to see slower deliveries that an average "
+            "can hide. Compare order-feature groups with their sample counts; route, category and "
+            "purchase period may also differ between groups.<br><br>"
+            "These relationships help explain the delivery task. They do not rank model importance "
+            "or select new features. Predictive value is assessed separately through forward validation "
+            "on Model evidence.",
+            label="How to read the delivery analysis",
         )
 
 
@@ -629,6 +605,8 @@ with tab_reviews:
     if rev.empty:
         st.info("No reviewed orders in the current selection.")
     else:
+        render_review_risk(d)
+        gap()
         c1, c2 = st.columns([2, 3])
 
         with c1:
@@ -690,11 +668,13 @@ with tab_reviews:
             note("Mean stars among observed reviews in the current selection; states require at least 50 reviews. Hover for the review count.")
 
         takeaway(
-            "Mean score falls by more than two stars between the fastest and slowest deliveries — "
-            "the steepest relationship anywhere in this dataset. Satisfaction is driven by the "
-            "delivery experience, which is only known <b>after</b> the fact, so a satisfaction "
-            "model has far less to work with at purchase time than a delivery model does. The "
-            "14% of orders rated one or two stars is the class imbalance such a model would face."
+            "The target of interest is a 1–2 star review, so compare low-review shares as well as "
+            "mean stars. Missing reviews do not count as satisfied customers. Differences across "
+            "delivery outcomes and order attributes are historical associations, not causal effects.<br><br>"
+            "Delivery outcomes are unavailable at purchase. For the low-review model, only events "
+            "available by its trigger time T can be used. These descriptive charts do not establish "
+            "which features improve prediction.",
+            label="How this relates to the low-review task",
         )
 
 

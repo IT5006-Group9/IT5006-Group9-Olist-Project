@@ -28,7 +28,6 @@ from deployment.input_help import INPUT_MEANINGS
 
 ASSETS = HERE / "assets"
 REPO = "https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project"
-BRIEF = "https://prakashsukhwal.github.io/IT5006/IT5006_Project_Description_2026Aug_V2.html"
 BLUE, TEAL, AMBER, INK, MUTED = "#4263eb", "#13877c", "#b97728", "#182b49", "#6c7c93"
 PAGES = ["Overview", "Delivery prediction", "Low-review prediction", "Model evidence", "Marketplace explorer", "Guide & methodology"]
 DISPLAY_LABELS = {
@@ -697,8 +696,8 @@ def guide(ev):
         st.caption("The recorded promise is an input, not the observed delivery outcome. The model estimates a duration; it does not return a calibrated probability of lateness.")
         st.caption("Changing the selection or leaving the page clears the forecast and revealed outcome. Each new calculation starts with the outcome hidden.")
     with right, st.container(border=True):
-        st.subheader("Explore the original marketplace dashboard")
-        st.write("The original five tabs remain available: Orders, Delivery, Reviews, Categories and Geography.")
+        st.subheader("Explore delivery and review patterns")
+        st.write("The five explorer tabs cover Orders, Delivery, Reviews, Categories and Geography. Delivery includes the duration tail and order-feature comparisons; Reviews focuses on the share of 1–2 star ratings across delivery outcomes and order attributes.")
         st.write("Overview and Marketplace explorer share purchase dates, customer states, categories, payments, route and delivered-only filters. Both pages show the current selection and offer Reset all filters.")
         st.caption("Prediction demonstration filters are separate. Model evaluation uses fixed historical cohorts and is unaffected by exploration filters.")
         st.button("Open marketplace explorer →", on_click=navigate, args=("Marketplace explorer",))
@@ -715,7 +714,7 @@ def guide(ev):
         {"Task": "Delivery regression", "Prediction point": "Purchase", "Target": "Days until customer delivery", "Test orders": ev["metadata"]["regression_test_n"]},
         {"Task": "Low-review classification", "Prediction point": "T = min(delivered, promised delivery)", "Target": "A later 1–2 star review", "Test orders": ev["metadata"]["classification_test_n"]},
     ]))
-    with st.expander("Evaluation method & practical limits", expanded=True):
+    with st.expander("Evaluation method & practical limits"):
         st.write("January–May 2018 provides five forward validation windows for model development. June–August 2018 is the later test period. Validation and test differ in periods, available history, outcome maturity and averaging.")
         st.write("Regression uses a 39-day gap and only labels observed before each training cutoff. The main model was selected by forward validation. Historical test exposure prevents interpreting these results as a newly untouched holdout.")
         if ev.get("classification_update", {}).get("strict", {}).get("available"):
@@ -726,16 +725,14 @@ def guide(ev):
         st.write("Low-review risk is not evidence that contacting a customer will improve their review. Interactive pages evaluate the frozen delivery model and the uploaded classification forests on historical examples or supplied feature rows. Frozen classification history is not refreshed with uploaded orders or later reviews. Classification experiments, calibration and stacking remain saved assessments; calibration is not applied to the interactive raw risk scores.")
         st.write("The data covers historical Olist orders. This demonstration neither connects to a live order feed nor establishes performance on today's marketplace.")
         st.write("Evaluation populations are restricted: regression uses completed deliveries, while classification uses orders with items and an observed review answered at or after T. Orders without a qualifying review are outside the classification assessment.")
-    st.subheader("Sources & project materials")
-    st.link_button("Project brief", BRIEF)
-    st.link_button("Phase 3 code, notebooks & evidence", REPO + "/tree/main/Phase_3")
-    st.link_button("Classification update: experiments & strict cutoff", REPO + "/blob/main/Phase_3/docs/classification.md")
-    st.link_button("Supplementary stacking report", REPO + "/blob/main/Phase_3/docs/regression/selected_stacking_holdout.md")
-    st.link_button("Quality audit & remaining report work", REPO + "/blob/main/Phase_3/docs/quality_audit.md")
-    st.link_button("Full feature & model appendix", REPO + "/blob/main/Phase_3/docs/report_appendix_features_models.md")
-    if (ASSETS / "manifest.json").exists():
-        with st.expander("Delivery demonstration provenance"):
-            st.json(json.loads((ASSETS / "manifest.json").read_text()))
+    with st.expander("Data, code & references"):
+        st.caption("The project uses the course-provided Olist data copy. The original dataset link below records its provenance.")
+        st.markdown(
+            "- [Original Olist dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)\n"
+            f"- [Project code and model evidence]({REPO}/tree/main/Phase_3)\n"
+            f"- [Feature and model definitions]({REPO}/blob/main/Phase_3/docs/report_appendix_features_models.md)\n"
+            f"- [Deployment versions and reproducibility]({REPO}/blob/main/Phase_3/deployment/README.md)"
+        )
 
 
 with st.sidebar:

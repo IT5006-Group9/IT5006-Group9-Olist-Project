@@ -48,8 +48,8 @@ After changing the evidence adapter or table schema, reboot the Cloud app and ve
 | Delivery prediction | Browse historical examples or edit/upload new purchase-time feature rows; run the fitted predictor and download forecasts. Only historical examples offer outcome reveal. |
 | Low-review prediction | Score historical examples or edit/upload feature rows with either fitted forest; inspect signed factor contributions, compare the raw score with its frozen threshold, and download predictions. |
 | Model evidence | View training, validation and test scores; switch classification between v1 and the strict-cutoff supplement; inspect the new experiments, daily capacity, calibration and classification stacking. Delivery stacking has its own tab. |
-| Marketplace explorer | Original Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview. |
-| Guide & methodology | Instructions, prediction-time definitions, evaluation limitations and sources. |
+| Marketplace explorer | Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview; task-focused duration and observed low-review analysis. |
+| Guide & methodology | Instructions, prediction-time definitions, evaluation limitations and collapsed data/code references. |
 
 Overview and Marketplace explorer share purchase dates, customer states,
 categories, payments, route and delivered-only filters. The current-filter summary
@@ -63,6 +63,30 @@ stay missing; delivery charts leave gaps for months below their 30-delivery
 minimum. State-rating charts use the full 0–5 axis so low averages remain visible.
 States below the 50-review minimum are explained rather than drawn as empty bars.
 Small filtered sales totals display reais and cents rather than rounding to 0.0M.
+
+Delivery now shows the complete duration distribution, including a separate
+`>60 days` bucket, P90/P95 and the share exceeding 30 days. The former clipped
+histogram is removed. A selector compares median and P90 across distance,
+freight/item-value share, item count and seller count; this replaces the earlier
+distance-only curve. New summaries use exact timestamp differences, including
+fractional calendar days, rather than the legacy extract's floored `delivery_days`.
+They cover valid recorded deliveries of any status and differ from the regression
+assessment population.
+
+Reviews starts with observed 1–2 star counts, share and review coverage. Horizontal
+dot plots compare the observed share by final delivery timing and by an order
+attribute, with pointwise 95% Wilson intervals. Reviewed orders without a recorded
+delivery remain a separate group. Missing reviews never count as satisfied or
+low-review customers. Fixed groups retain their counts, while estimates below
+30 valid outcomes remain blank. All summaries follow the shared selection.
+Payment records may finalize shortly after purchase. These are descriptive
+associations, not feature selection or causal effects; the compact extract lacks
+review-answer times and cannot reproduce the classifier's T-eligible cohort.
+
+The Guide retains original-data provenance, code, feature/model definitions and
+deployment notes under **Data, code & references**. Internal audit/todo links and
+the raw deployment-manifest display are removed from the interface; repository
+documents and artifacts remain available.
 
 The explorer's category filter assigns each whole order to its first recorded
 nonmissing English item category. Sales include that order's entire basket and

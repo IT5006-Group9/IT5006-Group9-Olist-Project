@@ -69,3 +69,13 @@ link, not a screenshot.
   series open and close on a misleading spike. Widen the slider to see them.
 - **GMV** is item price plus freight, matching the definition used in the
   notebooks.
+
+Delivery and Reviews also contain the Phase 3 task-focused EDA components.
+Delivery preserves a separate `>60 days` tail, shows P90/P95, and compares fixed
+order-attribute groups. Reviews focuses on observed 1–2 star shares, review
+coverage, final delivery timing and order attributes, with 95% Wilson intervals.
+Small groups retain counts while estimates below 30 eligible observations stay
+blank. These components use exact timestamp differences and valid observed
+reviews, follow the same sidebar filters, and do not alter models or the data
+extract. Their descriptive cohorts differ from model-evaluation cohorts; they
+show associations rather than causal effects or a new feature-selection result.
