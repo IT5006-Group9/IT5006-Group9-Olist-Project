@@ -133,3 +133,8 @@ charts still use the extract's floored days. The marketplace review population
 has no review-answer timestamps and differs from the T-eligible classification
 assessment. The Guide's essential references are collapsed; internal work links
 and raw manifest JSON are kept out of the product interface.
+
+The [focused EDA verification](focused_eda_verification.json) and
+[online screenshots](../docs/dashboard/README.md#delivery-and-review-eda-with-compact-references)
+record the numerical tests, layout checks, default metrics and shared-filter
+comparison. Original models, outputs and the committed data extract are unchanged.

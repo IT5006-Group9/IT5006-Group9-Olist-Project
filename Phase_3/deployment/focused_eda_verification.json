@@ -1,0 +1,132 @@
+{
+  "verified_at_utc": "2026-11-03T06:59:48.180233+00:00",
+  "app_url": "https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/",
+  "application_commit": "a2f51b156e5a80561c5793a3656787d8a4704e8e",
+  "scope": "Dashboard-only descriptive EDA and compact references; no training, model selection, notebook/report/slide changes or extract regeneration.",
+  "unchanged": {
+    "protected_original_model_source_output_files": 251,
+    "marketplace_extract_sha256": "e1fa66bfa7f43ac72ae015a557af7a1844d69caec42b3ad451cc11f3c84571ab",
+    "committed_extract_bytes_match": true
+  },
+  "local_checks": {
+    "dashboard_suite": {
+      "collected": 164,
+      "passed": 162,
+      "environment_specific_skipped": 2,
+      "command": ".venv/bin/python -m unittest discover -s Phase_3/tests -p test_dashboard*.py"
+    },
+    "new_eda_unit_checks": 23,
+    "new_eda_ui_checks": 5,
+    "final_axis_layout_recheck": {
+      "ui_checks": 5,
+      "passed": 5
+    },
+    "guide_smoke_check": "Collapsed references render, internal-work link buttons and raw manifest JSON absent.",
+    "numerical_fixture_coverage": [
+      "Exact fractional-day and right-closed boundary bins including zero and full >60-day tail.",
+      "Negative/invalid timings and absent outcomes kept distinct.",
+      "Observed integer 1–5 reviews only, low reviews 1–2, no missing review as a label.",
+      "Fixed feature groups preserve all selected and eligible counts.",
+      "min_n=30 uses eligible outcomes; small groups retain counts and blank estimates.",
+      "Pointwise 95% Wilson bounds, including all-zero/all-one groups.",
+      "Caller DataFrame is unchanged."
+    ]
+  },
+  "default_cohort": {
+    "purchase_months": [
+      "2017-01",
+      "2018-08"
+    ],
+    "delivery": {
+      "n_selected": 98353,
+      "n_valid_delivery": 96204,
+      "n_invalid_duration": 0,
+      "n_missing_delivery": 2149,
+      "p50": 10.210069444444445,
+      "p90": 23.06467476851852,
+      "p95": 29.21730671296295,
+      "over30_share": 0.046806785580641136
+    },
+    "duration_buckets": [
+      {
+        "label": "≤7 days",
+        "n": 26038,
+        "share": 0.27065402685959006
+      },
+      {
+        "label": "7–14 days",
+        "n": 40111,
+        "share": 0.4169369256995551
+      },
+      {
+        "label": "14–21 days",
+        "n": 17653,
+        "share": 0.1834954887530664
+      },
+      {
+        "label": "21–30 days",
+        "n": 7899,
+        "share": 0.08210677310714731
+      },
+      {
+        "label": "30–60 days",
+        "n": 4200,
+        "share": 0.04365722838967195
+      },
+      {
+        "label": ">60 days",
+        "n": 303,
+        "share": 0.0031495571909691904
+      }
+    ],
+    "reviews": {
+      "n_selected": 98353,
+      "n_reviews": 97609,
+      "n_low": 13813,
+      "low_share": 0.14151358993535432,
+      "n_missing_review": 744,
+      "n_invalid_review": 0
+    }
+  },
+  "RJ_filter_cohort": {
+    "delivery": {
+      "n_selected": 12713,
+      "n_valid_delivery": 12310,
+      "n_invalid_duration": 0,
+      "n_missing_delivery": 403,
+      "p50": 12.03607638888889,
+      "p90": 29.07984027777778,
+      "p95": 38.29626099537035,
+      "over30_share": 0.09374492282696995
+    },
+    "reviews": {
+      "n_selected": 12713,
+      "n_reviews": 12551,
+      "n_low": 2536,
+      "low_share": 0.20205561309855788,
+      "n_missing_review": 162,
+      "n_invalid_review": 0
+    }
+  },
+  "online_checks": [
+    "Updated source expander collapsed by default; four essential links verified on expansion, old course brief/quality audit/stacking buttons and raw manifest absent.",
+    "Delivery shows P90 23.1, P95 29.2, over30 4.7%, with all 303 >60-day orders labelled.",
+    "Review default shows 13,813 low reviews, 14.2% observed share, 99.2% coverage and 744 missing reviews.",
+    "Review charts are horizontal, labels readable, 0–100% axis explicit and 95% Wilson intervals shown.",
+    "Delivery selector switched to seller count; Review selector switched to main payment type with timing-availability note.",
+    "Shared RJ filter changed reviews to 2,536 / 12,551 = 20.2%, missing162, 12,713 selected orders.",
+    "Shared RJ filter changed delivery to P90 29.1 / P95 38.3, over30 9.4%, 12,310 valid durations."
+  ],
+  "interpretation_limits": [
+    "Descriptive cohort includes valid recorded deliveries regardless of final order status; it differs from regression evaluation.",
+    "Review extract lacks answer timestamps and cannot recreate the classifier T-eligible cohort.",
+    "Payment method may finalize shortly after purchase.",
+    "Groups are descriptive associations, not causal effects, model importance or a new feature-selection result.",
+    "New charts use fractional elapsed days; older explorer summaries retain floored day fields."
+  ],
+  "screenshots": [
+    "../docs/dashboard/compact_references.png",
+    "../docs/dashboard/delivery_target_eda.png",
+    "../docs/dashboard/review_target_eda.png"
+  ]
+}

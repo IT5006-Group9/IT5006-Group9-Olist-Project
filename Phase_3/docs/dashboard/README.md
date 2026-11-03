@@ -127,3 +127,36 @@ model checks passed separately in the compatible export environment), both
 online classifiers, two-row CSV batches for both tasks, real downloads matching
 local inference, historical explanations and state clearing. The 251 protected
 original model/source/output/asset files remain unchanged.
+
+## Delivery and review EDA, with compact references
+
+Captured from the same Cloud URL on 3 November 2026. The Guide now keeps only
+essential data, code, feature/model definitions and deployment references in a
+collapsed section. Internal audit/todo buttons and the raw manifest display are
+removed from the interface; the repository materials are retained.
+
+![Collapsed methodology and essential references](compact_references.png)
+
+Delivery replaces the clipped duration histogram with exact elapsed-day buckets
+and a separate complete tail. In the default selection, P90 is 23.1 days, P95 is
+29.2 days, and the >60-day bucket contains all 303 orders. The distance-only curve
+is replaced by a selector comparing median and P90 for distance, freight share,
+item count and seller count.
+
+![Delivery percentiles and complete tail](delivery_target_eda.png)
+
+Reviews focuses on the observed 1–2 star share, including review coverage,
+delivery timing and order attributes. Horizontal dots show group proportions
+with 95% Wilson intervals; smaller groups retain counts but have no plotted
+estimate. Reviewed orders without recorded delivery remain separate. These are
+descriptive associations and use a different cohort from the classifier's
+T-eligible evaluation.
+
+![Observed low-review shares by timing and order attribute](review_target_eda.png)
+
+The [verification record](../../deployment/focused_eda_verification.json) covers
+164 dashboard checks (162 passed; two unchanged trusted-model checks remain
+environment-specific skips), final layout checks, online attribute switches and
+a shared RJ-filter check against independently calculated counts and percentiles.
+The committed extract and 251 protected original model/source/output files are
+unchanged. No model training, feature selection or report/slide edits were made.
