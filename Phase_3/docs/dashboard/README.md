@@ -83,5 +83,23 @@ four fault-injection tests and a 360 px layout check.
 
 ![Classification result with model identity and score meaning](classification_self_audit.jpg)
 
+## Filtered chart corrections
+
+The next audit reproduced a February 2018 RJ/computer-accessories cohort with
+114 orders, 111 reviews, a 2.88 mean rating and R$17,116.14 in sales. Small sales
+now show their actual amount, and the mean-rating bar remains visible below
+three stars on a complete 0–5 axis.
+
+![Filtered sales and rating values](filtered_sales_review.jpg)
+
+![Low mean-review bar remains visible on the full scale](review_axis_fix.jpg)
+
+Zero-order months remain in count/sales trends; undefined or insufficient rates
+remain gaps. The classification monthly ranking curve is explicitly distinguished
+from fixed-threshold cards. Regression assets and forecast downloads are tied to
+their verified deployment manifest. The
+[verification record](../../deployment/deep_audit_verification.json) separates
+online checks from the 77 local tests (76 passed, one environment-specific skip).
+
 See the [dashboard guide](../../../dashboard/README.md) for setup, prediction
 semantics, evaluation sources and limitations.

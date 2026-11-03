@@ -1,0 +1,87 @@
+{
+  "passed": true,
+  "verified_at_utc": "2026-11-03T02:47:56.209727+00:00",
+  "url": "https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/",
+  "application_code_commit_at_browser_test": "eb57807106b44bb4905bea7eab1af04fa5e1159f",
+  "scope": "Dashboard charts, displayed filter scope and frozen-asset loading; no model fitting or metric changes.",
+  "fixes": [
+    "Complete selected calendars for order/sales trends, using zero only for counts/sales",
+    "Retain missing/insufficient delivery rates and medians as gaps, not invented zeros",
+    "Display state mean-rating bars on the full 0-5 axis",
+    "Show missing route delivery metrics as an em dash",
+    "Display small filtered sales in reais instead of rounded millions",
+    "Distinguish fixed-threshold cards from the monthly top-20% recall curve and label month ticks",
+    "Clarify whole-order category attribution and selected-state map scope",
+    "Verify regression asset fingerprints/contracts before decoding and handle deserialize failures",
+    "Bind regression caches, saved predictions and CSV provenance to the deployment manifest"
+  ],
+  "automated_checks": {
+    "command": ".venv/bin/python -m unittest discover -s Phase_3/tests -p 'test_dashboard*.py'",
+    "total": 77,
+    "passed": 76,
+    "skipped": 1,
+    "skip_reason": "Original classification pickle requires its matching isolated export environment; its portable runtime is tested in the dashboard environment.",
+    "new_explorer_cases": 4,
+    "new_evidence_chart_cases": 2,
+    "new_regression_asset_cases": 11,
+    "new_calendar_aggregation_case": 1,
+    "zero_month_example": {
+      "category": "construction_tools_construction",
+      "window": [
+        "2017-01",
+        "2018-08"
+      ],
+      "orders": 740,
+      "months_displayed": 20,
+      "empty_month": "2017-04",
+      "empty_month_orders": 0,
+      "empty_month_delivery_rate": "missing, not zero"
+    },
+    "sparse_cohorts_checked": [
+      "diapers_and_hygiene / BA: no deliveries",
+      "christmas_supplies / PA: no reviews"
+    ],
+    "corruption_cases_include": [
+      "Readable but changed input parquet",
+      "Model fingerprint mismatch",
+      "UnpicklingError/EOF/TypeError/dependency failures",
+      "Input/output population mismatch"
+    ]
+  },
+  "online_browser_checks": {
+    "filtered_review_example": {
+      "window": [
+        "2018-02",
+        "2018-02"
+      ],
+      "category": "computers_accessories",
+      "customer_state": "RJ",
+      "orders": 114,
+      "observed_reviews": 111,
+      "displayed_rating": "2.88 / 5",
+      "state_bar_visible_below_three": true,
+      "state_rating_axis": [
+        0,
+        5
+      ],
+      "displayed_sales": "R$ 17,116.14"
+    },
+    "classification_fixed_rule_notice_visible": true,
+    "classification_month_ticks": [
+      "2018-06",
+      "2018-07",
+      "2018-08"
+    ],
+    "regression_forecast_displayed": "18.7 days",
+    "regression_example_suffix": "6c018a",
+    "download_model_selection_and_canonical_manifest_fingerprints_verified": true
+  },
+  "protected_original_files": {
+    "count": 251,
+    "all_unchanged": true
+  },
+  "screenshots": [
+    "../docs/dashboard/filtered_sales_review.jpg",
+    "../docs/dashboard/review_axis_fix.jpg"
+  ]
+}
