@@ -75,7 +75,7 @@ class RegressionResilienceTests(unittest.TestCase):
         outcome_reads = []
 
         def unavailable_outcomes(path, *args, **kwargs):
-            if Path(path).name == "example_outcomes.parquet":
+            if Path(getattr(path, "name", path)).name == "example_outcomes.parquet":
                 outcome_reads.append(str(path))
                 raise OSError("Simulated unavailable historical outcome file")
             return original_read(path, *args, **kwargs)
@@ -113,7 +113,7 @@ class RegressionResilienceTests(unittest.TestCase):
             return False if path == ASSETS / "example_outcomes.parquet" else original_exists(path)
 
         def missing_outcomes(path, *args, **kwargs):
-            if Path(path) == ASSETS / "example_outcomes.parquet":
+            if Path(getattr(path, "name", path)) == ASSETS / "example_outcomes.parquet":
                 raise FileNotFoundError("Simulated missing optional outcome file")
             return original_read(path, *args, **kwargs)
 
@@ -132,7 +132,7 @@ class RegressionResilienceTests(unittest.TestCase):
         original_read = pd.read_parquet
 
         def unavailable_inputs(path, *args, **kwargs):
-            if Path(path).name == "example_inputs.parquet":
+            if Path(getattr(path, "name", path)).name == "example_inputs.parquet":
                 raise OSError("Simulated unavailable input package")
             return original_read(path, *args, **kwargs)
 
@@ -163,7 +163,7 @@ class RegressionResilienceTests(unittest.TestCase):
         original_load = joblib.load
 
         def unavailable_model(path, *args, **kwargs):
-            if Path(path).name == "regression_model.joblib":
+            if Path(getattr(path, "name", path)).name == "regression_model.joblib":
                 raise OSError("Simulated unavailable frozen regression model")
             return original_load(path, *args, **kwargs)
 

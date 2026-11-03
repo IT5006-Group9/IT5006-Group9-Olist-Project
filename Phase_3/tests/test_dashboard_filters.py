@@ -118,6 +118,24 @@ class SharedFilterTests(unittest.TestCase):
         self.assertNotIn("rj_cross", delivered_status.order_id.tolist())
         pd.testing.assert_frame_equal(self.frame, original)
 
+    def test_monthly_totals_preserve_empty_calendar_months_and_undefined_averages(self):
+        source = pd.DataFrame({"month": ["2018-06", "2018-06", "2018-08"],
+                               "gmv": [10., 20., 100.]})
+        original = source.copy(deep=True)
+        for selected in (source, source.iloc[:0]):
+            with self.subTest(empty=selected.empty):
+                result = filters.monthly_totals(selected, ("2018-05", "2018-09"))
+                self.assertEqual(result.month.tolist(), ["2018-05", "2018-06", "2018-07", "2018-08", "2018-09"])
+                self.assertEqual(result.orders.sum(), len(selected))
+                self.assertEqual(result.gmv.sum(), selected.gmv.sum())
+                self.assertTrue(result.loc[result.orders.eq(0), "aov"].isna().all())
+                self.assertTrue(result.loc[result.orders.eq(0), "gmv"].eq(0).all())
+                if len(selected):
+                    self.assertEqual(result.orders.tolist(), [0, 2, 0, 1, 0])
+                    self.assertEqual(result.gmv.tolist(), [0., 30., 0., 100., 0.])
+                    self.assertEqual(result.loc[result.month.eq("2018-06"), "aov"].iloc[0], 15.)
+        pd.testing.assert_frame_equal(source, original)
+
 
 class SharedFilterAppTests(unittest.TestCase):
     def assert_healthy(self, app):

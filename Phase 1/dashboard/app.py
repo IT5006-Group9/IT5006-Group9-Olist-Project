@@ -264,7 +264,9 @@ pick_states = st.sidebar.multiselect(
 
 pick_cats = st.sidebar.multiselect(
     "Product category", filter_choices["categories"], placeholder="All categories",
-    help="All categories in the marketplace extract.", key="explorer_filter_categories",
+    help="Order-level category: the first recorded nonmissing English item category. "
+         "Multi-category orders are assigned to one category, with their entire basket value and freight.",
+    key="explorer_filter_categories",
     on_change=sync_explorer_filter, args=("categories", "explorer_filter_categories"),
 )
 
@@ -331,10 +333,12 @@ def kpi(col, label, value, help_text=None):
 # monitor. Two rows of three keep every label and figure whole, and a panel
 # separates the headline numbers from the charts below.
 kpi_panel = st.container(border=True)
+gross_sales = d.gmv.sum()
+sales_label = f"R$ {gross_sales/1e6:,.1f}M" if gross_sales >= 1e6 else f"R$ {gross_sales:,.2f}"
 with kpi_panel:
     top = st.columns(3)
     kpi(top[0], "Orders", f"{len(d):,}")
-    kpi(top[1], "Total sales", f"R$ {d.gmv.sum()/1e6:,.1f}M",
+    kpi(top[1], "Total sales", sales_label,
         "Gross merchandise value: item price plus freight. Not Olist's own revenue — "
         "the platform takes a commission on this.")
     kpi(top[2], "Average order value", f"R$ {d.gmv.mean():,.0f}")
@@ -379,11 +383,8 @@ st.markdown(
 
 
 def month_frame(frame: pd.DataFrame) -> pd.DataFrame:
-    """Monthly aggregates with the sparse edge months dropped from the plot window."""
-    g = (frame.groupby("month", observed=True)
-         .agg(orders=("gmv", "size"), gmv=("gmv", "sum"), aov=("gmv", "mean"))
-         .reset_index())
-    return g.sort_values("month")
+    """Keep every selected month, including zero-order months after filtering."""
+    return shared_filters.monthly_totals(frame, filters["month_range"])
 
 
 # ---------------------------------------------------------------- orders
@@ -525,14 +526,17 @@ with tab_delivery:
             section("Late-delivery rate over time")
             m = (dd.groupby("month", observed=True)
                  .agg(orders=("is_late", "size"), late=("is_late", "mean")).reset_index())
-            m = m[m.orders >= 30].sort_values("month")
+            m = month_frame(dd)[["month"]].merge(m, on="month", how="left", validate="one_to_one")
+            m["late"] = m.late.where(m.orders.ge(30))
             fig = px.line(m, x="month", y="late", markers=True,
                           color_discrete_sequence=[BAD])
+            fig.update_traces(connectgaps=False)
             fig.add_hline(y=dd.is_late.mean(), line_dash="dash", line_color=MUTED,
                           annotation_text=f"overall {dd.is_late.mean():.1%}")
             fig.update_layout(height=H_MAIN, margin=PAD, yaxis_tickformat=".0%",
                               xaxis_title="Purchase month", yaxis_title="Late rate")
             render(fig)
+            note("Monthly rates require at least 30 recorded deliveries. Missing or smaller months are gaps, not a zero late rate.")
 
 
         with c2:
@@ -541,17 +545,20 @@ with tab_delivery:
                   .agg(orders=("delivery_days", "size"),
                        actual=("delivery_days", "median"),
                        promised=("promised_days", "median")).reset_index())
-            m2 = m2[m2.orders >= 30].sort_values("month")
+            m2 = month_frame(dd)[["month"]].merge(m2, on="month", how="left", validate="one_to_one")
+            m2[["actual", "promised"]] = m2[["actual", "promised"]].where(m2.orders.ge(30), axis=0)
             fig = go.Figure()
             fig.add_scatter(x=m2.month, y=m2.promised, name="Promised", mode="lines+markers",
                             line=dict(color=MUTED, dash="dash"))
             fig.add_scatter(x=m2.month, y=m2.actual, name="Actual", mode="lines+markers",
                             line=dict(color=tone, width=2))
+            fig.update_traces(connectgaps=False)
             fig.update_layout(height=H_MAIN, margin=PAD,
                               xaxis_title="Purchase month",
                               yaxis_title="Delivery days (monthly median)",
                               legend=dict(orientation="h", y=1.12, x=0))
             render(fig)
+            note("Monthly medians require at least 30 recorded deliveries. Missing or smaller months are gaps.")
 
 
         gap()
@@ -672,13 +679,15 @@ with tab_reviews:
             g = (rev.groupby("customer_state", observed=True)
                  .agg(score=("review_score", "mean"), n=("review_score", "size")).reset_index())
             g = g[g.n >= 50].sort_values("score", ascending=False)
-            fig = px.bar(g, x="customer_state", y="score",
-                         color_discrete_sequence=[tone], hover_data={"n": True})
-            fig.update_layout(height=H_SHORT, margin=PAD, yaxis_range=[3, 5],
-                              xaxis_title="Customer state", yaxis_title="Mean stars")
-            render(fig)
-            note("Every state sits between 3.8 and 4.2 stars. The order ranks them; "
-                 "colour would exaggerate differences this small.")
+            if g.empty:
+                st.info("No state has at least 50 observed reviews in this selection.")
+            else:
+                fig = px.bar(g, x="customer_state", y="score",
+                             color_discrete_sequence=[tone], hover_data={"n": True})
+                fig.update_layout(height=H_SHORT, margin=PAD, yaxis_range=[0, 5],
+                                  xaxis_title="Customer state", yaxis_title="Mean stars")
+                render(fig)
+            note("Mean stars among observed reviews in the current selection; states require at least 50 reviews. Hover for the review count.")
 
         takeaway(
             "Mean score falls by more than two stars between the fastest and slowest deliveries — "
@@ -693,6 +702,7 @@ with tab_reviews:
 
 with tab_catalogue:
     tone = TONES["categories"]
+    st.caption("Each order is assigned to its first recorded nonmissing English item category, or unknown when none is recorded. Sales include the assigned order's entire basket and freight, rather than only items in that category. Unknown-category orders are omitted from these category charts and the detail table.")
     n_top = st.slider("Categories shown", 5, 30, 15)
     cat = (d[d.category != "unknown"].groupby("category", observed=True)
            .agg(orders=("gmv", "size"), gmv=("gmv", "sum"), aov=("gmv", "mean"),
@@ -752,7 +762,7 @@ with tab_geo:
     tone = TONES["geography"]
 
     block("Where the orders are",
-          "Every federative unit on the map, with the same measure ranked beside it.")
+          "Customer states in the current selection, with the same measure ranked beside the map.")
     g = (d.groupby("customer_state", observed=True)
          .agg(orders=("gmv", "size"), gmv=("gmv", "sum"), aov=("gmv", "mean"),
               days=("delivery_days", "median"), late=("is_late", "mean"),
@@ -813,8 +823,7 @@ with tab_geo:
             fig.update_layout(height=H_TALL, margin=dict(t=10, b=10, l=10, r=10),
                               coloraxis_colorbar=bar)
             render(fig)
-            note("All 27 federative units are drawn, including those with too few "
-                 "orders for the ranking beside it.")
+            note(f"{len(g)} customer state(s) have orders in the current selection, including those with too few orders for the ranking beside the map. States outside the selection have no plotted value.")
         else:
             st.info("`dashboard/br_states.geojson` is missing, so the map is hidden.")
 
@@ -831,8 +840,8 @@ with tab_geo:
 
     gap(0.8)
     # The map and the bar show one measure at a time, so this is the lookup
-    # behind them: all seven measures for all 27 states, on demand.
-    with st.expander("Every state — full numbers"):
+    # behind them: all seven measures for the selected states, on demand.
+    with st.expander("Selected states — full numbers"):
         table = g.copy()
         table.columns = ["State", "Orders", "Total sales", "Avg order", "Median days",
                          "Late rate", "Avg rating", "Median km"]
@@ -865,8 +874,8 @@ with tab_geo:
                 section(route_name)
                 a, b_, c_ = st.columns(3)
                 a.metric("Orders", f"{row.orders:,.0f}")
-                b_.metric("Late rate", f"{row.late:.1%}")
-                c_.metric("Median days", f"{row.days:.0f}")
+                b_.metric("Late rate", f"{row.late:.1%}" if pd.notna(row.late) else "—")
+                c_.metric("Median days", f"{row.days:.0f}" if pd.notna(row.days) else "—")
 
     gap()
     block("Distance and buying behaviour",
@@ -939,22 +948,26 @@ with tab_geo:
     share = totals.head(8).sum() / totals.sum() if totals.sum() else 0
 
     block("State-level GMV trajectories",
-          f"How the eight largest states — {share:.0%} of all sales — have grown "
-          "month by month.")
+          f"The {len(keep)} largest customer state(s) — {share:.0%} of selected sales — "
+          "across the selected months.")
 
-    view = st.radio("Scale", ["Absolute (R$)", "Indexed (first month = 100)"],
+    view = st.radio("Scale", ["Absolute (R$)", "Indexed (first nonzero month = 100)"],
                     horizontal=True, key="traj_scale")
-    tr = (d[d.customer_state.isin(keep)]
-          .groupby(["month", "customer_state"], observed=True).gmv.sum()
-          .reset_index().sort_values("month"))
+    tr = pd.concat([
+        month_frame(d[d.customer_state.eq(state)])[["month", "gmv"]].assign(customer_state=state)
+        for state in keep
+    ], ignore_index=True)
 
     indexed = view.startswith("Indexed")
     if indexed:
         # Levels differ by two orders of magnitude, so rebasing is the only way to
         # compare the *shape* of growth rather than re-reading the same ranking.
-        tr["value"] = 100 * tr.gmv / tr.groupby("customer_state", observed=True).gmv.transform("first")
+        bases = tr.loc[tr.gmv.gt(0)].groupby("customer_state", observed=True).gmv.first()
+        tr["value"] = 100 * tr.gmv / tr.customer_state.map(bases)
     else:
-        tr["value"] = tr.gmv
+        # Log axes cannot show zero. Keep the true GMV in tr and make these
+        # points explicit gaps, rather than joining over a missing month.
+        tr["value"] = tr.gmv.where(tr.gmv.gt(0))
 
     gap(0.4)
     # Without an explicit order the traces come out in whatever order the first
@@ -963,20 +976,18 @@ with tab_geo:
                   color_discrete_sequence=STATE_QUAL,
                   category_orders={"customer_state": keep},
                   labels={"customer_state": "State"})
-    fig.update_traces(line=dict(width=2))
+    fig.update_traces(line=dict(width=2), connectgaps=False)
     fig.update_layout(
         height=H_MAIN, margin=PAD, xaxis_title="Purchase month",
-        yaxis_title="GMV, first month = 100" if indexed else "GMV (R$, log scale)",
+        yaxis_title="GMV, first nonzero month = 100" if indexed else "GMV (R$, log scale)",
         legend=dict(orientation="h", y=1.12, x=0, title=None),
     )
     if not indexed:
         fig.update_yaxes(type="log")
     render(fig)
-    note("Each state is rebased to its own first month in the window, so a state that "
-         "starts later starts from a different point in time."
+    note("Each state is rebased to its first month with positive sales in the selected window. Every selected month is included; zero-sales months are zero on this indexed scale."
          if indexed else
-         "The axis is logarithmic — São Paulo is an order of magnitude above the rest, "
-         "and on a linear axis the other seven flatten into the baseline.")
+         "The axis is logarithmic. Zero-sales months cannot appear on this axis and are shown as gaps; they remain zero in the sales totals.")
 
     takeaway(
         "Both sides of the marketplace sit in the south-east: São Paulo alone takes the largest "

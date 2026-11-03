@@ -23,6 +23,7 @@ for directory in (PHASE, PHASE / "src"):
 
 from deployment.evidence import EvidenceError, MODEL_LABELS, load_evidence
 from deployment import explorer_filters as shared_filters
+from deployment import regression_assets
 from deployment.input_help import INPUT_MEANINGS
 
 ASSETS = HERE / "assets"
@@ -113,21 +114,19 @@ def marketplace():
 
 
 @st.cache_resource(show_spinner="Loading the frozen delivery model…")
-def demo_bundle():
-    import joblib
-    return joblib.load(ASSETS / "regression_model.joblib")
+def demo_bundle(manifest_text):
+    return regression_assets.load_model(ASSETS, json.loads(manifest_text))
 
 
 @st.cache_data(show_spinner=False)
-def demo_examples():
-    inputs = pd.read_parquet(ASSETS / "example_inputs.parquet")
-    manifest = json.loads((ASSETS / "manifest.json").read_text())
-    return inputs, manifest
+def demo_examples(manifest_text):
+    manifest = json.loads(manifest_text)
+    return regression_assets.load_inputs(ASSETS, manifest), manifest
 
 
 @st.cache_data(show_spinner=False)
-def demo_outcomes():
-    return pd.read_parquet(ASSETS / "example_outcomes.parquet").set_index("order_id")
+def demo_outcomes(manifest_text):
+    return regression_assets.load_outcomes(ASSETS, json.loads(manifest_text))
 
 
 def header(title, description):
@@ -220,9 +219,11 @@ def overview(ev):
         return
     delivered = selected[selected.delivered_ts.notna()]
     rated = selected[selected.review_score.notna()]
+    gross_sales = selected.gmv.sum()
+    sales_label = f"R$ {gross_sales/1e6:,.2f}M" if gross_sales >= 1e6 else f"R$ {gross_sales:,.2f}"
     panel_metrics([
         ("Orders", f"{len(selected):,}", "One row per order in the selected marketplace extract."),
-        ("Sales incl. freight", f"R$ {selected.gmv.sum()/1e6:,.2f}M", "Item price plus freight; this is not marketplace commission revenue."),
+        ("Sales incl. freight", sales_label, "Item price plus freight; this is not marketplace commission revenue."),
         ("Delivered on time", f"{1-delivered.is_late.mean():.1%}" if len(delivered) else "—", "Delivered orders only, compared with the recorded promised date."),
         ("Low review share", f"{rated.review_score.le(2).mean():.1%}" if len(rated) else "—", "1–2 star reviews among orders with an observed review."),
     ], key="overview")
@@ -232,7 +233,7 @@ def overview(ev):
     with c1, st.container(border=True):
         st.subheader("The marketplace over time")
         metric = st.radio("Trend measure", ["Orders", "Sales incl. freight"], horizontal=True, label_visibility="collapsed")
-        monthly = selected.groupby("month", observed=True).agg(orders=("gmv", "size"), sales=("gmv", "sum")).reset_index()
+        monthly = shared_filters.monthly_totals(selected, filters["month_range"]).rename(columns={"gmv": "sales"})
         field = "orders" if metric == "Orders" else "sales"
         fig = px.area(monthly, x="month", y=field, color_discrete_sequence=[BLUE])
         fig.update_traces(line_width=2.5, fillcolor="rgba(66,99,235,.10)")
@@ -283,7 +284,10 @@ def prediction():
         st.warning("The delivery demonstration package is not available in this checkout. See the dashboard README for the export command.")
         return
     try:
-        inputs, manifest = demo_examples()
+        manifest = regression_assets.read_manifest(ASSETS)
+        deployment_id = regression_assets.manifest_identity(manifest)
+        manifest_text = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
+        inputs, manifest = demo_examples(manifest_text)
     except (OSError, ValueError, KeyError, ImportError) as error:
         clear_forecast()
         st.warning(f"The delivery demonstration package is unavailable: {error}")
@@ -312,7 +316,7 @@ def prediction():
             st.session_state["demo_order"] = order_ids[0]
             clear_forecast()
         selected = st.selectbox("Historical order", order_ids, format_func=order_label, key="demo_order", on_change=clear_forecast)
-        signature = (month, state, selected)
+        signature = (deployment_id, month, state, selected)
         if st.session_state.get("demo_selection_signature") != signature:
             clear_forecast()
             st.session_state["demo_selection_signature"] = signature
@@ -334,9 +338,15 @@ def prediction():
             clear_forecast()
             try:
                 from regression.score import predict_lead_time
-                result = predict_lead_time(row, demo_bundle()).iloc[0].to_dict()
+                result = predict_lead_time(row, demo_bundle(manifest_text)).iloc[0].to_dict()
                 if not np.isfinite(result["predicted_days"]):
                     raise ValueError("The model did not produce a finite forecast.")
+                result.update({
+                    "model_name": manifest["model_name"],
+                    "model_sha256": manifest["artifacts"]["regression_model.joblib"]["sha256"],
+                    "selection_sha256": manifest["selection_sha256"],
+                    "deployment_manifest_sha256": deployment_id,
+                })
                 st.session_state["delivery_forecast"] = result
             except ImportError:
                 st.session_state.pop("delivery_forecast", None)
@@ -355,7 +365,7 @@ def prediction():
             st.markdown(details.to_html(index=False, escape=True, border=0, classes="olist-input-table"), unsafe_allow_html=True)
     result = st.session_state.get("delivery_forecast")
     with output:
-        if not result or result["order_id"] != selected:
+        if not result or result["order_id"] != selected or result.get("deployment_manifest_sha256") != deployment_id:
             st.markdown('<div class="empty"><div class="eyebrow">YOUR FORECAST</div><h2>Start with an order.</h2><p>Choose a historical purchase and calculate its expected delivery lead time.</p><p class="quiet">The model uses purchase-time information. The historical delivery outcome stays hidden until you reveal it.</p></div>', unsafe_allow_html=True)
             return
         st.markdown('<span class="pill">FORECAST CALCULATED</span>', unsafe_allow_html=True)
@@ -376,7 +386,7 @@ def prediction():
         actual = None
         if reveal:
             try:
-                actual = demo_outcomes().loc[selected]
+                actual = demo_outcomes(manifest_text).loc[selected]
                 values.loc[len(values)] = ["Historical delivery", actual.actual_days]
             except (OSError, ValueError, KeyError, ImportError) as error:
                 actual = None
@@ -439,8 +449,12 @@ def regression_evidence(ev):
         if monthly.empty:
             st.info("Monthly regression evidence is not available.")
         else:
-            chart(px.line(monthly, x="month", y="mae", markers=True, color_discrete_sequence=[TEAL],
-                          labels={"month": "Purchase month", "mae": "MAE (days)"}), 230)
+            fig = px.line(monthly, x="month", y="mae", markers=True, color_discrete_sequence=[TEAL],
+                          labels={"month": "Purchase month", "mae": "MAE (days)"})
+            months = monthly.month.tolist()
+            fig.update_xaxes(type="category", categoryorder="array", categoryarray=months,
+                             tickmode="array", tickvals=months, ticktext=months)
+            chart(fig, 230)
         st.caption("Monthly MAE changes with the order mix. Test and validation also differ in outcome maturity and averaging.")
         st.metric("Test R²", f"{summary['test']['r2']:.3f}")
     importance = ev["regression_importance"].sort_values("mean")
@@ -505,7 +519,10 @@ def classification_evidence(ev):
             st.caption("A fixed score threshold does not guarantee a fixed contact budget when the order mix changes.")
         st.dataframe(rules.rename(columns={"flag_rate": "Flag rate", "recall": "Recall", "precision": "Precision"}), hide_index=True, width="stretch")
     with right, st.container(border=True):
-        st.subheader("Performance over time")
+        st.subheader("Monthly top-20% recall")
+        st.caption("Assessment: " + ("Strict cutoff" if use_strict else "v1"))
+        if not operating.startswith("Rank"):
+            st.info("This chart keeps the monthly top-20% rule; it does not apply the frozen validation threshold selected in the operating cards.")
         months = source["months"]
         if months.empty:
             st.info("Monthly classification evidence is not available.")
@@ -514,16 +531,19 @@ def classification_evidence(ev):
                           labels={"t_month": "Trigger month", "recall_at_capacity": "Recall at top 20%"})
             fig.add_hline(y=.5, line_dash="dot", line_color=AMBER, annotation_text="50% target")
             fig.update_yaxes(tickformat=".0%")
+            trigger_months = months.t_month.tolist()
+            fig.update_xaxes(type="category", categoryorder="array", categoryarray=trigger_months,
+                             tickmode="array", tickvals=trigger_months, ticktext=trigger_months)
             chart(fig, 290)
             below = months.loc[months.recall_at_capacity.lt(.5), "t_month"].tolist()
-            st.caption("Monthly rankings use each month's batch. " + ("Below the 50% target: " + ", ".join(below) + "." if below else "Every displayed month meets the 50% target."))
+            st.caption("Monthly rankings use each month's batch, independently of the operating-card rule. " + ("Below the 50% target: " + ", ".join(below) + "." if below else "Every displayed month meets the 50% target."))
     with st.expander("Model families, success criteria & interpretation"):
         st.dataframe(cv[["family", "train_pr_auc_mean", "cv_pr_auc_mean", "cv_pr_auc_sd", "cv_recall_at_capacity_mean"]], hide_index=True, width="stretch")
         st.dataframe(source["criteria"], hide_index=True, width="stretch")
         st.write("Delivery status is available at this task's trigger time. This classifier is evaluated later in the order lifecycle than the purchase-time regression model.")
         st.caption("Aggregate classification metrics are saved assessments. Low-review prediction evaluates the fitted classification forest on fixed historical examples using raw, uncalibrated scores.")
     suffix = "strict" if use_strict else "v1"
-    st.download_button("Download classification results", rules.to_csv(index=False), f"classification_{suffix}_operating_points.csv", "text/csv")
+    st.download_button("Download all classification operating rules", rules.to_csv(index=False), f"classification_{suffix}_operating_points.csv", "text/csv")
     classification_followup(ev, update)
 
 

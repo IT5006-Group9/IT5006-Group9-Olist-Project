@@ -129,6 +129,22 @@ def apply_filters(frame: pd.DataFrame, filters: Mapping) -> pd.DataFrame:
     return frame.loc[mask].copy()
 
 
+def monthly_totals(frame: pd.DataFrame, month_range) -> pd.DataFrame:
+    """Include every calendar month in the selected window, even with no orders.
+
+    Counts and sales are zero in empty months. Average order value is undefined
+    without orders and remains missing; rates and averages must not be zero-filled.
+    """
+    months = pd.period_range(month_range[0], month_range[1], freq="M").astype(str)
+    grouped = frame.groupby("month", observed=True).agg(
+        orders=("gmv", "size"), gmv=("gmv", "sum"), aov=("gmv", "mean"),
+    ).reindex(months)
+    grouped.index.name = "month"
+    grouped["orders"] = grouped["orders"].fillna(0).astype(int)
+    grouped["gmv"] = grouped["gmv"].fillna(0)
+    return grouped.reset_index()
+
+
 def summary(filters: Mapping) -> str:
     """Describe the full active cohort, including controls hidden on Overview."""
     start, end = filters["month_range"]

@@ -57,6 +57,16 @@ shows all active conditions, including conditions set on the other page. **Reset
 all filters** restores the default January 2017–August 2018 window and clears
 the other conditions. Overview's **Clear extra filters** preserves dates and states.
 An empty intersection keeps the controls available so it can be adjusted or reset.
+Monthly order counts and sales include every calendar month in the selected
+window, with zero values for months without orders. Undefined averages and rates
+stay missing; delivery charts leave gaps for months below their 30-delivery
+minimum. State-rating charts use the full 0–5 axis so low averages remain visible.
+States below the 50-review minimum are explained rather than drawn as empty bars.
+Small filtered sales totals display reais and cents rather than rounding to 0.0M.
+
+The explorer's category filter assigns each whole order to its first recorded
+nonmissing English item category. Sales include that order's entire basket and
+freight; these are not item-level sales for every category in a mixed basket.
 
 Prediction demonstration filters are separate. Navigation stays within the
 selected month and destination and never calculates a prediction automatically.
@@ -69,6 +79,10 @@ and revealed outcome; each new calculation starts with the outcome hidden.
 The delivery outcome file is read only after Reveal. If that file is unavailable,
 the calculated forecast and prediction download remain usable; input/model loading
 errors instead clear old results and display a controlled message.
+Regression assets are checked against their committed manifest before loading.
+Its cache and prediction state include the manifest identity. Forecast CSV files
+record the model and frozen-selection fingerprints plus `deployment_manifest_sha256`,
+the SHA-256 of canonical JSON manifest content (independent of file whitespace).
 Model metrics use fixed assessment cohorts and do not change with EDA filters.
 
 Below 800 px, the main panels stack, KPI cards use two columns, wide tables and
@@ -97,6 +111,11 @@ differ from regression's 18,603 purchase-window orders. Recall 53.23% applies to
 ranking the top 20% of the entire test window. The frozen validation threshold
 has a different flag rate and recall. **v1 remains the headline**, as specified
 by the latest classification methods and selection artifacts.
+
+The monthly recall curve always uses a separate top-20% ranking within each month
+for the selected assessment. Selecting the frozen validation threshold changes
+the operating cards; a notice explains why it does not change that monthly curve.
+Both model-evidence month charts explicitly label June, July and August.
 
 The classification evaluation cohort requires items and an observed review
 answered at or after T; it does not represent every order reaching the trigger
