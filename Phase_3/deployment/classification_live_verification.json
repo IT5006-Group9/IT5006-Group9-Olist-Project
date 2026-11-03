@@ -1,0 +1,95 @@
+{
+  "passed": true,
+  "verified_at_utc": "2026-11-03T02:25:49.708780+00:00",
+  "url": "https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/",
+  "application_code_commit_at_browser_test": "af7a7134955af19f82a7b586ab0168dc03b77951",
+  "teammate_model_upload_commit": "60b792e72c131621283a855640e2fbdda1fb1856",
+  "scope": "Dashboard integration only; no fitting, tuning, new aggregate model assessment or selection changes.",
+  "browser_checks": {
+    "six_workspaces_and_new_classification_entry_visible": true,
+    "strict_default": true,
+    "example_order_id": "1c57efb710fa0df4433b44a5c39e4b6e",
+    "strict": {
+      "displayed_score": "0.890",
+      "csv_score": 0.8895853761845439,
+      "displayed_threshold": "0.5415",
+      "flagged": true
+    },
+    "v1": {
+      "displayed_score": "0.880",
+      "local_exact_score": 0.8804079422413933,
+      "displayed_threshold": "0.5475",
+      "flagged": true
+    },
+    "review_hidden_until_reveal": true,
+    "revealed_review": {
+      "stars": 1,
+      "low_review": true,
+      "answer_time_displayed": "04 June 2018, 03:42"
+    },
+    "model_change_clears_score_review_and_download": true,
+    "next_order_clears_score_without_automatic_inference": true,
+    "leaving_and_returning_clears_old_score_and_review": true,
+    "download_matches_exact_local_forest_score": true,
+    "download_contains_no_current_review_fields_even_after_reveal": true,
+    "regression_prediction_still_works": {
+      "example_suffix": "6c018a",
+      "displayed_days": "18.7"
+    },
+    "classification_evidence_still_defaults_to_v1": {
+      "test_pr_auc": "0.375",
+      "recall_at_20_percent": "53.2%"
+    }
+  },
+  "local_automated_checks": {
+    "command": ".venv/bin/python -m unittest discover -s Phase_3/tests -p 'test_dashboard*.py'",
+    "total": 55,
+    "passed": 54,
+    "skipped": 1,
+    "skip_reason": "Original classification pickle requires the isolated matching export environment; not needed by the NumPy-only dashboard.",
+    "matching_export_environment_runtime_tests": {
+      "total": 10,
+      "passed": 10
+    },
+    "classification_ui_cases": 9,
+    "assertions_include": [
+      "Exact prepared row passed to real portable forest for both versions",
+      "Thresholds match their original frozen selection files",
+      "No outcomes or saved score lookup before reveal",
+      "Review excluded from downloads after reveal",
+      "Model/filter/order/page changes clear old state",
+      "Missing or corrupt assets handled without breaking other pages",
+      "All 49 displayed inputs have definitions"
+    ]
+  },
+  "numerical_export_verification": {
+    "v1": {
+      "rows": 120,
+      "fit_only_context_neutralization_max_abs_diff": 4.440892098500626e-16,
+      "portable_vs_fitted_pipeline_max_abs_diff": 4.440892098500626e-16,
+      "portable_vs_saved_scores_max_abs_diff": 4.440892098500626e-16,
+      "single_vs_batch_identical": true,
+      "saved_score_column": "v1"
+    },
+    "strict": {
+      "rows": 120,
+      "fit_only_context_neutralization_max_abs_diff": 1.6653345369377348e-16,
+      "portable_vs_fitted_pipeline_max_abs_diff": 4.440892098500626e-16,
+      "portable_vs_saved_scores_max_abs_diff": 3.3306690738754696e-16,
+      "single_vs_batch_identical": true,
+      "saved_score_column": "strict_selection"
+    }
+  },
+  "original_model_sha256": {
+    "v1": "4ec7d0fe0eae3c308feb8bd31368bc6a4658b92ff7924c755e9d5a91b28102d9",
+    "strict": "7d0d517355be65a895b5956c8d31ea368e2375dc83729b00f9d0bb1009414054"
+  },
+  "protected_original_files": {
+    "count": 251,
+    "all_unchanged": true,
+    "baseline_commit": "60b792e72c131621283a855640e2fbdda1fb1856"
+  },
+  "asset_manifest": "assets/classification/manifest.json",
+  "screenshot": "../docs/dashboard/classification_prediction.jpg",
+  "runtime_semantics": "Original fitted history/preprocessing prepared offline for fixed examples; button evaluates fitted forest. Raw scores use each version's fixed validation threshold, not one-row top-20% ranking. No calibration applied."
+}

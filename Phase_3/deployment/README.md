@@ -21,6 +21,9 @@ examples with the original fitted history/preprocessing. The page evaluates a
 forest when the user clicks Run; it does not look up saved risk scores. The
 [manifest](assets/classification/manifest.json) records exact model/source hashes,
 thresholds, preparation rules and per-example numerical verification.
+The [classification live verification](classification_live_verification.json)
+records successful online inference with both versions, review reveal, downloads
+and the existing regression forecast on 3 November 2026.
 
 The latest [classification update](../docs/classification.md) supplies a strict-cutoff
 rerun addressing the original [quality audit](../docs/quality_audit.md), alongside

@@ -58,5 +58,21 @@ historically examined test window.
 The earlier timing-audit screenshot above is retained as a historical record.
 The current interface acknowledges that the strict rerun has been completed.
 
+## Interactive low-review prediction
+
+Captured on 3 November 2026 after the teammates uploaded both fitted model
+bundles. The new **Low-review prediction** workspace runs either forest on a
+selected fixed historical example. Strict cutoff is the demo default; the score
+is compared with that model's frozen validation threshold. The actual review
+stays hidden until the reveal action. All 49 displayed input fields have meanings
+and units in the expandable table.
+
+![Online low-review prediction with the historical review hidden](classification_prediction.jpg)
+
+Both model versions, review reveal, prediction-only CSV download, state clearing
+and the existing regression forecast were checked on the original Cloud URL.
+The [classification deployment record](../../deployment/classification_live_verification.json)
+separates these browser checks from local tests and numerical export verification.
+
 See the [dashboard guide](../../../dashboard/README.md) for setup, prediction
 semantics, evaluation sources and limitations.

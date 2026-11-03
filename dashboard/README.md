@@ -33,6 +33,11 @@ verified after rebuilding the environment. See the
 [online verification record](../Phase_3/deployment/live_verification.json) and
 [deployed screenshots](../Phase_3/docs/dashboard/README.md).
 
+The new classification prediction workspace was also verified on the same Cloud
+URL on 3 November 2026: both forests, outcome reveal, prediction-only CSV download,
+state clearing and regression compatibility. See its separate
+[verification record](../Phase_3/deployment/classification_live_verification.json).
+
 After changing the evidence adapter or table schema, reboot the Cloud app and verify Model evidence. Open sessions can retain imported modules and cached evidence across a source update; a browser refresh alone may not load the new adapter. The app versions its evidence cache and tolerates absent optional keys during this transition.
 
 ## Pages
