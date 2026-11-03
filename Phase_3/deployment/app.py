@@ -50,7 +50,7 @@ DISPLAY_LABELS = {
 }
 
 st.set_page_config(
-    page_title="Olist Operations Studio · Group 09", page_icon="📦",
+    page_title="Olist Delivery & Review Analytics · Group 09", page_icon="📦",
     layout="wide", initial_sidebar_state="auto",
 )
 st.markdown("""
@@ -193,7 +193,7 @@ def panel_metrics(items, key):
 
 
 def overview(ev):
-    header("A clearer view of every delivery.", "Explore the marketplace, predict delivery and review risk for supplied order features, and inspect the evidence behind the models.")
+    header("Olist Delivery & Review Analytics", "Explore order trends, predict delivery time, and identify low-review risk.")
     raw = marketplace()
     filters = shared_filters.init_filters(st.session_state, raw)
     choices = shared_filters.filter_options(raw)
