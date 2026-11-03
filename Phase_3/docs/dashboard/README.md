@@ -103,3 +103,27 @@ online checks from the 77 local tests (76 passed, one environment-specific skip)
 
 See the [dashboard guide](../../../dashboard/README.md) for setup, prediction
 semantics, evaluation sources and limitations.
+
+## New order inputs and individual risk factors
+
+Captured from the same Cloud URL on 3 November 2026. Both prediction tasks now
+accept editable feature rows and bounded CSV batches. The new order ID does not
+need to exist in the historical examples. The screenshot shows two supplied
+delivery orders evaluated by the existing fitted deployment model.
+
+![New order CSV upload and delivery predictions](new_order_csv_predictions.png)
+
+Classification now explains an individual score with signed decision-path
+contributions. Users can switch between business groups and original features,
+inspect recorded values, and select another scored row in a batch. The baseline
+plus all contributions equals the raw risk score; this is not SHAP or a causal
+effect. The screenshot shows the strict model's new-order score of 0.8896.
+
+![Individual risk score with positive and negative factor contributions](risk_factor_contributions.png)
+
+The [verification record](../../deployment/new_orders_verification.json) covers
+the 136 dashboard checks (134 passed in the application runtime; two trusted
+model checks passed separately in the compatible export environment), both
+online classifiers, two-row CSV batches for both tasks, real downloads matching
+local inference, historical explanations and state clearing. The 251 protected
+original model/source/output/asset files remain unchanged.

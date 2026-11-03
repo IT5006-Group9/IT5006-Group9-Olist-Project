@@ -110,3 +110,8 @@ identify causal effects or guarantee the effect of editing an input. The baselin
 is neither prevalence nor the operating threshold. New-order rows never reveal
 historical labels, even if their IDs match an example. Downloads contain scores
 and model/package provenance only.
+
+The [new-order verification record](new_orders_verification.json) documents the
+local, compatible-export and online checks, including actual Cloud CSV downloads
+matching local fitted inference. The [screenshots](../docs/dashboard/README.md#new-order-inputs-and-individual-risk-factors)
+show both supplied-order predictions and individual score contributions.

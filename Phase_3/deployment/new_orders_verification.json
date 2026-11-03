@@ -1,0 +1,195 @@
+{
+  "verified_at_utc": "2026-11-03T03:12:33.173731+00:00",
+  "app_url": "https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/",
+  "application_commit": "de031217f08dd87a98252e2ede16d66fa3b854ea",
+  "scope": "Dashboard inference, input validation and individual score explanations only; no model fitting or selection, original models/source/outputs unchanged.",
+  "protected_original_files_unchanged": 251,
+  "local_checks": {
+    "dashboard_suite": {
+      "collected": 136,
+      "passed": 134,
+      "environment_specific_skipped": 2,
+      "command": ".venv/bin/python -m unittest discover -s Phase_3/tests -p test_dashboard*.py"
+    },
+    "trusted_pipeline_suite": {
+      "collected": 25,
+      "passed": 25,
+      "environment": ".venv-classification-export; OLIST_CLASSIFICATION_EXPORT_PARITY=1"
+    },
+    "trusted_forest_suite": {
+      "collected": 10,
+      "passed": 10,
+      "environment": ".venv-classification-export; OLIST_CLASSIFICATION_EXPORT_PARITY=1"
+    },
+    "skip_resolution": "The two trusted-bundle parity checks skipped in the dashboard runtime both passed in the original compatible export environment.",
+    "local_browser": [
+      "Edited delivery price to 100; inconsistent ratios rejected; explicit Recalculate restored validity; actual model forecast generated.",
+      "Uploaded two new-ID delivery rows; predicted using the fitted bundle.",
+      "Classification editor runs the fitted pipeline and signed contributions reconstruct the score."
+    ]
+  },
+  "online_checks": {
+    "auto_deployment": "GitHub main update loaded automatically; updated page copy and 2 MB server upload limit verified, no manual reboot needed.",
+    "classification_editor": {
+      "strict_score_display": "0.890",
+      "v1_score_display": "0.880",
+      "fresh_ids": [
+        "new-classification_strict-001",
+        "new-classification_v1-001"
+      ]
+    },
+    "classification_csv": [
+      {
+        "order_id": "ui-clf-new-001",
+        "risk_score": 0.8895853761845439,
+        "validation_threshold": 0.5415134093587367,
+        "above_threshold": true
+      },
+      {
+        "order_id": "ui-clf-new-002",
+        "risk_score": 0.8793906279096272,
+        "validation_threshold": 0.5415134093587367,
+        "above_threshold": true
+      }
+    ],
+    "classification_explanations": [
+      "Business groups and Original features views work.",
+      "Batch order selection changed score to 0.879390627909627 and net contributions to +0.3794.",
+      "Historical strict example preserves score 0.8895853761845439 and now shows factor contributions, with review reveal unchecked."
+    ],
+    "delivery_csv": [
+      {
+        "order_id": "ui-delivery-new-001",
+        "predicted_days": 18.666612898628912,
+        "quoted_days": 45.09755787037037
+      },
+      {
+        "order_id": "ui-delivery-new-002",
+        "predicted_days": 19.379857837552095,
+        "quoted_days": 44.489004629629626
+      }
+    ],
+    "download_validation": "Both actual Cloud CSV downloads match local fitted inference within 1e-12, include model/package provenance, and exclude outcome fields.",
+    "state_clearing": "Switching input method, classifier or page clears scores and explanation without automatic inference."
+  },
+  "classification_export_verification": {
+    "no_fitting": true,
+    "protected_original_bytes_unchanged": true,
+    "historical_matrix_exact": true,
+    "versions": {
+      "v1": {
+        "historical_120": {
+          "rows": 120,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 9.992007221626409e-16
+        },
+        "new_order": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 1.1102230246251565e-16
+        },
+        "unknown_categories_missing_numeric": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 5.551115123125783e-16
+        },
+        "learned_missing_category": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        },
+        "two_new_orders": {
+          "rows": 2,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        }
+      },
+      "strict": {
+        "historical_120": {
+          "rows": 120,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 5.551115123125783e-16
+        },
+        "historical_public_contract": {
+          "rows": 113,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 5.551115123125783e-16
+        },
+        "historical_public_rejections": {
+          "rows": 7,
+          "orders": [
+            {
+              "order_id": "154029fef0e3e2f72ef09775cc9d1af1",
+              "reason": "Row 1 (order_id='154029fef0e3e2f72ef09775cc9d1af1'), order_delivered_carrier_date: a known approval/carrier event cannot precede purchase"
+            },
+            {
+              "order_id": "076f1fe978468db6b826f40f714da65f",
+              "reason": "Row 1 (order_id='076f1fe978468db6b826f40f714da65f'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "ab6d00347b9055691972ac20f00df77b",
+              "reason": "Row 1 (order_id='ab6d00347b9055691972ac20f00df77b'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "12f0d35d150a1645900980264e766cc6",
+              "reason": "Row 1 (order_id='12f0d35d150a1645900980264e766cc6'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "6b66feb014823833433d386dad897fcd",
+              "reason": "Row 1 (order_id='6b66feb014823833433d386dad897fcd'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "af79819a5f90540c8d9a0eb9a4ed589c",
+              "reason": "Row 1 (order_id='af79819a5f90540c8d9a0eb9a4ed589c'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            },
+            {
+              "order_id": "083fa2fb9d3de18eabbb3427045a1a1f",
+              "reason": "Row 1 (order_id='083fa2fb9d3de18eabbb3427045a1a1f'), order_delivered_carrier_date: known carrier handover cannot precede approval"
+            }
+          ],
+          "scope": "Source-event sequence anomalies excluded only from new-order editor references; all 120 preserved for exact internal historical replay"
+        },
+        "new_order": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 3.3306690738754696e-16
+        },
+        "unknown_categories_missing_numeric": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        },
+        "learned_missing_category": {
+          "rows": 1,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        },
+        "two_new_orders": {
+          "rows": 2,
+          "matrix_exact_float32": true,
+          "max_probability_abs_diff": 4.440892098500626e-16
+        }
+      }
+    }
+  },
+  "input_contract": {
+    "delivery_columns": 41,
+    "classification_columns": 51,
+    "max_rows": 100,
+    "max_bytes": 2097152,
+    "classification_editor_safe_references": 113,
+    "historical_source_anomalies_excluded_from_new_editor": 7,
+    "history": "Frozen fitted events only; strictly before purchase; no uploaded outcomes refresh history.",
+    "seller_count_tenure": "Caller supplied, never invented."
+  },
+  "explanation_method": "Exact additive decision-path contributions (Saabas); not SHAP, calibration or causal effects. Root baseline plus all contributions equals raw risk score.",
+  "limits": [
+    "Feature-ready rows are required; a raw order ID is insufficient.",
+    "The original working-day calendar covers 2016–2018; outside those years enter working-day fields explicitly.",
+    "Historical models do not establish accuracy on current-period orders."
+  ],
+  "screenshots": [
+    "../docs/dashboard/new_order_csv_predictions.png",
+    "../docs/dashboard/risk_factor_contributions.png"
+  ]
+}
