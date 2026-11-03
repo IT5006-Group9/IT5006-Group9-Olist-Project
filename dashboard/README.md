@@ -66,6 +66,9 @@ timestamp. Descriptions cover units, binary flags, route codes, category rules
 and cyclical date encodings using the existing regression feature definitions.
 Changing a selection or leaving the page clears the previous forecast, download
 and revealed outcome; each new calculation starts with the outcome hidden.
+The delivery outcome file is read only after Reveal. If that file is unavailable,
+the calculated forecast and prediction download remain usable; input/model loading
+errors instead clear old results and display a controlled message.
 Model metrics use fixed assessment cohorts and do not change with EDA filters.
 
 Below 800 px, the main panels stack, KPI cards use two columns, wide tables and
@@ -94,6 +97,12 @@ differ from regression's 18,603 purchase-window orders. Recall 53.23% applies to
 ranking the top 20% of the entire test window. The frozen validation threshold
 has a different flag rate and recall. **v1 remains the headline**, as specified
 by the latest classification methods and selection artifacts.
+
+The classification evaluation cohort requires items and an observed review
+answered at or after T; it does not represent every order reaching the trigger
+time. The prediction result explicitly names its selected model. Input-table
+missing values can come from absent source data as well as event availability
+or version-specific masking.
 
 The fitted history transformer and preprocessing are applied once during export;
 the prediction button evaluates the fitted forest on the selected prepared row.

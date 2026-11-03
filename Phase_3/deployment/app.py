@@ -121,9 +121,13 @@ def demo_bundle():
 @st.cache_data(show_spinner=False)
 def demo_examples():
     inputs = pd.read_parquet(ASSETS / "example_inputs.parquet")
-    outcomes = pd.read_parquet(ASSETS / "example_outcomes.parquet")
     manifest = json.loads((ASSETS / "manifest.json").read_text())
-    return inputs, outcomes, manifest
+    return inputs, manifest
+
+
+@st.cache_data(show_spinner=False)
+def demo_outcomes():
+    return pd.read_parquet(ASSETS / "example_outcomes.parquet").set_index("order_id")
 
 
 def header(title, description):
@@ -273,11 +277,17 @@ def overview(ev):
 def prediction():
     header("A delivery forecast, before fulfilment.", "Run the frozen regression model on a held-out historical purchase. Actual delivery information is kept separate from the prediction inputs.")
     st.caption("1. Choose an order → 2. Calculate its forecast → 3. Optionally reveal the historical outcome")
-    required = ["regression_model.joblib", "example_inputs.parquet", "example_outcomes.parquet", "manifest.json"]
+    required = ["regression_model.joblib", "example_inputs.parquet", "manifest.json"]
     if any(not (ASSETS / name).exists() for name in required):
+        clear_forecast()
         st.warning("The delivery demonstration package is not available in this checkout. See the dashboard README for the export command.")
         return
-    inputs, outcomes, manifest = demo_examples()
+    try:
+        inputs, manifest = demo_examples()
+    except (OSError, ValueError, KeyError, ImportError) as error:
+        clear_forecast()
+        st.warning(f"The delivery demonstration package is unavailable: {error}")
+        return
     with st.container(key="olist_split_prediction"):
         controls, output = st.columns([1, 1.65], gap="large")
     with controls, st.container(border=True):
@@ -331,7 +341,7 @@ def prediction():
             except ImportError:
                 st.session_state.pop("delivery_forecast", None)
                 st.error("The delivery model environment is not ready. The deployment needs its pinned model dependencies. Marketplace exploration and saved model evidence remain available.")
-            except (ValueError, KeyError, RuntimeError) as error:
+            except (OSError, ValueError, KeyError, RuntimeError, EOFError) as error:
                 st.session_state.pop("delivery_forecast", None)
                 st.error(f"Unable to score this order: {error}")
         st.caption(f"{len(inputs)} examples selected deterministically from the historical test window, without using their outcomes.")
@@ -363,22 +373,27 @@ def prediction():
         values = pd.DataFrame({"Estimate": ["Model forecast", "Recorded promise"], "Days": [days, quoted]})
         st.markdown("**3 · Optional outcome check**")
         reveal = st.checkbox("Reveal the historical delivery outcome", key="demo_reveal")
+        actual = None
         if reveal:
-            actual = outcomes.set_index("order_id").loc[selected]
-            values.loc[len(values)] = ["Historical delivery", actual.actual_days]
+            try:
+                actual = demo_outcomes().loc[selected]
+                values.loc[len(values)] = ["Historical delivery", actual.actual_days]
+            except (OSError, ValueError, KeyError, ImportError) as error:
+                actual = None
+                st.warning(f"The historical delivery outcome is unavailable: {error}")
         fig = px.bar(values, y="Estimate", x="Days", color="Estimate", orientation="h", text="Days",
                      color_discrete_map={"Model forecast": BLUE, "Recorded promise": "#b9c5d8", "Historical delivery": TEAL})
         fig.update_traces(texttemplate="%{x:.1f} days", textposition="outside", cliponaxis=False)
         fig.update_layout(showlegend=False, xaxis_title="Days from purchase", yaxis_title=None)
         fig.update_xaxes(range=[0, max(values.Days)*1.25])
         chart(fig, 250)
-        if reveal:
+        if actual is not None:
             a, b = st.columns(2)
             a.metric("Actual lead time", f"{actual.actual_days:.1f} days")
             b.metric("This order's absolute error", f"{abs(days-actual.actual_days):.1f} days")
             st.caption(f"Historical arrival: {pd.Timestamp(actual.delivered_ts):%d %B %Y}. One order's error is not the overall model MAE.")
         st.download_button("Download this forecast", pd.DataFrame([result]).to_csv(index=False), file_name=f"delivery_forecast_{selected[-6:]}.csv", mime="text/csv")
-        st.caption("Historical proof of concept · Selected model: HGB_risk · Training cutoff: 1 June 2018. No model fitting runs inside the app.")
+        st.caption("Historical proof of concept · Deployment refit of the frozen HGB_risk specification · Training cutoff: 1 June 2018. Aggregate metrics come from the original saved assessment. No model fitting runs inside the app.")
 
 
 def regression_evidence(ev):
@@ -455,6 +470,7 @@ def classification_evidence(ev):
     summary, test, cv = source["summary"], source["summary"]["test"], source["cv"]
     selected = cv[cv.family.eq(source["selection"]["selected_family"])].iloc[0]
     st.caption(f"Low-review risk at T = min(delivery, promised delivery) · {test['n']:,} orders with T in June–August 2018 · Target: 1–2 stars")
+    st.caption("Evaluation cohort: orders with items and an observed review answered at or after T. These results do not cover every order reaching the trigger time.")
     if use_strict:
         st.info("Strict cutoff: training labels precede each fold cutoff; validation labels are known by 1 June 2018; features from approval or carrier events after T are masked. The Random Forest family is selected again, with different hyperparameters.")
         st.caption("Strict validation uses only labels available by the selection date. Its CV cohort differs from v1. The June–August test window is shared and had already been examined.")
@@ -505,7 +521,7 @@ def classification_evidence(ev):
         st.dataframe(cv[["family", "train_pr_auc_mean", "cv_pr_auc_mean", "cv_pr_auc_sd", "cv_recall_at_capacity_mean"]], hide_index=True, width="stretch")
         st.dataframe(source["criteria"], hide_index=True, width="stretch")
         st.write("Delivery status is available at this task's trigger time. This classifier is evaluated later in the order lifecycle than the purchase-time regression model.")
-        st.caption("Classification results are archived evidence; the interactive prediction page runs the delivery regression model.")
+        st.caption("Aggregate classification metrics are saved assessments. Low-review prediction evaluates the fitted classification forest on fixed historical examples using raw, uncalibrated scores.")
     suffix = "strict" if use_strict else "v1"
     st.download_button("Download classification results", rules.to_csv(index=False), f"classification_{suffix}_operating_points.csv", "text/csv")
     classification_followup(ev, update)
@@ -574,7 +590,7 @@ def classification_followup(ev, update):
             if not test_calibration.empty:
                 st.markdown("**Historical test · June–August 2018**")
                 st.dataframe(test_calibration.round(4), hide_index=True, width="stretch")
-            st.caption("These are saved classification diagnostics. The interactive delivery page runs the existing regression predictor.")
+            st.caption("These are saved calibration diagnostics. The Low-review prediction page uses raw forest scores; this sigmoid calibrator is not applied to its scores or frozen thresholds.")
     st.link_button("Read the complete classification update ↗", REPO + "/blob/main/Phase_3/docs/classification.md")
 
 
@@ -635,7 +651,7 @@ def model_evidence(ev):
         classification_evidence(ev)
     with tabs[2]:
         stacking_evidence(ev)
-    st.caption("Historical exposure: these test records were previously examined during the project. They are retrospective assessments, not new independent unseen data. Delivery metrics are conditional on observed completed deliveries.")
+    st.caption("Historical exposure: these test records were previously examined during the project. They are retrospective assessments, not new independent unseen data. Delivery metrics require observed completed deliveries; classification metrics require observed reviews answered at or after T.")
 
 
 def guide(ev):
@@ -674,6 +690,7 @@ def guide(ev):
             st.write("The original classification assessment has label and event availability limitations; a purge gap alone does not enforce those cutoffs. Strict-cutoff evidence is not available in this checkout.")
         st.write("Low-review risk is not evidence that contacting a customer will improve their review. Interactive pages evaluate the frozen delivery model and the uploaded classification forests on fixed examples. Classification experiments, calibration and stacking remain saved assessments; calibration is not applied to the interactive raw risk scores.")
         st.write("The data covers historical Olist orders. This demonstration neither connects to a live order feed nor establishes performance on today's marketplace.")
+        st.write("Evaluation populations are restricted: regression uses completed deliveries, while classification uses orders with items and an observed review answered at or after T. Orders without a qualifying review are outside the classification assessment.")
     st.subheader("Sources & project materials")
     st.link_button("Project brief", BRIEF)
     st.link_button("Phase 3 code, notebooks & evidence", REPO + "/tree/main/Phase_3")

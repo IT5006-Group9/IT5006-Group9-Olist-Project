@@ -183,11 +183,11 @@ def render(header, panel_metrics, chart):
             except (OSError, ValueError, KeyError, ImportError, RuntimeError) as error:
                 clear_prediction()
                 st.error(f"Unable to score this order: {error}")
-        st.caption(f"{len(inputs)} fixed historical examples · 40 per June–August 2018 trigger month, selected without using reviews or risk scores.")
+        st.caption(f"{len(inputs)} fixed historical examples · 40 per June–August 2018 trigger month. Within the eligible test cohort, order-ID sampling uses neither review values nor risk scores.")
         st.caption("Changing a model, filter or order, or leaving this page, clears the prediction and revealed review. Browsing never runs inference automatically.")
     with st.expander("See the classification inputs and their meanings"):
         from deployment.classification_input_help import CLASSIFICATION_INPUT_MEANINGS
-        st.caption("Read-only recorded inputs for the selected model. Missing means unavailable under that model’s event rules. Strict and v1 inputs can differ. IDs and timestamps identify the example or retrieve frozen history; they are not direct numeric features.")
+        st.caption("Read-only recorded inputs for the selected model. Missing may reflect absent source data, information unavailable by T, or version-specific masking; see each field’s definition. Strict and v1 inputs can differ. IDs and timestamps identify the example or retrieve frozen history; they are not direct numeric features.")
         details = record[manifest["metadata_columns"] + manifest["display_feature_columns"]].to_frame("Value")
         details["Value"] = details["Value"].map(lambda value: "Missing / unavailable" if pd.isna(value) else str(value))
         details = details.rename_axis("Input").reset_index()
@@ -201,6 +201,7 @@ def render(header, panel_metrics, chart):
         else:
             st.markdown('<span class="pill">PREDICTION CALCULATED</span>', unsafe_allow_html=True)
             st.subheader("2 · Low-review risk")
+            st.caption(f"Selected model: {VERSIONS[version]} · Raw forest score, not a calibrated probability.")
             score, threshold = result["risk_score"], result["validation_threshold"]
             panel_metrics([
                 ("Low-review risk score", f"{score:.3f}", "Raw fitted random-forest score for class 1; not a calibrated probability."),
@@ -239,3 +240,4 @@ def render(header, panel_metrics, chart):
         verification = spec["verification"]
         st.caption(f"Verified on all {verification['rows']} examples against the original fitted pipeline; maximum absolute score difference {verification['portable_vs_fitted_pipeline_max_abs_diff']:.2e}. Model SHA-256: {spec['model_sha256']}")
         st.caption("June–August 2018 historical assessment data was already examined during the project. This demonstration does not create a new independent holdout or connect to a live order feed. Aggregate model scores remain on Model evidence.")
+        st.caption("The eligible classification cohort contains orders with items and an observed review answered at or after T. Orders without a qualifying review are outside these evaluation results.")
