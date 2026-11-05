@@ -16,6 +16,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from deployment.brazil_states import state_label
+
 ASSETS = Path(__file__).resolve().parent / "assets/classification"
 VERSIONS = {
     "v1": "V1 · Final Random Forest",
@@ -143,18 +145,25 @@ def render(header, panel_metrics, chart):
         clear_prediction()
         st.warning(f"The classification demonstration package is unavailable: {error}")
         return
+    example_numbers = {order_id: number for number, order_id in enumerate(inputs.order_id, start=1)}
     with st.container(key="olist_split_classification_prediction"):
         controls, output = st.columns([1, 1.65], gap="large")
     with controls, st.container(border=True):
         st.subheader("1 · Choose a historical order")
+        st.caption(f"Browse {len(inputs)} historical examples by prediction point T and destination. Each example keeps the same number when you filter.")
         months = ["All months", *sorted(inputs.t_month.unique())]
-        month = st.selectbox("Trigger month", months, key="clf_month", on_change=clear_prediction)
+        month = st.selectbox("Trigger month", months,
+                             format_func=lambda value: "All months" if value == "All months" else pd.Timestamp(value + "-01").strftime("%B %Y"),
+                             help="The month of prediction point T, rather than the purchase month.",
+                             key="clf_month", on_change=clear_prediction)
         candidates = inputs if month == "All months" else inputs[inputs.t_month.eq(month)]
         states = ["All states", *sorted(candidates.customer_state.dropna().unique())]
         if st.session_state.get("clf_state") not in states:
             st.session_state["clf_state"] = "All states"
             clear_prediction()
-        state = st.selectbox("Customer destination", states, key="clf_state", on_change=clear_prediction)
+        state = st.selectbox("Customer destination", states, format_func=state_label,
+                             help="The customer's destination state in Brazil.",
+                             key="clf_state", on_change=clear_prediction)
         if state != "All states":
             candidates = candidates[candidates.customer_state.eq(state)]
         if candidates.empty:
@@ -168,15 +177,16 @@ def render(header, panel_metrics, chart):
             clear_prediction()
         def order_label(order_id):
             row = indexed.loc[order_id]
-            return f"{pd.Timestamp(row.survey_trigger_time):%d %b} · {row.seller_state} → {row.customer_state} · …{order_id[-6:]}"
-        selected = st.selectbox("Historical classification order", order_ids, format_func=order_label,
+            return f"Example {example_numbers[order_id]:03d} · {pd.Timestamp(row.survey_trigger_time):%d %b %Y}"
+        selected = st.selectbox("Historical order", order_ids, format_func=order_label,
+                                help="The displayed date is prediction point T. The example number stays the same across filters.",
                                 key="clf_order", on_change=clear_prediction)
         signature = (hashlib.sha256(manifest_text.encode()).hexdigest(), version, month, state, selected)
         if st.session_state.get("clf_selection") != signature:
             clear_prediction()
             st.session_state["clf_selection"] = signature
         position = order_ids.index(selected)
-        st.caption(f"Order {position + 1} of {len(order_ids)} in the current selection")
+        st.caption(f"{position + 1} of {len(order_ids)} matching examples")
         with st.container(key="olist_demo_navigation"):
             previous, following, shuffle = st.columns(3)
         previous.button("← Previous", key="clf_previous", on_click=change_order,
@@ -186,11 +196,14 @@ def render(header, panel_metrics, chart):
         shuffle.button("Random", key="clf_random", on_click=change_order,
                        args=(order_ids, "random"), disabled=len(order_ids) < 2, width="stretch")
         record = indexed.loc[selected]
-        st.markdown("**Order at the prediction point**")
-        st.write(f"Trigger: {pd.Timestamp(record.survey_trigger_time):%d %B %Y, %H:%M}")
-        st.write(f"{record.seller_state} → {record.customer_state} · {int(record.n_items)} item(s)")
-        st.write(f"Item value R\\$ {record.total_price:,.2f} · Freight R\\$ {record.total_freight:,.2f}")
-        st.write("Delivered by T: **" + ("Yes" if record.is_delivered else "No") + "**")
+        st.subheader(f"Example {example_numbers[selected]:03d} · Order details")
+        st.write(f"**Prediction point T:** {pd.Timestamp(record.survey_trigger_time):%d %B %Y, %H:%M}")
+        st.write(f"**Seller state:** {state_label(record.seller_state)}")
+        st.write(f"**Customer destination:** {state_label(record.customer_state)}")
+        st.write(f"**Items:** {int(record.n_items)}")
+        st.write(f"**Item value:** R\\$ {record.total_price:,.2f}")
+        st.write(f"**Freight:** R\\$ {record.total_freight:,.2f}")
+        st.write("**Delivered by prediction point T:** " + ("Yes" if record.is_delivered else "No · not yet delivered at T"))
         if st.button("Run low-review prediction", type="primary", width="stretch"):
             clear_prediction()
             try:

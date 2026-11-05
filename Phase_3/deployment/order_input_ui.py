@@ -220,7 +220,11 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
         error_key = f"new_{task}_check_error"
         if st.session_state.get(error_key, {}).get("identity") != raw_identity:
             st.session_state.pop(error_key, None)
-        if st.button("Check order details", type="primary", key=f"new_{task}_check"):
+        has_manual_entries = draft.drop(columns=automatic).map(
+            lambda value: bool(_value(value).strip())
+        ).any().any()
+        if st.button("Check order details", type="primary", key=f"new_{task}_check",
+                     disabled=not has_manual_entries):
             invalidate_order(task)
             try:
                 prepared = prepare_order(task, draft, recalculate)
@@ -237,7 +241,8 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
         if error_key in st.session_state:
             st.error("Please check these details:\n\n" + st.session_state[error_key]["message"])
         if st.session_state.get(checked_key) != raw_identity:
-            st.info("Fill in the sections and click Check order details to enable the prediction.")
+            st.info("Fill in the sections and click Check order details to enable the prediction."
+                    if has_manual_entries else "Enter your order details to enable Check order details.")
             return None
         try:
             frame = validator(draft)

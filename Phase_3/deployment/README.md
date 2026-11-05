@@ -71,7 +71,8 @@ names and grouped sections. **View a completed example** is read-only guidance;
 neither it nor grey placeholders copy example values into the form. The explicit
 **Check order details** action prepares calculable calendar, price and route
 fields and validates the completed order before its separate Run action becomes
-available. Measurements, basket summaries and purchase-time seller counts/tenure
+available. Check remains disabled until the user enters a manual field;
+calculated fields alone cannot enable it. Measurements, basket summaries and purchase-time seller counts/tenure
 must be supplied, rather than invented. A previously edited draft is retained;
 an untouched legacy example seed is replaced by a blank draft. **Clear form**
 beside the input method resets the draft and clears previous results; it is
@@ -107,12 +108,14 @@ the frozen history is not a complete operational order ledger. Historical outcom
 statistics are looked up strictly before purchase from fitted events only. New
 rows never update this history. Either forest's new-order adapter masks events
 after T. Automatic working-day recalculation is limited to the original
-2016–2018 holiday calendar; other years require explicit working-day inputs.
-Neither minimal raw order entry nor order-ID lookup alone supplies all features.
-The new-order editor offers 113 source-consistent reference rows. Seven of the
+2016–2018 holiday calendar. Delivered orders outside those years require explicit
+working-day inputs; these fields stay missing for orders undelivered by T.
+A complete feature row is required; an order ID alone cannot retrieve these inputs.
+The form's read-only completed example and example CSV use a source-consistent
+pool of 113 historical rows; users enter their own order in a blank form. Seven of the
 120 historical records contain known carrier/approval timestamps in reverse
 order; they remain available for faithful historical reproduction but are
-excluded from editable new-order references. Their IDs and validation reasons
+excluded from the new-order example pool. Their IDs and validation reasons
 are recorded in the new pipeline manifest.
 
 Every risk prediction can display **Why this risk score?** in business groups or

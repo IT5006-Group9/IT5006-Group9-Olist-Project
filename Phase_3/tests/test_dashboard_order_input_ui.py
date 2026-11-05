@@ -5,6 +5,7 @@ import io
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 import pandas as pd
 from streamlit.testing.v1 import AppTest
@@ -181,7 +182,9 @@ class EditorDraftLifecycleTests(unittest.TestCase):
         self.healthy(app, invalid=invalid)
 
     def check(self, app, *, invalid=False):
-        next(button for button in app.button if button.label == 'Check order details').click().run(timeout=30)
+        button = next(button for button in app.button if button.label == 'Check order details')
+        self.assertFalse(button.disabled)
+        button.click().run(timeout=30)
         self.healthy(app, invalid=invalid)
 
     def calculate(self, app, task):
@@ -194,11 +197,15 @@ class EditorDraftLifecycleTests(unittest.TestCase):
             with self.subTest(task=task):
                 app = self.launch(task)
                 self.assertTrue(all(widget.value == '' for widget in self.fields(app, task).values()))
+                self.assertTrue(next(button for button in app.button if button.label == 'Check order details').disabled)
                 example = next(widget for widget in app.expander if widget.label == 'View a completed example')
                 example_text = '\n'.join(item.value for item in example.markdown)
                 self.assertIn('example-order-001', example_text)
                 self.assertIn('books', example_text)
                 self.assertNotIn('Calculate test result', [button.label for button in app.button])
+                self.edit(app, task, {'order_id': 'my-new-order'})
+                self.assertFalse(next(button for button in app.button if button.label == 'Check order details').disabled)
+                self.assertFalse(app.error, 'Partial entry must wait for the explicit check before reporting missing fields')
                 self.edit(app, task, {'order_id': 'my-new-order', 'price': '25', 'category': 'my-category'})
                 self.assertNotIn('Calculate test result', [button.label for button in app.button])
                 self.check(app)
@@ -227,6 +234,7 @@ class EditorDraftLifecycleTests(unittest.TestCase):
                         self.assertFalse(any(message.value == 'Calculated result is available' for message in app.success))
                 self.edit(app, task, {'category': 'revised-category'})
                 self.assertNotIn('Calculate test result', [button.label for button in app.button])
+                self.assertNotIn(f'new_{task}_result', app.session_state)
                 self.check(app)
                 self.assertEqual(self.preview(app).category.tolist(), ['revised-category'])
 
@@ -234,6 +242,7 @@ class EditorDraftLifecycleTests(unittest.TestCase):
         for task in ('delivery', 'classification_v1'):
             with self.subTest(task=task):
                 app = self.launch(task)
+                self.assertTrue(next(button for button in app.button if button.label == 'Check order details').disabled)
                 self.edit(app, task, {'order_id': 'needs-correction', 'price': '10', 'category': 'books'})
                 self.check(app)
                 self.calculate(app, task)
@@ -253,11 +262,25 @@ class EditorDraftLifecycleTests(unittest.TestCase):
                 self.assertEqual(self.preview(app).order_id.tolist(), ['needs-correction'])
                 self.assertEqual(self.preview(app).price.tolist(), [15])
                 self.calculate(app, task)
-                next(button for button in app.button if button.label == 'Clear form').click().run(timeout=30)
-                self.healthy(app)
-                self.assertTrue(all(widget.value == '' for widget in self.fields(app, task).values()))
-                self.assertNotIn('Calculate test result', [button.label for button in app.button])
-                self.assertNotIn(f'new_{task}_result', app.session_state)
+                # In this generic UI fixture, make price an automatic field to
+                # isolate the shared rule from either task's model contract.
+                # A retained hidden value must not enable an otherwise empty form.
+                with patch('deployment.order_form_prepare.derived_fields', return_value=('price',)):
+                    app.run(timeout=30)
+                    self.assertNotIn('price', self.fields(app, task))
+                    self.edit(app, task, {'order_id': '', 'category': ''})
+                    self.assertEqual(app.session_state[f'new_{task}_draft'].price.tolist(), ['15'])
+                    self.assertTrue(next(button for button in app.button if button.label == 'Check order details').disabled)
+                    self.assertNotIn(f'new_{task}_result', app.session_state)
+                    self.assertNotIn('Calculate test result', [button.label for button in app.button])
+                    next(button for button in app.button if button.label == 'Clear form').click().run(timeout=30)
+                    self.healthy(app)
+                    self.assertTrue(all(widget.value == '' for widget in self.fields(app, task).values()))
+                    self.assertTrue(app.session_state[f'new_{task}_draft'].eq('').all().all())
+                    self.assertTrue(next(button for button in app.button if button.label == 'Check order details').disabled)
+                    self.assertNotIn('Calculate test result', [button.label for button in app.button])
+                    for name in ('result', 'identity', 'checked', 'check_error'):
+                        self.assertNotIn(f'new_{task}_{name}', app.session_state)
 
 
 if __name__ == "__main__":

@@ -112,7 +112,7 @@ freight; these are not item-level sales for every category in a mixed basket.
 
 Prediction demonstration filters are separate. Navigation stays within the
 selected month and destination and never calculates a prediction automatically.
-The full-width **See the purchase-time inputs** table includes Input, Value and
+The full-width **See the delivery inputs and their meanings** table includes Input, Value and
 Meaning / units for all 39 supplied features plus the order ID and purchase
 timestamp. Descriptions cover units, binary flags, route codes, category rules
 and cyclical date encodings using the existing regression feature definitions.
@@ -166,13 +166,13 @@ time. The prediction result explicitly names its selected model. Input-table
 missing values can come from absent source data as well as event availability
 or version-specific masking.
 
-Historical examples use preprocessing prepared during export. **New order / CSV**
+Historical examples use preprocessing prepared during export. **Enter an order or upload a table**
 runs the exported fitted history lookup, imputer and categorical encoders on
 validated supplied rows before evaluating the same forest. Every tree split,
 missing-value route and leaf score is preserved in a
 NumPy-only runtime. All 120 examples match the original fitted pipeline and saved
-scores to within 1e-10 for both versions. Strict input rows also apply the original
-post-T event masking. Current-order review labels and fit-only outcome context
+scores to within 1e-10 for both versions. Supplied classification rows enforce
+event availability at T. Current-order review labels and fit-only outcome context
 are excluded; the review file is read only after an explicit reveal.
 
 Single-order flags use the corresponding frozen validation threshold: v1
@@ -180,14 +180,19 @@ Single-order flags use the corresponding frozen validation threshold: v1
 as the top 20%. These raw forest scores are not calibrated probabilities. Changing
 the model, filter, order or page clears the score, download and revealed review.
 
-Both tasks accept a feature-ready CSV (maximum 100 orders / 2 MiB) or an editable
-reference row with a new order ID. Download templates and field definitions in
-the input panel. An order ID alone is insufficient. Explicit recalculation updates
-derived fields, while seller counts/tenure and product/basket aggregates remain
-caller supplied. Classification requires source-event timestamps where dependent
+Both tasks offer **Fill in one order**, a blank grouped form with read-only
+completed examples, and **Upload an order table (CSV)**, a feature-ready CSV
+(maximum 100 orders / 2 MiB). Download templates and field definitions in the
+folded input guide. An order ID alone is insufficient. Both methods require
+**Check order details**, followed by a separate Run action to start prediction.
+Check is disabled for an empty form or until a CSV is uploaded. The form check
+calculates derived values; CSV checks validate values as supplied. Seller
+counts/tenure and product/basket aggregates remain caller supplied. **Clear form**
+resets entered fields and predictions. Classification requires source-event timestamps where dependent
 values are populated and masks post-T information. Its history remains frozen;
-uploaded rows and later reviews never refresh it. Automatic working-day derivation
-uses the original 2016–2018 calendar; other years require explicit inputs.
+uploaded rows and later reviews never refresh it. Classification working-day derivation
+uses the original 2016–2018 calendar. Delivered orders outside those years require
+explicit working-day inputs; these fields stay missing if undelivered by T.
 
 **Why this risk score?** explains each classification prediction with signed
 decision-path contributions by business group or original feature, including

@@ -132,12 +132,35 @@ class ClassificationPredictionTests(unittest.TestCase):
             self.assertFalse(any(re.search(r"\bstrict\b", text, flags=re.IGNORECASE) for text in notices))
             self.assertTrue(any("historical" in text.lower() or "retrospective" in text.lower() for text in notices))
             self.assertFalse(any("availability limitations" in item.value.lower() for item in app.warning))
-            selected = self.widget(app.selectbox, "Historical classification order").value
+            selected = self.widget(app.selectbox, "Historical order").value
             spec = MANIFEST["versions"]["v1"]
             frozen_selection = json.loads((PHASE / spec["selection_file"]).read_text())
             self.assertEqual(spec["capacity_threshold"], frozen_selection["thresholds"]["capacity_threshold"])
             self.assertEqual(spec["selection_sha256"], frozen_selection["selection_sha256"])
             inputs = original_read(ASSETS / spec["inputs"])
+            picker = self.widget(app.selectbox, "Historical order")
+            self.assertEqual(picker.key, "clf_order")
+            self.assertEqual(len(picker.options), len(inputs))
+            for number, (label, source) in enumerate(zip(picker.options, inputs.itertuples()), start=1):
+                with self.subTest(example=number):
+                    self.assertEqual(label, f"Example {number:03d} · {pd.Timestamp(source.survey_trigger_time):%d %b %Y}")
+                    self.assertNotIn(source.order_id, label)
+                    self.assertNotRegex(label, r"[0-9a-f]{16,}|[→←…]")
+            self.assertIn("São Paulo (SP)", self.widget(app.selectbox, "Customer destination").options)
+            self.assertIn("Pernambuco (PE)", self.widget(app.selectbox, "Customer destination").options)
+            self.assertIn("June 2018", self.widget(app.selectbox, "Trigger month").options)
+            self.assertIn("Example 001 · Order details", [title.value for title in app.subheader])
+            details = "\n".join(item.value for item in app.markdown if "<table" not in item.value)
+            self.assertIn("**Prediction point T:** 01 June 2018, 00:00", details)
+            self.assertNotIn("25 April 2018", details, "The selector and summary date are T, not the purchase date")
+            self.assertIn("**Seller state:** São Paulo (SP)", details)
+            self.assertIn("**Customer destination:** Pernambuco (PE)", details)
+            first = inputs.iloc[0]
+            for label, value in (("Items", str(int(first.n_items))),
+                                 ("Item value", f"R\\$ {first.total_price:,.2f}"),
+                                 ("Freight", f"R\\$ {first.total_freight:,.2f}")):
+                self.assertIn(f"**{label}:** {value}", details)
+            self.assertIn("**Delivered by prediction point T:** No · not yet delivered at T", details)
             ordinal = inputs.order_id.tolist().index(selected)
             matrix = np.load(ASSETS / spec["matrix"], allow_pickle=False)
             forest = load_forest(ASSETS / spec["forest"])
@@ -196,18 +219,46 @@ class ClassificationPredictionTests(unittest.TestCase):
         inputs = pd.read_parquet(ASSETS / MANIFEST["versions"]["v1"]["inputs"])
         with self.real_inference_spy() as predict:
             app = self.launch()
-            chosen = self.widget(app.selectbox, "Historical classification order").value
+            # Pick the last full-sample row: a filtered ordinal must never
+            # replace Example 120 with its position inside the smaller cohort.
+            chosen = inputs.iloc[-1].order_id
+            self.widget(app.selectbox, "Historical order").set_value(chosen).run(timeout=60)
             row = inputs.set_index("order_id").loc[chosen]
+            expected_label = f"Example {len(inputs):03d} · {pd.Timestamp(row.survey_trigger_time):%d %b %Y}"
+            picker = self.widget(app.selectbox, "Historical order")
+            self.assertEqual(picker.options[picker.index], expected_label)
+            self.assertEqual(predict.call_count, 0)
             self.run_prediction(app)
             self.reveal(app)
             self.widget(app.selectbox, "Trigger month").set_value(row.t_month).run(timeout=60)
             self.assert_cleared(app)
-            self.assertEqual(self.widget(app.selectbox, "Historical classification order").value, chosen)
+            picker = self.widget(app.selectbox, "Historical order")
+            self.assertIn(expected_label, picker.options)
+            # Streamlit may reset selection when the filtered options change;
+            # the same underlying order must retain its full-sample label.
+            picker.set_value(chosen).run(timeout=60)
+            self.assert_cleared(app)
+            picker = self.widget(app.selectbox, "Historical order")
+            self.assertEqual(picker.value, chosen)
+            self.assertEqual(picker.options[picker.index], expected_label)
             self.run_prediction(app)
             self.reveal(app)
             self.widget(app.selectbox, "Customer destination").set_value(row.customer_state).run(timeout=60)
             self.assert_cleared(app)
-            self.assertEqual(self.widget(app.selectbox, "Historical classification order").value, chosen)
+            picker = self.widget(app.selectbox, "Historical order")
+            self.assertIn(expected_label, picker.options)
+            picker.set_value(chosen).run(timeout=60)
+            self.assert_cleared(app)
+            picker = self.widget(app.selectbox, "Historical order")
+            self.assertEqual(picker.value, chosen)
+            self.assertEqual(picker.options[picker.index], expected_label)
+            self.assertEqual(self.widget(app.selectbox, "Customer destination").value, "RS")
+            self.assertLess(len(picker.options), len(inputs))
+            self.assertIn("Example 120 · Order details", [title.value for title in app.subheader])
+            details = "\n".join(item.value for item in app.markdown if "<table" not in item.value)
+            self.assertIn("**Seller state:** Paraná (PR)", details)
+            self.assertIn("**Customer destination:** Rio Grande do Sul (RS)", details)
+            self.assertIn("**Delivered by prediction point T:** Yes", details)
             self.run_prediction(app)
             self.reveal(app)
             self.widget(app.radio, "Order source").set_value("Enter an order or upload a table").run(timeout=60)
@@ -215,6 +266,9 @@ class ClassificationPredictionTests(unittest.TestCase):
             self.widget(app.radio, "Order source").set_value("Historical examples").run(timeout=60)
             self.assert_cleared(app)
             self.assertEqual(predict.call_count, 3)
+            matrix = np.load(ASSETS / MANIFEST["versions"]["v1"]["matrix"], allow_pickle=False)
+            for call in predict.call_args_list:
+                np.testing.assert_array_equal(call.args[1], matrix[[-1]])
 
     def test_stale_strict_session_migrates_to_v1_without_running_a_model(self):
         with self.real_inference_spy() as predict:
@@ -246,19 +300,19 @@ class ClassificationPredictionTests(unittest.TestCase):
     def test_order_navigation_manual_selection_and_page_leave_never_restore_results(self):
         with self.real_inference_spy() as predict:
             app = self.launch()
-            original = self.widget(app.selectbox, "Historical classification order").value
+            original = self.widget(app.selectbox, "Historical order").value
             self.run_prediction(app)
             self.reveal(app)
             self.widget(app.button, "Next →").click().run(timeout=60)
             self.assert_cleared(app)
-            self.assertNotEqual(self.widget(app.selectbox, "Historical classification order").value, original)
+            self.assertNotEqual(self.widget(app.selectbox, "Historical order").value, original)
             self.widget(app.button, "← Previous").click().run(timeout=60)
             self.assert_cleared(app)
-            self.assertEqual(self.widget(app.selectbox, "Historical classification order").value, original)
+            self.assertEqual(self.widget(app.selectbox, "Historical order").value, original)
             self.run_prediction(app)
             self.reveal(app)
             other = next(order for order in pd.read_parquet(ASSETS / "inputs.parquet").order_id if order != original)
-            self.widget(app.selectbox, "Historical classification order").set_value(other).run(timeout=60)
+            self.widget(app.selectbox, "Historical order").set_value(other).run(timeout=60)
             self.assert_cleared(app)
             self.run_prediction(app)
             self.reveal(app)
@@ -274,12 +328,12 @@ class ClassificationPredictionTests(unittest.TestCase):
             app = self.launch()
             self.widget(app.selectbox, "Trigger month").set_value("2018-06").run(timeout=60)
             self.widget(app.selectbox, "Customer destination").set_value("SP").run(timeout=60)
-            before = self.widget(app.selectbox, "Historical classification order").value
+            before = self.widget(app.selectbox, "Historical order").value
             self.run_prediction(app)
             self.reveal(app)
             self.widget(app.button, "Random").click().run(timeout=60)
             self.assert_cleared(app)
-            after = self.widget(app.selectbox, "Historical classification order").value
+            after = self.widget(app.selectbox, "Historical order").value
             self.assertNotEqual(after, before)
             candidates = inputs.loc[inputs.t_month.eq("2018-06") & inputs.customer_state.eq("SP"), "order_id"].tolist()
             self.assertIn(after, candidates)
@@ -294,7 +348,7 @@ class ClassificationPredictionTests(unittest.TestCase):
             self.widget(app.selectbox, "Trigger month").set_value("2018-07").run(timeout=60)
             self.assert_cleared(app)
             self.assertEqual(self.widget(app.selectbox, "Customer destination").value, "All states")
-            selected = self.widget(app.selectbox, "Historical classification order").value
+            selected = self.widget(app.selectbox, "Historical order").value
             self.assertEqual(inputs.set_index("order_id").loc[selected, "t_month"], "2018-07")
             self.assertEqual(predict.call_count, 2)
 
@@ -382,6 +436,16 @@ class ClassificationPredictionTests(unittest.TestCase):
                 ids_sha = hashlib.sha256("\n".join(inputs.order_id.astype(str)).encode()).hexdigest()
                 self.assertEqual(ids_sha, spec["input_order_ids_sha256"])
         app = self.launch()
+        expander = self.widget(app.expander, "See the classification inputs and their meanings")
+        self.assertFalse(expander.proto.expanded)
+        # Retain the full-width folded catalogue outside both prediction columns.
+        column_rows = [[child for child in node.children.values() if child.type == "column"]
+                       for node in app.main if hasattr(node, "children")]
+        prediction_columns = [columns for columns in column_rows if len(columns) == 2
+                              and any(widget.key == "clf_order" for widget in columns[0].selectbox)]
+        self.assertEqual(len(prediction_columns), 1)
+        self.assertFalse(prediction_columns[0][0].expander)
+        self.assertFalse(prediction_columns[0][1].expander)
         details = next(text.value for text in app.markdown if 'class="dataframe olist-input-table"' in text.value)
         for column in columns:
             self.assertIn(f"<td>{column}</td>", details)

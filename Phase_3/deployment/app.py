@@ -25,20 +25,12 @@ from deployment.evidence import EvidenceError, MODEL_LABELS, load_evidence
 from deployment import explorer_filters as shared_filters
 from deployment import regression_assets
 from deployment.input_help import INPUT_MEANINGS
+from deployment.brazil_states import BRAZIL_STATES, state_label
 
 ASSETS = HERE / "assets"
 REPO = "https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project"
 BLUE, TEAL, AMBER, INK, MUTED = "#4263eb", "#13877c", "#b97728", "#182b49", "#6c7c93"
 PAGES = ["Overview", "Marketplace explorer", "Delivery prediction", "Low-review prediction", "Model results", "Guide & methodology"]
-BRAZIL_STATES = {
-    "AC": "Acre", "AL": "Alagoas", "AP": "Amapá", "AM": "Amazonas",
-    "BA": "Bahia", "CE": "Ceará", "DF": "Federal District", "ES": "Espírito Santo",
-    "GO": "Goiás", "MA": "Maranhão", "MT": "Mato Grosso", "MS": "Mato Grosso do Sul",
-    "MG": "Minas Gerais", "PA": "Pará", "PB": "Paraíba", "PR": "Paraná",
-    "PE": "Pernambuco", "PI": "Piauí", "RJ": "Rio de Janeiro", "RN": "Rio Grande do Norte",
-    "RS": "Rio Grande do Sul", "RO": "Rondônia", "RR": "Roraima", "SC": "Santa Catarina",
-    "SP": "São Paulo", "SE": "Sergipe", "TO": "Tocantins",
-}
 DISPLAY_LABELS = {
     "HGB_risk": "HGB + risk (selected)",
     "HGB_risk_current_main": "Main HGB + risk",
@@ -310,14 +302,6 @@ def overview(ev):
         header("Olist Delivery & Review Analytics", "Explore the marketplace, predict delivery time, and identify low-review risk.")
         overview_marketplace()
         overview_model_results(ev)
-
-
-def state_label(code):
-    """Expand the archived state code for display without changing model inputs."""
-    if pd.isna(code):
-        return "Not recorded"
-    name = BRAZIL_STATES.get(str(code))
-    return f"{name} ({code})" if name else str(code)
 
 
 def prediction():
@@ -774,7 +758,7 @@ def guide(ev):
         st.markdown("1. Open **Low-review prediction** and select a historical order by trigger month and destination. The page uses the final Random Forest V1.\n2. Click **Run low-review prediction** to evaluate the fitted forest.\n3. Compare its raw risk score with V1’s frozen validation threshold, then optionally reveal the actual review or download the prediction.")
         st.write("For your own orders, choose **Enter an order or upload a table**. Start with **Fill in one order**, consult **View a completed example**, and fill the blank grouped form with information known at T, including source-event times and the seller's purchase-time history. Alternatively, use **Upload an order table (CSV)** for a completed order table. With either method, click **Check order details**, correct any errors, then **Run new-order risk predictions** to start the predictions. An order ID alone is insufficient.")
         st.write("After either risk prediction, **Why this risk score?** shows factors that raised or lowered it. Switch between business groups and original features; the full table includes recorded values and signed contributions. Root baseline plus all contributions equals the raw risk score. This decision-path explanation is not SHAP or a causal effect.")
-        st.caption("Random Forest V1 is the final classification model. Scores are not calibrated probabilities. A single-order threshold check is not a top-20% ranking. Automatic working-day recalculation uses the original 2016–2018 holiday calendar; for other years supply the working-day fields explicitly.")
+        st.caption("Random Forest V1 is the final classification model. Scores are not calibrated probabilities. A single-order threshold check is not a top-20% ranking. Automatic working-day recalculation uses the original 2016–2018 holiday calendar. For delivered orders outside those years, supply the working-day fields explicitly; they stay missing if the order is undelivered by T.")
         st.caption("Changing the filters or order, or leaving the page, clears the previous score and review. Current review labels stay separate from prediction inputs.")
         st.button("Open low-review prediction →", on_click=navigate, args=("Low-review prediction",))
     st.subheader("Read the two tasks correctly")
