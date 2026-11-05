@@ -36,7 +36,7 @@ class DashboardEvidenceChartTests(unittest.TestCase):
 
     def launch(self):
         app = AppTest.from_file(str(ENTRY)).run(timeout=60)
-        app.sidebar.radio(key="workspace").set_value("Model evidence").run(timeout=60)
+        app.sidebar.radio(key="workspace").set_value("Model results").run(timeout=60)
         self.assert_healthy(app)
         return app
 

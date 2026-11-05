@@ -64,8 +64,8 @@ class DashboardAppTests(unittest.TestCase):
 
     def test_all_six_workspaces_load_and_original_explorer_is_retained(self):
         app = self.launch()
-        expected_pages = ["Overview", "Delivery prediction", "Low-review prediction", "Model evidence",
-                          "Marketplace explorer", "Guide & methodology"]
+        expected_pages = ["Marketplace explorer", "Overview", "Delivery prediction", "Low-review prediction",
+                          "Model results", "Guide & methodology"]
         self.assertEqual(app.sidebar.radio[0].options, expected_pages)
         for page in expected_pages:
             with self.subTest(page=page):
@@ -97,7 +97,7 @@ class DashboardAppTests(unittest.TestCase):
         self.assertLess(period_count, state_count)
 
     def test_evidence_preserves_mae_and_distinguishes_classification_rules(self):
-        app = self.launch("Model evidence")
+        app = self.launch("Model results")
         for title, expected in {
             "CV / validation MAE": "5.26 days", "Test MAE": "3.43 days",
             "Three-model mean · test MAE": "3.93 days", "Ridge + RF stack · test MAE": "4.39 days",
@@ -118,7 +118,7 @@ class DashboardAppTests(unittest.TestCase):
         self.assertEqual(self.metric_value(app, "Test MAE"), "3.43 days")
 
     def test_classification_assessment_switches_all_scores_and_operating_rules_together(self):
-        app = self.launch("Model evidence")
+        app = self.launch("Model results")
         self.widget(app.selectbox, "Classification assessment").set_value(
             "Strict cutoff · Availability rerun"
         ).run(timeout=60)
@@ -198,7 +198,7 @@ class DashboardAppTests(unittest.TestCase):
         available.pop("regression_selection_sensitivity")
         available.pop("classification_update")
         with patch.object(evidence_adapter, "load_evidence", return_value=available):
-            app = self.launch("Model evidence")
+            app = self.launch("Model results")
             self.assertEqual(self.metric_value(app, "Test MAE"), "3.43 days")
             self.assertEqual(self.metric_value(app, "Test PR-AUC"), "0.375")
             self.assertTrue(any("Supplementary stacking results are not included" in info.value for info in app.info))
@@ -291,7 +291,7 @@ class DashboardAppTests(unittest.TestCase):
         with patch("builtins.__import__", side_effect=missing_model_runtime):
             self.navigate(app, "Overview")
             self.assertGreater(int(self.metric_value(app, "Orders").replace(",", "")), 0)
-            self.navigate(app, "Model evidence")
+            self.navigate(app, "Model results")
             self.assertEqual(self.metric_value(app, "Test MAE"), "3.43 days")
             self.assertEqual(self.metric_value(app, "Test PR-AUC"), "0.375")
             self.navigate(app, "Delivery prediction")

@@ -38,18 +38,25 @@ URL on 3 November 2026: both forests, outcome reveal, prediction-only CSV downlo
 state clearing and regression compatibility. See its separate
 [verification record](../Phase_3/deployment/classification_live_verification.json).
 
-After changing the evidence adapter or table schema, reboot the Cloud app and verify Model evidence. Open sessions can retain imported modules and cached evidence across a source update; a browser refresh alone may not load the new adapter. The app versions its evidence cache and tolerates absent optional keys during this transition.
+After changing the evidence adapter or table schema, reboot the Cloud app and verify Model results. Open sessions can retain imported modules and cached evidence across a source update; a browser refresh alone may not load the new adapter. The app versions its evidence cache and tolerates absent optional keys during this transition.
 
 ## Pages
 
 | Page | Use |
 |---|---|
-| Overview | Filter by purchase period and customer states; switch the order/sales trend and continue into the explorer with the same selection. |
+| Marketplace explorer | Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview; task-focused duration and observed low-review analysis. |
+| Overview | Start with delivery and low-review model results, baseline comparisons and prediction shortcuts. A smaller marketplace snapshot below shares period/state filters with the explorer. |
 | Delivery prediction | Browse historical examples or edit/upload new purchase-time feature rows; run the fitted predictor and download forecasts. Only historical examples offer outcome reveal. |
 | Low-review prediction | Score historical examples or edit/upload feature rows with either fitted forest; inspect signed factor contributions, compare the raw score with its frozen threshold, and download predictions. |
-| Model evidence | View training, validation and test scores; switch classification between v1 and the strict-cutoff supplement; inspect the new experiments, daily capacity, calibration and classification stacking. Delivery stacking has its own tab. |
-| Marketplace explorer | Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview; task-focused duration and observed low-review analysis. |
+| Model results | View training, validation and test scores; switch classification between v1 and the strict-cutoff supplement; inspect the new experiments, daily capacity, calibration and classification stacking. Delivery stacking has its own tab. |
 | Guide & methodology | Instructions, prediction-time definitions, evaluation limitations and collapsed data/code references. |
+
+Marketplace explorer is first in the sidebar; a new session still opens Overview.
+Overview reads the saved June–August 2018 results: delivery MAE and share within
+three days, plus v1 classification PR-AUC and recall when ranking the top 20% of
+the full historical test window. Its results and model shortcuts precede the
+filtered marketplace snapshot. Classification is labelled v1; the strict-cutoff
+assessment remains separately available on Model results.
 
 Overview and Marketplace explorer share purchase dates, customer states,
 categories, payments, route and delivered-only filters. The current-filter summary

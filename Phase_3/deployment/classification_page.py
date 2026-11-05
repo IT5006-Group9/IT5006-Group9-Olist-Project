@@ -119,7 +119,7 @@ def render(header, panel_metrics, chart):
     if version == "strict":
         st.info("Strict-cutoff demo · Features from events after T are masked. The project’s published headline remains v1; this demo defaults to the availability-controlled version.")
     else:
-        st.warning("v1 retrospective comparison · This original model has label/event availability limitations. Its inputs and threshold differ from the strict-cutoff version. See Model evidence for the timing audit.")
+        st.warning("v1 retrospective comparison · This original model has label/event availability limitations. Its inputs and threshold differ from the strict-cutoff version. See Model results for the timing audit.")
     st.caption("Prediction point T = the earlier of delivery and the promised delivery date (promise if undelivered). This is later in the order lifecycle than the purchase-time delivery forecast.")
     source = st.radio("Order source", ["Historical examples", "New order / CSV"],
                       key="clf_source", horizontal=True, on_change=clear_prediction)
@@ -270,5 +270,5 @@ def render(header, panel_metrics, chart):
         st.write("The portable forest preserves every tree, split, missing-value route and leaf score. This keeps the existing regression runtime compatible with the teammates’ newer classification training environment.")
         verification = spec["verification"]
         st.caption(f"Verified on all {verification['rows']} examples against the original fitted pipeline; maximum absolute score difference {verification['portable_vs_fitted_pipeline_max_abs_diff']:.2e}. Model SHA-256: {spec['model_sha256']}")
-        st.caption("June–August 2018 historical assessment data was already examined during the project. This demonstration does not create a new independent holdout or connect to a live order feed. Aggregate model scores remain on Model evidence.")
+        st.caption("June–August 2018 historical assessment data was already examined during the project. This demonstration does not create a new independent holdout or connect to a live order feed. Aggregate model scores remain on Model results.")
         st.caption("The eligible classification cohort contains orders with items and an observed review answered at or after T. Orders without a qualifying review are outside these evaluation results.")

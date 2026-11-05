@@ -592,7 +592,7 @@ with tab_delivery:
             "purchase period may also differ between groups.<br><br>"
             "These relationships help explain the delivery task. They do not rank model importance "
             "or select new features. Predictive value is assessed separately through forward validation "
-            "on Model evidence.",
+            "on Model results.",
             label="How to read the delivery analysis",
         )
 

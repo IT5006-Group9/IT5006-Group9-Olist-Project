@@ -29,7 +29,7 @@ from deployment.input_help import INPUT_MEANINGS
 ASSETS = HERE / "assets"
 REPO = "https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project"
 BLUE, TEAL, AMBER, INK, MUTED = "#4263eb", "#13877c", "#b97728", "#182b49", "#6c7c93"
-PAGES = ["Overview", "Delivery prediction", "Low-review prediction", "Model evidence", "Marketplace explorer", "Guide & methodology"]
+PAGES = ["Marketplace explorer", "Overview", "Delivery prediction", "Low-review prediction", "Model results", "Guide & methodology"]
 DISPLAY_LABELS = {
     "HGB_risk": "HGB + risk (selected)",
     "HGB_risk_current_main": "Main HGB + risk",
@@ -191,8 +191,50 @@ def panel_metrics(items, key):
             col.metric(title, value, help=tip)
 
 
+def overview_model_results(ev):
+    regression = ev["regression_summary"]
+    classification = ev["classification_summary"]["test"]
+    median = ev["regression_comparison"].set_index("candidate").loc["Median", "test_mae"]
+    st.subheader("Model performance")
+    st.caption("Historical June–August 2018 test results · separate fixed evaluation cohorts · unchanged by marketplace filters.")
+    with st.container(key="olist_split_overview_results"):
+        delivery, review = st.columns(2)
+    with delivery, st.container(border=True):
+        st.markdown('<span class="pill">DELIVERY TIME</span>', unsafe_allow_html=True)
+        st.subheader("How close are the delivery forecasts?")
+        st.caption("Selected HGB + risk model")
+        with st.container(key="olist_kpis_overview_delivery"):
+            error, within = st.columns(2)
+        error.metric("Average error (MAE)", f"{regression['test']['mae']:.2f} days",
+                     delta=f"-{regression['success']['mae_reduction_vs_median']:.1%} vs median",
+                     delta_color="inverse",
+                     help="Mean absolute difference between forecast and actual delivery time. Lower is better; this is not a guarantee for an individual order.")
+        within.metric("Within ±3 days", f"{regression['test']['within3']:.1%}",
+                      help="Share of test deliveries whose forecast differs from the actual duration by no more than three days.")
+        st.write(f"The median baseline has {median:.2f} days of average error.")
+        st.caption(f"{regression['test_n']:,} completed deliveries · forecasts made at purchase")
+        st.button("Try a delivery prediction →", on_click=navigate, args=("Delivery prediction",), type="primary")
+    with review, st.container(border=True):
+        st.markdown('<span class="pill">LOW-REVIEW RISK</span>', unsafe_allow_html=True)
+        st.subheader("How well are low reviews identified?")
+        st.caption("Random Forest v1 · published project results")
+        with st.container(key="olist_kpis_overview_review"):
+            ranking, captured = st.columns(2)
+        ranking.metric("Test PR-AUC", f"{classification['pr_auc']:.3f}",
+                       help="Average precision for ranking orders that later receive a 1–2 star review. Higher is better; this is not classification accuracy.")
+        captured.metric("Low reviews captured", f"{classification['recall_at_capacity']:.1%}",
+                        help="Recall when ranking the highest-scored 20% of orders across the entire historical test window. This differs from applying a fixed score threshold to one order or ranking each day separately.")
+        st.write("Capture rate when ranking the highest-risk 20% of the historical test window.")
+        st.caption(f"{classification['n']:,} review-eligible orders · no-skill PR-AUC {classification['positive_rate']:.3f}")
+        st.button("Try a low-review prediction →", on_click=navigate, args=("Low-review prediction",))
+    st.button("View model results →", on_click=navigate, args=("Model results",))
+
+
 def overview(ev):
-    header("Olist Delivery & Review Analytics", "Explore order trends, predict delivery time, and identify low-review risk.")
+    header("Olist Delivery & Review Analytics", "Predict delivery time, identify low-review risk, and explore the marketplace behind the models.")
+    overview_model_results(ev)
+    st.subheader("Marketplace snapshot")
+    st.caption("Explore historical business patterns with the shared filters below.")
     raw = marketplace()
     filters = shared_filters.init_filters(st.session_state, raw)
     choices = shared_filters.filter_options(raw)
@@ -252,25 +294,6 @@ def overview(ev):
         fig.update_xaxes(tickformat=".0%")
         chart(fig, 332)
         st.caption("Eight states with the most delivered orders in your selection.")
-    st.subheader("Move from patterns to decisions")
-    with st.container(key="olist_split_overview_actions"):
-        a, b, c = st.columns(3)
-    with a, st.container(border=True):
-        st.markdown('<span class="pill">PURCHASE-TIME FORECAST</span>', unsafe_allow_html=True)
-        st.subheader("How long might this delivery take?")
-        st.write("Choose a historical example or supply purchase-time features in the editor or CSV, then run the frozen delivery model.")
-        st.button("Try a delivery prediction →", on_click=navigate, args=("Delivery prediction",), type="primary")
-    with b, st.container(border=True):
-        st.markdown('<span class="pill">REVIEW RISK AT T</span>', unsafe_allow_html=True)
-        st.subheader("Which orders may need attention?")
-        st.write("Score a historical example or supplied order features, then see which factors raised or lowered its risk score.")
-        st.button("Try a low-review prediction →", on_click=navigate, args=("Low-review prediction",))
-    with c, st.container(border=True):
-        st.markdown('<span class="pill">MODEL EVIDENCE</span>', unsafe_allow_html=True)
-        st.subheader("What supports the model choice?")
-        st.write(f"Delivery test MAE: {ev['regression_summary']['test']['mae']:.2f} days. Low-review test PR-AUC: {ev['classification_summary']['test']['pr_auc']:.3f}.")
-        st.caption("Model evaluation results do not change with the filters above.")
-        st.button("Review models & stacking →", on_click=navigate, args=("Model evidence",))
 
 
 def prediction():
@@ -668,7 +691,7 @@ def stacking_evidence(ev):
 
 
 def model_evidence(ev):
-    header("The evidence behind the forecast.", "Training, forward validation and later test results are shown separately. Published test outcomes have not been used to retune the dashboard model.")
+    header("Model results", "Compare training, forward validation and historical test performance for delivery time and low-review risk.")
     tabs = st.tabs(["Delivery regression", "Low-review classification", "Delivery stacking"])
     with tabs[0]:
         regression_evidence(ev)
@@ -712,7 +735,7 @@ def guide(ev):
         st.write("January–May 2018 provides five forward validation windows for model development. June–August 2018 is the later test period. Validation and test differ in periods, available history, outcome maturity and averaging.")
         st.write("Regression uses a 39-day gap and only labels observed before each training cutoff. The main model was selected by forward validation. Historical test exposure prevents interpreting these results as a newly untouched holdout.")
         if ev.get("classification_update", {}).get("strict", {}).get("available"):
-            st.write("The new strict-cutoff classification supplement explicitly restricts training and selection labels to those available by their cutoffs and masks features from events after T. It retains the 27-day gap. v1 remains the project headline; compare the two versions on Model evidence. Their shared June–August test window had already been examined.")
+            st.write("The new strict-cutoff classification supplement explicitly restricts training and selection labels to those available by their cutoffs and masks features from events after T. It retains the 27-day gap. v1 remains the project headline; compare the two versions on Model results. Their shared June–August test window had already been examined.")
             st.write("The new daily-capacity diagnostic ranks orders separately by T-day. It is a retrospective v1/v2 analysis and does not verify a live queue of customers who can still be contacted before answering a review. July recall remains below 50% in both v1 and strict monthly assessments.")
         else:
             st.write("The original classification assessment has label and event availability limitations; a purge gap alone does not enforce those cutoffs. Strict-cutoff evidence is not available in this checkout.")
@@ -731,6 +754,11 @@ def guide(ev):
 
 with st.sidebar:
     st.markdown('<div class="brand"><div class="brand-mark">o.</div><div><div class="brand-name">olist</div><div class="brand-sub">OPERATIONS STUDIO · 09</div></div></div>', unsafe_allow_html=True)
+    # Preserve navigation for sessions that were open before the page rename.
+    if st.session_state.get("workspace") == "Model evidence":
+        st.session_state["workspace"] = "Model results"
+    elif "workspace" not in st.session_state:
+        st.session_state["workspace"] = "Overview"
     page = st.radio("Workspace", PAGES, key="workspace", label_visibility="collapsed", on_change=clear_forecast)
     st.divider()
     st.markdown('<span class="pill">HISTORICAL DATA</span>', unsafe_allow_html=True)
@@ -753,7 +781,7 @@ else:
     elif page == "Low-review prediction":
         from deployment.classification_page import render
         render(header, panel_metrics, chart)
-    elif page == "Model evidence":
+    elif page == "Model results":
         model_evidence(ev)
     else:
         guide(ev)
