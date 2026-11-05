@@ -192,7 +192,7 @@ class CustomDeliveryTests(unittest.TestCase):
             self.widget(app.radio, "Order source").set_value(OWN_SOURCE).run(timeout=60)
             self.assertEqual(self.fields(app)["order_id"].value, "another-brand-new-order")
             self.assertEqual(score.call_count, 3)
-            self.widget(app.button, "Start a new blank order").click().run(timeout=60)
+            self.widget(app.button, "Clear form").click().run(timeout=60)
             self.assert_result_cleared(app)
             self.assertTrue(all(widget.value == "" for widget in self.fields(app).values()))
             self.assertNotIn("Run delivery predictions", [button.label for button in app.button])

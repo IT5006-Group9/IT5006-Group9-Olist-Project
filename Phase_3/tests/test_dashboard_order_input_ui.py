@@ -253,7 +253,7 @@ class EditorDraftLifecycleTests(unittest.TestCase):
                 self.assertEqual(self.preview(app).order_id.tolist(), ['needs-correction'])
                 self.assertEqual(self.preview(app).price.tolist(), [15])
                 self.calculate(app, task)
-                next(button for button in app.button if button.label == 'Start a new blank order').click().run(timeout=30)
+                next(button for button in app.button if button.label == 'Clear form').click().run(timeout=30)
                 self.healthy(app)
                 self.assertTrue(all(widget.value == '' for widget in self.fields(app, task).values()))
                 self.assertNotIn('Calculate test result', [button.label for button in app.button])

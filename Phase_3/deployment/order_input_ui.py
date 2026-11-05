@@ -120,9 +120,11 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
     if st.session_state.get(method_key, methods[0]) not in methods:
         st.session_state[method_key] = methods[0]
         invalidate_order(task)
-    method = st.radio("Input method", methods, horizontal=True, key=method_key,
-                      index=methods.index(st.session_state.get(method_key, methods[0])),
-                      on_change=invalidate_order, args=(task,))
+    method_column, form_actions = st.columns([4, 1], vertical_alignment="bottom")
+    with method_column:
+        method = st.radio("Input method", methods, horizontal=True, key=method_key,
+                          index=methods.index(st.session_state.get(method_key, methods[0])),
+                          on_change=invalidate_order, args=(task,))
     example = examples.iloc[[0]].copy().reset_index(drop=True)
     example["order_id"] = "example-order-001"
 
@@ -177,17 +179,20 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
             with st.container(height=380, border=False, key=f"olist_{task}_completed_example"):
                 st.markdown(guide.to_html(index=False, escape=True, border=0, classes="olist-input-table"), unsafe_allow_html=True)
             st.caption("Calendar terms, ratios and other fields that can be calculated from your entries are prepared when you check the form.")
-        if st.button("Start a new blank order", key=f"new_{task}_reset"):
-            st.session_state[draft_key] = _blank(examples.columns)
-            st.session_state[revision_key] += 1
-            invalidate_order(task)
-            st.rerun()
         derivable = set(derived_fields(task, st.session_state[draft_key]))
         automatic = [name for name in examples.columns if name in derivable]
         draft = render_blank_order(task, st.session_state[draft_key], meanings,
                                    st.session_state[revision_key], form_groups,
                                    derived_fields=automatic, example_values=example)
         st.session_state[draft_key] = draft.copy(deep=True)
+        with form_actions:
+            if st.button("Clear form", key=f"new_{task}_reset", width="stretch",
+                         help="Clear your entered fields and any prediction for this form.",
+                         disabled=not draft.map(lambda value: bool(_value(value).strip())).any().any()):
+                st.session_state[draft_key] = _blank(examples.columns)
+                st.session_state[revision_key] += 1
+                invalidate_order(task)
+                st.rerun()
         raw_identity = identity(draft, seed_identity)
         if st.session_state.get(checked_key) != raw_identity:
             clear_result(task)
