@@ -44,7 +44,7 @@ After changing the evidence adapter or table schema, reboot the Cloud app and ve
 
 | Page | Use |
 |---|---|
-| Overview | Start with delivery and low-review model results, baseline comparisons and prediction shortcuts. A smaller marketplace snapshot below shares period/state filters with the explorer. |
+| Overview | Start with a filtered marketplace summary, then view delivery and low-review model results, baseline comparisons and prediction shortcuts. Both sections use matching View buttons. |
 | Marketplace explorer | Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview; task-focused duration and observed low-review analysis. |
 | Delivery prediction | Browse historical examples or edit/upload new purchase-time feature rows; run the fitted predictor and download forecasts. Only historical examples offer outcome reveal. |
 | Low-review prediction | Score historical examples or edit/upload feature rows with either fitted forest; inspect signed factor contributions, compare the raw score with its frozen threshold, and download predictions. |
@@ -52,10 +52,13 @@ After changing the evidence adapter or table schema, reboot the Cloud app and ve
 | Guide & methodology | Instructions, prediction-time definitions, evaluation limitations and collapsed data/code references. |
 
 Overview is first in the sidebar and opens by default; Marketplace explorer is second.
-Overview reads the saved June–August 2018 results: delivery MAE and share within
+Overview shows Marketplace explorer first, followed by Model results. Each section
+ends with a matching **View marketplace explorer** or **View model results** button;
+the explorer entry carries the current shared filters. Overview reads the saved
+June–August 2018 results: delivery MAE and share within
 three days, plus v1 classification PR-AUC and recall when ranking the top 20% of
-the full historical test window. Its results and model shortcuts precede the
-filtered marketplace snapshot. Classification is labelled v1; the strict-cutoff
+the full historical test window. Model results remain visible even when marketplace
+filters match no orders. Classification is labelled v1; the strict-cutoff
 assessment remains separately available on Model results.
 
 Overview and Marketplace explorer share purchase dates, customer states,

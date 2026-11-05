@@ -195,7 +195,7 @@ def overview_model_results(ev):
     regression = ev["regression_summary"]
     classification = ev["classification_summary"]["test"]
     median = ev["regression_comparison"].set_index("candidate").loc["Median", "test_mae"]
-    st.subheader("Model performance")
+    st.subheader("Model results")
     st.caption("Historical June–August 2018 test results · separate fixed evaluation cohorts · unchanged by marketplace filters.")
     with st.container(key="olist_split_overview_results"):
         delivery, review = st.columns(2)
@@ -226,14 +226,12 @@ def overview_model_results(ev):
                         help="Recall when ranking the highest-scored 20% of orders across the entire historical test window. This differs from applying a fixed score threshold to one order or ranking each day separately.")
         st.write("Capture rate when ranking the highest-risk 20% of the historical test window.")
         st.caption(f"{classification['n']:,} review-eligible orders · no-skill PR-AUC {classification['positive_rate']:.3f}")
-        st.button("Try a low-review prediction →", on_click=navigate, args=("Low-review prediction",))
+        st.button("Try a low-review prediction →", on_click=navigate, args=("Low-review prediction",), type="primary")
     st.button("View model results →", on_click=navigate, args=("Model results",))
 
 
-def overview(ev):
-    header("Olist Delivery & Review Analytics", "Predict delivery time, identify low-review risk, and explore the marketplace behind the models.")
-    overview_model_results(ev)
-    st.subheader("Marketplace snapshot")
+def overview_marketplace():
+    st.subheader("Marketplace explorer")
     st.caption("Explore historical business patterns with the shared filters below.")
     raw = marketplace()
     filters = shared_filters.init_filters(st.session_state, raw)
@@ -250,11 +248,8 @@ def overview(ev):
                        on_change=sync_overview_filter, args=("states", "overview_filter_states"))
     filters = shared_filters.read_filters(st.session_state)
     st.caption("Current filters · " + shared_filters.summary(filters))
-    with st.container(key="olist_split_filter_actions"):
-        reset, explore = st.columns([1, 2])
-    reset.button("Reset all filters", key="overview_reset_filters",
-                 on_click=shared_filters.reset_filters, args=(st.session_state,))
-    explore.button("Explore this selection →", on_click=navigate, args=("Marketplace explorer",))
+    st.button("Reset all filters", key="overview_reset_filters",
+              on_click=shared_filters.reset_filters, args=(st.session_state,))
     if filters["categories"] or filters["payments"] or filters["route"] != "All" or filters["delivered_only"]:
         st.info("Additional filters from Marketplace explorer also apply to this overview.")
         st.button("Clear extra filters", on_click=shared_filters.reset_filters,
@@ -262,6 +257,7 @@ def overview(ev):
     selected = shared_filters.apply_filters(raw, filters)
     if selected.empty:
         st.info("No orders in this selection. Widen the purchase window or choose another state.")
+        st.button("View marketplace explorer →", on_click=navigate, args=("Marketplace explorer",))
         return
     delivered = selected[selected.delivered_ts.notna()]
     rated = selected[selected.review_score.notna()]
@@ -294,6 +290,13 @@ def overview(ev):
         fig.update_xaxes(tickformat=".0%")
         chart(fig, 332)
         st.caption("Eight states with the most delivered orders in your selection.")
+    st.button("View marketplace explorer →", on_click=navigate, args=("Marketplace explorer",))
+
+
+def overview(ev):
+    header("Olist Delivery & Review Analytics", "Explore the marketplace, predict delivery time, and identify low-review risk.")
+    overview_marketplace()
+    overview_model_results(ev)
 
 
 def prediction():
