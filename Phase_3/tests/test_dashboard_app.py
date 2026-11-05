@@ -64,7 +64,7 @@ class DashboardAppTests(unittest.TestCase):
 
     def test_all_six_workspaces_load_and_original_explorer_is_retained(self):
         app = self.launch()
-        expected_pages = ["Marketplace explorer", "Overview", "Delivery prediction", "Low-review prediction",
+        expected_pages = ["Overview", "Marketplace explorer", "Delivery prediction", "Low-review prediction",
                           "Model results", "Guide & methodology"]
         self.assertEqual(app.sidebar.radio[0].options, expected_pages)
         for page in expected_pages:

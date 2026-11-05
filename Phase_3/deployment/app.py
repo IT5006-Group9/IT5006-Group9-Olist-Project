@@ -29,7 +29,7 @@ from deployment.input_help import INPUT_MEANINGS
 ASSETS = HERE / "assets"
 REPO = "https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project"
 BLUE, TEAL, AMBER, INK, MUTED = "#4263eb", "#13877c", "#b97728", "#182b49", "#6c7c93"
-PAGES = ["Marketplace explorer", "Overview", "Delivery prediction", "Low-review prediction", "Model results", "Guide & methodology"]
+PAGES = ["Overview", "Marketplace explorer", "Delivery prediction", "Low-review prediction", "Model results", "Guide & methodology"]
 DISPLAY_LABELS = {
     "HGB_risk": "HGB + risk (selected)",
     "HGB_risk_current_main": "Main HGB + risk",
