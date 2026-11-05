@@ -92,9 +92,10 @@ div[data-baseweb="tab-list"] {gap:1.3rem}
 button[data-baseweb="tab"] {font-size:.87rem;padding-left:0;padding-right:0}
 </style>
 """, unsafe_allow_html=True)
-responsive_styles = HERE / "responsive.css"
-if responsive_styles.is_file():
-    st.markdown("<style>" + responsive_styles.read_text(encoding="utf-8") + "</style>", unsafe_allow_html=True)
+extra_styles = "\n".join(path.read_text(encoding="utf-8") for path in
+                         (HERE / "responsive.css", HERE / "hierarchy.css") if path.is_file())
+if extra_styles:
+    st.markdown("<style>" + extra_styles + "</style>", unsafe_allow_html=True)
 
 
 @st.cache_data(show_spinner=False)
@@ -129,9 +130,10 @@ def demo_outcomes(manifest_text):
 
 
 def header(title, description):
-    st.markdown('<div class="eyebrow">OLIST / OPERATIONS STUDIO / PHASE 03</div>', unsafe_allow_html=True)
-    st.title(title)
-    st.markdown(f'<div class="lede">{html.escape(description)}</div>', unsafe_allow_html=True)
+    with st.container(key="olist_page_intro"):
+        st.markdown('<div class="eyebrow">OLIST / OPERATIONS STUDIO / PHASE 03</div>', unsafe_allow_html=True)
+        st.title(title)
+        st.markdown(f'<div class="lede">{html.escape(description)}</div>', unsafe_allow_html=True)
 
 
 def navigate(page):
@@ -195,16 +197,16 @@ def overview_model_results(ev):
     regression = ev["regression_summary"]
     classification = ev["classification_summary"]["test"]
     median = ev["regression_comparison"].set_index("candidate").loc["Median", "test_mae"]
-    st.subheader("Model results")
-    st.caption("Historical June–August 2018 test results · separate fixed evaluation cohorts · unchanged by marketplace filters.")
+    with st.container(key="olist_section_models"):
+        st.header("Model results")
+        st.caption("Historical June–August 2018 test results · separate fixed evaluation cohorts · unchanged by marketplace filters.")
     with st.container(key="olist_split_overview_results"):
         delivery, review = st.columns(2)
-    with delivery, st.container(border=True):
-        st.markdown('<span class="pill">DELIVERY TIME</span>', unsafe_allow_html=True)
-        st.subheader("How close are the delivery forecasts?")
+    with delivery, st.container(border=True, key="olist_model_delivery"):
+        st.subheader("Delivery time")
         st.caption("Selected HGB + risk model")
         with st.container(key="olist_kpis_overview_delivery"):
-            error, within = st.columns(2)
+            error, within = st.columns([1.25, 1])
         error.metric("Average error (MAE)", f"{regression['test']['mae']:.2f} days",
                      delta=f"-{regression['success']['mae_reduction_vs_median']:.1%} vs median",
                      delta_color="inverse",
@@ -213,43 +215,44 @@ def overview_model_results(ev):
                       help="Share of test deliveries whose forecast differs from the actual duration by no more than three days.")
         st.write(f"The median baseline has {median:.2f} days of average error.")
         st.caption(f"{regression['test_n']:,} completed deliveries · forecasts made at purchase")
-        st.button("Try a delivery prediction →", on_click=navigate, args=("Delivery prediction",), type="primary")
-    with review, st.container(border=True):
-        st.markdown('<span class="pill">LOW-REVIEW RISK</span>', unsafe_allow_html=True)
-        st.subheader("How well are low reviews identified?")
+        st.button("Try a delivery prediction →", on_click=navigate, args=("Delivery prediction",), type="primary", width="stretch")
+    with review, st.container(border=True, key="olist_model_review"):
+        st.subheader("Low-review risk")
         st.caption("Random Forest v1 · published project results")
         with st.container(key="olist_kpis_overview_review"):
-            ranking, captured = st.columns(2)
+            captured, ranking = st.columns([1.25, 1])
         ranking.metric("Test PR-AUC", f"{classification['pr_auc']:.3f}",
                        help="Average precision for ranking orders that later receive a 1–2 star review. Higher is better; this is not classification accuracy.")
         captured.metric("Low reviews captured", f"{classification['recall_at_capacity']:.1%}",
                         help="Recall when ranking the highest-scored 20% of orders across the entire historical test window. This differs from applying a fixed score threshold to one order or ranking each day separately.")
         st.write("Capture rate when ranking the highest-risk 20% of the historical test window.")
         st.caption(f"{classification['n']:,} review-eligible orders · no-skill PR-AUC {classification['positive_rate']:.3f}")
-        st.button("Try a low-review prediction →", on_click=navigate, args=("Low-review prediction",), type="primary")
+        st.button("Try a low-review prediction →", on_click=navigate, args=("Low-review prediction",), type="primary", width="stretch")
     st.button("View model results →", on_click=navigate, args=("Model results",))
 
 
 def overview_marketplace():
-    st.subheader("Marketplace explorer")
-    st.caption("Explore historical business patterns with the shared filters below.")
+    with st.container(key="olist_section_marketplace"):
+        st.header("Marketplace explorer")
+        st.caption("Explore historical business patterns with the shared filters below.")
     raw = marketplace()
     filters = shared_filters.init_filters(st.session_state, raw)
     choices = shared_filters.filter_options(raw)
     st.session_state.pop("overview_filter_month_range", None)
     st.session_state["overview_filter_states"] = list(filters["states"])
     with st.container(key="olist_split_overview_filters"):
-        left, right = st.columns([3, 1])
+        left, right, reset = st.columns([3, 1.4, .65], vertical_alignment="bottom")
     with left:
         st.select_slider("Purchase window", options=choices["months"], value=filters["month_range"], key="overview_filter_month_range",
                          on_change=sync_overview_filter, args=("month_range", "overview_filter_month_range"))
     with right:
         st.multiselect("Customer state", choices["states"], placeholder="All states", key="overview_filter_states",
                        on_change=sync_overview_filter, args=("states", "overview_filter_states"))
+    reset.button("Reset", key="overview_reset_filters", width="stretch",
+                 help="Reset the purchase window, customer states and all shared marketplace filters.",
+                 on_click=shared_filters.reset_filters, args=(st.session_state,))
     filters = shared_filters.read_filters(st.session_state)
     st.caption("Current filters · " + shared_filters.summary(filters))
-    st.button("Reset all filters", key="overview_reset_filters",
-              on_click=shared_filters.reset_filters, args=(st.session_state,))
     if filters["categories"] or filters["payments"] or filters["route"] != "All" or filters["delivered_only"]:
         st.info("Additional filters from Marketplace explorer also apply to this overview.")
         st.button("Clear extra filters", on_click=shared_filters.reset_filters,
@@ -272,7 +275,7 @@ def overview_marketplace():
     st.caption(f"Selected marketplace cohort · {len(selected):,} orders · {len(delivered):,} with delivery dates · {len(rated):,} with reviews")
     with st.container(key="olist_split_overview_charts"):
         c1, c2 = st.columns([1.65, 1])
-    with c1, st.container(border=True):
+    with c1, st.container(border=True, key="olist_chart_marketplace"):
         st.subheader("The marketplace over time")
         metric = st.radio("Trend measure", ["Orders", "Sales incl. freight"], horizontal=True, label_visibility="collapsed")
         monthly = shared_filters.monthly_totals(selected, filters["month_range"]).rename(columns={"gmv": "sales"})
@@ -281,7 +284,7 @@ def overview_marketplace():
         fig.update_traces(line_width=2.5, fillcolor="rgba(66,99,235,.10)")
         fig.update_layout(xaxis_title=None, yaxis_title="Orders" if field == "orders" else "Sales (R$)")
         chart(fig, 300)
-    with c2, st.container(border=True):
+    with c2, st.container(border=True, key="olist_chart_delivery"):
         st.subheader("Delivery by customer state")
         grouped = delivered.groupby("customer_state", observed=True).agg(orders=("gmv", "size"), late_share=("is_late", "mean")).reset_index()
         grouped = grouped.nlargest(8, "orders").sort_values("late_share")
@@ -294,13 +297,14 @@ def overview_marketplace():
 
 
 def overview(ev):
-    header("Olist Delivery & Review Analytics", "Explore the marketplace, predict delivery time, and identify low-review risk.")
-    overview_marketplace()
-    overview_model_results(ev)
+    with st.container(key="olist_overview"):
+        header("Olist Delivery & Review Analytics", "Explore the marketplace, predict delivery time, and identify low-review risk.")
+        overview_marketplace()
+        overview_model_results(ev)
 
 
 def prediction():
-    header("A delivery forecast, before fulfilment.", "Run the frozen regression model on a historical example or your own purchase-time order features.")
+    header("Delivery prediction", "Estimate delivery time from purchase-time order features, then compare the forecast with the recorded promise.")
     st.caption("Choose an input source, validate the order features, then explicitly run a forecast. Historical outcomes are separate and optional.")
     required = ["regression_model.joblib", "example_inputs.parquet", "manifest.json"]
     if any(not (ASSETS / name).exists() for name in required):
@@ -450,18 +454,6 @@ def regression_evidence(ev):
     ], key="regression")
     st.success(f"Preset target met: {summary['success']['mae_reduction_vs_median']:.1%} lower test MAE than the training-median reference (target: at least 5%), and better than the recorded delivery promise.")
     st.caption(f"{summary['test']['within3']:.1%} of test deliveries are within ±3 days of the forecast. Average MAE does not provide an individual delivery guarantee.")
-    with st.expander("Selection stability and long-delivery errors", expanded=True):
-        sensitivity = ev.get("regression_selection_sensitivity", pd.DataFrame())
-        if not sensitivity.empty:
-            rows = sensitivity[sensitivity.candidate.isin([summary["selected_candidate"], "Ridge_a100"])]
-            st.write("The validation lead over Ridge is small, and the ranking changes when May is excluded. May's evaluation contains only outcomes available by the selection cutoff. This sensitivity limits claims that the more complex model is consistently better.")
-            st.dataframe(rows.rename(columns={"candidate": "Model", "five_month_mae": "Jan–May MAE", "jan_apr_mae": "Jan–Apr MAE", "five_month_rank": "Jan–May rank", "jan_apr_rank": "Jan–Apr rank"}), hide_index=True, width="stretch")
-            st.caption("This is a saved diagnostic. It does not select a new model after seeing the test results.")
-        groups = ev.get("regression_error_groups", pd.DataFrame())
-        if not groups.empty:
-            durations = groups[groups.group.isin(["0-14 days", "14-30 days", "30-60 days", ">60 days"])]
-            st.dataframe(durations[["group", "n", "mae", "bias", "within3"]].rename(columns={"group": "Actual delivery duration", "n": "Orders", "mae": "MAE (days)", "bias": "Mean forecast minus actual (days)", "within3": "Share within ±3 days"}), hide_index=True, width="stretch")
-            st.caption("Groups use the historical outcome and cannot be assigned at purchase. Long deliveries are systematically underestimated; no individual prediction interval has been calibrated.")
     with st.container(key="olist_split_regression"):
         left, right = st.columns([1.3, 1])
     with left, st.container(border=True):
@@ -488,6 +480,19 @@ def regression_evidence(ev):
             chart(fig, 230)
         st.caption("Monthly MAE changes with the order mix. Test and validation also differ in outcome maturity and averaging.")
         st.metric("Test R²", f"{summary['test']['r2']:.3f}")
+    st.caption("The validation lead over Ridge is small, and long deliveries tend to be underestimated. See the diagnostics below.")
+    with st.expander("Selection stability and long-delivery errors"):
+        sensitivity = ev.get("regression_selection_sensitivity", pd.DataFrame())
+        if not sensitivity.empty:
+            rows = sensitivity[sensitivity.candidate.isin([summary["selected_candidate"], "Ridge_a100"])]
+            st.write("The validation lead over Ridge is small, and the ranking changes when May is excluded. May's evaluation contains only outcomes available by the selection cutoff. This sensitivity limits claims that the more complex model is consistently better.")
+            st.dataframe(rows.rename(columns={"candidate": "Model", "five_month_mae": "Jan–May MAE", "jan_apr_mae": "Jan–Apr MAE", "five_month_rank": "Jan–May rank", "jan_apr_rank": "Jan–Apr rank"}), hide_index=True, width="stretch")
+            st.caption("This is a saved diagnostic. It does not select a new model after seeing the test results.")
+        groups = ev.get("regression_error_groups", pd.DataFrame())
+        if not groups.empty:
+            durations = groups[groups.group.isin(["0-14 days", "14-30 days", "30-60 days", ">60 days"])]
+            st.dataframe(durations[["group", "n", "mae", "bias", "within3"]].rename(columns={"group": "Actual delivery duration", "n": "Orders", "mae": "MAE (days)", "bias": "Mean forecast minus actual (days)", "within3": "Share within ±3 days"}), hide_index=True, width="stretch")
+            st.caption("Groups use the historical outcome and cannot be assigned at purchase. Long deliveries are systematically underestimated; no individual prediction interval has been calibrated.")
     importance = ev["regression_importance"].sort_values("mean")
     with st.expander("What information mattered?"):
         if importance.empty:
@@ -496,7 +501,6 @@ def regression_evidence(ev):
             chart(px.bar(importance, x="mean", y="group", orientation="h", color_discrete_sequence=[BLUE],
                          labels={"mean": "Increase in validation MAE when shuffled (days)", "group": ""}), 300)
             st.caption("Grouped permutation importance on the saved validation assessment; association does not establish causation.")
-    st.download_button("Download regression results", comparison.to_csv(index=False), "regression_comparison.csv", "text/csv")
 
 
 def classification_evidence(ev):
@@ -504,7 +508,6 @@ def classification_evidence(ev):
     strict = update.get("strict", {})
     use_strict = False
     if strict.get("available"):
-        st.info("Latest classification update: v1 Random Forest remains the project headline. Compare it with the strict-cutoff rerun below; the supplementary experiments follow the assessment.")
         assessment = st.selectbox("Classification assessment", ["v1 · Frozen headline", "Strict cutoff · Availability rerun"], key="classification_assessment")
         use_strict = assessment.startswith("Strict")
     source = strict if use_strict else {
@@ -514,20 +517,17 @@ def classification_evidence(ev):
     }
     summary, test, cv = source["summary"], source["summary"]["test"], source["cv"]
     selected = cv[cv.family.eq(source["selection"]["selected_family"])].iloc[0]
-    st.caption(f"Low-review risk at T = min(delivery, promised delivery) · {test['n']:,} orders with T in June–August 2018 · Target: 1–2 stars")
-    st.caption("Evaluation cohort: orders with items and an observed review answered at or after T. These results do not cover every order reaching the trigger time.")
-    if use_strict:
-        st.info("Strict cutoff: training labels precede each fold cutoff; validation labels are known by 1 June 2018; features from approval or carrier events after T are masked. The Random Forest family is selected again, with different hyperparameters.")
-        st.caption("Strict validation uses only labels available by the selection date. Its CV cohort differs from v1. The June–August test window is shared and had already been examined.")
-    else:
-        st.warning("v1 timing limitations: its original label and event availability rules are retained in these headline scores. The strict-cutoff supplement addresses the audit findings; it does not replace v1 or create a new unseen test window." if strict.get("available") else "Timing audit: the original assessment has label and event availability limitations. Strict-cutoff evidence is not available in this checkout.")
-    st.markdown(f"[Classification methods, new experiments and strict-cutoff results]({REPO}/blob/main/Phase_3/docs/classification.md)")
+    st.caption(f"Target: 1–2 stars · {test['n']:,} orders with items and a review answered at or after T · June–August 2018 · T = earlier of delivery and promised delivery")
     panel_metrics([
         ("Training PR-AUC", f"{summary['train']['pr_auc']:.3f}", "Final model, in sample."),
         ("CV / validation PR-AUC", f"{selected.cv_pr_auc_mean:.3f}", "Five January–May forward validation months; CV and validation refer to the same windows."),
         ("Test PR-AUC", f"{test['pr_auc']:.3f}", "Average precision; test no-skill reference is the low-review prevalence."),
         ("Test ROC-AUC", f"{test['roc_auc']:.3f}", "Ranking performance across all thresholds."),
     ], key="classification_scores")
+    if use_strict:
+        st.info("Strict cutoff: labels follow historical availability cutoffs, and events after T are masked. Validation uses a different label-availability cohort from v1; the test window is shared.")
+    else:
+        st.warning("v1 timing limitations: labels and events were not fully restricted to their historical availability cutoffs. The strict-cutoff assessment addresses these timing limitations; v1 remains the published project result." if strict.get("available") else "Timing audit: the original assessment has label and event availability limitations. Strict-cutoff evidence is not available in this checkout.")
     with st.container(key="olist_split_classification"):
         left, right = st.columns([1.3, 1])
     with left, st.container(border=True):
@@ -548,7 +548,8 @@ def classification_evidence(ev):
         else:
             st.warning(f"The frozen threshold ({r.threshold:.4f}) flags {r.flag_rate:.1%} of test orders and captures {r.recall:.1%} of low reviews; the recall target is 50%.")
             st.caption("A fixed score threshold does not guarantee a fixed contact budget when the order mix changes.")
-        st.dataframe(rules.rename(columns={"flag_rate": "Flag rate", "recall": "Recall", "precision": "Precision"}), hide_index=True, width="stretch")
+        with st.expander("All operating rules"):
+            st.dataframe(rules.rename(columns={"flag_rate": "Flag rate", "recall": "Recall", "precision": "Precision"}), hide_index=True, width="stretch")
     with right, st.container(border=True):
         st.subheader("Monthly top-20% recall")
         st.caption("Assessment: " + ("Strict cutoff" if use_strict else "v1"))
@@ -569,12 +570,12 @@ def classification_evidence(ev):
             below = months.loc[months.recall_at_capacity.lt(.5), "t_month"].tolist()
             st.caption("Monthly rankings use each month's batch, independently of the operating-card rule. " + ("Below the 50% target: " + ", ".join(below) + "." if below else "Every displayed month meets the 50% target."))
     with st.expander("Model families, success criteria & interpretation"):
+        st.markdown(f"[Classification methods, new experiments and strict-cutoff results]({REPO}/blob/main/Phase_3/docs/classification.md)")
         st.dataframe(cv[["family", "train_pr_auc_mean", "cv_pr_auc_mean", "cv_pr_auc_sd", "cv_recall_at_capacity_mean"]], hide_index=True, width="stretch")
         st.dataframe(source["criteria"], hide_index=True, width="stretch")
         st.write("Delivery status is available at this task's trigger time. This classifier is evaluated later in the order lifecycle than the purchase-time regression model.")
+        st.caption("Evaluation is restricted to orders with items and a qualifying observed review; it does not cover every order reaching T. Strict training labels precede each fold cutoff, selection labels are known by 1 June 2018, and post-T approval/carrier events are masked. Its Random Forest is reselected with different hyperparameters from v1.")
         st.caption("Aggregate classification metrics are saved assessments. Low-review prediction evaluates the fitted classification forest on historical examples or supplied features using raw, uncalibrated scores.")
-    suffix = "strict" if use_strict else "v1"
-    st.download_button("Download all classification operating rules", rules.to_csv(index=False), f"classification_{suffix}_operating_points.csv", "text/csv")
     classification_followup(ev, update)
 
 
@@ -595,7 +596,7 @@ def classification_followup(ev, update):
     st.subheader("Latest classification experiments")
     st.write("The project retains v1 as its headline. The v2 candidate changes the lateness convention and class weighting; its validation gain did not meet the replacement rule. Part B retains v1 timing eligibility; the separate strict assessment applies the full availability corrections. Later test comparisons are secondary assessments.")
     results, ledger = experiments["test_results"], experiments["ledger"]
-    with st.expander("Model families: training, validation and test", expanded=True):
+    with st.expander("Model families: training, validation and test"):
         rows = []
         headline = ev["classification_summary"]
         selected_cv = ev["classification_cv"].set_index("family").loc[ev["classification_selection"]["selected_family"]]
@@ -614,7 +615,6 @@ def classification_followup(ev, update):
         table = pd.DataFrame(rows)
         st.dataframe(table.round(4), hide_index=True, width="stretch")
         st.caption("Training is the final fit's in-sample score. Monthly CV averages five months; pooled OOF scores those months together and is a different quantity. Part B families share feature inputs and time folds, with family-specific preprocessing and class weights. Strict CV uses a different label-availability cohort; blank OOF values are not supplied here.")
-        st.download_button("Download classification family comparison", table.to_csv(index=False), "classification_family_comparison.csv", "text/csv")
     stack = experiments.get("stacking", {})
     if stack:
         with st.expander("Classification stacking · supplementary comparison"):
@@ -690,11 +690,11 @@ def stacking_evidence(ev):
         else:
             st.dataframe(ev["stacking_cv"], hide_index=True, width="stretch")
             st.caption("All 14 combinations received forward validation. Only the validation-selected learned stack and equal mean, plus their members, were included in this supplementary test assessment.")
-    st.download_button("Download stacking comparison", table.to_csv(index=False), "stacking_test_comparison.csv", "text/csv")
 
 
 def model_evidence(ev):
     header("Model results", "Compare training, forward validation and historical test performance for delivery time and low-review risk.")
+    st.caption("Historical assessment · These test records were previously examined during the project; they are not new independent unseen data.")
     tabs = st.tabs(["Delivery regression", "Low-review classification", "Delivery stacking"])
     with tabs[0]:
         regression_evidence(ev)
@@ -702,11 +702,11 @@ def model_evidence(ev):
         classification_evidence(ev)
     with tabs[2]:
         stacking_evidence(ev)
-    st.caption("Historical exposure: these test records were previously examined during the project. They are retrospective assessments, not new independent unseen data. Delivery metrics require observed completed deliveries; classification metrics require observed reviews answered at or after T.")
+    st.caption("Evaluation cohorts differ: delivery metrics require observed completed deliveries; classification metrics require observed reviews answered at or after T.")
 
 
 def guide(ev):
-    header("A small guide to using the studio.", "Two analytics tasks support different decisions at different points in an order's lifecycle.")
+    header("Guide & methodology", "How to use the two prediction tasks, read the results and understand their limits.")
     with st.container(key="olist_split_guide"):
         left, right = st.columns(2)
     with left, st.container(border=True):
@@ -718,7 +718,7 @@ def guide(ev):
     with right, st.container(border=True):
         st.subheader("Explore delivery and review patterns")
         st.write("The five explorer tabs cover Orders, Delivery, Reviews, Categories and Geography. Delivery includes the duration tail and order-feature comparisons; Reviews focuses on the share of 1–2 star ratings across delivery outcomes and order attributes.")
-        st.write("Overview and Marketplace explorer share purchase dates, customer states, categories, payments, route and delivered-only filters. Both pages show the current selection and offer Reset all filters.")
+        st.write("Overview and Marketplace explorer share purchase dates, customer states, categories, payments, route and delivered-only filters. Both pages show the current selection. Use Reset beside the Overview filters or Reset all filters in the explorer sidebar.")
         st.caption("Prediction demonstration filters are separate. Model evaluation uses fixed historical cohorts and is unaffected by exploration filters.")
         st.button("Open marketplace explorer →", on_click=navigate, args=("Marketplace explorer",))
     with st.container(border=True):
@@ -762,7 +762,8 @@ with st.sidebar:
         st.session_state["workspace"] = "Model results"
     elif "workspace" not in st.session_state:
         st.session_state["workspace"] = "Overview"
-    page = st.radio("Workspace", PAGES, key="workspace", label_visibility="collapsed", on_change=clear_forecast)
+    with st.container(key="olist_workspace_nav"):
+        page = st.radio("Workspace", PAGES, key="workspace", label_visibility="collapsed", on_change=clear_forecast)
     st.divider()
     st.markdown('<span class="pill">HISTORICAL DATA</span>', unsafe_allow_html=True)
     st.caption("Brazilian e-commerce · 2016–2018\n\nIT5006 · Group 9 · Phase 3")

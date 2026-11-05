@@ -104,7 +104,7 @@ def score_example(matrix, ordinal, spec, files):
 
 
 def render(header, panel_metrics, chart):
-    header("Which orders may need a closer look?", "Score a historical example or your own order features at the survey trigger time, then inspect what moved its risk score. A low review means 1–2 stars.")
+    header("Low-review prediction", "Identify the risk of a 1–2 star review at the survey trigger time, then inspect the factors behind the score.")
     st.caption("Choose an input source → Run the fitted classifier → Inspect the score and its contributing factors")
     try:
         manifest_text = (ASSETS / "manifest.json").read_text()

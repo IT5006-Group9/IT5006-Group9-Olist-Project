@@ -61,10 +61,18 @@ the full historical test window. Model results remain visible even when marketpl
 filters match no orders. Classification is labelled v1; the strict-cutoff
 assessment remains separately available on Model results.
 
+The visual hierarchy separates page titles, section headings, chart/card titles
+and supporting notes. Overview emphasizes delivery MAE and low-review capture;
+secondary scores remain visible at a smaller size. The two prediction shortcuts
+use matching blue buttons. Reset sits beside the purchase-window and state
+controls. Model results emphasizes test scores, keeps historical-assessment
+limitations visible, and folds supplementary diagnostics and operating-rule
+tables by default. Table download buttons have been removed from Model results.
+
 Overview and Marketplace explorer share purchase dates, customer states,
 categories, payments, route and delivered-only filters. The current-filter summary
-shows all active conditions, including conditions set on the other page. **Reset
-all filters** restores the default January 2017–August 2018 window and clears
+shows all active conditions, including conditions set on the other page. **Reset**
+on Overview or **Reset all filters** in the explorer restores the default January 2017–August 2018 window and clears
 the other conditions. Overview's **Clear extra filters** preserves dates and states.
 An empty intersection keeps the controls available so it can be adjusted or reset.
 Monthly order counts and sales include every calendar month in the selected

@@ -1,0 +1,323 @@
+/* Load after base styles and responsive.css. Streamlit 1.50 opt-in keys only:
+   hierarchy and emphasis, without changing data, Plotly internals or layout
+   rules for unkeyed/border=False containers. */
+:root {
+  --olist-hierarchy-blue: #3d5a9b;
+  --olist-hierarchy-ink: #182b49;
+  --olist-hierarchy-muted: #60718a;
+  --olist-hierarchy-line: #dce4ef;
+}
+
+/* Page title, section title, card title: three distinct levels. */
+[data-testid="stMain"] .st-key-olist_page_intro {
+  gap: .4rem;
+  padding-bottom: .65rem;
+  margin-bottom: .2rem;
+  border-bottom: 1px solid var(--olist-hierarchy-line);
+}
+
+[data-testid="stMain"] .st-key-olist_page_intro h1 {
+  color: var(--olist-hierarchy-ink);
+  font-size: clamp(2.1rem, 3.1vw, 2.75rem) !important;
+  font-weight: 700 !important;
+  line-height: 1.16;
+  letter-spacing: -.035em !important;
+  margin: 0;
+  padding: .1rem 0 .15rem;
+  overflow-wrap: break-word;
+}
+
+[data-testid="stMain"] .st-key-olist_page_intro .eyebrow {
+  color: var(--olist-hierarchy-blue);
+  font-size: .67rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+}
+
+[data-testid="stMain"] .st-key-olist_page_intro .lede {
+  color: var(--olist-hierarchy-muted);
+  max-width: 70ch;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: .15rem 0 .3rem;
+}
+
+/* Streamlit offsets heading Markdown by -1rem to match its default block gap.
+   These compact heading groups use a smaller gap, so cancel that offset here. */
+[data-testid="stMain"] :is(.st-key-olist_page_intro, .st-key-olist_section_marketplace,
+                           .st-key-olist_section_models)
+[data-testid="stHeading"] [data-testid="stMarkdownContainer"] {
+  margin-bottom: 0;
+}
+
+[data-testid="stMain"] h2 {
+  color: var(--olist-hierarchy-ink);
+  font-size: 1.5rem !important;
+  font-weight: 650 !important;
+  line-height: 1.3;
+  letter-spacing: -.025em !important;
+}
+
+[data-testid="stMain"] h3 {
+  color: var(--olist-hierarchy-ink);
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4;
+  letter-spacing: -.01em !important;
+}
+
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] p,
+[data-testid="stMain"] .quiet {
+  color: var(--olist-hierarchy-muted);
+  font-size: .85rem;
+  line-height: 1.55;
+}
+
+[data-testid="stMain"] .st-key-olist_overview {
+  gap: 1.15rem;
+}
+
+[data-testid="stMain"] .st-key-olist_section_marketplace,
+[data-testid="stMain"] .st-key-olist_section_models {
+  gap: .2rem;
+}
+
+[data-testid="stMain"] .st-key-olist_section_marketplace h2,
+[data-testid="stMain"] .st-key-olist_section_models h2 {
+  margin: 0;
+  padding: .1rem 0;
+}
+
+[data-testid="stMain"] .st-key-olist_section_models {
+  margin-top: .9rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--olist-hierarchy-line);
+}
+
+/* Navigation remains a native, keyboard-accessible radio group. */
+[data-testid="stSidebar"] .st-key-olist_workspace_nav [role="radiogroup"] {
+  gap: .3rem;
+}
+
+[data-testid="stSidebar"] .st-key-olist_workspace_nav label[data-baseweb="radio"] {
+  width: 100%;
+  min-height: 2.8rem;
+  box-sizing: border-box;
+  padding: .6rem .7rem .6rem .65rem;
+  margin: 0;
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
+  border-radius: 7px;
+  color: var(--olist-hierarchy-ink);
+  transition: background-color .12s ease, border-color .12s ease;
+}
+
+[data-testid="stSidebar"] .st-key-olist_workspace_nav label[data-baseweb="radio"] p {
+  color: inherit;
+  font-size: .91rem;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+[data-testid="stSidebar"] .st-key-olist_workspace_nav label[data-baseweb="radio"]:hover {
+  background: #e7edf6;
+}
+
+[data-testid="stSidebar"] .st-key-olist_workspace_nav label[data-baseweb="radio"]:has(input:checked) {
+  background: #e1e9f7;
+  border-left-color: var(--olist-hierarchy-blue);
+  color: #29477a;
+  font-weight: 600;
+}
+
+[data-testid="stSidebar"] .st-key-olist_workspace_nav label[data-baseweb="radio"]:has(input:focus-visible) {
+  outline: 2px solid var(--olist-hierarchy-blue);
+  outline-offset: 2px;
+}
+
+/* Only these explicit border=True panels receive a card treatment. */
+[data-testid="stMain"] .st-key-olist_model_delivery,
+[data-testid="stMain"] .st-key-olist_model_review {
+  background: #fff;
+  border: 1px solid var(--olist-hierarchy-line);
+  border-top: 3px solid var(--olist-hierarchy-blue);
+  border-radius: 12px;
+  box-shadow: 0 3px 13px rgba(24, 43, 73, .045);
+}
+
+[data-testid="stMain"] .st-key-olist_chart_marketplace,
+[data-testid="stMain"] .st-key-olist_chart_delivery {
+  background: #fff;
+  border: 1px solid #e1e7f0;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+[data-testid="stMain"] .st-key-olist_kpis_overview {
+  background: #f0f4f9;
+  border: 1px solid #e0e7f0;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+[data-testid="stMain"] .st-key-olist_kpis_overview [data-testid="stMetricLabel"] {
+  color: var(--olist-hierarchy-muted);
+  font-size: .82rem;
+  font-weight: 500;
+}
+
+[data-testid="stMain"] .st-key-olist_kpis_overview [data-testid="stMetricValue"] {
+  color: var(--olist-hierarchy-ink);
+  font-size: 1.85rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -.035em;
+}
+
+/* Help icons stay in their existing label flex rows; only values change size. */
+[data-testid="stMain"] :is(.st-key-olist_kpis_overview_delivery, .st-key-olist_kpis_overview_review)
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stMetricValue"] {
+  color: var(--olist-hierarchy-blue);
+  font-size: 2.35rem;
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -.045em;
+}
+
+[data-testid="stMain"] :is(.st-key-olist_kpis_overview_delivery, .st-key-olist_kpis_overview_review)
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child(2) [data-testid="stMetricValue"] {
+  color: var(--olist-hierarchy-ink);
+  font-size: 1.65rem;
+  line-height: 1.25;
+  letter-spacing: -.03em;
+}
+
+[data-testid="stMain"] :is(.st-key-olist_kpis_forecast, .st-key-olist_kpis_classification_prediction)
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stMetricValue"] {
+  color: var(--olist-hierarchy-blue);
+  font-size: 2.5rem;
+  font-weight: 650;
+  line-height: 1.15;
+}
+
+[data-testid="stMain"] :is(.st-key-olist_kpis_forecast, .st-key-olist_kpis_classification_prediction)
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child(2) [data-testid="stMetricValue"] {
+  color: var(--olist-hierarchy-ink);
+  font-size: 1.55rem;
+  line-height: 1.25;
+}
+
+@media (min-width: 801px) {
+  /* Align the three opt-in filter columns without changing marked row stacks. */
+  [data-testid="stMain"] .st-key-olist_split_overview_filters [data-testid="stHorizontalBlock"] {
+    align-items: flex-end;
+  }
+
+  [data-testid="stMain"] .st-key-olist_split_overview_filters [data-baseweb="select"] > div:first-child {
+    min-height: 2.75rem;
+    height: auto;
+  }
+
+  [data-testid="stMain"] .st-key-olist_split_overview_filters [data-testid="stColumn"]:last-child .stButton > button {
+    width: 100%;
+    min-height: 2.75rem;
+    height: 2.75rem;
+    padding: .5rem .65rem;
+    font-size: .85rem;
+    font-weight: 500;
+  }
+
+  [data-testid="stMain"] :is(.st-key-olist_kpis_regression, .st-key-olist_kpis_classification_scores)
+  [data-testid="stMetricValue"] {
+    color: var(--olist-hierarchy-ink);
+    font-size: 1.45rem;
+    font-weight: 550;
+    line-height: 1.25;
+  }
+
+  [data-testid="stMain"] :is(.st-key-olist_kpis_regression, .st-key-olist_kpis_classification_scores)
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child(3) [data-testid="stMetricValue"] {
+    color: var(--olist-hierarchy-blue);
+    font-size: 2.25rem;
+    font-weight: 650;
+    line-height: 1.15;
+  }
+}
+
+@media (min-width: 1200px) {
+  [data-testid="stMain"] :is(.st-key-olist_kpis_overview_delivery, .st-key-olist_kpis_overview_review)
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stMetricValue"] {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 800px) {
+  [data-testid="stMain"] .st-key-olist_page_intro {
+    padding-bottom: .65rem;
+    margin-bottom: .2rem;
+  }
+
+  [data-testid="stMain"] .st-key-olist_page_intro h1 {
+    font-size: clamp(1.7rem, 6vw, 2rem) !important;
+    line-height: 1.18;
+  }
+
+  [data-testid="stMain"] h2 {
+    font-size: 1.35rem !important;
+  }
+
+  [data-testid="stMain"] .st-key-olist_section_models {
+    margin-top: .5rem;
+    padding-top: 1rem;
+  }
+
+  /* Preserve the existing two-column KPI grid and its text wrapping. */
+  [data-testid="stMain"] .st-key-olist_kpis_overview [data-testid="stMetricValue"] {
+    font-size: 1.65rem;
+    line-height: 1.25;
+  }
+
+  [data-testid="stMain"] :is(.st-key-olist_kpis_overview_delivery, .st-key-olist_kpis_overview_review,
+                            .st-key-olist_kpis_forecast, .st-key-olist_kpis_classification_prediction)
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stMetricValue"] {
+    font-size: clamp(1.7rem, 6.5vw, 2.1rem);
+    line-height: 1.2;
+    letter-spacing: -.035em;
+  }
+
+  [data-testid="stMain"] :is(.st-key-olist_kpis_overview_delivery, .st-key-olist_kpis_overview_review,
+                            .st-key-olist_kpis_forecast, .st-key-olist_kpis_classification_prediction)
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child(2) [data-testid="stMetricValue"] {
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+
+  [data-testid="stMain"] :is(.st-key-olist_kpis_regression, .st-key-olist_kpis_classification_scores)
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child(3) [data-testid="stMetricValue"] {
+    color: var(--olist-hierarchy-blue);
+    font-size: 1.85rem;
+    font-weight: 650;
+    line-height: 1.2;
+  }
+
+  [data-testid="stMain"] :is(.st-key-olist_kpis_overview, .st-key-olist_kpis_overview_delivery,
+                            .st-key-olist_kpis_overview_review, .st-key-olist_kpis_forecast,
+                            .st-key-olist_kpis_classification_prediction, .st-key-olist_kpis_regression,
+                            .st-key-olist_kpis_classification_scores) [data-testid="stMetricValue"],
+  [data-testid="stMain"] :is(.st-key-olist_kpis_overview, .st-key-olist_kpis_overview_delivery,
+                            .st-key-olist_kpis_overview_review, .st-key-olist_kpis_forecast,
+                            .st-key-olist_kpis_classification_prediction, .st-key-olist_kpis_regression,
+                            .st-key-olist_kpis_classification_scores) [data-testid="stMetricValue"] > div {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-testid="stSidebar"] .st-key-olist_workspace_nav label[data-baseweb="radio"] {
+    transition: none;
+  }
+}

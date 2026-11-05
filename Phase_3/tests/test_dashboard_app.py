@@ -105,7 +105,7 @@ class DashboardAppTests(unittest.TestCase):
         }.items():
             self.assertEqual(self.metric_value(app, title), expected)
         self.assertTrue(any("v1 timing limitations" in warning.value for warning in app.warning))
-        self.assertTrue(any("strict-cutoff rerun" in info.value for info in app.info))
+        self.assertIn("Strict cutoff · Availability rerun", self.widget(app.selectbox, "Classification assessment").options)
         self.assertTrue(any("55.9%" in caption.value and "±3 days" in caption.value for caption in app.caption))
         self.assertTrue(any("ranking changes" in text.value for text in app.markdown))
         self.widget(app.selectbox, "Operating rule").set_value(
