@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 import unittest
 from unittest.mock import patch
+from xml.etree import ElementTree
 
 import numpy as np
 import pandas as pd
@@ -279,6 +280,27 @@ class DashboardAppTests(unittest.TestCase):
             self.assertEqual(len(matches), 1, "The order controls and forecast must share one two-column row")
             return matches[0]
 
+        def assert_input_table(app, order_id):
+            left, right = prediction_columns(app)
+            self.assertFalse(left.expander, "The inputs table must have the full page width")
+            self.assertFalse(right.expander)
+            expander = self.widget(app.expander, "See the delivery inputs and their meanings")
+            self.assertFalse(expander.proto.expanded)
+            tables = [item.value for item in expander.markdown if "<table" in item.value]
+            self.assertEqual(len(tables), 1)
+            html_table = ElementTree.fromstring(tables[0])
+            headers = ["".join(cell.itertext()) for cell in html_table.findall("./thead/tr/th")]
+            self.assertEqual(headers, ["Input", "Value", "Meaning / units"])
+            rows = [["".join(cell.itertext()) for cell in row.findall("td")]
+                    for row in html_table.findall("./tbody/tr")]
+            displayed = pd.DataFrame(rows, columns=headers).set_index("Input")
+            self.assertEqual(len(displayed), 41)
+            self.assertEqual(displayed.index.tolist(), inputs.columns.tolist())
+            expected = inputs.loc[inputs.order_id.eq(order_id)].iloc[0].astype(str)
+            self.assertEqual(displayed.Value.to_dict(), expected.to_dict())
+            self.assertTrue(displayed["Meaning / units"].str.strip().ne("").all())
+            self.assertFalse(displayed["Meaning / units"].str.contains("Description not yet available", regex=False).any())
+
         with patch("regression.score.predict_lead_time", wraps=predict_lead_time) as scored:
             app = self.launch("Delivery prediction")
             left, right = prediction_columns(app)
@@ -290,6 +312,7 @@ class DashboardAppTests(unittest.TestCase):
             self.assertEqual(forecast_containers(app), [])
             self.assertNotIn("2 · Delivery forecast", [item.value for item in app.subheader])
             picker = self.widget(app.selectbox, "Historical order")
+            assert_input_table(app, picker.value)
             self.assertEqual(len(picker.options), len(inputs))
             for number, (option, source) in enumerate(zip(picker.options, inputs.itertuples()), start=1):
                 with self.subTest(example=number):
@@ -323,7 +346,7 @@ class DashboardAppTests(unittest.TestCase):
             self.assertEqual(record.primary_seller_state, "SP")
             self.assertIn("**Seller state:** São Paulo (SP)", details)
             self.assertIn("**Customer destination:** Bahia (BA)", details)
-            self.assertFalse(self.widget(app.expander, "See the purchase-time inputs").proto.expanded)
+            assert_input_table(app, record.order_id)
             # Reopen the month's other examples so a later order change can
             # exercise result removal without changing a filter first.
             self.widget(app.selectbox, "Destination").set_value("All states").run(timeout=60)
@@ -334,6 +357,7 @@ class DashboardAppTests(unittest.TestCase):
             self.assertEqual(scored.call_count, 1)
             self.assertEqual(scored.call_args.args[0].order_id.tolist(), [record.order_id])
             self.assertEqual(app.session_state["delivery_forecast"]["order_id"], record.order_id)
+            assert_input_table(app, record.order_id)
             self.assertEqual(len(forecast_containers(app)), 1)
             left, right = prediction_columns(app)
             self.widget(left.button, "Calculate delivery forecast")
@@ -351,6 +375,7 @@ class DashboardAppTests(unittest.TestCase):
             self.assertEqual(forecast_containers(app), [])
             self.assertFalse(app.get("download_button"))
             self.assertFalse(app.checkbox)
+            assert_input_table(app, alternative)
             _, right = prediction_columns(app)
             self.assertTrue(any("YOUR FORECAST" in item.value for item in right.markdown))
             self.assertEqual(scored.call_count, 1, "Changing the order hides results without automatic prediction")

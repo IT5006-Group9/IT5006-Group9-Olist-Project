@@ -399,13 +399,6 @@ def prediction():
         st.write(f"**Item value:** R\\$ {record.total_price:,.2f}")
         st.write(f"**Freight:** R\\$ {record.total_freight:,.2f}")
         st.write(f"**Recorded delivery promise:** {record.promised_lead_time_days:.1f} days")
-        with st.expander("See the purchase-time inputs"):
-            st.caption("Each row shows the recorded value and its meaning or units. Order ID and purchase timestamp identify the example; the other rows describe purchase-time features.")
-            details = row.T.rename(columns={0: "Value"}).astype(str).rename_axis("Input").reset_index()
-            details["Meaning / units"] = details.Input.map(INPUT_MEANINGS).fillna("Description not yet available for this field.")
-            with st.container(height=560, border=False, key="olist_input_details"):
-                # Escape every cell: order metadata is displayed as text, never HTML.
-                st.markdown(details.to_html(index=False, escape=True, border=0, classes="olist-input-table"), unsafe_allow_html=True)
         if st.button("Calculate delivery forecast", type="primary", width="stretch"):
             clear_forecast()
             try:
@@ -427,6 +420,13 @@ def prediction():
                 st.session_state.pop("delivery_forecast", None)
                 st.error(f"Unable to score this order: {error}")
         st.caption("Changing the order, filters or page clears the forecast. The historical outcome stays hidden until you reveal it.")
+    with st.expander("See the delivery inputs and their meanings"):
+        st.caption("Each row shows the recorded value and its meaning or units. Order ID and purchase timestamp identify the example; the other rows describe purchase-time features.")
+        details = row.T.rename(columns={0: "Value"}).astype(str).rename_axis("Input").reset_index()
+        details["Meaning / units"] = details.Input.map(INPUT_MEANINGS).fillna("Description not yet available for this field.")
+        with st.container(height=560, border=False, key="olist_input_details"):
+            # Escape every cell: order metadata is displayed as text, never HTML.
+            st.markdown(details.to_html(index=False, escape=True, border=0, classes="olist-input-table"), unsafe_allow_html=True)
     result = st.session_state.get("delivery_forecast")
     with output:
         if not result or result["order_id"] != selected or result.get("deployment_manifest_sha256") != deployment_id:
