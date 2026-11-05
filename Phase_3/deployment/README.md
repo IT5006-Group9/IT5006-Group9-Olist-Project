@@ -14,9 +14,9 @@ HGB_risk specification in isolated scratch storage, without tuning or a new
 aggregate test assessment. Purchase-time inputs and outcomes are separate.
 The manifest records configuration, versions, boundaries and source hashes.
 
-The **Low-review prediction** page now runs the teammates’ uploaded fitted
-classification forests. [build_classification_demo.py](build_classification_demo.py)
-exports their numeric tree arrays and prepares 120 deterministic historical
+The **Low-review prediction** page runs the teammates’ uploaded fitted V1
+classifier. [build_classification_demo.py](build_classification_demo.py)
+retains both original forests as numeric tree arrays and prepares 120 deterministic historical
 examples with the original fitted history/preprocessing. The page evaluates a
 forest when the user clicks Run; it does not look up saved risk scores. The
 [manifest](assets/classification/manifest.json) records exact model/source hashes,
@@ -27,12 +27,12 @@ and the existing regression forecast on 3 November 2026.
 
 The latest [classification update](../docs/classification.md) supplies a strict-cutoff
 rerun addressing the original [quality audit](../docs/quality_audit.md), alongside
-Part B experiments. The dashboard keeps v1 as the headline, offers a separate
-strict assessment, and displays family comparisons, calibration, daily capacity
+Part B experiments. The dashboard uses V1 as the final classification model and
+keeps strict-cutoff results in a collapsed supplementary comparison, alongside calibration, daily capacity
 and the unretained classification stack. These remain saved retrospective results.
-The interactive demo defaults to strict availability rules and offers v1 as a
-labelled comparison, preserving v1 as the evaluation headline. No classifier is
-fitted by the dashboard.
+The interactive page runs V1 for historical and supplied orders. Its main version
+selector has been removed; stale strict-cutoff predictions are cleared when an
+older session returns. Backend audit assets remain available. No classifier is fitted by the dashboard.
 
 ## Classification inference
 
@@ -48,7 +48,7 @@ maximum absolute differences are below 1e-10. No training or selection was neede
 |---|---|
 | Original uploaded bundles | `models/classification/final_model.joblib`, `models/classification/strict_cutoff_model.joblib` |
 | Bundle contents | `model` (scikit-learn pipeline: history step → preprocessor → classifier), `selection` (family, hyperparameters, frozen thresholds), `input_columns`, `trained_on` |
-| Dashboard scoring | `classification_page.score_example` calls `PortableForest.predict_proba` on the selected version’s prepared matrix row |
+| Dashboard scoring | `classification_page.score_example` calls `PortableForest.predict_proba` on V1’s prepared matrix row |
 | Examples | 40 per Jun–Aug 2018 T-month, chosen by seeded order-ID hashes without using reviews or risk scores |
 | Input inspection | Version-specific 43 direct fields plus six identifiers/timestamps, with meanings and units; strict rows apply post-T masking |
 | Outcomes | Separate `outcomes.parquet`, loaded only after the reveal action; excluded from prediction and downloads |

@@ -1,4 +1,4 @@
-"""Fixed-example classification flows using the exported fitted forests.
+"""V1-only fixed-example classification flows using the exported fitted forest.
 
 The tests never train, load a pickle, or require the classification training
 environment. Expected scores come from the portable forest's numeric trees;
@@ -11,6 +11,7 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import re
 import shutil
 import sys
 import tempfile
@@ -69,10 +70,13 @@ class ClassificationPredictionTests(unittest.TestCase):
         ).run(timeout=60)
         self.assert_healthy(app)
 
-    def launch(self):
+    def launch(self, *, expect_model=True):
         app = AppTest.from_file(str(ENTRY)).run(timeout=60)
         self.assert_healthy(app)
         self.navigate(app, "Low-review prediction")
+        if expect_model:
+            self.assertEqual(app.session_state["clf_version"], "v1")
+        self.assertNotIn("Prediction model", [widget.label for widget in app.selectbox])
         return app
 
     def run_prediction(self, app):
@@ -88,12 +92,15 @@ class ClassificationPredictionTests(unittest.TestCase):
     def assert_cleared(self, app):
         self.assert_healthy(app)
         self.assertNotIn("clf_forecast", app.session_state)
+        for key in ("clf_explanation", "clf_explanation_values", "clf_explanation_error"):
+            self.assertNotIn(key, app.session_state)
         if "clf_reveal" in app.session_state:
             self.assertFalse(app.session_state["clf_reveal"])
         self.assertNotIn("Historical review", [metric.label for metric in app.metric])
         self.assertNotIn("Low-review risk score", [metric.label for metric in app.metric])
         self.assertFalse(app.checkbox)
-        self.assertFalse(app.get("download_button"))
+        self.assertFalse(any(item.proto.label in ("Download this risk prediction", "Download new risk predictions")
+                             for item in app.get("download_button")))
 
     @contextmanager
     def real_inference_spy(self):
@@ -102,7 +109,7 @@ class ClassificationPredictionTests(unittest.TestCase):
                           side_effect=ACTUAL_PREDICT) as predict:
             yield predict
 
-    def test_both_versions_run_real_forest_on_exact_row_without_outcomes_or_score_lookup(self):
+    def test_final_v1_runs_real_forest_on_exact_row_without_outcomes_or_score_lookup(self):
         original_read = pd.read_parquet
         read_paths = []
 
@@ -117,40 +124,39 @@ class ClassificationPredictionTests(unittest.TestCase):
                 patch.object(page, "load_outcomes", side_effect=AssertionError("Outcome read before reveal")) as outcomes, \
                 self.real_inference_spy() as predict:
             app = self.launch()
-            self.assertEqual(self.widget(app.selectbox, "Prediction model").value, "strict")
             self.assertEqual(predict.call_count, 0, "Opening the page cannot run inference")
-            for count, version in enumerate(("strict", "v1"), 1):
-                with self.subTest(version=version):
-                    if version != "strict":
-                        self.widget(app.selectbox, "Prediction model").set_value(version).run(timeout=60)
-                        self.assert_cleared(app)
-                        self.assertEqual(predict.call_count, count - 1)
-                    selected = self.widget(app.selectbox, "Historical classification order").value
-                    spec = MANIFEST["versions"][version]
-                    frozen_selection = json.loads((PHASE / spec["selection_file"]).read_text())
-                    self.assertEqual(spec["capacity_threshold"],
-                                     frozen_selection["thresholds"]["capacity_threshold"])
-                    self.assertEqual(spec["selection_sha256"], frozen_selection["selection_sha256"])
-                    inputs = original_read(ASSETS / spec["inputs"])
-                    ordinal = inputs.order_id.tolist().index(selected)
-                    matrix = np.load(ASSETS / spec["matrix"], allow_pickle=False)
-                    forest = load_forest(ASSETS / spec["forest"])
-                    expected = float(ACTUAL_PREDICT(forest, matrix[[ordinal]])[0, 1])
-                    result = self.run_prediction(app)
-                    self.assertEqual(predict.call_count, count)
-                    np.testing.assert_array_equal(predict.call_args.args[1], matrix[[ordinal]])
-                    self.assertEqual(predict.call_args.args[1].shape, (1, spec["n_features"]))
-                    self.assertAlmostEqual(result["risk_score"], expected, places=14)
-                    self.assertEqual(result["validation_threshold"], spec["capacity_threshold"])
-                    self.assertEqual(result["above_threshold"], expected >= spec["capacity_threshold"])
-                    self.assertEqual(result["version"], version)
-                    self.assertEqual(self.metric(app, "Low-review risk score"), f"{expected:.3f}")
-                    self.assertEqual(self.metric(app, "Frozen validation threshold"), f"{spec['capacity_threshold']:.4f}")
-                    self.assertFalse(self.widget(app.checkbox, "Reveal the historical review").value)
-                    self.assertNotIn("Historical review", [metric.label for metric in app.metric])
-                    self.assertEqual(len(app.get("download_button")), 1)
+            # Version-aware field meanings remain an accurate technical audit
+            # inside the folded input catalogue; primary notices expose one model.
+            notices = [item.value for group in (app.info, app.warning, app.caption, app.subheader) for item in group]
+            self.assertTrue(any("Final model" in text and "Random Forest V1" in text for text in notices))
+            self.assertFalse(any(re.search(r"\bstrict\b", text, flags=re.IGNORECASE) for text in notices))
+            self.assertTrue(any("historical" in text.lower() or "retrospective" in text.lower() for text in notices))
+            self.assertTrue(any("availability" in item.value.lower() for item in app.warning))
+            selected = self.widget(app.selectbox, "Historical classification order").value
+            spec = MANIFEST["versions"]["v1"]
+            frozen_selection = json.loads((PHASE / spec["selection_file"]).read_text())
+            self.assertEqual(spec["capacity_threshold"], frozen_selection["thresholds"]["capacity_threshold"])
+            self.assertEqual(spec["selection_sha256"], frozen_selection["selection_sha256"])
+            inputs = original_read(ASSETS / spec["inputs"])
+            ordinal = inputs.order_id.tolist().index(selected)
+            matrix = np.load(ASSETS / spec["matrix"], allow_pickle=False)
+            forest = load_forest(ASSETS / spec["forest"])
+            expected = float(ACTUAL_PREDICT(forest, matrix[[ordinal]])[0, 1])
+            result = self.run_prediction(app)
+            self.assertEqual(predict.call_count, 1)
+            np.testing.assert_array_equal(predict.call_args.args[1], matrix[[ordinal]])
+            self.assertEqual(predict.call_args.args[1].shape, (1, spec["n_features"]))
+            self.assertAlmostEqual(result["risk_score"], expected, places=14)
+            self.assertEqual(result["validation_threshold"], spec["capacity_threshold"])
+            self.assertEqual(result["above_threshold"], expected >= spec["capacity_threshold"])
+            self.assertEqual(result["version"], "v1")
+            self.assertEqual(self.metric(app, "Low-review risk score"), f"{expected:.3f}")
+            self.assertEqual(self.metric(app, "Frozen validation threshold"), f"{spec['capacity_threshold']:.4f}")
+            self.assertFalse(self.widget(app.checkbox, "Reveal the historical review").value)
+            self.assertNotIn("Historical review", [metric.label for metric in app.metric])
+            self.assertEqual(len(app.get("download_button")), 1)
             outcomes.assert_not_called()
-        self.assertTrue(any(Path(path).name == "strict_inputs.parquet" for path in read_paths))
+        self.assertFalse(any(Path(path).name == "strict_inputs.parquet" for path in read_paths))
         self.assertTrue(any(Path(path).name == "inputs.parquet" for path in read_paths))
 
     def test_outcome_is_loaded_only_after_reveal_and_never_enters_download(self):
@@ -175,6 +181,9 @@ class ClassificationPredictionTests(unittest.TestCase):
             downloaded = pd.read_csv(io.StringIO(csv_text))
             self.assertEqual(downloaded.order_id.tolist(), [result["order_id"]])
             self.assertAlmostEqual(downloaded.risk_score.iloc[0], result["risk_score"])
+            self.assertEqual(downloaded.version.tolist(), ["v1"])
+            for field in ("model_sha256", "selection_sha256"):
+                self.assertEqual(downloaded[field].iloc[0], MANIFEST["versions"]["v1"][field])
             self.assertFalse(set(downloaded.columns) & (page.OUTCOME_COLUMNS | {"y"}))
             # A second explicit Run also closes a previously revealed review.
             self.run_prediction(app)
@@ -183,8 +192,8 @@ class ClassificationPredictionTests(unittest.TestCase):
             self.assertEqual(load_outcomes.call_count, 1)
             self.assertEqual(predict.call_count, 2)
 
-    def test_model_and_matching_filter_changes_clear_prediction_and_download(self):
-        inputs = pd.read_parquet(ASSETS / MANIFEST["versions"]["strict"]["inputs"])
+    def test_matching_filter_and_source_changes_clear_prediction_and_download(self):
+        inputs = pd.read_parquet(ASSETS / MANIFEST["versions"]["v1"]["inputs"])
         with self.real_inference_spy() as predict:
             app = self.launch()
             chosen = self.widget(app.selectbox, "Historical classification order").value
@@ -201,9 +210,38 @@ class ClassificationPredictionTests(unittest.TestCase):
             self.assertEqual(self.widget(app.selectbox, "Historical classification order").value, chosen)
             self.run_prediction(app)
             self.reveal(app)
-            self.widget(app.selectbox, "Prediction model").set_value("v1").run(timeout=60)
+            self.widget(app.radio, "Order source").set_value("New order / CSV").run(timeout=60)
+            self.assert_cleared(app)
+            self.widget(app.radio, "Order source").set_value("Historical examples").run(timeout=60)
             self.assert_cleared(app)
             self.assertEqual(predict.call_count, 3)
+
+    def test_stale_strict_session_migrates_to_v1_without_running_a_model(self):
+        with self.real_inference_spy() as predict:
+            app = self.launch()
+            app.session_state["clf_version"] = "strict"
+            app.session_state["clf_forecast"] = {"version": "strict", "risk_score": .999, "order_id": "stale-strict"}
+            app.session_state["clf_reveal"] = True
+            for key in ("clf_explanation", "clf_explanation_values", "clf_explanation_error",
+                        "new_classification_strict_result", "new_classification_strict_identity"):
+                app.session_state[key] = {"stale": "strict"}
+            app.run(timeout=60)
+            self.assert_cleared(app)
+            self.assertEqual(app.session_state["clf_version"], "v1")
+            for key in ("new_classification_strict_result", "new_classification_strict_identity"):
+                self.assertNotIn(key, app.session_state)
+            self.assertNotIn("Prediction model", [widget.label for widget in app.selectbox])
+            self.assertEqual(predict.call_count, 0)
+            result = self.run_prediction(app)
+            self.assertEqual(result["version"], "v1")
+            self.assertEqual(predict.call_count, 1)
+            # An old strict forecast can also coexist with a current v1 marker.
+            # The result's own version must prevent this second stale state.
+            app.session_state["clf_forecast"] = {"version": "strict", "risk_score": .999, "order_id": "stale-strict"}
+            app.run(timeout=60)
+            self.assert_cleared(app)
+            self.assertEqual(app.session_state["clf_version"], "v1")
+            self.assertEqual(predict.call_count, 1)
 
     def test_order_navigation_manual_selection_and_page_leave_never_restore_results(self):
         with self.real_inference_spy() as predict:
@@ -219,7 +257,7 @@ class ClassificationPredictionTests(unittest.TestCase):
             self.assertEqual(self.widget(app.selectbox, "Historical classification order").value, original)
             self.run_prediction(app)
             self.reveal(app)
-            other = next(order for order in pd.read_parquet(ASSETS / "strict_inputs.parquet").order_id if order != original)
+            other = next(order for order in pd.read_parquet(ASSETS / "inputs.parquet").order_id if order != original)
             self.widget(app.selectbox, "Historical classification order").set_value(other).run(timeout=60)
             self.assert_cleared(app)
             self.run_prediction(app)
@@ -231,7 +269,7 @@ class ClassificationPredictionTests(unittest.TestCase):
             self.assertEqual(predict.call_count, 3)
 
     def test_random_stays_in_filter_and_stale_state_resets_for_new_month(self):
-        inputs = pd.read_parquet(ASSETS / "strict_inputs.parquet")
+        inputs = pd.read_parquet(ASSETS / "inputs.parquet")
         with self.real_inference_spy() as predict:
             app = self.launch()
             self.widget(app.selectbox, "Trigger month").set_value("2018-06").run(timeout=60)
@@ -264,11 +302,11 @@ class ClassificationPredictionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
             with patch.object(page, "ASSETS", base):
-                app = self.launch()
+                app = self.launch(expect_model=False)
                 self.assert_cleared(app)
                 self.assertTrue(any("package is unavailable" in warning.value for warning in app.warning))
                 shutil.copytree(ASSETS, base, dirs_exist_ok=True)
-                (base / "strict_matrix.npy").write_bytes(b"corrupt matrix")
+                (base / "v1_matrix.npy").write_bytes(b"corrupt matrix")
                 st.cache_data.clear()
                 app = self.launch()
                 self.assert_cleared(app)
@@ -283,7 +321,7 @@ class ClassificationPredictionTests(unittest.TestCase):
                     app = self.launch()
                     self.run_prediction(app)
                     self.reveal(app)
-                    forest = base / MANIFEST["versions"]["strict"]["forest"]
+                    forest = base / MANIFEST["versions"]["v1"]["forest"]
                     if mode == "missing":
                         forest.unlink()
                     else:
@@ -296,6 +334,19 @@ class ClassificationPredictionTests(unittest.TestCase):
                     self.assertNotIn("clf_forecast", app.session_state)
                     self.assertFalse(app.checkbox)
                     self.assertFalse(app.get("download_button"))
+
+    def test_corrupt_strict_only_assets_do_not_affect_the_final_v1_page(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            shutil.copytree(ASSETS, base, dirs_exist_ok=True)
+            strict = MANIFEST["versions"]["strict"]
+            for key in ("inputs", "matrix", "forest"):
+                (base / strict[key]).write_bytes(b"unavailable audit-only strict asset")
+            with patch.object(page, "ASSETS", base), self.real_inference_spy() as predict:
+                app = self.launch()
+                result = self.run_prediction(app)
+                self.assertEqual(result["version"], "v1")
+                self.assertEqual(predict.call_count, 1)
 
     def test_unavailable_outcome_does_not_break_or_change_prediction(self):
         with tempfile.TemporaryDirectory() as directory:

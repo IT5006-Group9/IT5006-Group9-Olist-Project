@@ -68,7 +68,7 @@ def render(*, version, spec, panel_metrics):
         st.warning(f"The complete classification inference package is unavailable: {error}")
         return
     st.info("New-order risk · The fitted history lookup, encoders, imputer and forest run on your supplied row. Features must describe the order at T. No new model is trained.")
-    st.caption("New inputs enforce event availability by T for either forest. Seller prior-order count and tenure must be supplied from your operations data; outcome-based history uses only the frozen training events. This historical model does not establish accuracy on today's orders.")
+    st.caption("Supplied inputs enforce event availability by T. Seller prior-order count and tenure must be supplied from your operations data; outcome-based history uses only the frozen training events. This historical model does not establish accuracy on today's orders.")
     task = "classification_" + version
     frame = inputs_ui.collect_orders(task=task, examples=examples, meanings=MEANINGS,
                                     validator=pipeline.validate, recalculate=pipeline.recalculate_editor,

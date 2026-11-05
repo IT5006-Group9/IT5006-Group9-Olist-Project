@@ -18,9 +18,10 @@ import streamlit as st
 
 ASSETS = Path(__file__).resolve().parent / "assets/classification"
 VERSIONS = {
-    "strict": "Strict cutoff · Availability rerun",
-    "v1": "v1 · Frozen headline",
+    "v1": "V1 · Final Random Forest",
+    "strict": "Strict cutoff · Supplementary audit",
 }
+FINAL_VERSION = "v1"
 OUTCOME_COLUMNS = {"review_score", "review_answer_timestamp", "is_low_review", "y",
                    "delivery_days", "is_on_time", "order_delivered_customer_date"}
 
@@ -109,17 +110,18 @@ def render(header, panel_metrics, chart):
     try:
         manifest_text = (ASSETS / "manifest.json").read_text()
         manifest = json.loads(manifest_text)
-        version = st.selectbox("Prediction model", list(VERSIONS), format_func=VERSIONS.get,
-                               key="clf_version", on_change=clear_prediction)
+        version = FINAL_VERSION
+        if (st.session_state.get("clf_version") != version
+                or st.session_state.get("clf_forecast", {}).get("version", version) != version):
+            clear_prediction()
+        st.session_state["clf_version"] = version
         spec = manifest["versions"][version]
     except (OSError, ValueError, KeyError, ImportError) as error:
         clear_prediction()
         st.warning(f"The classification demonstration package is unavailable: {error}")
         return
-    if version == "strict":
-        st.info("Strict-cutoff demo · Features from events after T are masked. The project’s published headline remains v1; this demo defaults to the availability-controlled version.")
-    else:
-        st.warning("v1 retrospective comparison · This original model has label/event availability limitations. Its inputs and threshold differ from the strict-cutoff version. See Model results for the timing audit.")
+    st.caption("Final model · Random Forest V1")
+    st.warning("V1 historical model · Its original assessment has label and event availability limitations. See Model results for the timing audit.")
     st.caption("Prediction point T = the earlier of delivery and the promised delivery date (promise if undelivered). This is later in the order lifecycle than the purchase-time delivery forecast.")
     source = st.radio("Order source", ["Historical examples", "New order / CSV"],
                       key="clf_source", horizontal=True, on_change=clear_prediction)
@@ -208,10 +210,10 @@ def render(header, panel_metrics, chart):
                 clear_prediction()
                 st.error(f"Unable to score this order: {error}")
         st.caption(f"{len(inputs)} fixed historical examples · 40 per June–August 2018 trigger month. Within the eligible test cohort, order-ID sampling uses neither review values nor risk scores.")
-        st.caption("Changing a model, filter or order, or leaving this page, clears the prediction and revealed review. Browsing never runs inference automatically.")
+        st.caption("Changing a filter or order, or leaving this page, clears the prediction and revealed review. Browsing never runs inference automatically.")
     with st.expander("See the classification inputs and their meanings"):
         from deployment.classification_input_help import CLASSIFICATION_INPUT_MEANINGS
-        st.caption("Read-only recorded inputs for the selected model. Missing may reflect absent source data, information unavailable by T, or version-specific masking; see each field’s definition. Strict and v1 inputs can differ. IDs and timestamps identify the example or retrieve frozen history; they are not direct numeric features.")
+        st.caption("Read-only recorded inputs for the final V1 model. Missing may reflect absent source data or information unavailable by T; see each field’s definition. IDs and timestamps identify the example or retrieve frozen history; they are not direct numeric features.")
         details = record[manifest["metadata_columns"] + manifest["display_feature_columns"]].to_frame("Value")
         details["Value"] = details["Value"].map(lambda value: "Missing / unavailable" if pd.isna(value) else str(value))
         details = details.rename_axis("Input").reset_index()

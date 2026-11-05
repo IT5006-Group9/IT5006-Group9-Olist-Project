@@ -60,6 +60,10 @@ The current interface acknowledges that the strict rerun has been completed.
 
 ## Interactive low-review prediction
 
+Current interface (5 November 2026): V1 is the final model used by Overview,
+prediction and the main results. The strict-cutoff comparison is folded under
+Model results. The screenshots below retain the earlier interface as a dated record.
+
 Captured on 3 November 2026 after the teammates uploaded both fitted model
 bundles. The new **Low-review prediction** workspace runs either forest on a
 selected fixed historical example. Strict cutoff is the demo default; the score

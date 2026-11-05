@@ -1,4 +1,4 @@
-"""Rendered evidence-chart semantics across classification assessment/rule changes.
+"""Rendered V1 evidence-chart semantics across classification operating rules.
 
 Inspect the actual Plotly specs emitted by Streamlit, rather than recalculating
 model metrics. Tests only read the published monthly tables; no inference or
@@ -82,10 +82,16 @@ class DashboardEvidenceChartTests(unittest.TestCase):
         self.assert_monthly_curve(self.figure(app, "Trigger month"), self.saved_classification("v1"),
                                   "t_month", "recall_at_capacity")
         self.assertIn("Monthly top-20% recall", [heading.value for heading in app.subheader])
+        self.assertNotIn("Classification assessment", [widget.label for widget in app.selectbox])
+        self.assertTrue(any("Final model" in caption.value and "Random Forest V1" in caption.value for caption in app.caption))
+        supplementary = self.widget(app.expander, "Supplementary strict-cutoff comparison")
+        self.assertFalse(supplementary.proto.expanded)
 
     def test_rule_changes_do_not_relabel_or_recalculate_monthly_rank_curve(self):
         app = self.launch()
         original_v1 = self.figure(app, "Trigger month")
+        self.assertEqual([metric.value for metric in app.metric if metric.label == "Low reviews captured"], ["53.2%"])
+        self.assertNotIn("Classification assessment", [widget.label for widget in app.selectbox])
         self.widget(app.selectbox, "Operating rule").set_value(
             "Use the frozen validation score threshold"
         ).run(timeout=60)
@@ -94,35 +100,29 @@ class DashboardEvidenceChartTests(unittest.TestCase):
         self.assertIn(THRESHOLD_NOTE, [notice.value for notice in app.info])
         self.assertEqual([metric.value for metric in app.metric if metric.label == "Low reviews captured"], ["46.8%"])
 
-        # The threshold control is still selected; changing the assessment must
-        # update the curve to that version's saved monthly ranking results.
-        self.widget(app.selectbox, "Classification assessment").set_value(
-            "Strict cutoff · Availability rerun"
-        ).run(timeout=60)
+        # A stale pre-update assessment widget state must not change the final
+        # model's main curve or operating cards on a live session rerun.
+        app.session_state["classification_assessment"] = "Strict cutoff · Availability rerun"
+        app.run(timeout=60)
         self.assert_healthy(app)
-        strict_figure = self.figure(app, "Trigger month")
-        self.assert_monthly_curve(strict_figure, self.saved_classification("strict"),
+        self.assert_monthly_curve(self.figure(app, "Trigger month"), self.saved_classification("v1"),
                                   "t_month", "recall_at_capacity")
-        self.assertFalse(np.array_equal(plotted_values(strict_figure["data"][0]["y"]),
-                                        plotted_values(original_v1["data"][0]["y"])))
+        self.assertEqual(self.figure(app, "Trigger month"), original_v1)
         self.assertIn(THRESHOLD_NOTE, [notice.value for notice in app.info])
-        self.assertEqual([metric.value for metric in app.metric if metric.label == "Low reviews captured"], ["46.5%"])
+        self.assertEqual([metric.value for metric in app.metric if metric.label == "Low reviews captured"], ["46.8%"])
+        self.assertEqual([metric.value for metric in app.metric if metric.label == "Test PR-AUC"], ["0.375"])
+        self.assertNotIn("Classification assessment", [widget.label for widget in app.selectbox])
 
         self.widget(app.selectbox, "Operating rule").set_value(
             "Rank the top 20% of the test window"
         ).run(timeout=60)
         self.assert_healthy(app)
-        self.assertEqual(self.figure(app, "Trigger month"), strict_figure)
+        self.assertEqual(self.figure(app, "Trigger month"), original_v1)
         self.assertNotIn(THRESHOLD_NOTE, [notice.value for notice in app.info])
-        self.assertEqual([metric.value for metric in app.metric if metric.label == "Low reviews captured"], ["53.5%"])
-
-        self.widget(app.selectbox, "Classification assessment").set_value(
-            "v1 · Frozen headline"
-        ).run(timeout=60)
-        self.assert_healthy(app)
         self.assert_monthly_curve(self.figure(app, "Trigger month"), self.saved_classification("v1"),
                                   "t_month", "recall_at_capacity")
         self.assertEqual([metric.value for metric in app.metric if metric.label == "Low reviews captured"], ["53.2%"])
+        self.assertEqual([metric.value for metric in app.metric if metric.label == "Orders flagged"], ["20.0%"])
 
 
 if __name__ == "__main__":

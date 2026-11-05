@@ -104,8 +104,11 @@ class DashboardAppTests(unittest.TestCase):
             "Test PR-AUC": "0.375", "Orders flagged": "20.0%", "Low reviews captured": "53.2%",
         }.items():
             self.assertEqual(self.metric_value(app, title), expected)
-        self.assertTrue(any("v1 timing limitations" in warning.value for warning in app.warning))
-        self.assertIn("Strict cutoff · Availability rerun", self.widget(app.selectbox, "Classification assessment").options)
+        timing = [warning.value for warning in app.warning if "v1 timing limitations" in warning.value.lower()]
+        self.assertEqual(len(timing), 1)
+        self.assertNotRegex(timing[0].lower(), r"\bstrict\b")
+        self.assertNotIn("Classification assessment", [widget.label for widget in app.selectbox])
+        self.assertTrue(any("Final model" in caption.value and "Random Forest V1" in caption.value for caption in app.caption))
         self.assertTrue(any("55.9%" in caption.value and "±3 days" in caption.value for caption in app.caption))
         self.assertTrue(any("ranking changes" in text.value for text in app.markdown))
         self.widget(app.selectbox, "Operating rule").set_value(
@@ -117,35 +120,55 @@ class DashboardAppTests(unittest.TestCase):
         self.assertTrue(any("46.8%" in warning.value and "50%" in warning.value for warning in app.warning))
         self.assertEqual(self.metric_value(app, "Test MAE"), "3.43 days")
 
-    def test_classification_assessment_switches_all_scores_and_operating_rules_together(self):
+    def test_classification_main_is_v1_with_folded_strict_comparison(self):
         app = self.launch("Model results")
-        self.widget(app.selectbox, "Classification assessment").set_value(
-            "Strict cutoff · Availability rerun"
-        ).run(timeout=60)
-        self.assert_healthy(app)
+        self.assertNotIn("Classification assessment", [widget.label for widget in app.selectbox])
         for title, value in {
-            "Training PR-AUC": "0.599", "CV / validation PR-AUC": "0.546",
-            "Test PR-AUC": "0.374", "Test ROC-AUC": "0.740",
-            "Orders flagged": "20.0%", "Low reviews captured": "53.5%",
+            "Training PR-AUC": "0.610", "CV / validation PR-AUC": "0.546",
+            "Test PR-AUC": "0.375", "Test ROC-AUC": "0.739",
+            "Orders flagged": "20.0%", "Low reviews captured": "53.2%",
             "Test MAE": "3.43 days",
         }.items():
             self.assertEqual(self.metric_value(app, title), value)
-        self.assertFalse(any("v1 timing limitations" in warning.value for warning in app.warning))
+        comparison = self.widget(app.expander, "Supplementary strict-cutoff comparison")
+        self.assertFalse(comparison.proto.expanded)
+        self.assertFalse(comparison.metric, "Supplementary scores must not duplicate primary metric labels")
+        columns = ["Model", "Training PR-AUC", "CV PR-AUC", "Test PR-AUC", "Test ROC-AUC",
+                   "Recall at top20%", "Recall at frozen threshold", "Flag rate at frozen threshold"]
+        tables = [element.value for element in comparison.dataframe if set(columns).issubset(element.value.columns)]
+        self.assertEqual(len(tables), 1)
+        displayed = tables[0].set_index("Model")
+        self.assertEqual(displayed.index.tolist(), ["Random Forest V1 · final model", "Strict cutoff · supplementary"])
+        saved = evidence_adapter.load_evidence(PHASE)
+        for model, source in [
+            ("Random Forest V1 · final model", {
+                "summary": saved["classification_summary"], "selection": saved["classification_selection"],
+                "cv": saved["classification_cv"], "operating": saved["classification_operating"],
+            }),
+            ("Strict cutoff · supplementary", saved["classification_update"]["strict"]),
+        ]:
+            family = source["selection"]["selected_family"]
+            cv = source["cv"].set_index("family").loc[family]
+            frozen = source["operating"].set_index("rule").loc["frozen capacity threshold from validation"]
+            expected = [source["summary"]["train"]["pr_auc"], cv.cv_pr_auc_mean,
+                        source["summary"]["test"]["pr_auc"], source["summary"]["test"]["roc_auc"],
+                        source["summary"]["test"]["recall_at_capacity"], frozen.recall, frozen.flag_rate]
+            # The compact display can round published values to four decimals.
+            np.testing.assert_allclose(displayed.loc[model, columns[1:]].to_numpy(dtype=float),
+                                       expected, rtol=0, atol=5e-5)
         self.widget(app.selectbox, "Operating rule").set_value(
             "Use the frozen validation score threshold"
         ).run(timeout=60)
         self.assert_healthy(app)
-        self.assertEqual(self.metric_value(app, "Orders flagged"), "14.8%")
-        self.assertEqual(self.metric_value(app, "Low reviews captured"), "46.5%")
-        self.assertTrue(any("0.5415" in warning.value for warning in app.warning))
-        self.widget(app.selectbox, "Classification assessment").set_value(
-            "v1 · Frozen headline"
-        ).run(timeout=60)
-        self.assert_healthy(app)
         self.assertEqual(self.metric_value(app, "Test PR-AUC"), "0.375")
+        self.assertEqual(self.metric_value(app, "Test ROC-AUC"), "0.739")
         self.assertEqual(self.metric_value(app, "Orders flagged"), "14.9%")
         self.assertEqual(self.metric_value(app, "Low reviews captured"), "46.8%")
         self.assertTrue(any("0.5475" in warning.value for warning in app.warning))
+        comparison = self.widget(app.expander, "Supplementary strict-cutoff comparison")
+        self.assertFalse(comparison.proto.expanded)
+        repeated = next(element.value for element in comparison.dataframe if set(columns).issubset(element.value.columns))
+        pd.testing.assert_frame_equal(repeated.set_index("Model"), displayed)
         self.assertTrue(any("0.5474" in frame.value.to_string() and "0.3784" in frame.value.to_string()
                             for frame in app.table), "The supplementary classification stack should retain its own CV/test scores.")
 

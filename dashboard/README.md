@@ -47,8 +47,8 @@ After changing the evidence adapter or table schema, reboot the Cloud app and ve
 | Overview | Start with a filtered marketplace summary, then view delivery and low-review model results, baseline comparisons and prediction shortcuts. Both sections use matching View buttons. |
 | Marketplace explorer | Orders, Delivery, Reviews, Categories and Geography tabs sharing filters with Overview; task-focused duration and observed low-review analysis. |
 | Delivery prediction | Browse historical examples or edit/upload new purchase-time feature rows; run the fitted predictor and download forecasts. Only historical examples offer outcome reveal. |
-| Low-review prediction | Score historical examples or edit/upload feature rows with either fitted forest; inspect signed factor contributions, compare the raw score with its frozen threshold, and download predictions. |
-| Model results | View training, validation and test scores; switch classification between v1 and the strict-cutoff supplement; inspect the new experiments, daily capacity, calibration and classification stacking. Delivery stacking has its own tab. |
+| Low-review prediction | Score historical examples or edit/upload feature rows with the final V1 forest; inspect signed factor contributions, compare the raw score with its frozen threshold, and download predictions. |
+| Model results | View training, validation and test scores for the final models. Classification uses V1; strict-cutoff and other experiments are folded supplementary comparisons. Delivery stacking has its own tab. |
 | Guide & methodology | Instructions, prediction-time definitions, evaluation limitations and collapsed data/code references. |
 
 Overview is first in the sidebar and opens by default; Marketplace explorer is second.
@@ -58,8 +58,8 @@ the explorer entry carries the current shared filters. Overview reads the saved
 June–August 2018 results: delivery MAE and share within
 three days, plus v1 classification PR-AUC and recall when ranking the top 20% of
 the full historical test window. Model results remain visible even when marketplace
-filters match no orders. Classification is labelled v1; the strict-cutoff
-assessment remains separately available on Model results.
+filters match no orders. Classification is labelled V1 as the final model;
+the strict-cutoff comparison is available only in a supplementary Model results foldout.
 
 The visual hierarchy separates page titles, section headings, chart/card titles
 and supporting notes. Overview emphasizes delivery MAE and low-review capture;
@@ -144,10 +144,11 @@ selected by an order-ID hash without using outcomes. Actual delivery and labels
 are in a separate file and never enter prediction. The quote comparison is
 between point estimates, not a lateness probability or prediction interval.
 
-The **Low-review prediction** page evaluates the uploaded, already fitted random
-forests on 120 fixed historical examples or supplied feature rows. The strict-cutoff model is the demo
-default, and v1 is a separately labelled retrospective comparison. This does not
-change the project’s evaluation headline or model-selection decisions.
+The **Low-review prediction** page evaluates the uploaded, already fitted V1 random
+forest on 120 fixed historical examples or supplied feature rows. Overview,
+prediction and the main Model results assessment all use this final model.
+There is no primary version selector. Sessions retaining a strict-cutoff prediction
+from an older interface clear that score before returning to V1.
 Its prediction point is T = min(delivered, promised delivery); its 21,058 test orders
 differ from regression's 18,603 purchase-window orders. Recall 53.23% applies to
 ranking the top 20% of the entire test window. The frozen validation threshold
@@ -155,7 +156,7 @@ has a different flag rate and recall. **v1 remains the headline**, as specified
 by the latest classification methods and selection artifacts.
 
 The monthly recall curve always uses a separate top-20% ranking within each month
-for the selected assessment. Selecting the frozen validation threshold changes
+for V1. Selecting the frozen validation threshold changes
 the operating cards; a notice explains why it does not change that monthly curve.
 Both model-evidence month charts explicitly label June, July and August.
 
@@ -196,7 +197,7 @@ the threshold. Supplied rows never reveal historical outcomes. See the
 [deployment guide](../Phase_3/deployment/README.md#new-order-input-and-individual-risk-explanations)
 for fitted-pipeline export and input-contract details.
 
-The new **Classification assessment** selector adds the strict-cutoff rerun:
+The collapsed **Supplementary strict-cutoff comparison** retains the audit rerun:
 test PR-AUC 0.3738, recall 53.5% at top 20%, and 70,054 training orders. That run
 filters training and selection labels by their availability, masks post-T event
 features and freezes a manifest before testing. Its selected forest parameters
