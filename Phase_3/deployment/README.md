@@ -73,13 +73,18 @@ neither it nor grey placeholders copy example values into the form. The explicit
 fields and validates the completed order before its separate Run action becomes
 available. Measurements, basket summaries and purchase-time seller counts/tenure
 must be supplied, rather than invented. A previously edited draft is retained;
-an untouched legacy example seed is replaced by a blank draft. **Start a new
-blank order** explicitly resets the draft and clears previous results.
+an untouched legacy example seed is replaced by a blank draft. **Clear form**
+beside the input method resets the draft and clears previous results; it is
+disabled when the form is empty.
 
 **Upload an order table (CSV)** explains how to edit a template in Excel and save
 CSV UTF-8, with one order per row. Templates retain the exact model field names;
-all headers are required, and batches are bounded to 100 rows and 2 MiB. Uploaded
-values are validated as supplied without automatic recalculation. Labels,
+all headers are required, and batches are bounded to 100 rows and 2 MiB. The
+templates and field guide are folded so the upload and check controls remain
+visible. **Check order details** explicitly validates the uploaded values as
+supplied without automatic recalculation; a separate Run action then scores
+the checked batch. Replacing file content or switching input methods requires
+another check. Labels,
 outcomes unavailable at the prediction point, duplicate IDs and inconsistent
 derived values are rejected. Validation and navigation never score
 automatically. Editing input, replacing a CSV, changing a model/source or leaving

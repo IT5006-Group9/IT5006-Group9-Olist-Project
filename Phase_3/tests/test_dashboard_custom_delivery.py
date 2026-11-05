@@ -246,12 +246,21 @@ class CustomDeliveryTests(unittest.TestCase):
     def test_csv_batch_scores_supplied_rows_and_replacement_clears_previous_download(self):
         batch = self.examples.iloc[:2].copy()
         batch["order_id"] = ["csv-new-order-001", "csv-new-order-002"]
-        uploaded = [io.BytesIO(regression_inputs.template_csv(self.manifest, batch).encode("utf-8"))]
+        uploaded = [None]
         with patch.object(st, "file_uploader", side_effect=lambda *args, **kwargs: uploaded[0]), \
                 patch("regression.score.predict_lead_time", wraps=predict_lead_time) as score:
             app = self.launch(blank=True)
             self.widget(app.radio, "Input method").set_value(CSV_METHOD).run(timeout=60)
             self.assert_healthy(app)
+            self.assertTrue(self.widget(app.button, "Check order details").disabled)
+            self.assertFalse(self.widget(app.expander, "Order table templates and field guide").proto.expanded)
+            self.assertNotIn("Run delivery predictions", [button.label for button in app.button])
+            uploaded[0] = io.BytesIO(regression_inputs.template_csv(self.manifest, batch).encode("utf-8"))
+            app.run(timeout=60)
+            self.assert_result_cleared(app)
+            self.assertFalse(self.widget(app.button, "Check order details").disabled)
+            self.assertNotIn("Run delivery predictions", [button.label for button in app.button])
+            self.check(app)
             self.assertEqual(score.call_count, 0)
             result = self.predict(app)
             expected = self.expected(batch)
@@ -259,18 +268,51 @@ class CustomDeliveryTests(unittest.TestCase):
             np.testing.assert_allclose(result.predicted_days, expected.predicted_days, rtol=0, atol=1e-12)
             np.testing.assert_allclose(result.quoted_days, expected.quoted_days, rtol=0, atol=1e-12)
             self.assertEqual(score.call_count, 1)
+            app.run(timeout=60)
+            self.assert_healthy(app)
+            pd.testing.assert_frame_equal(app.session_state["new_delivery_result"]["predictions"], result)
+            self.assertIn("Run delivery predictions", [button.label for button in app.button])
+            self.assertEqual(score.call_count, 1, "The same checked file must not run inference on rerender")
             changed = batch.iloc[[0]].copy()
             changed["order_id"] = "replacement-csv-order"
-            uploaded[0] = io.BytesIO(regression_inputs.template_csv(self.manifest, changed).encode("utf-8"))
+            replacement_csv = regression_inputs.template_csv(self.manifest, changed).encode("utf-8")
+            # The mocked uploader never fires on_change: content identity must
+            # still invalidate the old check, prediction and download.
+            uploaded[0] = io.BytesIO(replacement_csv)
             app.run(timeout=60)
             self.assert_result_cleared(app)
+            self.assertNotIn("Run delivery predictions", [button.label for button in app.button])
             self.assertEqual(score.call_count, 1)
-            changed["review_score"] = 1
-            uploaded[0] = io.BytesIO(changed.to_csv(index=False).encode("utf-8"))
+            self.check(app)
+            replacement = self.predict(app)
+            self.assertEqual(replacement.order_id.tolist(), ["replacement-csv-order"])
+            np.testing.assert_allclose(replacement.predicted_days, self.expected(changed).predicted_days, rtol=0, atol=1e-12)
+            self.assertEqual(score.call_count, 2)
+            uploaded[0] = io.BytesIO(changed.assign(review_score=1).to_csv(index=False).encode("utf-8"))
             app.run(timeout=60)
+            self.assert_result_cleared(app)
+            self.assertNotIn("Run delivery predictions", [button.label for button in app.button])
+            self.check(app, allow_error=True)
             self.assert_result_cleared(app, allow_error=True)
             self.assertTrue(any("Unexpected columns" in error.value and "review_score" in error.value for error in app.error))
-            self.assertEqual(score.call_count, 1)
+            errors = [error.value for error in app.error]
+            app.run(timeout=60)
+            self.assert_result_cleared(app, allow_error=True)
+            self.assertEqual([error.value for error in app.error], errors, "A failed check must remain visible for the same file")
+            self.assertEqual(score.call_count, 2)
+            uploaded[0] = io.BytesIO(replacement_csv)
+            app.run(timeout=60)
+            self.assert_result_cleared(app)
+            self.assertNotIn("Run delivery predictions", [button.label for button in app.button])
+            self.check(app)
+            self.widget(app.radio, "Input method").set_value("Fill in one order").run(timeout=60)
+            self.assert_result_cleared(app)
+            self.widget(app.radio, "Input method").set_value(CSV_METHOD).run(timeout=60)
+            self.assert_result_cleared(app)
+            self.assertNotIn("Run delivery predictions", [button.label for button in app.button])
+            self.check(app)
+            self.assertIn("Run delivery predictions", [button.label for button in app.button])
+            self.assertEqual(score.call_count, 2, "Checking or switching methods must not score the file")
 
 
 if __name__ == "__main__":

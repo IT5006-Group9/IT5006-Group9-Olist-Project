@@ -64,8 +64,8 @@ def _value(value):
 
 def invalidate_order(task):
     clear_result(task)
-    st.session_state.pop(f"new_{task}_checked", None)
-    st.session_state.pop(f"new_{task}_check_error", None)
+    for suffix in ("checked", "check_error", "csv_checked", "csv_check_error"):
+        st.session_state.pop(f"new_{task}_{suffix}", None)
 
 
 def _strings(frame):
@@ -99,8 +99,8 @@ def _form_error(task, error, columns):
 def collect_orders(*, task, examples, meanings, validator, recalculate=None, seed_identity=""):
     """Collect a genuinely blank order form or a complete, bounded CSV batch.
 
-    Example values are read-only guidance. Form preparation is an explicit
-    action, and only a checked, unchanged draft can reach the prediction page.
+    Example values are read-only guidance. Checking is an explicit action for
+    both input methods; only unchanged, checked inputs can reach prediction.
     """
     from deployment.order_form import render_blank_order
     from deployment.order_form_prepare import derived_fields, prepare_order
@@ -130,7 +130,8 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
 
     if method == methods[1]:
         st.write("A CSV is a table file you can edit in Excel. Download the blank table below, fill one order per row, keep its column headings, and save it as CSV UTF-8 before uploading.")
-        with st.expander("Order table templates and field guide", expanded=True):
+        st.caption("Upload your file → Check order details → Run predictions. Uploading a file does not start a prediction.")
+        with st.expander("Order table templates and field guide"):
             left, right = st.columns(2)
             left.download_button("Download blank order table", safe_csv(example.iloc[:0]),
                                  file_name=f"{task}_new_orders_template.csv", mime="text/csv", key=f"new_{task}_template")
@@ -143,16 +144,35 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
             st.caption("All template headers are required. Leave a value blank only where the field allows missing information. Review labels and outcomes unavailable at the task’s prediction point are rejected. Limit: 100 orders and 2 MiB. Uploaded values are checked as supplied; they are not automatically recalculated.")
         uploaded = st.file_uploader("Upload your completed order table (CSV)", type=["csv"],
                                     key=f"new_{task}_upload", on_change=invalidate_order, args=(task,))
+        check_clicked = st.button("Check order details", type="primary", key=f"new_{task}_csv_check",
+                                  disabled=uploaded is None)
+        st.caption("This checks the uploaded fields and values. After they pass, use the Run button below to start the predictions.")
         if uploaded is None:
             invalidate_order(task)
             st.info("Upload your filled CSV table to check the orders before prediction.")
             return None
-        try:
-            frame = validator(csv_frame(uploaded))
-        except (ValueError, KeyError, TypeError, OverflowError) as error:
+        content = uploaded.getvalue() if hasattr(uploaded, "getvalue") else uploaded
+        upload_identity = hashlib.sha256(seed_identity.encode() + b"\n" + content).hexdigest()
+        checked_key, error_key = f"new_{task}_csv_checked", f"new_{task}_csv_check_error"
+        if st.session_state.get(checked_key, {}).get("identity") != upload_identity:
+            clear_result(task)
+            st.session_state.pop(checked_key, None)
+        if st.session_state.get(error_key, {}).get("identity") != upload_identity:
+            st.session_state.pop(error_key, None)
+        if check_clicked:
             invalidate_order(task)
-            st.error(f"Please correct these table fields:\n\n{error}")
+            try:
+                validated = validator(csv_frame(content))
+                st.session_state[checked_key] = {"identity": upload_identity, "frame": validated.copy(deep=True)}
+            except (ValueError, KeyError, TypeError, OverflowError) as error:
+                st.session_state[error_key] = {"identity": upload_identity, "message": str(error)}
+        if error_key in st.session_state:
+            st.error("Please correct these table fields:\n\n" + st.session_state[error_key]["message"])
             return None
+        if checked_key not in st.session_state:
+            st.info("File uploaded. Click Check order details to validate it before running predictions.")
+            return None
+        frame = st.session_state[checked_key]["frame"].copy(deep=True)
     else:
         seed_key, draft_key, revision_key, checked_key = (
             f"new_{task}_{name}" for name in ("form_seed", "draft", "revision", "checked")
