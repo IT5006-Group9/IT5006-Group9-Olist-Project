@@ -264,18 +264,12 @@ def overview(ev):
         st.markdown('<span class="pill">REVIEW RISK AT T</span>', unsafe_allow_html=True)
         st.subheader("Which orders may need attention?")
         st.write("Score a historical example or supplied order features, then see which factors raised or lowered its risk score.")
-        st.caption("Strict-cutoff demonstration with a fixed validation threshold; v1 is also available for comparison.")
         st.button("Try a low-review prediction →", on_click=navigate, args=("Low-review prediction",))
     with c, st.container(border=True):
         st.markdown('<span class="pill">MODEL EVIDENCE</span>', unsafe_allow_html=True)
         st.subheader("What supports the model choice?")
         st.write(f"Delivery test MAE: {ev['regression_summary']['test']['mae']:.2f} days. Low-review test PR-AUC: {ev['classification_summary']['test']['pr_auc']:.3f}.")
-        st.caption("These fixed evaluation results use separate test cohorts and do not change with the filters above.")
-        strict = ev.get("classification_update", {}).get("strict", {})
-        if strict.get("available"):
-            st.caption(f"v1 remains the classification headline. The new strict-cutoff check reports test PR-AUC {strict['summary']['test']['pr_auc']:.3f}; compare both assessments on Model evidence.")
-        else:
-            st.caption("Classification evidence has timing limitations. Review the audit on Model evidence before interpreting its performance.")
+        st.caption("Model evaluation results do not change with the filters above.")
         st.button("Review models & stacking →", on_click=navigate, args=("Model evidence",))
 
 
