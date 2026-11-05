@@ -1,0 +1,36 @@
+{
+  "course": "IT5006 Fundamentals of Data Analytics",
+  "title": "Predicting Delivery Lead Time and Low-Review Risk on Olist",
+  "subtitle": "Chronological evaluation, deployment and business impact",
+  "team": "Team 9 Members",
+  "members": [
+    [
+      "Hu Xiaozhang",
+      "A0331992X"
+    ],
+    [
+      "Liang Xiao",
+      "A0340121A"
+    ],
+    [
+      "Li Shuaixian",
+      "A0329839J"
+    ],
+    [
+      "Wang Lurong",
+      "A0189107Y"
+    ],
+    [
+      "Ye Xueying",
+      "A0291069X"
+    ]
+  ],
+  "links": [
+    "Application: [it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app](https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/)",
+    "GitHub: [github.com/IT5006-Group9/IT5006-Group9-Olist-Project](https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project)"
+  ],
+  "date": "Prepared on 8 November 2026",
+  "header": "IT5006 Team 9 · Olist delivery and review-risk analytics",
+  "milestone": "Group Project Milestone 3: Final Report",
+  "semester": "AY2026/2027 Semester 1"
+}

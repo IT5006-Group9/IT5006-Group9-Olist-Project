@@ -16,3 +16,13 @@ __pycache__/
 # Local editor/tooling
 .claude/
 notebooks/04_ regional_consumer_behaviour_eda.ipynb
+
+# Phase 3 pipelines: generated locally (formerly Phase_3/.gitignore)
+data/classification/
+data/regression/
+models/
+outputs/*/predictions/
+outputs/*_quick/
+outputs/classification/strict_cutoff/console.log
+*.joblib
+!deployment/assets/regression_model.joblib

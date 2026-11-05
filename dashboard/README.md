@@ -1,7 +1,7 @@
 # Olist Operations Studio — Phase 3 dashboard
 
 [Live application](https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/)
-· [Application source](../Phase_3/deployment/app.py)
+· [Application source](../deployment/app.py)
 · [Course brief](https://prakashsukhwal.github.io/IT5006/IT5006_Project_Description_2026Aug_V2.html)
 
 The existing dashboard/app.py entry now launches Phase 3. The original Phase 1
@@ -16,7 +16,7 @@ Use Python **3.11 or 3.12**, from the repository root:
 
 The app includes a fitted regression model, the two uploaded fitted classification
 forests, 120 examples per task, separate historical outcomes and provenance
-manifests in Phase_3/deployment/assets/.
+manifests in deployment/assets/.
 No raw CSVs, credentials or training are needed at runtime.
 
 Streamlit Cloud keeps the same repository, branch main, entry dashboard/app.py
@@ -30,13 +30,13 @@ No secrets are required.
 The existing Cloud app is configured with Python 3.12. Online prediction,
 outcome reveal, the original five pages and classification operating-rule switching were
 verified after rebuilding the environment. See the
-[online verification record](../Phase_3/deployment/live_verification.json) and
-[deployed screenshots](../Phase_3/docs/dashboard/README.md).
+[online verification record](../deployment/live_verification.json) and
+[deployed screenshots](../docs/dashboard/README.md).
 
 The new classification prediction workspace was also verified on the same Cloud
 URL on 3 November 2026: both forests, outcome reveal, prediction-only CSV download,
 state clearing and regression compatibility. See its separate
-[verification record](../Phase_3/deployment/classification_live_verification.json).
+[verification record](../deployment/classification_live_verification.json).
 
 After changing the evidence adapter or table schema, reboot the Cloud app and verify Model results. Open sessions can retain imported modules and cached evidence across a source update; a browser refresh alone may not load the new adapter. The app versions its evidence cache and tolerates absent optional keys during this transition.
 
@@ -199,7 +199,7 @@ decision-path contributions by business group or original feature, including
 recorded values. Root baseline plus every contribution equals the raw score.
 This is not SHAP or a causal explanation, and the baseline is not prevalence or
 the threshold. Supplied rows never reveal historical outcomes. See the
-[deployment guide](../Phase_3/deployment/README.md#new-order-input-and-individual-risk-explanations)
+[deployment guide](../deployment/README.md#new-order-input-and-individual-risk-explanations)
 for fitted-pipeline export and input-contract details.
 
 The collapsed **Supplementary strict-cutoff comparison** retains the audit rerun:
@@ -219,11 +219,11 @@ test score does not replace the headline. Daily v1 test recall is 51.8%; this
 ranks historical T-days and does not validate a live actionable contact queue.
 Calibration is saved evidence and is not applied to an online classifier.
 
-The [classification methods and updated results](../Phase_3/docs/classification.md)
-document the upload. The [earlier quality audit](../Phase_3/docs/quality_audit.md)
+The [classification methods and updated results](../docs/classification.md)
+document the upload. The [earlier quality audit](../docs/quality_audit.md)
 provides the original findings; its request for a strict rerun is now addressed
 by the supplement. July still misses the monthly recall target, and historical
-test exposure remains visible. The [feature and model appendix](../Phase_3/docs/report_appendix_features_models.md)
+test exposure remains visible. The [feature and model appendix](../docs/report_appendix_features_models.md)
 retains the original catalogue; current strict model parameters are shown directly
 in the dashboard and the classification methods.
 
@@ -236,23 +236,23 @@ table. Historical test exposure is disclosed; test rankings do not reopen select
 
 To rebuild the frozen deployment specification using the exact course CSVs:
 
-    python Phase_3/deployment/build_demo_bundle.py --csv-dir /path/to/Olist_CSV
+    python deployment/build_demo_bundle.py --csv-dir /path/to/Olist_CSV
 
 The exporter verifies original course hashes, feature values, population identities,
 source hashes and temporal boundaries. It isolates fitting caches under ignored
-Phase_3/data/deployment/, preserving all existing sources, evidence and notebooks.
+data/deployment/, preserving all existing sources, evidence and notebooks.
 It reuses verified assets by default; --force-refit rebuilds the same configuration.
 It performs no tuning or new aggregate test assessment.
 
 Run the dashboard checks:
 
-    python -m unittest discover -s Phase_3/tests -p 'test_dashboard*.py'
+    python -m unittest discover -s tests -p 'test_dashboard*.py'
 
 To re-export the **already fitted** uploaded classification bundles, use a separate
 environment matching their NumPy/pandas/scikit-learn versions (recorded in the
 classification asset manifest), then run:
 
-    python Phase_3/deployment/build_classification_demo.py --csv-dir /path/to/Olist_CSV
+    python deployment/build_classification_demo.py --csv-dir /path/to/Olist_CSV
 
 This classification exporter performs no fitting, search or model selection. It
 verifies course CSV hashes, the full strict feature-table hash, frozen test IDs,
