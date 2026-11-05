@@ -131,7 +131,7 @@ class ClassificationPredictionTests(unittest.TestCase):
             self.assertTrue(any("Final model" in text and "Random Forest V1" in text for text in notices))
             self.assertFalse(any(re.search(r"\bstrict\b", text, flags=re.IGNORECASE) for text in notices))
             self.assertTrue(any("historical" in text.lower() or "retrospective" in text.lower() for text in notices))
-            self.assertTrue(any("availability" in item.value.lower() for item in app.warning))
+            self.assertFalse(any("availability limitations" in item.value.lower() for item in app.warning))
             selected = self.widget(app.selectbox, "Historical classification order").value
             spec = MANIFEST["versions"]["v1"]
             frozen_selection = json.loads((PHASE / spec["selection_file"]).read_text())

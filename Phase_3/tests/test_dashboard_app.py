@@ -133,9 +133,12 @@ class DashboardAppTests(unittest.TestCase):
             "Test PR-AUC": "0.375", "Orders flagged": "20.0%", "Low reviews captured": "53.2%",
         }.items():
             self.assertEqual(self.metric_value(app, title), expected)
-        timing = [warning.value for warning in app.warning if "v1 timing limitations" in warning.value.lower()]
+        methods = self.widget(app.expander, "Methods & limitations")
+        self.assertFalse(methods.proto.expanded)
+        timing = [text.value for text in methods.markdown if "Labels and event features" in text.value]
         self.assertEqual(len(timing), 1)
         self.assertNotRegex(timing[0].lower(), r"\bstrict\b")
+        self.assertFalse(any("timing limitations" in warning.value.lower() for warning in app.warning))
         self.assertNotIn("Classification assessment", [widget.label for widget in app.selectbox])
         self.assertTrue(any("Final model" in caption.value and "Random Forest V1" in caption.value for caption in app.caption))
         self.assertTrue(any("55.9%" in caption.value and "±3 days" in caption.value for caption in app.caption))

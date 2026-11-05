@@ -557,7 +557,6 @@ def classification_evidence(ev):
         ("Test PR-AUC", f"{test['pr_auc']:.3f}", "Average precision; test no-skill reference is the low-review prevalence."),
         ("Test ROC-AUC", f"{test['roc_auc']:.3f}", "Ranking performance across all thresholds."),
     ], key="classification_scores")
-    st.warning("v1 timing limitations: labels and events were not fully restricted to their historical availability cutoffs. Treat these as historical project results; see the methods notes for details.")
     with st.container(key="olist_split_classification"):
         left, right = st.columns([1.3, 1])
     with left, st.container(border=True):
@@ -599,7 +598,9 @@ def classification_evidence(ev):
             chart(fig, 290)
             below = months.loc[months.recall_at_capacity.lt(.5), "t_month"].tolist()
             st.caption("Monthly rankings use each month's batch, independently of the operating-card rule. " + ("Below the 50% target: " + ", ".join(below) + "." if below else "Every displayed month meets the 50% target."))
-    with st.expander("Model families, success criteria & interpretation"):
+    with st.expander("Methods & limitations"):
+        st.markdown("**V1 assessment limitations**")
+        st.write("Labels and event features were not fully restricted to information available at their historical cutoffs. These are historical project results; future-order performance requires an availability-aware assessment.")
         st.markdown(f"[Classification methods, new experiments and strict-cutoff results]({REPO}/blob/main/Phase_3/docs/classification.md)")
         st.dataframe(cv[["family", "train_pr_auc_mean", "cv_pr_auc_mean", "cv_pr_auc_sd", "cv_recall_at_capacity_mean"]], hide_index=True, width="stretch")
         st.dataframe(source["criteria"], hide_index=True, width="stretch")

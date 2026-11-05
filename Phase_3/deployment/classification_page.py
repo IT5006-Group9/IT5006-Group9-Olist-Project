@@ -121,7 +121,6 @@ def render(header, panel_metrics, chart):
         st.warning(f"The classification demonstration package is unavailable: {error}")
         return
     st.caption("Final model · Random Forest V1")
-    st.warning("V1 historical model · Its original assessment has label and event availability limitations. See Model results for the timing audit.")
     st.caption("Prediction point T = the earlier of delivery and the promised delivery date (promise if undelivered). This is later in the order lifecycle than the purchase-time delivery forecast.")
     sources = ["Historical examples", "Enter an order or upload a table"]
     current_source = st.session_state.get("clf_source", sources[0])
