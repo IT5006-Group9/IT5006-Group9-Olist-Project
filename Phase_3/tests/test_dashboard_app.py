@@ -265,16 +265,28 @@ class DashboardAppTests(unittest.TestCase):
         # the first matching order as Example 001.
         position = int(np.flatnonzero((inputs.customer_state.eq("BA") & months.eq("2018-07")).to_numpy())[0])
         record = inputs.iloc[position]
-        expected_label = f"Example {position + 1:03d} · {pd.Timestamp(record.purchase_ts):%d %b %Y} · Bahia"
+        expected_label = f"Example {position + 1:03d} · {pd.Timestamp(record.purchase_ts):%d %b %Y}"
+
         def forecast_containers(app):
             return [node for node in app.main
                     if getattr(node.proto, "id", "").endswith("-olist_delivery_forecast")]
 
+        def prediction_columns(app):
+            rows = [[child for child in node.children.values() if child.type == "column"]
+                    for node in app.main if hasattr(node, "children")]
+            matches = [columns for columns in rows if len(columns) == 2
+                       and any(widget.key == "demo_order" for widget in columns[0].selectbox)]
+            self.assertEqual(len(matches), 1, "The order controls and forecast must share one two-column row")
+            return matches[0]
+
         with patch("regression.score.predict_lead_time", wraps=predict_lead_time) as scored:
             app = self.launch("Delivery prediction")
-            initial_text = "\n".join(item.value for item in app.markdown)
-            self.assertNotIn("YOUR FORECAST", initial_text)
-            self.assertNotIn("Start with an order", initial_text)
+            left, right = prediction_columns(app)
+            self.assertEqual(self.widget(left.button, "Calculate delivery forecast").label, "Calculate delivery forecast")
+            self.assertFalse(right.button)
+            self.assertFalse(any("YOUR FORECAST" in item.value for item in left.markdown))
+            self.assertTrue(any("YOUR FORECAST" in item.value and "Start with an order" in item.value
+                                for item in right.markdown))
             self.assertEqual(forecast_containers(app), [])
             self.assertNotIn("2 · Delivery forecast", [item.value for item in app.subheader])
             picker = self.widget(app.selectbox, "Historical order")
@@ -282,10 +294,9 @@ class DashboardAppTests(unittest.TestCase):
             for number, (option, source) in enumerate(zip(picker.options, inputs.itertuples()), start=1):
                 with self.subTest(example=number):
                     parts = option.split(" · ")
-                    self.assertEqual(len(parts), 3)
+                    self.assertEqual(len(parts), 2)
                     self.assertEqual(parts[0], f"Example {number:03d}")
                     self.assertEqual(parts[1], f"{pd.Timestamp(source.purchase_ts):%d %b %Y}")
-                    self.assertGreater(len(parts[2]), 2, "Show the destination's full state name")
                     self.assertNotRegex(option, r"[0-9a-f]{16,}|[→←…]")
                     self.assertNotIn(source.order_id, option)
             self.assertIn("Bahia (BA)", self.widget(app.selectbox, "Destination").options)
@@ -324,15 +335,14 @@ class DashboardAppTests(unittest.TestCase):
             self.assertEqual(scored.call_args.args[0].order_id.tolist(), [record.order_id])
             self.assertEqual(app.session_state["delivery_forecast"]["order_id"], record.order_id)
             self.assertEqual(len(forecast_containers(app)), 1)
-            elements = list(app.main)
-            calculate_position = next(index for index, item in enumerate(elements)
-                                      if item.type == "button" and item.label == "Calculate delivery forecast")
-            inputs_position = next(index for index, item in enumerate(elements)
-                                   if item.type == "expander" and item.label == "See the purchase-time inputs")
-            result_position = next(index for index, item in enumerate(elements)
-                                   if item.type == "subheader" and item.value == "2 · Delivery forecast")
-            self.assertLess(inputs_position, calculate_position)
-            self.assertLess(calculate_position, result_position)
+            left, right = prediction_columns(app)
+            self.widget(left.button, "Calculate delivery forecast")
+            self.assertNotIn("2 · Delivery forecast", [item.value for item in left.subheader])
+            self.assertIn("2 · Delivery forecast", [item.value for item in right.subheader])
+            self.assertIn("Predicted lead time", [item.label for item in right.metric])
+            self.assertNotIn("Actual lead time", [item.label for item in app.metric])
+            self.assertFalse(self.widget(right.checkbox, "Reveal the historical delivery outcome").value)
+            self.assertFalse(any("YOUR FORECAST" in item.value for item in right.markdown))
             alternative = inputs.loc[months.eq("2018-07") & inputs.order_id.ne(record.order_id), "order_id"].iloc[0]
             self.widget(app.selectbox, "Historical order").set_value(alternative).run(timeout=60)
             self.assert_healthy(app)
@@ -340,6 +350,9 @@ class DashboardAppTests(unittest.TestCase):
             self.assertNotIn("2 · Delivery forecast", [item.value for item in app.subheader])
             self.assertEqual(forecast_containers(app), [])
             self.assertFalse(app.get("download_button"))
+            self.assertFalse(app.checkbox)
+            _, right = prediction_columns(app)
+            self.assertTrue(any("YOUR FORECAST" in item.value for item in right.markdown))
             self.assertEqual(scored.call_count, 1, "Changing the order hides results without automatic prediction")
 
     def test_example_navigation_clears_forecast_and_never_restores_revealed_outcomes(self):
