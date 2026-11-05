@@ -149,7 +149,7 @@ def render(header, panel_metrics, chart):
     with st.container(key="olist_split_classification_prediction"):
         controls, output = st.columns([1, 1.65], gap="large")
     with controls, st.container(border=True):
-        st.subheader("1 · Choose a historical order")
+        st.subheader("Choose a historical order")
         st.caption(f"Browse {len(inputs)} historical examples by prediction point T and destination. Each example keeps the same number when you filter.")
         months = ["All months", *sorted(inputs.t_month.unique())]
         month = st.selectbox("Trigger month", months,
@@ -247,7 +247,7 @@ def render(header, panel_metrics, chart):
             st.markdown('<div class="empty"><div class="eyebrow">LOW-REVIEW RISK</div><h2>Start with an order.</h2><p>Choose a historical order and run its low-review prediction.</p><p class="quiet">The actual review stays hidden until you choose to reveal it.</p></div>', unsafe_allow_html=True)
         else:
             st.markdown('<span class="pill">PREDICTION CALCULATED</span>', unsafe_allow_html=True)
-            st.subheader("2 · Low-review risk")
+            st.subheader("Low-review risk")
             st.caption(f"Selected model: {VERSIONS[version]} · Raw forest score, not a calibrated probability.")
             score, threshold = result["risk_score"], result["validation_threshold"]
             panel_metrics([
@@ -266,7 +266,7 @@ def render(header, panel_metrics, chart):
             fig.update_yaxes(title=None)
             chart(fig, 210)
             st.caption("This is a fixed score threshold, not a top-20% rank for one order. It does not guarantee a 20% flag rate or the project’s 50% recall target on future orders. Scores are uncalibrated; contacting a customer has not been shown to change their review.")
-            st.markdown("**3 · Optional outcome check**")
+            st.markdown("**Optional outcome check**")
             if st.checkbox("Reveal the historical review", key="clf_reveal"):
                 try:
                     name = manifest["outcomes"]

@@ -339,7 +339,7 @@ def prediction():
     with st.container(key="olist_split_prediction"):
         controls, output = st.columns([1.1, 1.55], gap="large")
     with controls, st.container(border=True, key="olist_delivery_picker"):
-        st.subheader("1 · Choose a historical order")
+        st.subheader("Choose a historical order")
         st.caption(f"Browse {len(inputs)} historical purchases by date and destination. Each example keeps the same number when you filter.")
         month = st.selectbox("Purchase month", ["All months", "2018-06", "2018-07", "2018-08"],
                             format_func=lambda value: "All months" if value == "All months" else pd.Timestamp(value + "-01").strftime("%B %Y"),
@@ -425,7 +425,7 @@ def prediction():
             st.markdown('<div class="empty"><div class="eyebrow">YOUR FORECAST</div><h2>Start with an order.</h2><p>Choose a historical purchase and calculate its expected delivery lead time.</p><p class="quiet">The model uses purchase-time information. The historical delivery outcome stays hidden until you reveal it.</p></div>', unsafe_allow_html=True)
             return
     with output, st.container(border=True, key="olist_delivery_forecast"):
-        st.subheader("2 · Delivery forecast")
+        st.subheader("Delivery forecast")
         days, quoted = result["predicted_days"], result["quoted_days"]
         panel_metrics([
             ("Predicted lead time", f"{days:.1f} days", "A point estimate of purchase-to-delivery duration."),
@@ -437,7 +437,7 @@ def prediction():
         else:
             st.info(f"The forecast is {quoted-days:.1f} days within the recorded promise. It is a point estimate, not a probability of on-time delivery.")
         values = pd.DataFrame({"Estimate": ["Model forecast", "Recorded promise"], "Days": [days, quoted]})
-        st.markdown("**3 · Optional outcome check**")
+        st.markdown("**Optional outcome check**")
         reveal = st.checkbox("Reveal the historical delivery outcome", key="demo_reveal")
         actual = None
         if reveal:

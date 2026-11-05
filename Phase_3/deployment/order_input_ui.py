@@ -109,7 +109,7 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
     canonical = [name for _, fields in group_fields(task) for name in fields if name in examples.columns]
     ordered = canonical + [name for name in examples.columns if name not in canonical]
     form_groups = group_fields(task, ordered)
-    st.subheader("1 · Enter your order details")
+    st.subheader("Enter your order details")
     st.write("Fill in one order from a blank form, or upload a completed order table. The model needs order, product and delivery details; an order ID alone is not enough.")
     methods = ["Fill in one order", "Upload an order table (CSV)"]
     method_key = f"new_{task}_method"

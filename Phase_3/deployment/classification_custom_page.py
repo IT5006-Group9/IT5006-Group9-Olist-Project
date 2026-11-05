@@ -120,7 +120,7 @@ def render(*, version, spec, panel_metrics):
     if not result or result["identity"] != signature:
         return
     predictions = result["predictions"]
-    st.subheader("2 · New-order low-review risk")
+    st.subheader("New-order low-review risk")
     st.dataframe(predictions[["order_id", "risk_score", "validation_threshold", "above_threshold"]],
                  hide_index=True, use_container_width=True)
     selected = st.selectbox("Inspect a risk prediction", predictions.order_id.tolist(), key=f"new_{task}_selected")

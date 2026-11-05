@@ -46,7 +46,7 @@ def render(*, examples, manifest, deployment_id, load_bundle, panel_metrics):
     if not result or result["identity"] != signature:
         return
     predictions = result["predictions"]
-    st.subheader("2 · New-order delivery predictions")
+    st.subheader("New-order delivery predictions")
     st.dataframe(predictions[["order_id", "predicted_days", "quoted_days", "predicted_exceeds_quote", "estimated_arrival"]],
                  hide_index=True, use_container_width=True)
     chosen = st.selectbox("Inspect a delivery prediction", predictions.order_id.tolist(), key="new_delivery_selected")
