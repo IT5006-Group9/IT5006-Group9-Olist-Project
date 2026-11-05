@@ -30,6 +30,15 @@ ASSETS = HERE / "assets"
 REPO = "https://github.com/IT5006-Group9/IT5006-Group9-Olist-Project"
 BLUE, TEAL, AMBER, INK, MUTED = "#4263eb", "#13877c", "#b97728", "#182b49", "#6c7c93"
 PAGES = ["Overview", "Marketplace explorer", "Delivery prediction", "Low-review prediction", "Model results", "Guide & methodology"]
+BRAZIL_STATES = {
+    "AC": "Acre", "AL": "Alagoas", "AP": "Amapá", "AM": "Amazonas",
+    "BA": "Bahia", "CE": "Ceará", "DF": "Federal District", "ES": "Espírito Santo",
+    "GO": "Goiás", "MA": "Maranhão", "MT": "Mato Grosso", "MS": "Mato Grosso do Sul",
+    "MG": "Minas Gerais", "PA": "Pará", "PB": "Paraíba", "PR": "Paraná",
+    "PE": "Pernambuco", "PI": "Piauí", "RJ": "Rio de Janeiro", "RN": "Rio Grande do Norte",
+    "RS": "Rio Grande do Sul", "RO": "Rondônia", "RR": "Roraima", "SC": "Santa Catarina",
+    "SP": "São Paulo", "SE": "Sergipe", "TO": "Tocantins",
+}
 DISPLAY_LABELS = {
     "HGB_risk": "HGB + risk (selected)",
     "HGB_risk_current_main": "Main HGB + risk",
@@ -303,9 +312,16 @@ def overview(ev):
         overview_model_results(ev)
 
 
+def state_label(code):
+    """Expand the archived state code for display without changing model inputs."""
+    if pd.isna(code):
+        return "Not recorded"
+    name = BRAZIL_STATES.get(str(code))
+    return f"{name} ({code})" if name else str(code)
+
+
 def prediction():
     header("Delivery prediction", "Estimate delivery time from purchase-time order features, then compare the forecast with the recorded promise.")
-    st.caption("Choose an input source, validate the order features, then explicitly run a forecast. Historical outcomes are separate and optional.")
     required = ["regression_model.joblib", "example_inputs.parquet", "manifest.json"]
     if any(not (ASSETS / name).exists() for name in required):
         clear_forecast()
@@ -327,15 +343,27 @@ def prediction():
         render(examples=inputs, manifest=manifest, deployment_id=deployment_id,
                load_bundle=lambda: demo_bundle(manifest_text), panel_metrics=panel_metrics)
         return
-    with st.container(key="olist_split_prediction"):
-        controls, output = st.columns([1, 1.65], gap="large")
-    with controls, st.container(border=True):
+    example_numbers = {order_id: number for number, order_id in enumerate(inputs.order_id, start=1)}
+    with st.container(border=True, key="olist_delivery_picker"):
         st.subheader("1 · Choose a historical order")
-        month = st.selectbox("Purchase month", ["All months", "2018-06", "2018-07", "2018-08"], key="demo_month", on_change=clear_forecast)
+        st.caption(f"Browse {len(inputs)} historical purchases by date and destination. Each example keeps the same number when you filter.")
+        with st.container(key="olist_split_delivery_filters"):
+            month_column, destination_column, order_column = st.columns([1, 1.5, 2.8], gap="medium")
+        with month_column:
+            month = st.selectbox("Purchase month", ["All months", "2018-06", "2018-07", "2018-08"],
+                                format_func=lambda value: "All months" if value == "All months" else pd.Timestamp(value + "-01").strftime("%B %Y"),
+                                key="demo_month", on_change=clear_forecast)
         candidates = inputs.copy()
         if month != "All months":
             candidates = candidates[pd.to_datetime(candidates.purchase_ts).dt.strftime("%Y-%m").eq(month)]
-        state = st.selectbox("Destination", ["All states", *sorted(candidates.customer_state.dropna().unique())], key="demo_state", on_change=clear_forecast)
+        states = ["All states", *sorted(candidates.customer_state.dropna().unique())]
+        if st.session_state.get("demo_state", "All states") not in states:
+            st.session_state["demo_state"] = "All states"
+            clear_forecast()
+        with destination_column:
+            state = st.selectbox("Destination", states, format_func=state_label,
+                                 help="The customer's destination state in Brazil.",
+                                 key="demo_state", on_change=clear_forecast)
         if state != "All states":
             candidates = candidates[candidates.customer_state.eq(state)]
         if candidates.empty:
@@ -345,30 +373,49 @@ def prediction():
         indexed = candidates.set_index("order_id", drop=False)
         def order_label(order_id):
             row = indexed.loc[order_id]
-            return f"{pd.Timestamp(row.purchase_ts):%d %b} · {row.primary_seller_state} → {row.customer_state} · …{order_id[-6:]}"
+            destination = BRAZIL_STATES.get(str(row.customer_state), str(row.customer_state))
+            return f"Example {example_numbers[order_id]:03d} · {pd.Timestamp(row.purchase_ts):%d %b %Y} · {destination}"
         order_ids = candidates.order_id.tolist()
         if st.session_state.get("demo_order") not in order_ids:
             st.session_state["demo_order"] = order_ids[0]
             clear_forecast()
-        selected = st.selectbox("Historical order", order_ids, format_func=order_label, key="demo_order", on_change=clear_forecast)
+        with order_column:
+            selected = st.selectbox("Historical order", order_ids, format_func=order_label,
+                                    key="demo_order", on_change=clear_forecast)
+            position = order_ids.index(selected)
+            st.caption(f"{position + 1} of {len(order_ids)} matching examples")
+            with st.container(key="olist_demo_navigation"):
+                previous, following, shuffle = st.columns(3)
+            previous.button("← Previous", on_click=change_example, args=(order_ids, -1), disabled=position == 0, width="stretch")
+            following.button("Next →", on_click=change_example, args=(order_ids, 1), disabled=position == len(order_ids) - 1, width="stretch")
+            shuffle.button("Random", on_click=change_example, args=(order_ids, "random"), disabled=len(order_ids) < 2, width="stretch")
         signature = (deployment_id, month, state, selected)
         if st.session_state.get("demo_selection_signature") != signature:
             clear_forecast()
             st.session_state["demo_selection_signature"] = signature
-        position = order_ids.index(selected)
-        st.caption(f"Order {position + 1} of {len(order_ids)} in the current selection")
-        with st.container(key="olist_demo_navigation"):
-            previous, following, shuffle = st.columns(3)
-        previous.button("← Previous", on_click=change_example, args=(order_ids, -1), disabled=position == 0, width="stretch")
-        following.button("Next →", on_click=change_example, args=(order_ids, 1), disabled=position == len(order_ids) - 1, width="stretch")
-        shuffle.button("Random", on_click=change_example, args=(order_ids, "random"), disabled=len(order_ids) < 2, width="stretch")
-        row = indexed.loc[[selected]].reset_index(drop=True)
-        record = row.iloc[0]
-        st.markdown("**Order at purchase**")
-        st.write(f"{pd.Timestamp(record.purchase_ts):%d %B %Y, %H:%M}")
-        st.write(f"{record.primary_seller_state} → {record.customer_state} · {int(record.item_count)} item(s)")
-        st.write(f"Item value R\\$ {record.total_price:,.2f} · Freight R\\$ {record.total_freight:,.2f}")
-        st.write(f"Recorded delivery promise: **{record.promised_lead_time_days:.1f} days**")
+    row = indexed.loc[[selected]].reset_index(drop=True)
+    record = row.iloc[0]
+    with st.container(border=True, key="olist_delivery_order_summary"):
+        st.subheader(f"Example {example_numbers[selected]:03d} · Order details")
+        with st.container(key="olist_split_delivery_summary"):
+            purchase_column, route_column, value_column = st.columns([1, 1.2, 1.1], gap="medium")
+        with purchase_column:
+            st.write(f"**Purchased:** {pd.Timestamp(record.purchase_ts):%d %B %Y, %H:%M}")
+            st.write(f"**Items:** {int(record.item_count)}")
+        with route_column:
+            st.write(f"**Seller state:** {state_label(record.primary_seller_state)}")
+            st.write(f"**Customer destination:** {state_label(record.customer_state)}")
+        with value_column:
+            st.write(f"**Item value:** R\\$ {record.total_price:,.2f}")
+            st.write(f"**Freight:** R\\$ {record.total_freight:,.2f}")
+            st.write(f"**Recorded delivery promise:** {record.promised_lead_time_days:.1f} days")
+        with st.expander("See the purchase-time inputs"):
+            st.caption("Each row shows the recorded value and its meaning or units. Order ID and purchase timestamp identify the example; the other rows describe purchase-time features.")
+            details = row.T.rename(columns={0: "Value"}).astype(str).rename_axis("Input").reset_index()
+            details["Meaning / units"] = details.Input.map(INPUT_MEANINGS).fillna("Description not yet available for this field.")
+            with st.container(height=560, border=False, key="olist_input_details"):
+                # Escape every cell: order metadata is displayed as text, never HTML.
+                st.markdown(details.to_html(index=False, escape=True, border=0, classes="olist-input-table"), unsafe_allow_html=True)
         if st.button("Calculate delivery forecast", type="primary", width="stretch"):
             clear_forecast()
             try:
@@ -389,21 +436,11 @@ def prediction():
             except (OSError, ValueError, KeyError, RuntimeError, EOFError) as error:
                 st.session_state.pop("delivery_forecast", None)
                 st.error(f"Unable to score this order: {error}")
-        st.caption(f"{len(inputs)} examples selected deterministically from the historical test window, without using their outcomes.")
-        st.caption("Changing the selection or leaving this page clears the forecast and revealed outcome. Navigation never runs a prediction automatically.")
-    with st.expander("See the purchase-time inputs"):
-        st.caption("Each row shows the recorded value and its meaning or units. Order ID and purchase timestamp identify the example; the other rows describe purchase-time features.")
-        details = row.T.rename(columns={0: "Value"}).astype(str).rename_axis("Input").reset_index()
-        details["Meaning / units"] = details.Input.map(INPUT_MEANINGS).fillna("Description not yet available for this field.")
-        with st.container(height=560, border=False, key="olist_input_details"):
-            # Escape every cell: order metadata is displayed as text, never HTML.
-            st.markdown(details.to_html(index=False, escape=True, border=0, classes="olist-input-table"), unsafe_allow_html=True)
+        st.caption("Changing the order, filters or page clears the forecast. The historical outcome stays hidden until you reveal it.")
     result = st.session_state.get("delivery_forecast")
-    with output:
-        if not result or result["order_id"] != selected or result.get("deployment_manifest_sha256") != deployment_id:
-            st.markdown('<div class="empty"><div class="eyebrow">YOUR FORECAST</div><h2>Start with an order.</h2><p>Choose a historical purchase and calculate its expected delivery lead time.</p><p class="quiet">The model uses purchase-time information. The historical delivery outcome stays hidden until you reveal it.</p></div>', unsafe_allow_html=True)
-            return
-        st.markdown('<span class="pill">FORECAST CALCULATED</span>', unsafe_allow_html=True)
+    if not result or result["order_id"] != selected or result.get("deployment_manifest_sha256") != deployment_id:
+        return
+    with st.container(border=True, key="olist_delivery_forecast"):
         st.subheader("2 · Delivery forecast")
         days, quoted = result["predicted_days"], result["quoted_days"]
         panel_metrics([

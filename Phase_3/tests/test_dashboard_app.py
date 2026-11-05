@@ -258,6 +258,90 @@ class DashboardAppTests(unittest.TestCase):
             self.assertNotIn("Classification assessment", [widget.label for widget in app.selectbox])
             self.assertTrue(any("Supplementary classification experiments are not available" in info.value for info in app.info))
 
+    def test_delivery_picker_uses_readable_stable_example_labels_but_scores_raw_order_id(self):
+        inputs = pd.read_parquet(ASSETS / "example_inputs.parquet")
+        months = pd.to_datetime(inputs.purchase_ts).dt.strftime("%Y-%m")
+        # Use a later example so filtering cannot accidentally pass by renumbering
+        # the first matching order as Example 001.
+        position = int(np.flatnonzero((inputs.customer_state.eq("BA") & months.eq("2018-07")).to_numpy())[0])
+        record = inputs.iloc[position]
+        expected_label = f"Example {position + 1:03d} · {pd.Timestamp(record.purchase_ts):%d %b %Y} · Bahia"
+        def forecast_containers(app):
+            return [node for node in app.main
+                    if getattr(node.proto, "id", "").endswith("-olist_delivery_forecast")]
+
+        with patch("regression.score.predict_lead_time", wraps=predict_lead_time) as scored:
+            app = self.launch("Delivery prediction")
+            initial_text = "\n".join(item.value for item in app.markdown)
+            self.assertNotIn("YOUR FORECAST", initial_text)
+            self.assertNotIn("Start with an order", initial_text)
+            self.assertEqual(forecast_containers(app), [])
+            self.assertNotIn("2 · Delivery forecast", [item.value for item in app.subheader])
+            picker = self.widget(app.selectbox, "Historical order")
+            self.assertEqual(len(picker.options), len(inputs))
+            for number, (option, source) in enumerate(zip(picker.options, inputs.itertuples()), start=1):
+                with self.subTest(example=number):
+                    parts = option.split(" · ")
+                    self.assertEqual(len(parts), 3)
+                    self.assertEqual(parts[0], f"Example {number:03d}")
+                    self.assertEqual(parts[1], f"{pd.Timestamp(source.purchase_ts):%d %b %Y}")
+                    self.assertGreater(len(parts[2]), 2, "Show the destination's full state name")
+                    self.assertNotRegex(option, r"[0-9a-f]{16,}|[→←…]")
+                    self.assertNotIn(source.order_id, option)
+            self.assertIn("Bahia (BA)", self.widget(app.selectbox, "Destination").options)
+            picker.set_value(record.order_id).run(timeout=60)
+            for label, value in (("Purchase month", "2018-07"), ("Destination", "BA")):
+                self.widget(app.selectbox, label).set_value(value).run(timeout=60)
+                self.assert_healthy(app)
+                picker = self.widget(app.selectbox, "Historical order")
+                self.assertIn(expected_label, picker.options)
+                # Streamlit may reset a selectbox when its option list changes;
+                # reselect the same order to verify its identity across cohorts.
+                picker.set_value(record.order_id).run(timeout=60)
+                self.assert_healthy(app)
+                picker = self.widget(app.selectbox, "Historical order")
+                self.assertEqual(picker.value, record.order_id)
+                self.assertEqual(picker.options[picker.index], expected_label)
+                self.assertEqual(scored.call_count, 0, "Selecting or filtering examples must not run inference")
+                self.assertNotIn("delivery_forecast", app.session_state)
+            self.assertIn("July 2018", self.widget(app.selectbox, "Purchase month").options)
+            self.assertTrue(any(f"Example {position + 1:03d} · Order details" == title.value for title in app.subheader))
+            details = "\n".join(item.value for item in app.markdown)
+            for label in ("Purchased:", "Seller state:", "Customer destination:", "Items:", "Item value:", "Freight:", "Recorded delivery promise:"):
+                self.assertIn(label, details)
+            self.assertEqual(record.primary_seller_state, "SP")
+            self.assertIn("**Seller state:** São Paulo (SP)", details)
+            self.assertIn("**Customer destination:** Bahia (BA)", details)
+            self.assertFalse(self.widget(app.expander, "See the purchase-time inputs").proto.expanded)
+            # Reopen the month's other examples so a later order change can
+            # exercise result removal without changing a filter first.
+            self.widget(app.selectbox, "Destination").set_value("All states").run(timeout=60)
+            self.widget(app.selectbox, "Historical order").set_value(record.order_id).run(timeout=60)
+            self.assertEqual(scored.call_count, 0)
+            self.widget(app.button, "Calculate delivery forecast").click().run(timeout=60)
+            self.assert_healthy(app)
+            self.assertEqual(scored.call_count, 1)
+            self.assertEqual(scored.call_args.args[0].order_id.tolist(), [record.order_id])
+            self.assertEqual(app.session_state["delivery_forecast"]["order_id"], record.order_id)
+            self.assertEqual(len(forecast_containers(app)), 1)
+            elements = list(app.main)
+            calculate_position = next(index for index, item in enumerate(elements)
+                                      if item.type == "button" and item.label == "Calculate delivery forecast")
+            inputs_position = next(index for index, item in enumerate(elements)
+                                   if item.type == "expander" and item.label == "See the purchase-time inputs")
+            result_position = next(index for index, item in enumerate(elements)
+                                   if item.type == "subheader" and item.value == "2 · Delivery forecast")
+            self.assertLess(inputs_position, calculate_position)
+            self.assertLess(calculate_position, result_position)
+            alternative = inputs.loc[months.eq("2018-07") & inputs.order_id.ne(record.order_id), "order_id"].iloc[0]
+            self.widget(app.selectbox, "Historical order").set_value(alternative).run(timeout=60)
+            self.assert_healthy(app)
+            self.assertNotIn("delivery_forecast", app.session_state)
+            self.assertNotIn("2 · Delivery forecast", [item.value for item in app.subheader])
+            self.assertEqual(forecast_containers(app), [])
+            self.assertFalse(app.get("download_button"))
+            self.assertEqual(scored.call_count, 1, "Changing the order hides results without automatic prediction")
+
     def test_example_navigation_clears_forecast_and_never_restores_revealed_outcomes(self):
         app = self.launch("Delivery prediction")
         original = self.widget(app.selectbox, "Historical order").value
