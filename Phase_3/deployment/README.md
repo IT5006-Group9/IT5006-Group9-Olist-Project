@@ -56,7 +56,7 @@ maximum absolute differences are below 1e-10. No training or selection was neede
 ## Behaviour
 
 * Original fitted history/preprocessing runs offline, with frozen training events looked up strictly before each order’s purchase. No test reviews refresh that history. Current-order fit-only outcome fields are neutralized; transformation/score invariance is verified before export.
-* Historical examples retain their original prepared inputs. **New order / CSV** runs the full exported fitted preprocessing and history lookup on supplied feature rows using the same forest, with no fitting.
+* Historical examples retain their original prepared inputs. **Enter an order or upload a table** runs the full exported fitted preprocessing and history lookup on supplied feature rows using the same forest, with no fitting.
 * Single-order scores use each model’s own validation capacity threshold (strict 0.5415134093587367; v1 0.5474615225207792). The original scoring helper’s batch `flagged` field is not used: a one-order batch would always rank first. Fixed thresholding does not guarantee a 20% flag rate or 50% recall.
 * The raw score is not calibrated. The saved sigmoid calibration experiment is not applied to this score or threshold.
 * Changes of model, filter, order or page clear prior predictions, downloads and revealed reviews. Navigation never runs inference automatically.
@@ -65,13 +65,23 @@ maximum absolute differences are below 1e-10. No training or selection was neede
 
 ## New order input and individual risk explanations
 
-Both prediction pages offer **Historical examples** and **New order / CSV**.
-The new-order editor starts from a recorded feature row under a new order ID;
-users must change it to describe their order. CSV templates contain all required
-headers, and batches are bounded to 100 rows and 2 MiB. Values are validated at
-the relevant prediction time; labels, outcome columns, duplicate IDs and
-inconsistent derived values are rejected. Calendar, price and route fields can
-be recalculated with an explicit button. Validation and navigation never score
+Both prediction pages offer **Historical examples** and **Enter an order or upload a table**.
+**Fill in one order** opens a blank form with task-specific, plain-language field
+names and grouped sections. **View a completed example** is read-only guidance;
+neither it nor grey placeholders copy example values into the form. The explicit
+**Check order details** action prepares calculable calendar, price and route
+fields and validates the completed order before its separate Run action becomes
+available. Measurements, basket summaries and purchase-time seller counts/tenure
+must be supplied, rather than invented. A previously edited draft is retained;
+an untouched legacy example seed is replaced by a blank draft. **Start a new
+blank order** explicitly resets the draft and clears previous results.
+
+**Upload an order table (CSV)** explains how to edit a template in Excel and save
+CSV UTF-8, with one order per row. Templates retain the exact model field names;
+all headers are required, and batches are bounded to 100 rows and 2 MiB. Uploaded
+values are validated as supplied without automatic recalculation. Labels,
+outcomes unavailable at the prediction point, duplicate IDs and inconsistent
+derived values are rejected. Validation and navigation never score
 automatically. Editing input, replacing a CSV, changing a model/source or leaving
 the page clears the previous predictions and download.
 

@@ -1,7 +1,7 @@
 """V1 fitted-pipeline inference and input-bound classification explanations.
 
-AppTest cannot edit Glide cells or upload a browser file. Only those widget
-boundaries are replaced; CSV parsing, validation, preprocessing, fitted trees,
+AppTest fills native blank-form fields; only file upload is replaced in memory.
+CSV parsing, validation, preprocessing, fitted trees,
 explanations and session transitions all run through the actual dashboard.
 Successful loader calls keep real fitted pipelines. A recovery test injects a
 temporary package-read error without replacing the cached fitted objects.
@@ -9,6 +9,7 @@ temporary package-read error without replacing the cached fitted objects.
 from __future__ import annotations
 
 from contextlib import contextmanager
+from copy import deepcopy
 import hashlib
 import io
 import json
@@ -16,6 +17,7 @@ from pathlib import Path
 import sys
 import unittest
 from unittest.mock import patch
+from xml.etree import ElementTree
 
 import numpy as np
 import pandas as pd
@@ -39,6 +41,8 @@ PIPELINE_ASSETS = PHASE / "deployment/assets/classification_pipeline"
 MANIFEST = json.loads((ASSETS / "manifest.json").read_text())
 ACTUAL_PREDICT = PortableForest.predict_proba
 FORBIDDEN = page.OUTCOME_COLUMNS | {"is_low_review", "risk_score", "score", "prediction"}
+OWN_SOURCE = "Enter an order or upload a table"
+CSV_METHOD = "Upload an order table (CSV)"
 
 
 class CustomClassificationTests(unittest.TestCase):
@@ -49,19 +53,38 @@ class CustomClassificationTests(unittest.TestCase):
     def setUp(self):
         st.cache_data.clear()
         st.cache_resource.clear()
-        self.edits = {}
 
     def tearDown(self):
         st.cache_data.clear()
         st.cache_resource.clear()
 
-    def editor(self, details, *args, **kwargs):
-        self.assertEqual(list(details.columns), ["Field", "Value", "Meaning / units"])
-        result = details.copy(deep=True)
-        for field, value in self.edits.items():
-            self.assertIn(field, result.Field.tolist())
-            result.loc[result.Field.eq(field), "Value"] = str(value)
-        return result
+    def fields(self, app):
+        prefix = "classification_v1_field_"
+        return {widget.key[len(prefix):].rsplit("_", 1)[0]: widget for widget in app.text_input
+                if widget.key and widget.key.startswith(prefix)}
+
+    def set_fields(self, app, values):
+        fields = self.fields(app)
+        for name, value in values.items():
+            self.assertIn(name, fields, f"Expected a native input for {name}")
+            fields[name].set_value("" if pd.isna(value) else str(value))
+        app.run(timeout=60)
+        self.assert_healthy(app)
+
+    def record(self, **changes):
+        row = self.pipelines["v1"].example_inputs(public_valid_only=True).iloc[[0]].copy()
+        row["order_id"] = "own-classification-001"
+        for name, value in changes.items():
+            row[name] = value
+        return row
+
+    def fill_record(self, app, row):
+        for _ in range(2):
+            self.set_fields(app, {name: row.iloc[0][name] for name in self.fields(app)})
+
+    def check(self, app, *, allow_error=False):
+        self.widget(app.button, "Check order details").click().run(timeout=60)
+        self.assert_healthy(app, allow_error=allow_error)
 
     def widget(self, widgets, label):
         matches = [widget for widget in widgets if widget.label == label]
@@ -77,15 +100,18 @@ class CustomClassificationTests(unittest.TestCase):
         self.widget(app.sidebar.radio, "Workspace").set_value(destination).run(timeout=60)
         self.assert_healthy(app)
 
-    def launch(self, *, custom=True):
+    def launch(self, *, custom=True, blank=False, row=None):
         app = AppTest.from_file(str(ENTRY)).run(timeout=60)
         self.assert_healthy(app)
         self.navigate(app, "Low-review prediction")
         self.assertEqual(app.session_state["clf_version"], "v1")
         self.assertNotIn("Prediction model", [widget.label for widget in app.selectbox])
         if custom:
-            self.widget(app.radio, "Order source").set_value("New order / CSV").run(timeout=60)
+            self.widget(app.radio, "Order source").set_value(OWN_SOURCE).run(timeout=60)
             self.assert_healthy(app)
+            if not blank:
+                self.fill_record(app, self.record() if row is None else row)
+                self.check(app)
         return app
 
     @contextmanager
@@ -148,35 +174,40 @@ class CustomClassificationTests(unittest.TestCase):
             yield paths
             outcomes.assert_not_called()
 
-    def test_final_v1_edit_new_order_run_complete_pipeline_and_download_provenance(self):
-        self.edits.update(seller_id="new-seller-outside-the-fitted-history", main_category="new-category",
-                          main_payment_type="new-payment", seller_prior_orders="3", seller_tenure_days="15")
-        with patch.object(st, "data_editor", side_effect=self.editor), \
-                patch.object(st, "download_button", wraps=st.download_button) as download, \
+    def test_blank_form_final_v1_runs_complete_pipeline_without_prefill_and_downloads_provenance(self):
+        supplied = self.record(seller_id="new-seller-outside-the-fitted-history", main_category="new-category",
+                               main_payment_type="new-payment", seller_prior_orders="3", seller_tenure_days="15")
+        with patch.object(st, "download_button", wraps=st.download_button) as download, \
                 self.no_outcome_reads(), self.real_inference_spy() as predict:
-            app = self.launch()
+            app = self.launch(blank=True)
+            self.assertTrue(self.fields(app))
+            self.assertTrue(all(widget.value == "" for widget in self.fields(app).values()),
+                            "Recorded examples may guide entry but must never prefill the blank order")
+            example = self.widget(app.expander, "View a completed example")
+            self.assertFalse(example.text_input)
+            self.assertFalse(example.button)
+            self.assertTrue(any("Example value" in item.value for item in example.markdown))
+            self.assertNotIn("Run new-order risk predictions", [button.label for button in app.button])
             self.assert_cleared(app)
-            self.assertEqual(predict.call_count, 0, "Browsing must not evaluate the forest")
-            version = "v1"
-            pipeline = self.pipelines[version]
-            reference = self.widget(app.selectbox, "Reference example for initial values").value
-            frame = pipeline.example_inputs().loc[lambda rows: rows.order_id.eq(reference)].copy()
-            frame["order_id"] = "new-classification_v1-001"
-            for name, value in self.edits.items():
-                frame[name] = value
-            matrix, expected = self.expected(version, frame)
-            result = self.run_prediction(app, version)
+            self.fill_record(app, supplied)
+            self.assertNotIn("Run new-order risk predictions", [button.label for button in app.button])
+            self.check(app)
+            self.assertEqual(predict.call_count, 0, "Checking an order must not evaluate the forest")
+            pipeline = self.pipelines["v1"]
+            checked = pipeline.validate(app.session_state["new_classification_v1_draft"])
+            matrix, expected = self.expected("v1", checked)
+            result = self.run_prediction(app, "v1")
             self.assertEqual(predict.call_count, 1)
             np.testing.assert_array_equal(predict.call_args.args[1], matrix)
             predictions = result["predictions"]
-            self.assertEqual(predictions.order_id.tolist(), ["new-classification_v1-001"])
+            self.assertEqual(predictions.order_id.tolist(), ["own-classification-001"])
             self.assertFalse(set(predictions.order_id) & set(pipeline.example_inputs().order_id))
             np.testing.assert_allclose(predictions.risk_score, expected, rtol=0, atol=1e-12)
-            spec = MANIFEST["versions"][version]
+            spec = MANIFEST["versions"]["v1"]
             self.assertEqual(predictions.validation_threshold.tolist(), [spec["capacity_threshold"]])
             self.assertEqual(predictions.above_threshold.tolist(), [expected[0] >= spec["capacity_threshold"]])
             self.assert_explanation(result)
-            self.assertEqual(result["input_values"][0]["seller_id"], self.edits["seller_id"])
+            self.assertEqual(result["input_values"][0]["seller_id"], supplied.seller_id.iloc[0])
             self.assertFalse(app.checkbox, "New inputs must not expose a historical review")
             calls = [call for call in download.call_args_list
                      if call.args and call.args[0] == "Download new risk predictions"]
@@ -185,21 +216,21 @@ class CustomClassificationTests(unittest.TestCase):
                 self.assertEqual(exported[field].iloc[0], spec[field])
             package_id = hashlib.sha256((PIPELINE_ASSETS / "manifest.json").read_bytes()).hexdigest()
             self.assertEqual(exported.pipeline_manifest_sha256.iloc[0], package_id)
-            self.assertEqual(exported.version.tolist(), [version])
+            self.assertEqual(exported.version.tolist(), ["v1"])
             self.assertFalse(set(exported.columns) & (FORBIDDEN - {"risk_score"}))
 
     def test_supplied_v1_field_help_matches_actual_asof_masking_and_preserves_historical_help(self):
         historical_help = dict(CLASSIFICATION_INPUT_MEANINGS)
-        rendered = []
-
-        def record_editor(details, *args, **kwargs):
-            rendered.append(dict(zip(details.Field, details["Meaning / units"])))
-            return self.editor(details, *args, **kwargs)
-
-        with patch.object(st, "data_editor", side_effect=record_editor), \
-                self.no_outcome_reads(), self.real_inference_spy() as predict:
-            app = self.launch()
-            help_text = rendered[-1]
+        with self.no_outcome_reads(), self.real_inference_spy() as predict:
+            app = self.launch(blank=True)
+            self.widget(app.radio, "Input method").set_value(CSV_METHOD).run(timeout=60)
+            guide = self.widget(app.expander, "Order table templates and field guide")
+            html_table = ElementTree.fromstring(next(item.value for item in guide.markdown if "<table" in item.value))
+            headers = ["".join(cell.itertext()) for cell in html_table.findall("./thead/tr/th")]
+            rows = [["".join(cell.itertext()) for cell in row.findall("td")]
+                    for row in html_table.findall("./tbody/tr")]
+            catalogue = pd.DataFrame(rows, columns=headers).set_index("Field")
+            help_text = catalogue["Meaning / units"].to_dict()
             self.assertEqual(set(help_text), set(self.pipelines["v1"].input_columns))
             self.assertIn("unique within the supplied batch", help_text["order_id"])
             self.assertNotIn("historical order identifier", help_text["order_id"])
@@ -239,8 +270,7 @@ class CustomClassificationTests(unittest.TestCase):
                 raise OSError("temporary classification package read failure")
             return original_get_pipeline(version)
 
-        with patch.object(st, "data_editor", side_effect=self.editor), \
-                patch.object(custom_page, "get_pipeline", side_effect=package), \
+        with patch.object(custom_page, "get_pipeline", side_effect=package), \
                 self.no_outcome_reads(), self.real_inference_spy() as predict:
             app = self.launch()
             before = self.run_prediction(app, "v1")["predictions"].copy(deep=True)
@@ -260,45 +290,47 @@ class CustomClassificationTests(unittest.TestCase):
             np.testing.assert_array_equal(after.risk_score, before.risk_score)
             self.assertEqual(predict.call_count, 2)
 
-    def test_editor_reference_source_and_page_changes_clear_v1_score_and_explanation(self):
-        with patch.object(st, "data_editor", side_effect=self.editor), self.real_inference_spy() as predict:
+    def test_field_source_and_page_changes_clear_scores_preserve_draft_and_start_blank_resets(self):
+        with self.real_inference_spy() as predict:
             app = self.launch()
             self.run_prediction(app, "v1")
-            self.edits["order_id"] = "another-new-order"
-            app.run(timeout=60)
+            self.set_fields(app, {"order_id": "another-new-order"})
             self.assert_cleared(app)
+            self.assertNotIn("Run new-order risk predictions", [button.label for button in app.button])
             self.assertEqual(predict.call_count, 1)
-            self.run_prediction(app, "v1")
-            reference = self.widget(app.selectbox, "Reference example for initial values")
-            alternative = next(value for value in self.pipelines["v1"].example_inputs(public_valid_only=True).order_id
-                               if value != reference.value)
-            reference.set_value(alternative).run(timeout=60)
-            self.assert_cleared(app)
+            self.check(app)
             self.run_prediction(app, "v1")
             self.widget(app.radio, "Order source").set_value("Historical examples").run(timeout=60)
             self.assert_cleared(app)
-            self.widget(app.radio, "Order source").set_value("New order / CSV").run(timeout=60)
+            self.widget(app.radio, "Order source").set_value(OWN_SOURCE).run(timeout=60)
             self.assert_cleared(app)
-            self.assertEqual(predict.call_count, 3)
+            self.assertEqual(self.fields(app)["order_id"].value, "another-new-order")
+            self.check(app)
             self.run_prediction(app, "v1")
             self.navigate(app, "Guide & methodology")
             self.assert_cleared(app)
             self.navigate(app, "Low-review prediction")
             self.assert_cleared(app)
-            self.assertEqual(predict.call_count, 4)
+            self.widget(app.radio, "Order source").set_value(OWN_SOURCE).run(timeout=60)
+            self.assertEqual(self.fields(app)["order_id"].value, "another-new-order")
+            self.assertEqual(predict.call_count, 3)
+            self.widget(app.button, "Start a new blank order").click().run(timeout=60)
+            self.assert_cleared(app)
+            self.assertTrue(all(widget.value == "" for widget in self.fields(app).values()))
+            self.assertNotIn("Run new-order risk predictions", [button.label for button in app.button])
+            self.assertEqual(predict.call_count, 3)
 
     def test_v1_csv_two_new_ids_real_scores_selection_and_rejected_outcomes(self):
         uploaded = [None]
-        with patch.object(st, "data_editor", side_effect=self.editor), \
-                patch.object(st, "file_uploader", side_effect=lambda *args, **kwargs: uploaded[0]), \
+        with patch.object(st, "file_uploader", side_effect=lambda *args, **kwargs: uploaded[0]), \
                 self.no_outcome_reads(), self.real_inference_spy() as predict:
-            app = self.launch()
+            app = self.launch(blank=True)
             version = "v1"
             batch = self.pipelines[version].example_inputs(public_valid_only=True).iloc[:2].copy()
             batch["order_id"] = ["csv-v1-new-001", "csv-v1-new-002"]
             self.assertFalse(set(batch.columns) & FORBIDDEN)
             uploaded[0] = io.BytesIO(batch.to_csv(index=False).encode("utf-8"))
-            self.widget(app.radio, "Input method").set_value("Upload CSV").run(timeout=60)
+            self.widget(app.radio, "Input method").set_value(CSV_METHOD).run(timeout=60)
             self.assert_cleared(app)
             matrix, expected = self.expected(version, batch)
             result = self.run_prediction(app, version)
@@ -326,24 +358,44 @@ class CustomClassificationTests(unittest.TestCase):
             self.assertNotIn("Run new-order risk predictions", [button.label for button in app.button])
             self.assertEqual(predict.call_count, 1)
 
-    def test_invalid_edit_clears_prediction_then_explicit_recalculation_restores_validity(self):
-        with patch.object(st, "data_editor", side_effect=self.editor), self.real_inference_spy() as predict:
+    def test_legacy_labels_preserve_checked_blank_form_draft_and_discard_matching_old_results(self):
+        with self.real_inference_spy() as predict:
+            app = self.launch(row=self.record(order_id="review-draft-kept-through-label-migration"))
+            self.run_prediction(app, "v1")
+            keys = [f"new_classification_v1_{name}" for name in
+                    ("form_seed", "draft", "revision", "checked", "identity", "result")]
+            saved = {key: deepcopy(app.session_state[key]) for key in keys}
+            for old_source in ("New order / CSV", "Use your own order"):
+                for old_method, expected_method in (("Edit one order", "Fill in one order"),
+                                                     ("Upload CSV", CSV_METHOD)):
+                    with self.subTest(source=old_source, method=old_method):
+                        resumed = AppTest.from_file(str(ENTRY))
+                        resumed.session_state["workspace"] = "Low-review prediction"
+                        resumed.session_state["clf_version"] = "v1"
+                        resumed.session_state["clf_source"] = old_source
+                        resumed.session_state["new_classification_v1_method"] = old_method
+                        for key, value in saved.items():
+                            resumed.session_state[key] = deepcopy(value)
+                        resumed.run(timeout=60)
+                        self.assert_cleared(resumed)
+                        self.assertEqual(self.widget(resumed.radio, "Order source").value, OWN_SOURCE)
+                        self.assertEqual(self.widget(resumed.radio, "Input method").value, expected_method)
+                        pd.testing.assert_frame_equal(resumed.session_state["new_classification_v1_draft"], saved["new_classification_v1_draft"])
+                        self.assertEqual(predict.call_count, 1, "Migration must not evaluate the forest")
+
+    def test_invalid_fields_require_check_and_valid_changes_recalculate_before_prediction(self):
+        with self.real_inference_spy() as predict:
             app = self.launch()
             self.run_prediction(app, "v1")
-            self.edits["total_price"] = "not-a-number"
-            app.run(timeout=60)
-            self.assert_cleared(app, allow_error=True)
-            self.assertTrue(any("total_price" in error.value and "Row" in error.value for error in app.error))
+            self.set_fields(app, {"total_price": "not-a-number"})
+            self.assert_cleared(app)
+            self.check(app, allow_error=True)
+            self.assertTrue(any("Item price total (R$)" in error.value for error in app.error))
             self.assertNotIn("Run new-order risk predictions", [button.label for button in app.button])
             self.assertEqual(predict.call_count, 1)
-            self.edits["total_price"] = "200"
-            app.run(timeout=60)
-            self.assert_cleared(app, allow_error=True)
-            self.assertTrue(any("total_order_value" in error.value or "freight_ratio" in error.value for error in app.error))
-            # Apply the edit to the draft via the UI's explicit recalculation.
-            self.widget(app.button, "Recalculate derived fields").click().run(timeout=60)
+            self.set_fields(app, {"total_price": "200"})
+            self.check(app)
             self.assert_cleared(app)
-            self.assertEqual(predict.call_count, 1)
             result = self.run_prediction(app, "v1")
             self.assertEqual(result["input_values"][0]["total_price"], 200.)
             self.assert_explanation(result)

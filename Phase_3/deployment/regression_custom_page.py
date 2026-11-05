@@ -10,9 +10,14 @@ from deployment.input_help import INPUT_MEANINGS
 
 
 def render(*, examples, manifest, deployment_id, load_bundle, panel_metrics):
-    st.info("New-order forecast · Supply purchase-time features. This model was fitted on historical Olist data; predictions for new periods do not establish accuracy on today's marketplace.")
+    st.info("Fill in the blank form with details known at purchase, or upload an order table (CSV), to estimate delivery time.")
+    st.caption("This model was fitted on historical Olist data; predictions for new periods do not establish accuracy on today's marketplace.")
+    meanings = {**INPUT_MEANINGS,
+        "order_id": "Your order identifier, unique within the supplied batch. It identifies the output; it does not retrieve order details or an actual delivery outcome.",
+        "purchase_ts": "Your order’s purchase date and local time; used to calculate its calendar features.",
+    }
     frame = inputs_ui.collect_orders(
-        task="delivery", examples=examples, meanings=INPUT_MEANINGS,
+        task="delivery", examples=examples, meanings=meanings,
         validator=lambda rows: regression_inputs.validate_orders(rows, manifest),
         recalculate=regression_inputs.derive_editor_fields,
         seed_identity=deployment_id,

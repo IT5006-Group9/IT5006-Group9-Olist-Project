@@ -210,7 +210,7 @@ class ClassificationPredictionTests(unittest.TestCase):
             self.assertEqual(self.widget(app.selectbox, "Historical classification order").value, chosen)
             self.run_prediction(app)
             self.reveal(app)
-            self.widget(app.radio, "Order source").set_value("New order / CSV").run(timeout=60)
+            self.widget(app.radio, "Order source").set_value("Enter an order or upload a table").run(timeout=60)
             self.assert_cleared(app)
             self.widget(app.radio, "Order source").set_value("Historical examples").run(timeout=60)
             self.assert_cleared(app)

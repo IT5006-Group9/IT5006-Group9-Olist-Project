@@ -106,7 +106,7 @@ def score_example(matrix, ordinal, spec, files):
 
 def render(header, panel_metrics, chart):
     header("Low-review prediction", "Identify the risk of a 1–2 star review at the survey trigger time, then inspect the factors behind the score.")
-    st.caption("Choose an input source → Run the fitted classifier → Inspect the score and its contributing factors")
+    st.caption("Choose a historical example or enter your order details, then run a risk prediction and inspect its factors.")
     try:
         manifest_text = (ASSETS / "manifest.json").read_text()
         manifest = json.loads(manifest_text)
@@ -123,9 +123,18 @@ def render(header, panel_metrics, chart):
     st.caption("Final model · Random Forest V1")
     st.warning("V1 historical model · Its original assessment has label and event availability limitations. See Model results for the timing audit.")
     st.caption("Prediction point T = the earlier of delivery and the promised delivery date (promise if undelivered). This is later in the order lifecycle than the purchase-time delivery forecast.")
-    source = st.radio("Order source", ["Historical examples", "New order / CSV"],
+    sources = ["Historical examples", "Enter an order or upload a table"]
+    current_source = st.session_state.get("clf_source", sources[0])
+    if current_source in ("New order / CSV", "Use your own order"):
+        clear_prediction()
+        st.session_state["clf_source"] = sources[1]
+    elif current_source not in sources:
+        clear_prediction()
+        st.session_state["clf_source"] = sources[0]
+    source = st.radio("Order source", sources,
+                      index=sources.index(st.session_state.get("clf_source", sources[0])),
                       key="clf_source", horizontal=True, on_change=clear_prediction)
-    if source == "New order / CSV":
+    if source == "Enter an order or upload a table":
         from deployment.classification_custom_page import render as render_custom
         render_custom(version=version, spec=spec, panel_metrics=panel_metrics)
         return
@@ -267,7 +276,7 @@ def render(header, panel_metrics, chart):
                 st.info("The prediction is available, but its factor explanation could not be loaded: "
                         + st.session_state["clf_explanation_error"])
     with st.expander("How this demonstration runs"):
-        st.write("Historical examples use the original preprocessing prepared at export. New order / CSV runs the exported fitted history transformer, imputer and encoders on the supplied features. Clicking Run evaluates the uploaded model’s fitted forest. No training or model selection runs in the app.")
+        st.write("Historical examples use the original preparation saved at export. Enter an order or upload a table starts with a blank form or your completed order table, then applies the fitted preparation and frozen history to your details. Clicking Run evaluates the fitted Random Forest V1. No model training or selection runs in the app.")
         st.write("Frozen seller and route history comes only from events stored by the fitted pipeline, with each lookup strictly before the order’s purchase. It is not refreshed with later test reviews. Current-order review fields never enter prediction.")
         st.write("The portable forest preserves every tree, split, missing-value route and leaf score. This keeps the existing regression runtime compatible with the teammates’ newer classification training environment.")
         verification = spec["verification"]
