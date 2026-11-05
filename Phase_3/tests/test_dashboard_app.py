@@ -96,6 +96,34 @@ class DashboardAppTests(unittest.TestCase):
         self.assertGreater(period_count, 0)
         self.assertLess(period_count, state_count)
 
+    def test_guide_shortcuts_open_all_three_tasks_without_running_predictions(self):
+        app = self.launch("Guide & methodology")
+        destinations = {
+            "Open delivery prediction →": "Delivery prediction",
+            "Open low-review prediction →": "Low-review prediction",
+            "Open marketplace explorer →": "Marketplace explorer",
+        }
+        for label, page in destinations.items():
+            with self.subTest(page=page):
+                self.navigate(app, "Guide & methodology")
+                # Every instruction card must provide its own working shortcut.
+                for shortcut in destinations:
+                    self.widget(app.button, shortcut)
+                self.widget(app.button, label).click().run(timeout=60)
+                self.assert_healthy(app)
+                self.assertEqual(app.sidebar.radio[0].value, page)
+                self.assertNotIn("delivery_forecast", app.session_state)
+                self.assertNotIn("clf_forecast", app.session_state)
+                self.assertNotIn("Predicted lead time", [metric.label for metric in app.metric])
+                self.assertNotIn("Low-review risk score", [metric.label for metric in app.metric])
+                if page == "Delivery prediction":
+                    self.widget(app.button, "Calculate delivery forecast")
+                elif page == "Low-review prediction":
+                    self.widget(app.button, "Run low-review prediction")
+                else:
+                    self.assertEqual([tab.label for tab in app.tabs],
+                                     ["Orders", "Delivery", "Reviews", "Categories", "Geography"])
+
     def test_evidence_preserves_mae_and_distinguishes_classification_rules(self):
         app = self.launch("Model results")
         for title, expected in {

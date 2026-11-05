@@ -1,4 +1,4 @@
-"""Standalone CSV parsing and input identities, without task/model UI flows."""
+"""CSV parsing, input identities and real editor lifecycle, without models."""
 from __future__ import annotations
 
 import io
@@ -7,6 +7,7 @@ import sys
 import unittest
 
 import pandas as pd
+from streamlit.testing.v1 import AppTest
 
 PHASE = Path(__file__).resolve().parents[1]
 if str(PHASE) not in sys.path:
@@ -105,6 +106,147 @@ class OrderIdentityTests(unittest.TestCase):
         self.assertNotEqual(first, identity(frame.iloc[::-1], "model-sha-A"))
         self.assertNotEqual(first, identity(frame, "model-sha-B"))
         pd.testing.assert_frame_equal(frame, original)
+
+
+EDITOR_APP = """
+import sys
+import pandas as pd
+import streamlit as st
+sys.path.insert(0, PHASE_DIRECTORY)
+from deployment.order_input_ui import collect_orders, clear_result, identity
+
+def clear_scores():
+    clear_result(TASK)
+
+page = st.radio('Page', ['Orders', 'Other page'], key='test_page', on_change=clear_scores)
+if page == 'Orders':
+    source = st.radio('Order source', ['New order', 'Historical'], key='test_source', on_change=clear_scores)
+    if source == 'New order':
+        examples = pd.DataFrame({'order_id': ['reference-first', 'reference-second'],
+                                 'price': [10., 25.], 'category': ['books', 'toys']})
+        def validate(rows):
+            typed = rows.copy(deep=True)
+            typed['price'] = pd.to_numeric(typed.price, errors='raise')
+            if typed.price.lt(0).any():
+                raise ValueError('price must be nonnegative')
+            return typed
+        frame = collect_orders(task=TASK, examples=examples,
+            meanings={'order_id': 'New order identifier', 'price': 'Item price', 'category': 'Category'},
+            validator=validate, seed_identity='frozen-package-a')
+        if frame is not None:
+            current = identity(frame, 'frozen-model')
+            key = 'new_' + TASK + '_identity'
+            if st.session_state.get(key) != current:
+                clear_result(TASK)
+                st.session_state[key] = current
+            if st.button('Calculate test result'):
+                st.session_state['new_' + TASK + '_result'] = frame.copy(deep=True)
+            if 'new_' + TASK + '_result' in st.session_state:
+                st.success('Calculated result is available')
+    else:
+        st.write('Historical order controls')
+else:
+    st.write('Another page')
+"""
+
+
+class EditorDraftLifecycleTests(unittest.TestCase):
+    def launch(self, task):
+        source = ("PHASE_DIRECTORY = " + repr(str(PHASE)) + "\nTASK = " + repr(task)
+                  + "\n" + EDITOR_APP)
+        app = AppTest.from_string(source).run(timeout=30)
+        self.healthy(app)
+        return app
+
+    def healthy(self, app, *, invalid=False):
+        self.assertEqual([error.message for error in app.exception], [])
+        if not invalid:
+            self.assertEqual([error.value for error in app.error], [])
+
+    def editor_details(self, app):
+        return next(table.value for table in app.dataframe if 'Field' in table.value)
+
+    def preview(self, app):
+        return next(table.value for table in app.dataframe if 'order_id' in table.value)
+
+    def edit(self, app, task, changes, *, invalid=False):
+        # Exercise Streamlit's actual delta state and widget cleanup, rather
+        # than mocking data_editor and accidentally preserving values in a mock.
+        details = self.editor_details(app)
+        revision = app.session_state[f'new_{task}_revision']
+        key = f'new_{task}_editor_{revision}'
+        old = app.session_state[key]
+        rows = {int(row): dict(value) for row, value in old['edited_rows'].items()}
+        for field, value in changes.items():
+            row = details.Field.tolist().index(field)
+            rows[row] = {'Value': str(value)}
+        app.session_state[key] = {'edited_rows': rows, 'added_rows': [], 'deleted_rows': []}
+        app.run(timeout=30)
+        self.healthy(app, invalid=invalid)
+
+    def calculate(self, app, task):
+        next(button for button in app.button if button.label == 'Calculate test result').click().run(timeout=30)
+        self.healthy(app)
+        self.assertIn(f'new_{task}_result', app.session_state)
+
+    def test_second_reference_draft_survives_method_source_and_page_cleanup_but_scores_do_not(self):
+        for task in ('delivery', 'classification_v1'):
+            with self.subTest(task=task):
+                app = self.launch(task)
+                app.selectbox(key=f'new_{task}_reference').set_value('reference-second').run(timeout=30)
+                self.edit(app, task, {'order_id': 'my-new-order', 'category': 'my-category'})
+                # A normal rerun must also keep a stable grid base so edits do
+                # not disappear before any navigation occurs.
+                app.run(timeout=30)
+                self.assertEqual(self.preview(app).iloc[0].to_dict(),
+                                 {'order_id': 'my-new-order', 'price': 25., 'category': 'my-category'})
+                transitions = (
+                    ('method', f'new_{task}_method', 'Upload CSV', 'Edit one order'),
+                    ('source', 'test_source', 'Historical', 'New order'),
+                    ('page', 'test_page', 'Other page', 'Orders'),
+                )
+                for name, key, away, back in transitions:
+                    with self.subTest(task=task, transition=name):
+                        self.calculate(app, task)
+                        app.radio(key=key).set_value(away).run(timeout=30)
+                        self.healthy(app)
+                        self.assertNotIn(f'new_{task}_result', app.session_state)
+                        app.radio(key=key).set_value(back).run(timeout=30)
+                        self.healthy(app)
+                        self.assertEqual(app.selectbox(key=f'new_{task}_reference').value, 'reference-second')
+                        self.assertEqual(self.preview(app).iloc[0].to_dict(),
+                                         {'order_id': 'my-new-order', 'price': 25., 'category': 'my-category'})
+                        self.assertNotIn(f'new_{task}_result', app.session_state)
+                        self.assertFalse(any(message.value == 'Calculated result is available' for message in app.success))
+                # A later edit must replace the restored delta, not replay the
+                # old editor base or accidentally start from the first example.
+                self.edit(app, task, {'category': 'revised-category'})
+                self.assertEqual(self.preview(app).category.tolist(), ['revised-category'])
+
+    def test_invalid_draft_is_preserved_until_corrected_and_reference_change_explicitly_replaces_it(self):
+        for task in ('delivery', 'classification_v1'):
+            with self.subTest(task=task):
+                app = self.launch(task)
+                self.calculate(app, task)
+                self.edit(app, task, {'order_id': 'needs-correction', 'price': '-1'}, invalid=True)
+                self.assertNotIn(f'new_{task}_result', app.session_state)
+                self.assertTrue(any('price must be nonnegative' in error.value for error in app.error))
+                app.radio(key=f'new_{task}_method').set_value('Upload CSV').run(timeout=30)
+                app.radio(key=f'new_{task}_method').set_value('Edit one order').run(timeout=30)
+                self.healthy(app, invalid=True)
+                details = self.editor_details(app).set_index('Field')
+                self.assertEqual(details.loc['order_id', 'Value'], 'needs-correction')
+                self.assertEqual(details.loc['price', 'Value'], '-1')
+                self.assertNotIn('Calculate test result', [button.label for button in app.button])
+                self.edit(app, task, {'price': '15'})
+                self.assertEqual(self.preview(app).order_id.tolist(), ['needs-correction'])
+                self.assertEqual(self.preview(app).price.tolist(), [15])
+                self.calculate(app, task)
+                app.selectbox(key=f'new_{task}_reference').set_value('reference-second').run(timeout=30)
+                self.healthy(app)
+                self.assertEqual(self.preview(app).iloc[0].to_dict(),
+                                 {'order_id': f'new-{task}-001', 'price': 25., 'category': 'toys'})
+                self.assertNotIn(f'new_{task}_result', app.session_state)
 
 
 if __name__ == "__main__":

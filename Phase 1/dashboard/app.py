@@ -174,8 +174,8 @@ def load_states():
 
 if not DATA.exists():
     st.error(
-        "`dashboard/orders.parquet` is missing. Build it with "
-        "`python dashboard/build_data.py` from the repository root."
+        "`Phase 1/dashboard/orders.parquet` is missing. Build it with "
+        '`python "Phase 1/dashboard/build_data.py"` from the repository root.'
     )
     st.stop()
 

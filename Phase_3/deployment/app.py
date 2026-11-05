@@ -567,7 +567,7 @@ def classification_evidence(ev):
         st.dataframe(cv[["family", "train_pr_auc_mean", "cv_pr_auc_mean", "cv_pr_auc_sd", "cv_recall_at_capacity_mean"]], hide_index=True, width="stretch")
         st.dataframe(source["criteria"], hide_index=True, width="stretch")
         st.write("Delivery status is available at this task's trigger time. This classifier is evaluated later in the order lifecycle than the purchase-time regression model.")
-        st.caption("Evaluation is restricted to orders with items and a qualifying observed review; it does not cover every order reaching T. Strict training labels precede each fold cutoff, selection labels are known by 1 June 2018, and post-T approval/carrier events are masked. Its Random Forest is reselected with different hyperparameters from v1.")
+        st.caption("V1 evaluation is restricted to orders with items and a qualifying observed review; it does not cover every order reaching T. Its 27-day purge gap reduces late-label exposure but does not explicitly restrict every training label to its historical availability cutoff.")
         st.caption("Aggregate classification metrics are saved assessments. Low-review prediction evaluates the fitted classification forest on historical examples or supplied features using raw, uncalibrated scores.")
     classification_followup(ev, update)
 
@@ -592,7 +592,7 @@ def classification_followup(ev, update):
                              "Flag rate at frozen threshold": fixed.flag_rate})
             st.dataframe(pd.DataFrame(rows).round(4), hide_index=True, width="stretch")
             st.caption("CV is the mean of monthly forward validation scores; the label-availability cohorts differ. Whole-window top-20% recall and frozen-threshold recall use different rules.")
-            st.write("The supplement enforces label availability at training and selection, masks features whose events occur after T, and freezes its manifest before scoring. It retains the 27-day gap and the original candidate budgets.")
+            st.write("The supplement enforces label availability at training and selection, masks features whose events occur after T, and freezes its manifest before scoring. Training labels precede each fold cutoff and selection labels are known by 1 June 2018. Its Random Forest is reselected with different hyperparameters from V1, retaining the 27-day gap and the original candidate budgets.")
             paired = strict.get("paired", pd.DataFrame())
             if not paired.empty:
                 st.dataframe(paired.rename(columns={"comparison": "Paired comparison", "d_pr_auc": "Test PR-AUC difference", "d_pr_auc_ci": "95% CI for PR-AUC difference", "d_recall": "Recall difference", "d_recall_ci": "95% CI for recall difference"}), hide_index=True, width="stretch")
@@ -724,6 +724,7 @@ def guide(ev):
         st.write("For your own orders, choose **New order / CSV**. Edit the feature values or download and upload a completed template. Use **Recalculate derived fields** after editing dates, prices or routes, correct any validation errors, then click **Run delivery predictions**. CSV batches support up to 100 orders and 2 MiB.")
         st.caption("The recorded promise is an input, not the observed delivery outcome. The model estimates a duration; it does not return a calibrated probability of lateness.")
         st.caption("Changing the selection or leaving the page clears the forecast and revealed outcome. Each new calculation starts with the outcome hidden.")
+        st.button("Open delivery prediction →", on_click=navigate, args=("Delivery prediction",))
     with right, st.container(border=True):
         st.subheader("Explore delivery and review patterns")
         st.write("The five explorer tabs cover Orders, Delivery, Reviews, Categories and Geography. Delivery includes the duration tail and order-feature comparisons; Reviews focuses on the share of 1–2 star ratings across delivery outcomes and order attributes.")

@@ -79,7 +79,7 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
                                   "Meaning / units": [meanings.get(name, "Prediction-time input; see the model contract.") for name in examples.columns]})
         st.markdown(catalogue.to_html(index=False, escape=True, border=0,
                                      classes="olist-input-table"), unsafe_allow_html=True)
-        st.caption("All template headers are required. Leave a value blank only where the field allows missing information. Review labels and other outcome fields are rejected. CSV limit: 100 orders and 2 MiB.")
+        st.caption("All template headers are required. Leave a value blank only where the field allows missing information. Review labels and outcomes unavailable at the task’s prediction point are rejected. CSV limit: 100 orders and 2 MiB.")
     if method == "Upload CSV":
         uploaded = st.file_uploader("Upload feature-ready orders", type=["csv"],
                                     key=f"new_{task}_upload", on_change=clear_result, args=(task,))
@@ -95,10 +95,22 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
             return None
     else:
         st.caption("The editor starts with recorded feature values and a new order ID. Change the values to describe your order; no historical review is copied. Any history fields and multi-item statistics must describe your supplied order.")
-        reference = st.selectbox("Reference example for initial values", examples.order_id.tolist(),
+        seed_key, draft_key, revision_key, base_key = (
+            f"new_{task}_{name}" for name in ("seed", "draft", "revision", "editor_base")
+        )
+        reference_key = f"new_{task}_reference"
+        references = examples.order_id.tolist()
+        previous_seed = st.session_state.get(seed_key)
+        # The reference widget disappears on another method/source/page. Restore
+        # its choice from durable state before it can reset a second-row draft.
+        if (reference_key not in st.session_state and previous_seed
+                and previous_seed[0] == seed_identity
+                and previous_seed[2] == tuple(examples.columns)
+                and previous_seed[1] in references):
+            st.session_state[reference_key] = previous_seed[1]
+        reference = st.selectbox("Reference example for initial values", references,
                                  format_func=lambda value: f"Reference …{str(value)[-8:]}",
-                                 key=f"new_{task}_reference", on_change=clear_result, args=(task,))
-        seed_key, draft_key, revision_key = (f"new_{task}_{name}" for name in ("seed", "draft", "revision"))
+                                 key=reference_key, on_change=clear_result, args=(task,))
         signature = (seed_identity, reference, tuple(examples.columns))
         if st.session_state.get(seed_key) != signature:
             frame = examples.loc[examples.order_id.eq(reference)].iloc[[0]].copy().reset_index(drop=True)
@@ -107,7 +119,13 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
             st.session_state[seed_key] = signature
             st.session_state[revision_key] = st.session_state.get(revision_key, 0) + 1
             clear_result(task)
-        initial = st.session_state[draft_key].iloc[0]
+        editor_key = f"new_{task}_editor_{st.session_state[revision_key]}"
+        # Keep the grid's base stable while Streamlit owns its edit deltas.
+        # Re-entry after widget cleanup starts a clean grid from the latest
+        # durable draft, including edits that have not passed validation yet.
+        if editor_key not in st.session_state or base_key not in st.session_state:
+            st.session_state[base_key] = st.session_state[draft_key].copy(deep=True)
+        initial = st.session_state[base_key].iloc[0]
         details = pd.DataFrame({"Field": initial.index, "Value": [_value(value) for value in initial],
                                 "Meaning / units": [meanings.get(name, "Prediction-time input.") for name in initial.index]})
         edited = st.data_editor(details, hide_index=True, height=540, use_container_width=True,
@@ -115,8 +133,9 @@ def collect_orders(*, task, examples, meanings, validator, recalculate=None, see
                                 column_config={"Field": st.column_config.TextColumn(width="medium"),
                                                "Value": st.column_config.TextColumn("Your value", width="medium"),
                                                "Meaning / units": st.column_config.TextColumn(width="large")},
-                                key=f"new_{task}_editor_{st.session_state[revision_key]}")
+                                key=editor_key)
         draft = pd.DataFrame([dict(zip(edited.Field, edited.Value))])
+        st.session_state[draft_key] = draft.copy(deep=True)
         if recalculate is not None:
             if st.button("Recalculate derived fields", key=f"new_{task}_recalculate"):
                 try:

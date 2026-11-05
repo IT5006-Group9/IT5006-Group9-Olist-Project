@@ -15,9 +15,18 @@ from deployment.classification_explanation_ui import render_explanation
 from deployment.regression_inputs import safe_csv
 
 ASSETS = Path(__file__).resolve().parent / "assets/classification_pipeline"
+# Historical explanations retain the original catalogue. Supplied rows use a
+# separate availability adapter, including when the fitted forest is V1.
 MEANINGS = {**CLASSIFICATION_INPUT_MEANINGS,
-    "order_approved_at": "Recorded local approval timestamp. Required when an approval-derived value is supplied; events after T are masked.",
-    "order_delivered_carrier_date": "Recorded local carrier-handover timestamp. Required when a carrier-derived value is supplied; events after T are masked.",
+    "order_id": "Your order identifier, unique within the supplied batch. It identifies the output row; it does not retrieve order features or a historical review.",
+    "survey_trigger_time": "Required local prediction timestamp T: the earlier of delivery and the supplied promise. If delivery has not occurred by the promise, use the promise; both T and the promise must be supplied.",
+    "approval_lag_hours": "Hours from purchase to approval. The approval timestamp must be known at or before T; leave missing if approval is unknown. For supplied V1 rows, approval after T is masked.",
+    "carrier_handover_days": "Fractional days from approval to carrier handover. Both source timestamps must be known at or before T; leave missing if either is unknown. Supplied rows are masked when either event is after T.",
+    "carrier_transit_days": "Fractional days from carrier handover to customer delivery. Requires delivery observed by T and a carrier timestamp known at or before T; otherwise missing. A carrier event after T is masked for supplied rows.",
+    "seller_prior_orders": "Your purchase-time count of orders assigned to the representative seller strictly before this purchase. Supply it from your operations records; it is not reconstructed from frozen delivery or review events.",
+    "seller_tenure_days": "Your purchase-time elapsed days from the representative seller's first recorded purchase, not account-registration age. Supply it from your operations records; it must be 0 when seller_prior_orders is 0.",
+    "order_approved_at": "Local approval timestamp, required when approval_lag_hours or carrier_handover_days is populated. If approval is unknown, leave it and those derived values missing. Approval after T masks both values.",
+    "order_delivered_carrier_date": "Local carrier-handover timestamp, required when carrier_shipped is 1 or a handover/transit duration is populated. For an unknown event leave it blank and set carrier_shipped to 0; events after T mask the related durations.",
 }
 
 
@@ -65,6 +74,7 @@ def render(*, version, spec, panel_metrics):
             raise ValueError("The inference package and selected model specification differ.")
         examples = pipeline.example_inputs(public_valid_only=True)
     except (OSError, ValueError, KeyError, ImportError) as error:
+        inputs_ui.clear_result("classification_" + version)
         st.warning(f"The complete classification inference package is unavailable: {error}")
         return
     st.info("New-order risk · The fitted history lookup, encoders, imputer and forest run on your supplied row. Features must describe the order at T. No new model is trained.")

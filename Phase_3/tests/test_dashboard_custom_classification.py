@@ -3,7 +3,8 @@
 AppTest cannot edit Glide cells or upload a browser file. Only those widget
 boundaries are replaced; CSV parsing, validation, preprocessing, fitted trees,
 explanations and session transitions all run through the actual dashboard.
-The resource loaders are never mocked, so cached objects remain real pipelines.
+Successful loader calls keep real fitted pipelines. A recovery test injects a
+temporary package-read error without replacing the cached fitted objects.
 """
 from __future__ import annotations
 
@@ -28,6 +29,8 @@ for directory in (PHASE, PHASE / "src"):
         sys.path.insert(0, str(directory))
 
 from deployment import classification_page as page  # noqa: E402
+from deployment import classification_custom_page as custom_page  # noqa: E402
+from deployment.classification_input_help import CLASSIFICATION_INPUT_MEANINGS  # noqa: E402
 from deployment.classification_pipeline_runtime import load_pipeline  # noqa: E402
 from deployment.classification_runtime import PortableForest  # noqa: E402
 
@@ -184,6 +187,78 @@ class CustomClassificationTests(unittest.TestCase):
             self.assertEqual(exported.pipeline_manifest_sha256.iloc[0], package_id)
             self.assertEqual(exported.version.tolist(), [version])
             self.assertFalse(set(exported.columns) & (FORBIDDEN - {"risk_score"}))
+
+    def test_supplied_v1_field_help_matches_actual_asof_masking_and_preserves_historical_help(self):
+        historical_help = dict(CLASSIFICATION_INPUT_MEANINGS)
+        rendered = []
+
+        def record_editor(details, *args, **kwargs):
+            rendered.append(dict(zip(details.Field, details["Meaning / units"])))
+            return self.editor(details, *args, **kwargs)
+
+        with patch.object(st, "data_editor", side_effect=record_editor), \
+                self.no_outcome_reads(), self.real_inference_spy() as predict:
+            app = self.launch()
+            help_text = rendered[-1]
+            self.assertEqual(set(help_text), set(self.pipelines["v1"].input_columns))
+            self.assertIn("unique within the supplied batch", help_text["order_id"])
+            self.assertNotIn("historical order identifier", help_text["order_id"])
+            self.assertIn("both T and the promise must be supplied", help_text["survey_trigger_time"])
+            for field in ("approval_lag_hours", "carrier_handover_days", "carrier_transit_days"):
+                self.assertIn("at or before T", help_text[field])
+                self.assertIn("masked", help_text[field])
+                self.assertNotEqual(help_text[field], historical_help[field])
+            self.assertIn("Hours", help_text["approval_lag_hours"])
+            self.assertIn("Fractional days", help_text["carrier_handover_days"])
+            self.assertIn("Fractional days", help_text["carrier_transit_days"])
+            self.assertIn("approval_lag_hours", help_text["order_approved_at"])
+            self.assertIn("carrier_shipped", help_text["order_delivered_carrier_date"])
+            for field in ("seller_prior_orders", "seller_tenure_days"):
+                self.assertIn("operations records", help_text[field])
+            pipeline = self.pipelines["v1"]
+            row = pipeline.example_inputs(public_valid_only=True).iloc[[0]].copy()
+            row["order_approved_at"] = pd.to_datetime(row.survey_trigger_time) + pd.Timedelta(days=1)
+            masked = pipeline.validate(row)
+            self.assertTrue(masked[["approval_lag_hours", "carrier_handover_days"]].isna().all().all())
+            delivered = pipeline.example_inputs(public_valid_only=True).loc[lambda rows: rows.is_delivered.eq(1)].iloc[[0]].copy()
+            delivered["order_delivered_carrier_date"] = pd.to_datetime(delivered.survey_trigger_time) + pd.Timedelta(days=1)
+            delivered["carrier_shipped"] = 0.
+            masked = pipeline.validate(delivered)
+            self.assertTrue(masked[["carrier_handover_days", "carrier_transit_days"]].isna().all().all())
+            self.assertEqual(CLASSIFICATION_INPUT_MEANINGS, historical_help)
+            self.assertIn("v1 retains its original calculation", historical_help["approval_lag_hours"])
+            self.assert_cleared(app)
+            self.assertEqual(predict.call_count, 0)
+
+    def test_package_failure_clears_v1_result_and_recovery_requires_another_run(self):
+        unavailable = [False]
+        original_get_pipeline = custom_page.get_pipeline
+
+        def package(version):
+            if unavailable[0]:
+                raise OSError("temporary classification package read failure")
+            return original_get_pipeline(version)
+
+        with patch.object(st, "data_editor", side_effect=self.editor), \
+                patch.object(custom_page, "get_pipeline", side_effect=package), \
+                self.no_outcome_reads(), self.real_inference_spy() as predict:
+            app = self.launch()
+            before = self.run_prediction(app, "v1")["predictions"].copy(deep=True)
+            self.assertEqual(predict.call_count, 1)
+            unavailable[0] = True
+            app.run(timeout=60)
+            self.assert_cleared(app)
+            self.assertNotIn("new_classification_v1_identity", app.session_state)
+            self.assertTrue(any("package is unavailable" in warning.value for warning in app.warning))
+            self.assertEqual(predict.call_count, 1)
+            unavailable[0] = False
+            app.run(timeout=60)
+            self.assert_cleared(app)
+            self.assertIn("Run new-order risk predictions", [button.label for button in app.button])
+            self.assertEqual(predict.call_count, 1, "Recovering package availability must not score or redisplay the previous result")
+            after = self.run_prediction(app, "v1")["predictions"]
+            np.testing.assert_array_equal(after.risk_score, before.risk_score)
+            self.assertEqual(predict.call_count, 2)
 
     def test_editor_reference_source_and_page_changes_clear_v1_score_and_explanation(self):
         with patch.object(st, "data_editor", side_effect=self.editor), self.real_inference_spy() as predict:
