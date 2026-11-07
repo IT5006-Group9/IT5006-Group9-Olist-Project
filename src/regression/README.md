@@ -14,10 +14,27 @@ The regression branch predicts fractional purchase-to-receipt days using purchas
 
 From the repository root, use Python 3.12 and install `requirements-regression.lock.txt`. Keep the classification environment separately if it uses a different scikit-learn version.
 
+Check the published snapshots without fitting a model:
+
 ```bash
 python -m pip install -r requirements-regression.lock.txt
-OLIST_ARCHIVE=/path/to/IT5006_Project-Data.zip \
-  python src/regression/run_pipeline.py --stage all --output-root /path/to/new_run
+python scripts/verify_regression_data.py
+```
+
+To regenerate the raw-data audit, choose an empty output directory:
+
+```bash
+OLIST_ARCHIVE=/absolute/path/to/IT5006_Project-Data.zip \
+  python src/regression/run_pipeline.py --stage audit \
+  --output-root /absolute/path/to/new_regression_run
+```
+
+Then run the training stages in that same isolated directory:
+
+```bash
+OLIST_ARCHIVE=/absolute/path/to/IT5006_Project-Data.zip \
+  python src/regression/run_pipeline.py --stage all \
+  --output-root /absolute/path/to/new_regression_run
 ```
 
 The archive fingerprint is checked before reading. A CSV-directory override must match the same archive byte for byte. `--output-root` isolates a fresh run from the published evidence; the generated reading materials include a source copy for portability.

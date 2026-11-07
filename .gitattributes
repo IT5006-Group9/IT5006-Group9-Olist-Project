@@ -7,3 +7,9 @@ src/regression_dev/** text eol=lf
 *.parquet binary
 *.pdf binary
 *.joblib binary
+
+# Keep the nine course CSVs byte-identical to the fixed course ZIP, including
+# original CRLF endings and comment whitespace. The regression audit checks raw
+# SHA-256 fingerprints; source data is not subject to code whitespace cleanup.
+/data/olist_*.csv -text whitespace=-blank-at-eol,cr-at-eol
+/data/product_category_name_translation.csv -text whitespace=-blank-at-eol,cr-at-eol

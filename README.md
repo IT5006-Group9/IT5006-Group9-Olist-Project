@@ -69,7 +69,10 @@ The six required folders hold the submission. `outputs/`, `models/`, `tests/` an
    | Risk model pipeline | 3.11+ (verified 3.14.7) | `python -m pip install -r requirements-classification.txt` |
    | Delivery model pipeline | 3.12 | `python -m pip install -r requirements-regression.lock.txt` |
    | Ensemble reruns | 3.12 | `python -m pip install -r requirements-stacking.lock.txt` |
-   | Notebooks and EDA | 3.11+ | `python -m pip install -r requirements.txt` |
+   | General EDA | 3.11+ | `python -m pip install -r requirements.txt` |
+   | Application and protocol tests | 3.12 | `python -m pip install -r requirements-test.txt` |
+
+   Keep the application/test, classification and regression training environments separate. Run each task's notebooks in its corresponding environment; loading the published classification bundles requires scikit-learn 1.9.1, while regression requires 1.7.2. The root `requirements.txt` is for general EDA and application dependencies, not a combined training environment.
 
 ## Run
 
@@ -89,17 +92,30 @@ python src/classification/run_pipeline.py
 python src/classification/run_experiments.py
 ```
 
-Reproduce the delivery model (see [`src/regression/README.md`](src/regression/README.md) for the stages):
+Check the published delivery data and frozen split without training:
 
 ```bash
-python src/regression/run_pipeline.py --stage audit
+python scripts/verify_regression_data.py
 ```
 
-Run the tests:
+Rebuild and audit the delivery data from the fixed course ZIP in a new directory:
 
 ```bash
+OLIST_ARCHIVE=/absolute/path/to/IT5006_Project-Data.zip \
+  python src/regression/run_pipeline.py --stage audit \
+  --output-root /absolute/path/to/new_regression_run
+```
+
+Use an empty output directory. This keeps the submitted audit, frozen selection and results intact. For full training, continue with `--stage all` and the same `--output-root` and `OLIST_ARCHIVE`; see [`src/regression/README.md`](src/regression/README.md) for all stages.
+
+Run the tests in the application/test environment:
+
+```bash
+python -m pip install -r requirements-test.txt
 python -m pytest tests
 ```
+
+Two comparisons against the original classification pickles are opt-in and require the matching classification export environment; the portable dashboard runtime and its predictions are checked in the application/test environment.
 
 ## History
 

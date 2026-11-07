@@ -1,0 +1,5 @@
+# Application and protocol checks; keep separate from the classification training environment.
+-r dashboard/requirements.txt
+catboost>=1.2
+imbalanced-learn>=0.14
+pytest>=8

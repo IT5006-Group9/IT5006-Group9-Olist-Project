@@ -1,13 +1,14 @@
 # Phase 3 classification pipeline. Verified on Python 3.14.7 with the versions in brackets.
-# Install:  python -m pip install -r requirements.txt
+# Install:  python -m pip install -r requirements-classification.txt
 pandas>=2.2          # (3.0.6)
 numpy>=2.0           # (2.5.3)
 scipy>=1.14          # (1.18.1)
-scikit-learn>=1.6    # (1.9.1)
+scikit-learn==1.9.1  # published fitted classification bundles require this version
 catboost>=1.2        # (1.2.10)
 pyarrow>=15          # (25.0.1) parquet feature table
 matplotlib>=3.9      # (3.11.2)
 joblib>=1.4
+imbalanced-learn>=0.14  # training-only undersampling, oversampling and SMOTE
 # notebook
 jupyterlab>=4.0
 ipykernel>=6.29

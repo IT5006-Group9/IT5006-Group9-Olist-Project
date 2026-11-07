@@ -21,7 +21,7 @@ PYTHONPATH=src .venv-stacking/bin/python \
   scripts/build_stacking_chronological_report.py
 ```
 
-The runner verifies all seven course CSV members against the existing Phase 3 SHA-256 inventory. The original course ZIP is not required when identical extracted CSVs are available. It stores private data, OOF matrices, model checkpoints and order-level predictions under the ignored `Phase_3/data/regression_stacking_chronological/` directory. Published aggregate outputs are under `Phase_3/outputs/regression_stacking_chronological/`.
+The runner verifies all seven course CSV members against the existing Phase 3 SHA-256 inventory. The original course ZIP is not required when identical extracted CSVs are available; the repository's `data/` folder contains byte-identical copies of those members. It stores generated data, OOF matrices, model checkpoints and order-level predictions under `data/regression_stacking_chronological/`. Published aggregate outputs are under `outputs/regression_stacking_chronological/`. Use a separate checkout for a new full experiment, as described below.
 
 The protocol is recorded before fitting. Checkpoints include input identities, row order, cutoff, model specification and training-source hashes. Repeating the same command resumes matching checkpoints. A changed protocol or source is rejected rather than mixed with earlier results; run changed experiments in a separate checkout with a new experiment directory.
 
