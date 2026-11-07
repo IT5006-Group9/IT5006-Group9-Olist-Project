@@ -14,7 +14,7 @@ Two models for the Olist Brazilian e-commerce marketplace, evaluated chronologic
 
 ```
 project-root/
-├── data/            course CSVs (not committed; see Setup) and generated feature tables
+├── data/            course CS and generated data
 ├── notebooks/       executed notebooks for both models
 │   ├── classification_chronological.ipynb      risk model, v1 results
 │   ├── classification_experiments.ipynb        risk model, experiments
