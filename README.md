@@ -7,7 +7,6 @@ Two models for the Olist Brazilian e-commerce marketplace, evaluated chronologic
 | **Delivery model** (regression) | How many days from purchase to receipt? | Checkout | HGB with a past-only slow-order risk score: **MAE 3.43 days**, against 5.06 for the training median and 3.86 for Ridge |
 | **Risk model** (classification) | Will this order get a 1–2 star review? | T = min(delivered, promised date) | Random forest: **PR-AUC 0.375** (3.3 × random); the riskiest 20% of orders contain **53.2%** of low reviews |
 
-- **Final report:** [`docs/final_report/Team9_Phase3_IT5006_AY2627Sem1.docx`](docs/final_report/Team9_Phase3_IT5006_AY2627Sem1.docx)
 - **Live application:** [Olist Operations Studio](https://it5006-group9-olist-project-c5hmxth6jt543wszxqoaqd.streamlit.app/) ([setup and usage](dashboard/README.md))
 - **Full method and results:** [classification](docs/classification.md) · [regression](docs/regression/final_report_regression.md) · [feature and model appendix](docs/report_appendix_features_models.md)
 
