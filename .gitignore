@@ -22,3 +22,11 @@ outputs/*_quick/
 outputs/classification/strict_cutoff/console.log
 *.joblib
 !deployment/assets/regression_model.joblib
+
+# Published regression snapshots; keep generated training caches local.
+/data/regression/*
+!/data/regression/README.md
+!/data/regression/manifest.json
+!/data/regression/orders.pkl
+!/data/regression/all_valid.pkl
+!/data/regression/fold_manifest.csv.gz

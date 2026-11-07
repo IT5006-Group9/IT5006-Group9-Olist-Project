@@ -38,7 +38,7 @@ PYTHONPATH=src python -m regression.reproduce_frozen \
   --archive /path/to/IT5006_Project-Data.zip --output-root /path/to/new_frozen_run
 ```
 
-Raw and prepared data, models, per-order predictions and intermediate caches are generated locally under git-ignored `data/regression` and `models/regression`. Aggregate tables and figures, executed notebooks and explanatory documents form the reviewable deliverable. The [deployment handoff](../../docs/regression/deployment_handoff.md) documents the frozen model and purchase-input scoring interface.
+The existing audited order tables and chronological fold manifest are published under [`data/regression`](../../data/regression/README.md). Verify them without model fitting with `python scripts/verify_regression_data.py`; add `--archive /path/to/IT5006_Project-Data.zip` to independently rebuild the tables in a temporary directory. Model checkpoints, transformed matrices, per-order predictions and intermediate caches remain locally generated. Aggregate tables and figures, executed notebooks and explanatory documents form the reviewable deliverable. The [deployment handoff](../../docs/regression/deployment_handoff.md) documents the frozen model and purchase-input scoring interface.
 
 ## Interpretation
 

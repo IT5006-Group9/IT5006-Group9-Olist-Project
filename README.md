@@ -14,7 +14,9 @@ Two models for the Olist Brazilian e-commerce marketplace, evaluated chronologic
 
 ```
 project-root/
-├── data/            course CS and generated data
+├── data/            nine course CSVs, the shared consolidated table and task-specific data
+│   ├── classification/     prepared low-review classification tables
+│   └── regression/         audited delivery tables and chronological fold memberships
 ├── notebooks/       executed notebooks for both models
 │   ├── classification_chronological.ipynb      risk model, v1 results
 │   ├── classification_experiments.ipynb        risk model, experiments
@@ -58,7 +60,7 @@ The six required folders hold the submission. `outputs/`, `models/`, `tests/` an
 
 ## Setup
 
-1. **Data.** The nine Olist course CSVs are not committed. Put them in `data/`, or set `OLIST_CSV_DIR` to their folder (or `OLIST_ARCHIVE` to the course ZIP). The application does not need them: it runs from committed assets.
+1. **Data.** `data/` contains the nine course CSVs, the shared consolidated table, and prepared classification and regression data. See [`data/regression/README.md`](data/regression/README.md) for regression snapshots, feature roles and frozen chronological memberships. The regression raw-data audit still requires the original course ZIP through `OLIST_ARCHIVE` for its strict fingerprint check; its prepared tables can be read directly. The application runs from committed assets without loading these training tables.
 2. **Environments.** Run every command from the repository root.
 
    | Purpose | Python | Install |

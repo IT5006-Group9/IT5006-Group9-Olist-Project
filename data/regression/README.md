@@ -1,0 +1,69 @@
+# Delivery regression data
+
+These are the existing audited Phase 3 data snapshots used for the chronological delivery lead-time experiments. Publishing them does not change the cohort, folds, model selection or saved results. The nine raw course tables are in the parent [`data/`](../) directory; the classification tables remain in [`data/classification/`](../classification/).
+
+## Files
+
+| File | Contents | Rows |
+|---|---|---:|
+| `orders.pkl` | Canonical one-order-per-row modelling table, January 2017–August 2018; loaded directly by `regression.data.load()` | 96,203 |
+| `all_valid.pkl` | Completed deliveries with valid non-negative targets across all source dates, before the modelling-period restriction | 96,470 |
+| `fold_manifest.csv.gz` | Existing membership records for the five expanding validation folds and the final train/test split | 413,680 |
+| `manifest.json` | File hashes, schemas, provenance, protocol and publication checks | — |
+
+The pickle files are pandas DataFrames in the existing pipeline format. Use Python 3.12 and [`requirements-regression.lock.txt`](../../requirements-regression.lock.txt). The full-window records and training memberships repeat orders across roles and folds; the manifest row count is not a count of distinct orders.
+
+```python
+import pandas as pd
+
+orders = pd.read_pickle("data/regression/orders.pkl")
+all_valid = pd.read_pickle("data/regression/all_valid.pkl")
+membership = pd.read_csv("data/regression/fold_manifest.csv.gz")
+```
+
+## Columns and prediction-time roles
+
+`orders.pkl` has 49 stored columns, not 49 model predictors. They contain the 39 common purchase-time features, two diagnostic absolute-date features, identifiers/timestamps, the target and outcome/audit metadata. `all_valid.pkl` has the same schema without `chronology_flag` (48 columns).
+
+- Target: `lead_time_days = (delivered_ts - purchase_ts) / 86400 seconds`.
+- `delivered_ts`, `lead_time_days`, `order_status` and `chronology_flag` are outcomes or audit fields, never purchase-time predictors. IDs and context timestamps are also excluded from the estimator's feature list.
+- The selected HGB uses the 39 common fields plus `risk_p30` and `risk_unavailable` generated inside its past-only risk pipeline. These two fields are intentionally not stored as global columns here: each validation fold must construct them using its own eligible training data.
+- `purchase_elapsed_days` and `purchase_year_month` are stored for diagnostic ablations, not used by the selected main model.
+- Missing measurements remain missing and are imputed inside training folds. Legitimate long deliveries remain in the cohort.
+
+Exact feature definitions and estimator input roles are in the [feature catalogue](../../outputs/regression/tables/feature_catalogue.csv) and [implementation protocol](../../docs/regression/implementation_protocol.md).
+
+## Chronological membership
+
+The gap is 39 days. Training orders must satisfy both `purchase_ts < cutoff - 39 days` and `delivered_ts < cutoff`. Validation `score` rows have outcomes observed before 1 June 2018; `full_window` also includes later-completing deliveries and is for coverage diagnostics. Final test `score` contains all eligible June–August orders. Boundaries and IDs are unchanged from the published audit.
+
+| Fold | Validation/test month | Training orders | Scored orders | Full window |
+|---|---|---:|---:|---:|
+| fold1 | January 2018 | 34,246 | 7,068 | 7,069 |
+| fold2 | February 2018 | 42,450 | 6,551 | 6,555 |
+| fold3 | March 2018 | 47,940 | 6,996 | 7,003 |
+| fold4 | April 2018 | 54,882 | 6,715 | 6,798 |
+| fold5 | May 2018 | 62,130 | 4,406 | 6,749 |
+| final | June–August 2018 | 68,916 | 18,603 | 18,603 |
+
+May label coverage is incomplete, and the historical test orders were exposed during earlier project work. These files retain that protocol and its limitations; they do not create a new independent holdout. See the [leakage review](../../docs/regression/data_leakage_review.md).
+
+## Verification and regeneration
+
+From the repository root:
+
+```bash
+python scripts/verify_regression_data.py
+```
+
+This checks file fingerprints against the published audit, unique-order grain, targets, feature roles, all fold memberships, label-availability boundaries and the frozen test IDs without fitting a model.
+
+To additionally rebuild and compare the tables from the original course ZIP:
+
+```bash
+python scripts/verify_regression_data.py --archive /path/to/IT5006_Project-Data.zip
+```
+
+The optional rebuild writes only to a temporary directory. The regression audit retains its strict original-ZIP and raw-byte checks; two root CSVs have normalised line endings, so use the original ZIP rather than the root CSV override for byte-identical regeneration. The full experiment reproduction instructions remain in [`src/regression/README.md`](../../src/regression/README.md).
+
+Model checkpoints, transformed matrices, per-order prediction caches and stacking OOF matrices are not part of this data package. They are regenerated by the corresponding training stages; no global risk or OOF cache should be substituted for fold-local fitting.
